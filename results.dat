@@ -1,3 +1,3 @@
-Unit Cell 1: graph.vasp
-Unit Cell 2: graph.vasp
-
+| idx | angle (deg) | strain   | atoms | surf_ratio |  idx1  |  idx2  |
+--------------------------------------------------------------
+|   1 |    21.7870 | 0.000000 |    28 |   7/7   |  -3, -1 |  -2, -3 |
