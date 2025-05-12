@@ -34,6 +34,7 @@ def find_matching_length_vectors(span1, span2, tolerance=1e-5):
     
     matching_lengths = np.isclose(lengths1[:, None], lengths2[None, :], atol=tolerance)
     
+    # Determines vectors with identical lengths present in both spans
     matching_vectors = []
     for i in range(matching_lengths.shape[0]):
         for j in range(matching_lengths.shape[1]):
