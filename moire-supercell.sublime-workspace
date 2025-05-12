@@ -1,0 +1,492 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "cellfind.py",
+			"settings":
+			{
+				"buffer_size": 4963,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+			]
+		},
+		{
+			"file": "cellmatch.py",
+			"settings":
+			{
+				"buffer_size": 9701,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "CellMatch/cellmatch.py",
+			"settings":
+			{
+				"buffer_size": 20416,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "CellMatch/cellang.py",
+			"settings":
+			{
+				"buffer_size": 10801,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "CellMatch/cellrot.py",
+			"settings":
+			{
+				"buffer_size": 5282,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/E/moire-supercell",
+		"/E/moire-supercell/CellMatch"
+	],
+	"file_history":
+	[
+		"/E/moire-supercell/moire-supercell.sublime-project",
+		"/E/moire-supercell/cellgen.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/CMF/CellMatch/cellang.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/CMF/CellMatch/cellrot.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/CMF/CellMatch/cellmatch.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/CMF/cellmatch.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/CMF/cellfind.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/sarwin89.github.io/index.html",
+		"/C/Users/Sarwin/OneDrive/Desktop/CMF/cellfindp.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/CMF/cellgen.py",
+		"/E/c2db/materials/A2B3/1Ag2Te3/1/hse.json",
+		"/E/c2db/materials/A2B3/1Ag2Te3/1/data.json",
+		"/C/Users/Sarwin/OneDrive/Desktop/CMF/cellgene.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/CMF/cellmatch2.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/CMF/CMF/cellgene.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/CMF/CMF/cellmatch.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/Moire/scripts.js",
+		"/C/Users/Sarwin/OneDrive/Desktop/Moire/styles.css",
+		"/C/Users/Sarwin/OneDrive/Desktop/Moire/hex.html",
+		"/C/Users/Sarwin/OneDrive/Desktop/sarwin89.github.io/css/templatemo-style.css",
+		"/C/Users/Sarwin/OneDrive/Desktop/sarwin89.github.io/js/vendor/bootstrap.js",
+		"/C/Users/Sarwin/OneDrive/Desktop/sarwin89.github.io/js/main.js",
+		"/C/Users/Sarwin/OneDrive/Desktop/templatemo_518_sentra/index.html",
+		"/C/Users/Sarwin/OneDrive/Desktop/sarwin89.github.io/css/bootstrap.css",
+		"/C/Users/Sarwin/OneDrive/Desktop/sarwin89.github.io/css/fontAwesome.css",
+		"/C/Users/Sarwin/OneDrive/Desktop/sarwin89.github.io/css/light-box.css",
+		"/C/Users/Sarwin/OneDrive/Desktop/At2.html",
+		"/C/Users/Sarwin/OneDrive/Desktop/AtOrb.html",
+		"/C/Users/Sarwin/OneDrive/Desktop/templatemo_518_sentra/css/bootstrap.css",
+		"/C/Users/Sarwin/OneDrive/Desktop/templatemo_518_sentra/css/bootstrap-theme.css",
+		"/C/Users/Sarwin/OneDrive/Desktop/Karthik Data/fetcher2.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/Karthik Data/fetcher.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/Karthik Data/fetcher3.py",
+		"/D/Game Setups/Forza Horizon 5 [FitGirl Repack]/Verify BIN files before installation.bat",
+		"/C/Users/Sarwin/OneDrive/Desktop/GSO.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/Lorentz.py",
+		"/E/project/Pendulum.py",
+		"/E/PyB/Except.py",
+		"/E/PyB/BS.py",
+		"/E/MClone/css/hw1.css",
+		"/C/Users/Sarwin/OneDrive/Desktop/project/result.php",
+		"/C/Users/Sarwin/OneDrive/Desktop/project/pendap.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/project/Pendulum.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/project/scene.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/project/test.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/test.py",
+		"/D/Degree Notes/Java/JavaL/shapes.html",
+		"/D/Degree Notes/Java/JavaL/pal.html",
+		"/D/Degree Notes/Java/Java/cmain.java",
+		"/D/Degree Notes/Java/Java/FP.java",
+		"/D/Degree Notes/Java/Java/Arr.java",
+		"/D/Degree Notes/Java/Java/Ar.java",
+		"/D/Degree Notes/Java/Java/BS.java",
+		"/D/Degree Notes/Java/Java/Divs.java",
+		"/D/Degree Notes/Java/Java/Div.java",
+		"/D/Degree Notes/Java/Java/cmdargs.java",
+		"/D/Degree Notes/Java/Java/Fib.java",
+		"/D/Degree Notes/Java/Java/Conar.java",
+		"/D/Degree Notes/Java/Java/Calc.java",
+		"/C/Users/Sarwin/OneDrive/Desktop/project/dp.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/project/dpt.py",
+		"/D/Degree Notes/Java/Java/MultiDivAdd.java",
+		"/D/Degree Notes/Java/Java/Matrix.java",
+		"/D/Degree Notes/Java/Java/MA.java",
+		"/D/Degree Notes/Java/Java/interfacearea.java",
+		"/D/Degree Notes/Java/Java/Hotel.java",
+		"/D/Degree Notes/Java/Java/strex.java",
+		"/D/Degree Notes/Java/Java/Revs.java",
+		"/D/Degree Notes/Java/Java/Salary.java",
+		"/D/Degree Notes/Java/Java/prime.java",
+		"/D/Degree Notes/Java/Java/RA.java",
+		"/D/Degree Notes/Java/Java/Rev.java",
+		"/D/Degree Notes/Java/Java/multiply.java",
+		"/C/Users/Sarwin/OneDrive/Desktop/project/pendulumn.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/project/pendulumn",
+		"/C/Users/Sarwin/OneDrive/Desktop/PyB/Except.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/PyB/fileapd.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/PyB/SingleInherit.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/PyB/fileh.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/PyB/Emp.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/PyB/BS.py",
+		"/C/Users/Sarwin/OneDrive/Desktop/PyB/fileapd",
+		"/C/Users/Sarwin/OneDrive/Desktop/PyB/SingleInherit"
+	],
+	"find":
+	{
+		"height": 23.2
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "cellfind.py",
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4963,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1000,
+								1000
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "cellmatch.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9701,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "CellMatch/cellmatch.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 20416,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "CellMatch/cellang.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10801,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "CellMatch/cellrot.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5282,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"stack_multiselect": false,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.2
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "moire-supercell.sublime-project",
+	"replace":
+	{
+		"height": 43.2
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 499.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"E:\\sarwin89.github.io\\portfolio.sublime-project"
+			]
+		],
+		"width": 378.0
+	},
+	"select_symbol":
+	{
+		"height": 323.0,
+		"last_filter": "logo",
+		"selected_items":
+		[
+			[
+				"logo",
+				"logo"
+			],
+			[
+				"smoo",
+				"smoothScroll"
+			],
+			[
+				"fa-twitter",
+				"fa-twitter"
+			],
+			[
+				"scroll",
+				"ScrollSpy"
+			],
+			[
+				"smooth",
+				"smoothScroll"
+			],
+			[
+				"col-md",
+				"col-md-1"
+			],
+			[
+				"active",
+				"active-section"
+			],
+			[
+				"featured",
+				"featured"
+			]
+		],
+		"width": 592.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 181.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
