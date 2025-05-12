@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hexagonal Lattice Moire</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="lattice-container">
+            <canvas id="hexGridCanvas"></canvas>
+            <div class="controls">
+                <label for="rotationSlider">Rotate Lattice:</label>
+                <input type="range" id="rotationSlider" min="0" max="60" step="0.01" value="0">
+                <input type="number" id="angleInput" value="0" step="0.01">
+            </div>
+        </div>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>
