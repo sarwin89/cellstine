@@ -4,18 +4,14 @@ import argparse
 import math
 import multiprocessing as mp
 
-# --- Utilities ---
-
 def rotate_vector_2d(v, theta):
     """Rotate 2D vector v by angle theta (radians)."""
     c, s = math.cos(theta), math.sin(theta)
     return np.array([c * v[0] - s * v[1], s * v[0] + c * v[1]])
 
-
 def unit_area(v1, v2):
     """Calculate the absolute 2D cross product (area spanned by v1 and v2)."""
     return abs(v1[0] * v2[1] - v1[1] * v2[0])
-
 
 def parse_poscar(path):
     """Parse a VASP POSCAR/CONTCAR file: return lattice (3x3), coordinates (Nx3), and counts list."""
@@ -144,7 +140,7 @@ def main():
     p.add_argument('--nindex', type=int, default=10)
     p.add_argument('--tolerance', type=float, default=1e-5)
     p.add_argument('--lin_tol', type=float, default=1e-4)
-    p.add_argument('--processes', type=int, default=4)
+    p.add_argument('--processes', type=int, default=6)
     p.add_argument('--output', default='results.dat')
     args = p.parse_args()
 
