@@ -4,18 +4,14 @@ import argparse
 import math
 import multiprocessing as mp
 
-# --- Utilities ---
-
 def rotate_vector_2d(v, theta):
     """Rotate 2D vector v by angle theta (radians)."""
     c, s = math.cos(theta), math.sin(theta)
     return np.array([c * v[0] - s * v[1], s * v[0] + c * v[1]])
 
-
 def unit_area(v1, v2):
     """Calculate the absolute 2D cross product (area spanned by v1 and v2)."""
     return abs(v1[0] * v2[1] - v1[1] * v2[0])
-
 
 def parse_poscar(path):
     """Parse a VASP POSCAR/CONTCAR file: return lattice (3x3), coordinates (Nx3), and counts list."""
@@ -127,11 +123,34 @@ def build_supercells(pairs, lin_tol, rot1, lat2_2d, cnt1, cnt2, angle):
     return sorted(res, key=lambda x: x[0])
 
 # --- Angle Scan and Search ---
-def process_angle(angle, lat1, lat2, nidx, mt, lt, cnt1, cnt2):
+def process_angle(angle, lat1, lat2, nidx, tol, lin_tol, cnt1, cnt2):
     theta = math.radians(angle)
-    rot1 = np.array([rotate_vector_2d(v, theta) for v in lat1[:2,:2]])
-    pairs = gen_pairs(rot1, lat2[:2,:2], nidx, mt)
-    return build_supercells(pairs, lt, rot1, lat2[:2,:2], cnt1, cnt2, angle)
+    rot1  = np.array([rotate_vector_2d(v, theta) for v in lat1[:2,:2]])
+    pairs = gen_pairs(rot1, lat2[:2,:2], nidx, tol)
+
+    # —— Debug snippet starts here —— 
+    # Build the full V and G arrays so we can inspect all errors
+    idx  = np.arange(-nidx, nidx+1)
+    c1   = np.vstack(np.meshgrid(idx, idx)).T.reshape(-1,2)
+    c1   = c1[~np.all(c1==0, axis=1)]
+    c2   = np.vstack(np.meshgrid(idx, idx)).T.reshape(-1,2)
+    c2   = c2[~np.all(c2==0, axis=1)]
+
+    V = c1 @ rot1
+    G = c2 @ lat2[:2,:2]
+    nV  = np.linalg.norm(V, axis=1)
+    nG  = np.linalg.norm(G, axis=1)
+
+    D = V[:,None,:] - G[None,:,:]
+    errs = np.linalg.norm(D, axis=2) / (nV[:,None] + nG[None,:])
+
+    # Mask out the trivial zero‐vector self‐matches
+    nontrivial = errs[~np.eye(errs.shape[0], dtype=bool)]
+    print(f"Angle {angle:.4f}° → min non-trivial rel‐error = {nontrivial.min():.6f}")
+    # —— Debug snippet ends here ——
+
+    return build_supercells(pairs, lin_tol, rot1, lat2[:2,:2], cnt1, cnt2, angle)
+
 
 # --- CLI ---
 def main():
@@ -144,7 +163,7 @@ def main():
     p.add_argument('--nindex', type=int, default=10)
     p.add_argument('--tolerance', type=float, default=1e-5)
     p.add_argument('--lin_tol', type=float, default=1e-4)
-    p.add_argument('--processes', type=int, default=4)
+    p.add_argument('--processes', type=int, default=6)
     p.add_argument('--output', default='results.dat')
     args = p.parse_args()
 

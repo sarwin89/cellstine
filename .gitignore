@@ -2,3 +2,5 @@
 *.ipynb
 *.png
 *.gif
+*.dat
+results.dat
