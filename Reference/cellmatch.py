@@ -308,7 +308,7 @@ if show_percent == 1:
 print(" Done!")
 
 relative_distances.sort()
- 
+
 po_povrsini = []
 po_povrsini_unique_omjer = []
 po_povrsini_unique = []
