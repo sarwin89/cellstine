@@ -1,177 +1,324 @@
-"""Geometric utilities for 2D lattice operations.
+"""Geometric utilities used by the moire finder and generator."""
 
-All functions assume the first two lattice vectors define the in-plane
-cell; the third vector is ignored except when computing strains (where
-we impute a unit z-component).
+from __future__ import annotations
 
-These routines are numerically heavy and have been written using
-NumPy for performance.
-"""
+from dataclasses import dataclass
+import math
+from typing import List, Sequence, Tuple
 
 import numpy as np
-import math
-from typing import Tuple, List
 
 
-def rotate_vector(v: np.ndarray, theta_rad: float) -> np.ndarray:
-    """Rotate a 2D vector by ``theta_rad`` radians about the origin."""
-    c = math.cos(theta_rad)
-    s = math.sin(theta_rad)
-    return np.array([c * v[0] - s * v[1], s * v[0] + c * v[1]])
+@dataclass(frozen=True)
+class VectorMatch:
+    """One nearly coincident in-plane vector pair."""
+
+    layer1_coeffs: Tuple[int, int]
+    layer2_coeffs: Tuple[int, int]
+    layer1_vector: Tuple[float, float]
+    layer2_vector: Tuple[float, float]
+    absolute_error: float
+    relative_error: float
+    relative_length_mismatch: float
 
 
-def unit_area(v1: np.ndarray, v2: np.ndarray) -> float:
-    """Absolute 2D cross product; area of parallelogram spanned by v1,v2."""
-    return abs(v1[0] * v2[1] - v1[1] * v2[0])
+@dataclass(frozen=True)
+class SupercellCandidate:
+    """A commensurate supercell candidate for one twist angle."""
+
+    angle_deg: float
+    strain_avg: float
+    strain_layer1: float
+    strain_layer2: float
+    ratio1: int
+    ratio2: int
+    total_atoms: int
+    layer1_vector1: Tuple[int, int]
+    layer1_vector2: Tuple[int, int]
+    layer2_vector1: Tuple[int, int]
+    layer2_vector2: Tuple[int, int]
+    eps1: float
+    eps2: float
+    vector_product: float
+    area1: float
+    area2: float
 
 
-def calc_strain(a1, b1, c1, a2, b2, c2) -> float:
-    """Calculate the average linear strain between two unit cells.
+def rotate_vector(vector: Sequence[float], theta_rad: float) -> np.ndarray:
+    """Rotate a 2D vector by theta_rad around the z-axis."""
 
-    Parameters are 3‑vectors giving two basis vectors and a dummy z of
-    1.0 (we ignore out‑of‑plane distortions).  The algorithm is the same
-    as the legacy ``calc_strain`` used in earlier versions of the
-    project.
-    """
-    # force planar z=1.0 for compatibility
-    a1x, a1y, a1z = a1; b1x, b1y, b1z = b1; c1z = 1.0
-    a2x, a2y, a2z = a2; b2x, b2y, b2z = b2; c2z = 1.0
-    M1 = np.array([
-        [a1x*a1x+a1y*a1y+a1z*a1z, a1x*b1x+a1y*b1y+a1z*b1z, a1x*c1[0]+a1y*c1[1]+a1z*c1z],
-        [a1x*b1x+a1y*b1y+a1z*b1z, b1x*b1x+b1y*b1y+b1z*b1z, b1x*c1[0]+b1y*c1[1]+b1z*c1z],
-        [a1x*c1[0]+a1y*c1[1]+a1z*c1z, c1[0]*b1x+c1[1]*b1y+c1z*b1z, c1[0]*c1[0]+c1[1]*c1[1]+c1z*c1z]
-    ])
-    M2 = np.array([
-        [a2x*a2x+a2y*a2y+a2z*a2z, a2x*b2x+a2y*b2y+a2z*b2z, a2x*c2[0]+a2y*c2[1]+a2z*c2z],
-        [a2x*b2x+a2y*b2y+a2z*b2z, b2x*b2x+b2y*b2y+b2z*b2z, b2x*c2[0]+b2y*c2[1]+b2z*c2z],
-        [a2x*c2[0]+a2y*c2[1]+a2z*c2z, c2[0]*b2x+c2[1]*b2y+c2z*b2z, c2[0]*c2[0]+c2[1]*c2[1]+c2z*c2z]
-    ])
-    rt1 = np.linalg.cholesky(M1).T
-    rt2 = np.linalg.cholesky(M2).T
-    E = rt2 @ np.linalg.inv(rt1) - np.eye(3)
-    S = 0.5 * (E + E.T + E @ E.T)
-    ev = np.linalg.eigvals(S)
-    return math.sqrt((ev * ev).sum()) / 3.0
+    cos_theta = math.cos(theta_rad)
+    sin_theta = math.sin(theta_rad)
+    x_value, y_value = float(vector[0]), float(vector[1])
+    return np.array(
+        [
+            cos_theta * x_value - sin_theta * y_value,
+            sin_theta * x_value + cos_theta * y_value,
+        ],
+        dtype=float,
+    )
 
 
-def gen_span(lattice: np.ndarray, nmax: int) -> np.ndarray:
-    """Generate all integer linear combinations a*e1 + b*e2 with
-    -nmax <= a,b <= nmax (excluding the zero vector).
+def rotation_matrix_z(angle_deg: float) -> np.ndarray:
+    """Return the 3D rotation matrix for an in-plane rotation."""
 
-    Returns array of shape (M,2) where M=(2*nmax+1)**2-1.
-    """
-    idx = np.arange(-nmax, nmax + 1)
-    a, b = np.meshgrid(idx, idx)
-    coeffs = np.vstack((a.ravel(), b.ravel())).T
-    coeffs = coeffs[~np.all(coeffs == 0, axis=1)]
-    return coeffs @ lattice[:2, :2]
-
-
-def filter_unique_directions(vectors: np.ndarray) -> np.ndarray:
-    """Remove mirror duplicates; keep one representative for each direction."""
-    dirs = np.array([np.sign(v) * np.abs(v) for v in vectors])
-    # round to avoid floating point jitter before unique
-    return np.unique(np.round(dirs, 6), axis=0)
+    theta = math.radians(angle_deg)
+    cos_theta = math.cos(theta)
+    sin_theta = math.sin(theta)
+    return np.array(
+        [
+            [cos_theta, -sin_theta, 0.0],
+            [sin_theta, cos_theta, 0.0],
+            [0.0, 0.0, 1.0],
+        ],
+        dtype=float,
+    )
 
 
-def find_length_matches(span1: np.ndarray, span2: np.ndarray,
-                        tol: float = 1e-5) -> List[Tuple[np.ndarray, np.ndarray]]:
-    """Return pairs of independent vectors from the two spans sharing length.
+def rotate_lattice(lattice: np.ndarray, angle_deg: float) -> np.ndarray:
+    """Rotate a lattice in the x-y plane."""
 
-    Independence is checked by verifying the rank of the two vectors is 2.
-    """
-    n1 = np.linalg.norm(span1, axis=1)
-    n2 = np.linalg.norm(span2, axis=1)
-    matches = np.isclose(n1[:, None], n2[None, :], atol=tol)
-    pairs = []
-    for i in range(matches.shape[0]):
-        for j in range(matches.shape[1]):
-            if matches[i, j]:
-                v1 = span1[i]; v2 = span2[j]
-                if not np.allclose(v1, v2) and np.linalg.matrix_rank(np.vstack((v1, v2)).T) == 2:
-                    pairs.append((v1, v2))
-    return pairs
+    return np.asarray(lattice, dtype=float) @ rotation_matrix_z(angle_deg).T
 
 
-def angle_between(v1: np.ndarray, v2: np.ndarray) -> float:
-    """Angle (degrees) between two vectors."""
-    cos = np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
-    cos = max(-1.0, min(1.0, cos))
-    return math.degrees(math.acos(cos))
+def rotate_cartesian_positions(positions: np.ndarray, angle_deg: float) -> np.ndarray:
+    """Rotate Cartesian coordinates in the x-y plane."""
+
+    return np.asarray(positions, dtype=float) @ rotation_matrix_z(angle_deg).T
 
 
-def gen_pairs(rot1: np.ndarray, lat2_2d: np.ndarray, nidx: int, tol: float):
-    """Generate matching vector pairs between rotated cell1 and cell2.
+def unit_area(v1: Sequence[float], v2: Sequence[float]) -> float:
+    """Absolute 2D cross product."""
 
-    Copied from the prior cellmatch implementation; returns a list of
-    dictionaries holding coefficient pairs, vectors and error.
-    """
-    rot = np.asarray(rot1)[:2,:2]
-    lat2 = np.asarray(lat2_2d)[:2,:2]
-    idx = np.arange(-nidx, nidx+1)
-    c1 = np.vstack(np.meshgrid(idx,idx)).T.reshape(-1,2)
-    c1 = c1[~np.all(c1==0, axis=1)]
-    c2 = np.vstack(np.meshgrid(idx,idx)).T.reshape(-1,2)
-    c2 = c2[~np.all(c2==0, axis=1)]
-
-    V = c1 @ rot
-    G = c2 @ lat2
-    nV = np.linalg.norm(V, axis=1)
-    nG = np.linalg.norm(G, axis=1)
-    D = V[:,None,:] - G[None,:,:]
-    rel_err = np.linalg.norm(D,axis=2)/(nV[:,None]+nG[None,:])
-
-    pairs = []
-    ai, bi = np.nonzero(rel_err < tol)
-    for ia, ib in zip(ai, bi):
-        pairs.append({
-            'c1': tuple(c1[ia]),
-            'c2': tuple(c2[ib]),
-            'v1': tuple(V[ia]),
-            'v2': tuple(G[ib]),
-            'eps': float(rel_err[ia,ib])
-        })
-    pairs.sort(key=lambda p: p['eps'])
-    return pairs
+    return abs(float(v1[0]) * float(v2[1]) - float(v1[1]) * float(v2[0]))
 
 
-def build_supercells(pairs, lin_tol, rot1, lat2, cnt1, cnt2, angle=None):
-    """Given matched pairs, produce a list of supercell candidates.
+cross_2d = unit_area
 
-    The returned tuple contents match the legacy format; see
-    :func:`moire.finder.find_supercells` for details.
-    """
-    A1 = unit_area(rot1[0], rot1[1])
-    A2 = unit_area(lat2[0], lat2[1])
-    eps_arr = np.array([p['eps'] for p in pairs])
-    k = (eps_arr <= lin_tol).sum()
-    if k < 2:
+
+def _metric_tensor(a_vec: Sequence[float], b_vec: Sequence[float], c_vec: Sequence[float]) -> np.ndarray:
+    a = np.array([float(a_vec[0]), float(a_vec[1]), float(a_vec[2])], dtype=float)
+    b = np.array([float(b_vec[0]), float(b_vec[1]), float(b_vec[2])], dtype=float)
+    c = np.array([float(c_vec[0]), float(c_vec[1]), 1.0], dtype=float)
+    return np.array(
+        [
+            [np.dot(a, a), np.dot(a, b), np.dot(a, c)],
+            [np.dot(b, a), np.dot(b, b), np.dot(b, c)],
+            [np.dot(c, a), np.dot(c, b), np.dot(c, c)],
+        ],
+        dtype=float,
+    )
+
+
+def calculate_strain(a1: Sequence[float], b1: Sequence[float], c1: Sequence[float], a2: Sequence[float], b2: Sequence[float], c2: Sequence[float]) -> float:
+    """Legacy-compatible deformation strain metric from CellMatch."""
+
+    metric_tensor1 = _metric_tensor(a1, b1, c1)
+    metric_tensor2 = _metric_tensor(a2, b2, c2)
+
+    rt1 = np.linalg.cholesky(metric_tensor1).T
+    rt2 = np.linalg.cholesky(metric_tensor2).T
+
+    e_tensor = rt2 @ np.linalg.inv(rt1) - np.eye(3)
+    strain_tensor = 0.5 * (e_tensor + e_tensor.T + e_tensor @ e_tensor.T)
+    eigenvalues = np.linalg.eigvals(strain_tensor)
+    return float(math.sqrt(float(np.sum(np.real(eigenvalues) ** 2))) / 3.0)
+
+
+def enumerate_integer_coefficients(nindex: int) -> np.ndarray:
+    """Return all integer coefficient pairs except the origin."""
+
+    values = np.arange(-nindex, nindex + 1, dtype=int)
+    grid_x, grid_y = np.meshgrid(values, values, indexing="ij")
+    coeffs = np.stack((grid_x.ravel(), grid_y.ravel()), axis=1)
+    return coeffs[np.any(coeffs != 0, axis=1)]
+
+
+def enumerate_in_plane_vectors(lattice: np.ndarray, nindex: int) -> Tuple[np.ndarray, np.ndarray]:
+    """Enumerate all in-plane lattice vectors a*v1 + b*v2."""
+
+    coeffs = enumerate_integer_coefficients(nindex)
+    basis = np.asarray(lattice, dtype=float)[:2, :2]
+    vectors = coeffs @ basis
+    return coeffs, vectors
+
+
+def find_coincident_vector_pairs(
+    lattice1: np.ndarray,
+    lattice2: np.ndarray,
+    nindex: int,
+    tolerance: float,
+    *,
+    strain_tolerance: float | None = None,
+) -> List[VectorMatch]:
+    """Find nearly coincident vectors between two in-plane lattices."""
+
+    coeffs1, vectors1 = enumerate_in_plane_vectors(lattice1, nindex)
+    coeffs2, vectors2 = enumerate_in_plane_vectors(lattice2, nindex)
+
+    norms1 = np.linalg.norm(vectors1, axis=1)
+    norms2 = np.linalg.norm(vectors2, axis=1)
+    deltas = vectors1[:, None, :] - vectors2[None, :, :]
+    absolute_errors = np.linalg.norm(deltas, axis=2)
+    relative_errors = absolute_errors / np.maximum(norms1[:, None] + norms2[None, :], 1e-12)
+    length_mismatch = np.abs(norms1[:, None] - norms2[None, :]) / np.maximum((norms1[:, None] + norms2[None, :]) * 0.5, 1e-12)
+
+    valid_mask = relative_errors <= tolerance
+    if strain_tolerance is not None:
+        valid_mask &= length_mismatch <= strain_tolerance
+
+    match_rows, match_cols = np.nonzero(valid_mask)
+    matches: List[VectorMatch] = []
+    for row_index, col_index in zip(match_rows.tolist(), match_cols.tolist()):
+        matches.append(
+            VectorMatch(
+                layer1_coeffs=(int(coeffs1[row_index, 0]), int(coeffs1[row_index, 1])),
+                layer2_coeffs=(int(coeffs2[col_index, 0]), int(coeffs2[col_index, 1])),
+                layer1_vector=(float(vectors1[row_index, 0]), float(vectors1[row_index, 1])),
+                layer2_vector=(float(vectors2[col_index, 0]), float(vectors2[col_index, 1])),
+                absolute_error=float(absolute_errors[row_index, col_index]),
+                relative_error=float(relative_errors[row_index, col_index]),
+                relative_length_mismatch=float(length_mismatch[row_index, col_index]),
+            )
+        )
+
+    matches.sort(key=lambda item: (item.relative_error, item.relative_length_mismatch, item.absolute_error))
+    return matches
+
+
+def _vector_pair_strains(v1: np.ndarray, v2: np.ndarray, g1: np.ndarray, g2: np.ndarray) -> Tuple[float, float]:
+    norm_v1 = np.linalg.norm(v1)
+    norm_v2 = np.linalg.norm(v2)
+    norm_g1 = np.linalg.norm(g1)
+    norm_g2 = np.linalg.norm(g2)
+
+    strain1 = 0.0
+    if norm_v1 > 0.0 and norm_v2 > 0.0:
+        strain1 = math.sqrt(((norm_g1 / norm_v1 - 1.0) ** 2 + (norm_g2 / norm_v2 - 1.0) ** 2) / 2.0)
+
+    strain2 = 0.0
+    if norm_g1 > 0.0 and norm_g2 > 0.0:
+        strain2 = math.sqrt(((norm_v1 / norm_g1 - 1.0) ** 2 + (norm_v2 / norm_g2 - 1.0) ** 2) / 2.0)
+
+    return float(strain1), float(strain2)
+
+
+def build_supercell_candidates(
+    matches: Sequence[VectorMatch],
+    rotated_lattice1: np.ndarray,
+    lattice2: np.ndarray,
+    atom_count1: int,
+    atom_count2: int,
+    candidate_tolerance: float,
+    angle_deg: float,
+) -> List[SupercellCandidate]:
+    """Build commensurate supercell candidates from matched vectors."""
+
+    base_area1 = unit_area(rotated_lattice1[0, :2], rotated_lattice1[1, :2])
+    base_area2 = unit_area(lattice2[0, :2], lattice2[1, :2])
+    if base_area1 == 0.0 or base_area2 == 0.0:
         return []
-    sub = pairs[:k]
-    results = []
-    for p in range(k):
-        for q in range(p, k):
-            c1p = sub[p]['c1']; c1q = sub[q]['c1']
-            c2p = sub[p]['c2']; c2q = sub[q]['c2']
-            v1 = np.array(sub[p]['v1']); v2 = np.array(sub[q]['v1'])
-            g1 = np.array(sub[p]['v2']); g2 = np.array(sub[q]['v2'])
-            surf1 = abs(v1[0]*v2[1] - v1[1]*v2[0])
-            surf2 = abs(g1[0]*g2[1] - g1[1]*g2[0])
-            if surf1 == 0 or surf2 == 0:
+
+    usable = [match for match in matches if match.relative_error <= candidate_tolerance]
+    if len(usable) < 2:
+        return []
+
+    candidates: List[SupercellCandidate] = []
+    for first_index, first_match in enumerate(usable):
+        for second_match in usable[first_index:]:
+            v1 = np.array(first_match.layer1_vector, dtype=float)
+            v2 = np.array(second_match.layer1_vector, dtype=float)
+            g1 = np.array(first_match.layer2_vector, dtype=float)
+            g2 = np.array(second_match.layer2_vector, dtype=float)
+
+            area1_signed = float(v1[0] * v2[1] - v1[1] * v2[0])
+            area2_signed = float(g1[0] * g2[1] - g1[1] * g2[0])
+            if math.isclose(area1_signed, 0.0, abs_tol=1e-12) or math.isclose(area2_signed, 0.0, abs_tol=1e-12):
                 continue
-            om1 = round(surf1 / A1)
-            om2 = round(surf2 / A2)
-            if om1 <= 0 or om2 <= 0:
+
+            ratio1 = int(round(abs(area1_signed / base_area1)))
+            ratio2 = int(round(abs(area2_signed / base_area2)))
+            if ratio1 <= 0 or ratio2 <= 0:
                 continue
-            # compute a few strain measures
-            strain_avg = calc_strain([v1[0],v1[1],0], [v2[0],v2[1],0], [0,0,1],
-                                     [g1[0],g1[1],0], [g2[0],g2[1],0], [0,0,1])
-            n_v1 = np.linalg.norm(v1); n_v2 = np.linalg.norm(v2)
-            n_g1 = np.linalg.norm(g1); n_g2 = np.linalg.norm(g2)
-            s1 = math.sqrt(((n_g1/n_v1 - 1)**2 + (n_g2/n_v2 - 1)**2)/2) if n_v1>0 and n_v2>0 else 0.0
-            s2 = math.sqrt(((n_v1/n_g1 - 1)**2 + (n_v2/n_g2 - 1)**2)/2) if n_g1>0 and n_g2>0 else 0.0
-            atoms = round(cnt1 * om1 + cnt2 * om2)
-            eps1 = sub[p]['eps']; eps2 = sub[q]['eps']
-            results.append((strain_avg, s1, s2, om1, om2, atoms,
-                            c1p, c1q, c2p, c2q, eps1, eps2, angle))
-    return sorted(results, key=lambda x: x[0])
+
+            strain_avg = calculate_strain(
+                [v1[0], v1[1], 0.0],
+                [v2[0], v2[1], 0.0],
+                [0.0, 0.0, 1.0],
+                [g1[0], g1[1], 0.0],
+                [g2[0], g2[1], 0.0],
+                [0.0, 0.0, 1.0],
+            )
+            strain1, strain2 = _vector_pair_strains(v1, v2, g1, g2)
+            candidates.append(
+                SupercellCandidate(
+                    angle_deg=float(angle_deg),
+                    strain_avg=float(strain_avg),
+                    strain_layer1=float(strain1),
+                    strain_layer2=float(strain2),
+                    ratio1=ratio1,
+                    ratio2=ratio2,
+                    total_atoms=int(round(atom_count1 * ratio1 + atom_count2 * ratio2)),
+                    layer1_vector1=first_match.layer1_coeffs,
+                    layer1_vector2=second_match.layer1_coeffs,
+                    layer2_vector1=first_match.layer2_coeffs,
+                    layer2_vector2=second_match.layer2_coeffs,
+                    eps1=float(first_match.relative_error),
+                    eps2=float(second_match.relative_error),
+                    vector_product=float(np.linalg.norm(v1) * np.linalg.norm(v2)),
+                    area1=abs(area1_signed),
+                    area2=abs(area2_signed),
+                )
+            )
+
+    candidates.sort(key=lambda item: (item.strain_avg, item.total_atoms, item.vector_product, item.angle_deg))
+    return candidates
+
+
+def deduplicate_candidates(
+    candidates: Sequence[SupercellCandidate],
+    strain_tolerance: float = 1e-4,
+    ratio_tolerance: float = 1e-5,
+    angle_tolerance: float = 1e-9,
+) -> List[SupercellCandidate]:
+    """Collapse near-identical candidates while keeping the shortest cell."""
+
+    ordered = sorted(candidates, key=lambda item: (item.angle_deg, item.strain_avg, item.vector_product, item.total_atoms))
+    unique: List[SupercellCandidate] = []
+
+    for index, candidate in enumerate(ordered):
+        ratio = candidate.ratio1 / float(candidate.ratio2)
+        duplicate = False
+        for kept in unique:
+            kept_ratio = kept.ratio1 / float(kept.ratio2)
+            if (
+                abs(candidate.angle_deg - kept.angle_deg) <= angle_tolerance
+                and abs(candidate.strain_avg - kept.strain_avg) < strain_tolerance
+                and abs(ratio - kept_ratio) < ratio_tolerance
+            ):
+                duplicate = True
+                break
+        if duplicate:
+            continue
+
+        best = candidate
+        scan_index = index + 1
+        while scan_index < len(ordered):
+            other = ordered[scan_index]
+            if other.angle_deg > candidate.angle_deg + angle_tolerance:
+                break
+            other_ratio = other.ratio1 / float(other.ratio2)
+            if (
+                abs(other.angle_deg - candidate.angle_deg) <= angle_tolerance
+                and abs(other.strain_avg - candidate.strain_avg) < strain_tolerance
+                and abs(other_ratio - ratio) < ratio_tolerance
+            ):
+                current_key = (best.vector_product, best.total_atoms, best.eps1 + best.eps2)
+                other_key = (other.vector_product, other.total_atoms, other.eps1 + other.eps2)
+                if other_key < current_key:
+                    best = other
+            scan_index += 1
+        unique.append(best)
+
+    unique.sort(key=lambda item: (item.strain_avg, item.total_atoms, item.angle_deg, item.vector_product))
+    return unique

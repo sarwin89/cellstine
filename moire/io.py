@@ -1,89 +1,187 @@
-"""I/O utilities for reading and writing VASP POSCAR/CONTCAR files.
+"""POSCAR helpers shared by the finder and generator flows."""
 
-The routines are intentionally simple, returning numpy arrays for
-lattice vectors and atomic positions.  Only the subset of POSCAR
-features used in the moire finder/generator (scale factor, lattice
-vectors, atom counts, coordinates) is implemented; additional
-functionality can be added later.
+from __future__ import annotations
 
-The code is pure Python/NumPy with minimal dependencies.
-"""
+from dataclasses import dataclass
+from typing import List, Sequence, Tuple
 
 import numpy as np
-from typing import Tuple, List
+
+
+@dataclass
+class PoscarData:
+    """Parsed POSCAR/CONTCAR data."""
+
+    comment: str
+    lattice: np.ndarray
+    species: List[str]
+    counts: List[int]
+    positions_direct: np.ndarray
+    positions_cartesian: np.ndarray
+    coordinate_mode: str
+    selective_dynamics: bool
+    selective_flags: List[Tuple[str, str, str]] | None
+
+    @property
+    def natoms(self) -> int:
+        return int(sum(self.counts))
+
+
+def cartesian_to_direct(cartesian: np.ndarray, lattice: np.ndarray) -> np.ndarray:
+    """Convert row-vector Cartesian coordinates to direct coordinates."""
+
+    return np.asarray(cartesian, dtype=float) @ np.linalg.inv(np.asarray(lattice, dtype=float))
+
+
+def direct_to_cartesian(direct: np.ndarray, lattice: np.ndarray) -> np.ndarray:
+    """Convert row-vector direct coordinates to Cartesian coordinates."""
+
+    return np.asarray(direct, dtype=float) @ np.asarray(lattice, dtype=float)
+
+
+def wrap_direct(direct: np.ndarray, tol: float = 1e-10) -> np.ndarray:
+    """Wrap direct coordinates into the [0, 1) interval."""
+
+    wrapped = np.mod(np.asarray(direct, dtype=float), 1.0)
+    wrapped[np.isclose(wrapped, 1.0, atol=tol)] = 0.0
+    wrapped[np.isclose(wrapped, 0.0, atol=tol)] = 0.0
+    return wrapped
+
+
+def read_poscar(path: str) -> PoscarData:
+    """Read a POSCAR/CONTCAR file."""
+
+    with open(path, "r", encoding="utf-8") as handle:
+        lines = handle.read().splitlines()
+
+    if len(lines) < 8:
+        raise ValueError(f"{path} does not look like a POSCAR/CONTCAR file")
+
+    comment = lines[0].rstrip("\n")
+    scale = float(lines[1].split()[0])
+    lattice = np.array([list(map(float, lines[i].split()[:3])) for i in range(2, 5)], dtype=float)
+    lattice *= scale
+
+    line_index = 5
+    first_tokens = lines[line_index].split()
+    species: List[str]
+    counts: List[int]
+    try:
+        counts = [int(token) for token in first_tokens]
+        species = []
+        line_index += 1
+    except ValueError:
+        species = first_tokens
+        line_index += 1
+        counts = [int(token) for token in lines[line_index].split()]
+        line_index += 1
+
+    selective_dynamics = False
+    if lines[line_index].strip().lower().startswith("s"):
+        selective_dynamics = True
+        line_index += 1
+
+    coordinate_mode = lines[line_index].strip()
+    line_index += 1
+
+    natoms = int(sum(counts))
+    raw_positions = []
+    selective_flags: List[Tuple[str, str, str]] | None = [] if selective_dynamics else None
+    for offset in range(natoms):
+        tokens = lines[line_index + offset].split()
+        raw_positions.append([float(tokens[0]), float(tokens[1]), float(tokens[2])])
+        if selective_dynamics:
+            selective_flags.append(tuple(tokens[3:6]))
+
+    raw_array = np.array(raw_positions, dtype=float)
+    if coordinate_mode.lower().startswith("d"):
+        positions_direct = raw_array
+        positions_cartesian = direct_to_cartesian(raw_array, lattice)
+    else:
+        positions_cartesian = raw_array
+        positions_direct = cartesian_to_direct(raw_array, lattice)
+
+    return PoscarData(
+        comment=comment,
+        lattice=lattice,
+        species=species,
+        counts=counts,
+        positions_direct=positions_direct,
+        positions_cartesian=positions_cartesian,
+        coordinate_mode=coordinate_mode,
+        selective_dynamics=selective_dynamics,
+        selective_flags=selective_flags,
+    )
 
 
 def parse_poscar(path: str) -> Tuple[np.ndarray, np.ndarray, List[int], List[str]]:
-    """Read a POSCAR/CONTCAR and return lattice, positions, counts, types.
+    """Backward-compatible POSCAR parser used by older tests and scripts."""
 
-    Returns
-    -------
-    lattice : (3,3) ndarray
-        Cartesian lattice vectors (scaled by the scale factor).
-    positions : (N,3) ndarray
-        Atomic coordinates in Cartesian space (regardless of input mode).
-    counts : list of int
-        Number of atoms for each species, in the order given.
-    types : list of str
-        Chemical symbols corresponding to ``counts`` (empty list if
-        unspecified).
-    """
-    with open(path, 'r') as f:
-        lines = f.read().splitlines()
+    data = read_poscar(path)
+    return data.lattice, data.positions_cartesian, data.counts, data.species
 
-    if len(lines) < 8:
-        raise ValueError(f"File {path} does not look like a POSCAR")
 
-    scale = float(lines[1].split()[0])
-    lattice = np.array([list(map(float, lines[i].split())) for i in range(2, 5)])
-    lattice *= scale
+def _normalise_flags(
+    selective_flags: Sequence[Sequence[str]] | None,
+    natoms: int,
+) -> List[Tuple[str, str, str]] | None:
+    if selective_flags is None:
+        return None
+    if len(selective_flags) != natoms:
+        raise ValueError("selective_flags length does not match number of atoms")
+    return [tuple(str(item) for item in flags[:3]) for flags in selective_flags]
 
-    # atom species and counts may occupy one or two lines depending on
-    # style; we attempt to detect both cases.
-    tokens5 = lines[5].split()
-    tokens6 = lines[6].split()
-    if all(tok.isalpha() for tok in tokens5):
-        types = tokens5
-        counts = list(map(int, tokens6))
-        coord_start = 8
+
+def write_poscar(
+    path: str,
+    lattice: np.ndarray,
+    positions: np.ndarray,
+    counts: Sequence[int],
+    types: Sequence[str] | None = None,
+    comment: str = "Generated by moire",
+    *,
+    positions_are_cartesian: bool = True,
+    selective_flags: Sequence[Sequence[str]] | None = None,
+) -> None:
+    """Write a POSCAR using Direct coordinates."""
+
+    lattice = np.asarray(lattice, dtype=float)
+    positions_array = np.asarray(positions, dtype=float)
+    natoms = int(sum(int(value) for value in counts))
+    if positions_array.shape != (natoms, 3):
+        raise ValueError("positions shape does not match atom counts")
+
+    if positions_are_cartesian:
+        direct = cartesian_to_direct(positions_array, lattice)
     else:
-        types = []
-        counts = list(map(int, tokens5))
-        coord_start = 7
+        direct = positions_array
+    direct = wrap_direct(direct)
 
-    natoms = sum(counts)
-    coords = np.array([list(map(float, lines[i].split()[:3])) for i in range(coord_start, coord_start + natoms)])
+    normalised_flags = _normalise_flags(selective_flags, natoms)
 
-    # if the file used "Direct" coordinates, convert to Cartesian
-    if lines[coord_start - 1].lower().startswith('d'):
-        coords = coords @ lattice  # assume row vectors
-
-    return lattice, coords, counts, types
-
-
-def write_poscar(path: str,
-                  lattice: np.ndarray,
-                  positions: np.ndarray,
-                  counts: List[int],
-                  types: List[str] = None,
-                  comment: str = "Generated by moire") -> None:
-    """Write a simple POSCAR file from the given data.
-
-    Only `Direct` coordinate output is currently supported; the
-    lattice is written with scale factor 1.0.  ``types`` may be an
-    empty list if atom symbols are unknown.
-    """
-    with open(path, 'w') as f:
-        f.write(comment.rstrip() + "\n")
-        f.write("1.0\n")
-        for vec in lattice:
-            f.write("  %16.12f %16.12f %16.12f\n" % tuple(vec))
+    with open(path, "w", encoding="utf-8") as handle:
+        handle.write(comment.rstrip() + "\n")
+        handle.write("1.0\n")
+        for vector in lattice:
+            handle.write(
+                "  {0:21.16f} {1:21.16f} {2:21.16f}\n".format(
+                    float(vector[0]),
+                    float(vector[1]),
+                    float(vector[2]),
+                )
+            )
         if types:
-            f.write(" ".join(types) + "\n")
-        f.write(" ".join(str(x) for x in counts) + "\n")
-        f.write("Direct\n")
-        # convert positions to direct coordinates
-        invlat = np.linalg.inv(lattice)
-        direct = positions @ invlat
-        for p in direct:
-            f.write("  %16.12f %16.12f %16.12f\n" % tuple(p))
+            handle.write("  " + "  ".join(str(symbol) for symbol in types) + "\n")
+        handle.write("  " + "  ".join(str(int(value)) for value in counts) + "\n")
+        if normalised_flags is not None:
+            handle.write("Selective Dynamics\n")
+        handle.write("Direct\n")
+        for index, position in enumerate(direct):
+            line = "  {0:19.16f} {1:19.16f} {2:19.16f}".format(
+                float(position[0]),
+                float(position[1]),
+                float(position[2]),
+            )
+            if normalised_flags is not None:
+                line += " " + " ".join(normalised_flags[index])
+            handle.write(line + "\n")
