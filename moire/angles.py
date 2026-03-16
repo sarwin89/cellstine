@@ -24,24 +24,6 @@ class AngleCandidate:
     relative_mismatch: float
 
 
-def _canonicalise_directions(coeffs: np.ndarray, vectors: np.ndarray, tolerance: float = 1e-10) -> Tuple[np.ndarray, np.ndarray]:
-    first_component = vectors[:, 0]
-    second_component = vectors[:, 1]
-    orientation = np.where(
-        np.abs(first_component) > tolerance,
-        np.sign(first_component),
-        np.where(np.abs(second_component) > tolerance, np.sign(second_component), 1.0),
-    )
-    orientation[orientation == 0.0] = 1.0
-    oriented_vectors = vectors * orientation[:, None]
-    oriented_coeffs = coeffs * orientation[:, None].astype(int)
-
-    rounded = np.round(oriented_vectors, decimals=8)
-    _, unique_indices = np.unique(rounded, axis=0, return_index=True)
-    unique_indices = np.sort(unique_indices)
-    return oriented_coeffs[unique_indices], oriented_vectors[unique_indices]
-
-
 def _merge_nearby_angles(candidates: Sequence[AngleCandidate], merge_tolerance: float) -> List[AngleCandidate]:
     ordered = sorted(candidates, key=lambda item: (item.angle_deg, item.relative_mismatch))
     merged: List[AngleCandidate] = []
@@ -62,16 +44,27 @@ def find_commensurate_angles(
     length_tolerance: float = 1e-5,
     strain_tolerance: float | None = None,
     min_angle: float = 0.0,
-    max_angle: float = 90.0,
+    max_angle: float | None = None,
     angle_round_decimals: int = 4,
     merge_tolerance: float = 1e-3,
 ) -> List[AngleCandidate]:
-    """Find unique candidate commensurate angles from matching span lengths."""
+    """Find unique candidate commensurate angles from matching span lengths.
+
+    This follows the fast `cellfind` idea:
+    - generate full integer spans with NumPy
+    - match vectors by equal length (or allowed relative mismatch)
+    - compute the rotation angle between every matching pair
+    - keep only angles in the symmetry-limited search window
+    """
+
+    _, _, symmetry_lcm = lat.combined_symmetry_limit(lattice1, lattice2)
+    bounded_min = max(0.0, float(min_angle))
+    bounded_max = float(symmetry_lcm if max_angle is None else min(float(max_angle), symmetry_lcm))
+    if bounded_max < bounded_min:
+        return []
 
     coeffs1, vectors1 = lat.enumerate_in_plane_vectors(lattice1, nindex)
     coeffs2, vectors2 = lat.enumerate_in_plane_vectors(lattice2, nindex)
-    coeffs1, vectors1 = _canonicalise_directions(coeffs1, vectors1)
-    coeffs2, vectors2 = _canonicalise_directions(coeffs2, vectors2)
 
     norms1 = np.linalg.norm(vectors1, axis=1)
     norms2 = np.linalg.norm(vectors2, axis=1)
@@ -79,38 +72,50 @@ def find_commensurate_angles(
     absolute_mismatch = np.abs(norms1[:, None] - norms2[None, :])
     relative_mismatch = absolute_mismatch / average_norm
 
-    length_mask = absolute_mismatch <= length_tolerance
+    length_mask = np.isclose(norms1[:, None], norms2[None, :], atol=length_tolerance, rtol=0.0)
     if strain_tolerance is not None:
         length_mask |= relative_mismatch <= strain_tolerance
 
     dot_products = vectors1 @ vectors2.T
-    norm_products = np.maximum(norms1[:, None] * norms2[None, :], 1e-12)
-    cosines = np.clip(dot_products / norm_products, -1.0, 1.0)
-    angles = np.degrees(np.arccos(cosines))
     cross_products = vectors1[:, None, 0] * vectors2[None, :, 1] - vectors1[:, None, 1] * vectors2[None, :, 0]
+    angles = np.degrees(np.arctan2(np.abs(cross_products), dot_products))
 
     valid_mask = (
         length_mask
         & (np.abs(cross_products) > 1e-10)
-        & (angles >= min_angle)
-        & (angles <= max_angle)
+        & (angles >= bounded_min)
+        & (angles <= bounded_max)
     )
 
     row_indices, col_indices = np.nonzero(valid_mask)
-    raw_candidates: List[AngleCandidate] = []
-    for row_index, col_index in zip(row_indices.tolist(), col_indices.tolist()):
-        raw_candidates.append(
-            AngleCandidate(
-                angle_deg=round(float(angles[row_index, col_index]), angle_round_decimals),
-                coeffs1=(int(coeffs1[row_index, 0]), int(coeffs1[row_index, 1])),
-                coeffs2=(int(coeffs2[col_index, 0]), int(coeffs2[col_index, 1])),
-                length1=float(norms1[row_index]),
-                length2=float(norms2[col_index]),
-                relative_mismatch=float(relative_mismatch[row_index, col_index]),
-            )
-        )
+    if row_indices.size == 0:
+        return []
 
-    return _merge_nearby_angles(raw_candidates, merge_tolerance)
+    selected_angles = np.round(angles[row_indices, col_indices], decimals=angle_round_decimals)
+    selected_mismatch = relative_mismatch[row_indices, col_indices]
+    selected_lengths1 = norms1[row_indices]
+    selected_lengths2 = norms2[col_indices]
+    selected_coeffs1 = coeffs1[row_indices]
+    selected_coeffs2 = coeffs2[col_indices]
+
+    order = np.lexsort((selected_mismatch, selected_angles))
+    sorted_angles = selected_angles[order]
+    keep_sorted = np.ones(sorted_angles.shape[0], dtype=bool)
+    if sorted_angles.shape[0] > 1:
+        keep_sorted[1:] = np.diff(sorted_angles) > merge_tolerance
+    keep_indices = order[keep_sorted]
+
+    return [
+        AngleCandidate(
+            angle_deg=float(selected_angles[index]),
+            coeffs1=(int(selected_coeffs1[index, 0]), int(selected_coeffs1[index, 1])),
+            coeffs2=(int(selected_coeffs2[index, 0]), int(selected_coeffs2[index, 1])),
+            length1=float(selected_lengths1[index]),
+            length2=float(selected_lengths2[index]),
+            relative_mismatch=float(selected_mismatch[index]),
+        )
+        for index in keep_indices.tolist()
+    ]
 
 
 def format_angle_table(candidates: Sequence[AngleCandidate]) -> str:
@@ -145,7 +150,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--length_tolerance", type=float, default=1e-5, help="absolute tolerance when matching vector lengths")
     parser.add_argument("--strain_tolerance", type=float, default=None, help="relative length-mismatch tolerance")
     parser.add_argument("--min_angle", type=float, default=0.0, help="minimum angle to report")
-    parser.add_argument("--max_angle", type=float, default=90.0, help="maximum angle to report")
+    parser.add_argument("--max_angle", type=float, default=None, help="maximum angle to report; defaults to the symmetry LCM")
     parser.add_argument("--merge_tolerance", type=float, default=1e-3, help="merge nearby angles within this tolerance")
     parser.add_argument("--output", type=str, default=None, help="optional file to write the angle table")
     return parser.parse_args()

@@ -1,170 +1,114 @@
-# Moire Supercell Finder
+# Moire Superstructure Toolkit
 
-Fast, vectorized tools for finding commensurate moire supercells from VASP POSCAR files.
+End-to-end commensurate moire workflow with:
 
-The project is split into a reusable Python package and thin top-level CLI entry points:
+- one **finder stage** (`moire/find.py`)
+- one **maker stage** (`moire/make.py`)
+- one user CLI wrapper (`moire_cli.py`)
 
-- `moire/`: all core functionality
-- `cellfind.py`: fast commensurate-angle shortlist CLI
-- `finder.py`: strain-aware supercell search CLI
-- `generator.py`: exact supercell builder CLI
+Credits: **Made by Sarwin Chandran**.
 
-The legacy research scripts are preserved in `Reference/` for comparison.
+## Design
 
-## Features
-
-- Vectorized NumPy span matching for speed
-- Fast commensurate-angle search based on equal-length lattice spans
-- Strain-aware supercell search with layer-wise and average strain metrics
-- Exact supercell reconstruction from integer match coefficients
-- POSCAR read/write support for Direct, Cartesian, species, and Selective Dynamics
-- Generator support for layer shifts and optional `zfix`
-- Reference-backed tests for MoS2/MoS2 commensurate structures
-
-## Repository layout
+The code is split into two core stages and shared common modules.
 
 ```text
 .
-+-- cellfind.py          # CLI wrapper for moire.angles
-+-- finder.py            # CLI wrapper for moire.finder
-+-- generator.py         # CLI wrapper for moire.generator
++-- moire_cli.py              # single user-facing CLI (find + make)
 +-- moire/
-¦   +-- __init__.py
-¦   +-- angles.py        # commensurate-angle search
-¦   +-- finder.py        # strain-aware candidate search
-¦   +-- generator.py     # exact supercell generation
-¦   +-- io.py            # POSCAR parsing/writing
-¦   +-- lattice.py       # vectorized lattice math
-+-- Reference/           # older working/reference scripts
-+-- Results/             # saved reference MoS2/MoS2 supercells
+|   +-- find.py               # stage 1: find commensurate candidates
+|   +-- make.py               # stage 2: generate superstructure POSCAR
+|   +-- angles.py             # fast commensurate-angle shortlist utility
+|   +-- finder.py             # vectorized candidate search backend
+|   +-- generator.py          # exact structure construction backend
+|   +-- lattice.py            # geometry, symmetry, strain helpers
+|   +-- io.py                 # POSCAR read/write + coordinate transforms
+|   +-- __init__.py
 +-- tests/
++-- Reference/                # legacy code kept only for comparison
++-- Results/                  # reference outputs
 ```
 
-## Recommended workflow
+## Features
 
-### 1. Shortlist commensurate angles
+- Commensurate angle search from integer spans up to `nindex`
+- Strain-aware matching via relative vector-length mismatch tolerances
+- Symmetry-aware angle range:
+  - infer each lattice periodicity (`60`, `90`, or `180` degrees)
+  - search in `[0, LCM(sym_top, sym_bottom)]`
+- Candidate ranking and deduplication
+- Exact POSCAR generation with user-selected candidate index
+- Interactive prompts for bottom/top selection and interlayer spacing
 
-Use `cellfind.py` to identify likely twist angles before running the heavier full search.
+## CLI Usage
 
-```powershell
-& 'C:\Users\Sarwi\AppData\Local\Python\pythoncore-3.14-64\python.exe' cellfind.py mos2.vasp mos2.vasp 12 --strain_tolerance 0.002 --max_angle 30
+The same script works on Windows, Linux, and macOS.
+
+```bash
+python moire_cli.py
+python moire_cli.py find --help
+python moire_cli.py make --help
 ```
 
-This prints a table of candidate angles with matching span coefficients.
+Running `python moire_cli.py` opens the guided interactive workflow for normal use.
+The wizard only requires the POSCAR paths and `nindex` up front, then offers recommended defaults for the rest.
 
-### 2. Run the full supercell finder
+### 1) Find commensurate candidates
 
-Use `finder.py` on either an angle range, a fixed list of angles, or angles shortlisted by `cellfind`.
-
-```powershell
-& 'C:\Users\Sarwi\AppData\Local\Python\pythoncore-3.14-64\python.exe' finder.py mos2.vasp mos2.vasp --angles 13.15,21.787,27.9 --nindex 12 --tolerance 0.002 --lin_tol 0.002 --vector_strain_tol 0.002 --max_atoms 200
+```bash
+python moire_cli.py find mos2.vasp mos2.vasp --nindex 12 --max-atoms 300
 ```
 
-Or let the finder call the angle shortlisting stage internally:
+Optional explicit angles:
 
-```powershell
-& 'C:\Users\Sarwi\AppData\Local\Python\pythoncore-3.14-64\python.exe' finder.py mos2.vasp mos2.vasp 0 30 --use_cellfind --nindex 12 --tolerance 0.002 --lin_tol 0.002 --angle_strain_tolerance 0.002 --vector_strain_tol 0.002 --max_atoms 200
+```bash
+python moire_cli.py find mos2.vasp mos2.vasp --angles 13.15,21.787,27.9 --nindex 12
 ```
 
-The finder writes `results.dat` with:
+Important options:
 
-- twist angle
-- average strain
-- layer-1 and layer-2 strain estimates
-- total atoms
-- supercell ratios
-- integer coefficients for both matched layers
-- vector matching errors
+- `--bottom a|b` choose which input goes below
+- `--angle-strain-tolerance` shortlist tolerance on vector length mismatch
+- `--vector-strain-tolerance` tolerance during vector-pair matching
+- `--strain-tolerance` final strain filter on candidates
+- `--output-root runs` where find artifacts are saved
 
-### 3. Generate the exact supercell
+If the fast exact-angle shortlist is empty, the finder automatically falls back to scanning the full symmetry-limited range `[0, LCM]`.
 
-```powershell
-& 'C:\Users\Sarwi\AppData\Local\Python\pythoncore-3.14-64\python.exe' generator.py results.dat 1 --output supercell.vasp
+Find stage artifacts are saved into a timestamped run directory:
+
+- `find_results.json`
+- `find_results.md`
+- `find_results.dat`
+
+### 2) Make a final superstructure POSCAR
+
+```bash
+python moire_cli.py make runs/<run_name>/find_results.json --index 1 --interlayer 3.35
 ```
 
-Useful generator options:
+Output naming format:
 
-- `--preserve_layer 1|2|avg`
-- `--shift11`, `--shift12`, `--shift13`
-- `--shift1x`, `--shift1y`, `--shift1z`
-- `--shift21`, `--shift22`, `--shift23`
-- `--shift2x`, `--shift2y`, `--shift2z`
-- `--zfix`
+- `stack_idx{index}_ang{angle}_atoms{count}_{bottom}-below_{top}-above.vasp`
 
-## Python API
+## Notes on Strain Handling
 
-### Angle shortlist
+- Angle shortlist can accept near-equal lengths through `--angle-strain-tolerance`
+- Finder vector pairing uses `--vector-strain-tolerance`
+- Final candidate filtering uses `--strain-tolerance` with `--strain-layer avg|1|2`
 
-```python
-from moire import angles, io
+This gives practical strain tolerance in percentage-like relative mismatch terms.
 
-structure = io.read_poscar('mos2.vasp')
-candidates = angles.find_commensurate_angles(
-    structure.lattice,
-    structure.lattice,
-    nindex=12,
-    strain_tolerance=2e-3,
-    min_angle=0.0,
-    max_angle=30.0,
-)
+## Testing
+
+```bash
+python -m unittest discover -s tests -q
 ```
 
-### Full finder
+Current tests validate:
 
-```python
-from moire import finder, io
-
-structure = io.read_poscar('mos2.vasp')
-results = finder.find_supercells(
-    structure.lattice,
-    structure.lattice,
-    None,
-    None,
-    angles=[13.15, 21.787, 27.9],
-    nindex=12,
-    tol=2e-3,
-    lin_tol=2e-3,
-    vector_strain_tol=2e-3,
-    atom_count1=structure.natoms,
-    atom_count2=structure.natoms,
-)
-```
-
-### Generator
-
-```python
-from moire import generator
-
-lattice, positions_direct, counts, species, flags = generator.build_supercell(
-    'mos2.vasp',
-    'mos2.vasp',
-    record,
-)
-```
-
-## Validation
-
-The current implementation is tested against the saved MoS2/MoS2 reference supercells in `Results/`.
-
-Verified reference families:
-
-- around `13.15 deg` -> `114` atoms
-- around `21.787 deg` -> `42` atoms
-- around `27.9 deg` -> `78` atoms
-
-The generated supercells reproduce the same species counts and in-plane lattice lengths as the saved reference POSCARs.
-
-## Tests
-
-Run the test suite with:
-
-```powershell
-$env:PYTHONDONTWRITEBYTECODE='1'
-& 'C:\Users\Sarwi\AppData\Local\Python\pythoncore-3.14-64\python.exe' -m unittest discover -s tests -q
-```
-
-## Notes
-
-- `pos1` is the rotated layer in the finder flow.
-- `pos2` is preserved by default in the generator flow.
-- `Reference/` is kept intentionally for provenance and comparison.
+- symmetry inference and LCM angle bounds
+- MoS2 reference commensurate-angle families
+- candidate atom counts near reference angles
+- end-to-end `find -> make` workflow
+- generated counts against saved `Results/` references

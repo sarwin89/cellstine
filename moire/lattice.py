@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
 from typing import List, Sequence, Tuple
 
 import numpy as np
@@ -42,6 +42,47 @@ class SupercellCandidate:
     vector_product: float
     area1: float
     area2: float
+
+
+def in_plane_lengths_and_angle(lattice: np.ndarray) -> Tuple[float, float, float]:
+    """Return (|a|, |b|, gamma_deg) for the in-plane primitive vectors."""
+
+    basis = np.asarray(lattice, dtype=float)[:2, :2]
+    vector_a = basis[0]
+    vector_b = basis[1]
+    length_a = float(np.linalg.norm(vector_a))
+    length_b = float(np.linalg.norm(vector_b))
+    denominator = max(length_a * length_b, 1e-12)
+    cosine = np.clip(float(np.dot(vector_a, vector_b) / denominator), -1.0, 1.0)
+    gamma_deg = float(np.degrees(np.arccos(cosine)))
+    return length_a, length_b, gamma_deg
+
+
+def infer_rotational_symmetry_angle(lattice: np.ndarray, tolerance: float = 1e-2) -> int:
+    """Infer the smallest rotational periodicity angle for a 2D lattice.
+
+    Heuristic classes:
+    - hexagonal: a=b and gamma~60 or 120 -> 60 deg
+    - square: a=b and gamma~90 -> 90 deg
+    - other Bravais classes -> 180 deg
+    """
+
+    length_a, length_b, gamma_deg = in_plane_lengths_and_angle(lattice)
+    relative_length_delta = abs(length_a - length_b) / max((length_a + length_b) * 0.5, 1e-12)
+    equal_lengths = relative_length_delta <= tolerance
+    if equal_lengths and (abs(gamma_deg - 60.0) <= 3.0 or abs(gamma_deg - 120.0) <= 3.0):
+        return 60
+    if equal_lengths and abs(gamma_deg - 90.0) <= 3.0:
+        return 90
+    return 180
+
+
+def combined_symmetry_limit(lattice1: np.ndarray, lattice2: np.ndarray) -> Tuple[int, int, int]:
+    """Return (sym1, sym2, lcm(sym1, sym2)) for two lattices."""
+
+    symmetry_1 = infer_rotational_symmetry_angle(lattice1)
+    symmetry_2 = infer_rotational_symmetry_angle(lattice2)
+    return symmetry_1, symmetry_2, int(math.lcm(symmetry_1, symmetry_2))
 
 
 def rotate_vector(vector: Sequence[float], theta_rad: float) -> np.ndarray:

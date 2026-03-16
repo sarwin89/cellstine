@@ -1,11 +1,13 @@
-"""Core functionality for the moire supercell command-line tools."""
+"""Core functionality for the moire toolkit."""
 
 __all__ = [
-    'angles',
+    'find',
+    'make',
     'finder',
     'generator',
+    'angles',
     'io',
     'lattice',
 ]
 
-__version__ = '0.2.0'
+__version__ = '0.4.0'

@@ -1,10 +1,11 @@
-"""Generate exact supercells from finder results."""
+"""Generator backend for exact moire supercell construction.
+
+Made by Sarwin Chandran.
+"""
 
 from __future__ import annotations
 
-import argparse
-import math
-import os
+import json
 from collections import OrderedDict
 from typing import Dict, List, Sequence, Tuple
 
@@ -14,8 +15,43 @@ from . import io as io_mod
 from . import lattice as lat
 
 
-def parse_results(filename: str) -> Tuple[str, str, List[dict]]:
-    """Parse new-style or legacy finder results files."""
+# Made by Sarwin Chandran: this module hosts the supercell generator backend.
+
+
+def record_from_candidate_dict(candidate: Dict[str, object], index: int | None = None) -> Dict[str, object]:
+    """Convert a serialized finder candidate into generator coefficients."""
+
+    payload: Dict[str, object] = {
+        "idx": int(index) if index is not None else int(candidate.get("index", 0)),
+        "angle": float(candidate["angle_deg"]),
+        "ratio1": int(candidate["ratio1"]),
+        "ratio2": int(candidate["ratio2"]),
+        "i11": int(candidate["layer1_vector1"][0]),
+        "i12": int(candidate["layer1_vector1"][1]),
+        "i21": int(candidate["layer1_vector2"][0]),
+        "i22": int(candidate["layer1_vector2"][1]),
+        "j11": int(candidate["layer2_vector1"][0]),
+        "j12": int(candidate["layer2_vector1"][1]),
+        "j21": int(candidate["layer2_vector2"][0]),
+        "j22": int(candidate["layer2_vector2"][1]),
+    }
+    return payload
+
+
+def parse_results(filename: str) -> Tuple[str, str, List[dict], dict]:
+    """Parse finder results from JSON or legacy DAT format."""
+
+    if filename.lower().endswith(".json"):
+        with open(filename, "r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+        meta = payload.get("meta", {})
+        top_path = meta.get("top_poscar") or meta.get("pos1")
+        bottom_path = meta.get("bottom_poscar") or meta.get("pos2")
+        if not top_path or not bottom_path:
+            raise ValueError("JSON results do not contain top/bottom POSCAR metadata")
+        candidates = payload.get("candidates", [])
+        records = [record_from_candidate_dict(candidate, idx + 1) for idx, candidate in enumerate(candidates)]
+        return str(top_path), str(bottom_path), records, payload
 
     records: List[dict] = []
     with open(filename, "r", encoding="utf-8") as handle:
@@ -32,61 +68,28 @@ def parse_results(filename: str) -> Tuple[str, str, List[dict]]:
             if not parts or parts[0].lower() == "idx":
                 continue
 
-            if len(parts) >= 13:
-                ratio1, ratio2 = [int(value) for value in parts[6].split("/")]
-                i11, i12 = [int(value) for value in parts[7].split()]
-                i21, i22 = [int(value) for value in parts[8].split()]
-                j11, j12 = [int(value) for value in parts[9].split()]
-                j21, j22 = [int(value) for value in parts[10].split()]
-                records.append(
-                    {
-                        "idx": int(parts[0]),
-                        "angle": float(parts[1]),
-                        "strain_avg": float(parts[2]),
-                        "strain1": float(parts[3]),
-                        "strain2": float(parts[4]),
-                        "atoms": int(parts[5]),
-                        "ratio1": ratio1,
-                        "ratio2": ratio2,
-                        "i11": i11,
-                        "i12": i12,
-                        "i21": i21,
-                        "i22": i22,
-                        "j11": j11,
-                        "j12": j12,
-                        "j21": j21,
-                        "j22": j22,
-                        "eps1": float(parts[11]),
-                        "eps2": float(parts[12]),
-                    }
-                )
-            elif len(parts) >= 6:
-                ratio1, ratio2 = [int(value) for value in parts[3].split()[:2]]
-                i11, i12, i21, i22 = [int(value) for value in parts[4].split()[:4]]
-                j11, j12, j21, j22 = [int(value) for value in parts[5].split()[:4]]
-                records.append(
-                    {
-                        "idx": int(parts[0]),
-                        "angle": 0.0,
-                        "strain_avg": float(parts[1]),
-                        "strain1": float(parts[1]),
-                        "strain2": float(parts[1]),
-                        "atoms": int(parts[2]),
-                        "ratio1": ratio1,
-                        "ratio2": ratio2,
-                        "i11": i11,
-                        "i12": i12,
-                        "i21": i21,
-                        "i22": i22,
-                        "j11": j11,
-                        "j12": j12,
-                        "j21": j21,
-                        "j22": j22,
-                        "eps1": 0.0,
-                        "eps2": 0.0,
-                    }
-                )
-    return file1, file2, records
+            ratio1, ratio2 = [int(value) for value in parts[6].split("/")]
+            i11, i12 = [int(value) for value in parts[7].split()]
+            i21, i22 = [int(value) for value in parts[8].split()]
+            j11, j12 = [int(value) for value in parts[9].split()]
+            j21, j22 = [int(value) for value in parts[10].split()]
+            records.append(
+                {
+                    "idx": int(parts[0]),
+                    "angle": float(parts[1]),
+                    "ratio1": ratio1,
+                    "ratio2": ratio2,
+                    "i11": i11,
+                    "i12": i12,
+                    "i21": i21,
+                    "i22": i22,
+                    "j11": j11,
+                    "j12": j12,
+                    "j21": j21,
+                    "j22": j22,
+                }
+            )
+    return file1, file2, records, {}
 
 
 def _expand_species(species: Sequence[str], counts: Sequence[int], fallback: str) -> List[str]:
@@ -268,7 +271,9 @@ def build_supercell(
     if preserve_mode in {"1", "layer1", "first"}:
         final_lattice = layer1_supercell.copy()
     elif preserve_mode in {"avg", "average"}:
-        average_c = structure2.lattice[2] if np.linalg.norm(structure2.lattice[2]) >= np.linalg.norm(rotated_lattice1[2]) else rotated_lattice1[2]
+        norm_c1 = np.linalg.norm(rotated_lattice1[2])
+        norm_c2 = np.linalg.norm(structure2.lattice[2])
+        average_c = structure2.lattice[2] if norm_c2 >= norm_c1 else rotated_lattice1[2]
         final_lattice = np.vstack(((v1 + g1) / 2.0, (v2 + g2) / 2.0, average_c))
     else:
         final_lattice = layer2_supercell.copy()
@@ -323,54 +328,19 @@ def build_supercell(
     return final_lattice, positions_direct, counts, species, flags
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Generate a moire supercell from finder results")
-    parser.add_argument("results", help="results file written by finder.py")
-    parser.add_argument("index", type=int, help="1-based solution index to generate")
-    parser.add_argument("--output", default="supercell.vasp", help="output POSCAR filename")
-    parser.add_argument("--tolerance", type=int, default=1, help="integer image padding during atom replication")
-    parser.add_argument("--tolerance_float", type=float, default=1e-4, help="floating tolerance during atom replication")
-    parser.add_argument("--preserve_layer", default="2", help="which matched lattice to preserve: 1, 2, or avg")
-    parser.add_argument("--shift11", type=float, default=0.0)
-    parser.add_argument("--shift12", type=float, default=0.0)
-    parser.add_argument("--shift13", type=float, default=0.0)
-    parser.add_argument("--shift1x", type=float, default=0.0)
-    parser.add_argument("--shift1y", type=float, default=0.0)
-    parser.add_argument("--shift1z", type=float, default=0.0)
-    parser.add_argument("--shift21", type=float, default=0.0)
-    parser.add_argument("--shift22", type=float, default=0.0)
-    parser.add_argument("--shift23", type=float, default=0.0)
-    parser.add_argument("--shift2x", type=float, default=0.0)
-    parser.add_argument("--shift2y", type=float, default=0.0)
-    parser.add_argument("--shift2z", type=float, default=0.0)
-    parser.add_argument("--zfix", type=float, default=None, help="if set, write Selective Dynamics flags based on z height")
-    return parser.parse_args()
+def write_supercell_poscar(
+    output_path: str,
+    lattice: np.ndarray,
+    positions_direct: np.ndarray,
+    counts: Sequence[int],
+    species: Sequence[str],
+    flags: Sequence[Sequence[str]] | None,
+    comment: str,
+) -> None:
+    """Write a generated supercell POSCAR."""
 
-
-def main() -> None:
-    args = parse_args()
-    file1, file2, records = parse_results(args.results)
-    by_index = {record["idx"]: record for record in records}
-    if args.index not in by_index:
-        raise ValueError(f"index {args.index} not found in {args.results}")
-
-    lattice, positions_direct, counts, species, flags = build_supercell(
-        file1,
-        file2,
-        by_index[args.index],
-        shift1_direct=(args.shift11, args.shift12, args.shift13),
-        shift1_cart=(args.shift1x, args.shift1y, args.shift1z),
-        shift2_direct=(args.shift21, args.shift22, args.shift23),
-        shift2_cart=(args.shift2x, args.shift2y, args.shift2z),
-        tolerance=args.tolerance,
-        tolerance_float=args.tolerance_float,
-        preserve_layer=args.preserve_layer,
-        zfix=args.zfix,
-    )
-
-    comment = f"moire supercell from {os.path.basename(args.results)} index {args.index}"
     io_mod.write_poscar(
-        args.output,
+        output_path,
         lattice,
         positions_direct,
         counts,
@@ -379,8 +349,3 @@ def main() -> None:
         positions_are_cartesian=False,
         selective_flags=flags,
     )
-    print(f"Wrote supercell to {args.output}")
-
-
-if __name__ == "__main__":
-    main()
