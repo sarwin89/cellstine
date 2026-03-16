@@ -4,3 +4,8 @@
 *.gif
 *.dat
 results.dat
+runs/
+__pycache__/
+*.pyc
+*.pyo
+moire_test_*/

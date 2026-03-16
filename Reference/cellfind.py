@@ -60,7 +60,11 @@ def get_unique_directions(span):
     return np.unique(np.round(directions, decimals=6), axis=0)
 
 def lcm(a, b):
-    return abs(a * b) // math.gcd(a, b)
+    return abs(a * b) // math.gcd(a, b) 
+
+def atom_count():
+
+    return 
 
 def main():
     # Argument parsing, non-verbal :P
