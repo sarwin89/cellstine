@@ -1,4 +1,3 @@
-import json
 import shutil
 import unittest
 from pathlib import Path
@@ -64,6 +63,7 @@ class MoireToolkitTests(unittest.TestCase):
         self.assertLessEqual(float(found_angles.max()), 60.0)
 
     def test_graphene_mos2_search_window_uses_lcm_limit(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
         find_run = find.run_find(
             top_poscar=GRAPHENE_PATH,
             bottom_poscar=MOS2_PATH,
@@ -76,7 +76,7 @@ class MoireToolkitTests(unittest.TestCase):
             vector_strain_tolerance=2e-3,
             candidate_tolerance=2e-3,
             max_atoms=400,
-            output_root=str(BASE_DIR / f"moire_test_{uuid4().hex}"),
+            output_root=str(temp_root),
         )
         try:
             self.assertEqual(find_run.symmetry_lcm, 60)
@@ -84,8 +84,9 @@ class MoireToolkitTests(unittest.TestCase):
             self.assertAlmostEqual(find_run.search_max_angle, 60.0, places=8)
             self.assertIn(0.0, find_run.angle_values)
             self.assertIn(60.0, find_run.angle_values)
+            self.assertTrue(find_run.dat_path.exists())
         finally:
-            shutil.rmtree(find_run.run_dir.parent, ignore_errors=True)
+            shutil.rmtree(temp_root, ignore_errors=True)
 
     def test_reference_angles_atom_counts(self):
         expected_atoms = {13.15: 114, 21.787: 42, 27.9: 78}
@@ -127,18 +128,24 @@ class MoireToolkitTests(unittest.TestCase):
                 max_atoms=300,
                 output_root=str(temp_root),
             )
-            self.assertTrue(find_run.json_path.exists())
-            self.assertTrue(find_run.markdown_path.exists())
             self.assertTrue(find_run.dat_path.exists())
             self.assertGreater(len(find_run.candidates), 0)
 
             make_run = make.generate_from_results(
-                str(find_run.json_path),
+                str(find_run.dat_path),
                 index=1,
                 interlayer_distance=3.35,
             )
             self.assertTrue(make_run.output_path.exists())
             self.assertGreater(make_run.total_atoms, 0)
+
+            batch_runs = make.generate_many_from_results(
+                str(find_run.dat_path),
+                indexes=[1, 2],
+                interlayer_distance=3.35,
+            )
+            self.assertEqual(len(batch_runs), 2)
+            self.assertTrue(all(run.output_path.exists() for run in batch_runs))
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 
@@ -160,39 +167,19 @@ class MoireToolkitTests(unittest.TestCase):
                     vector_strain_tol=2e-3,
                 )
                 best = results[0]
-                payload = {
-                    "meta": {
-                        "top_poscar": MOS2_PATH,
-                        "bottom_poscar": MOS2_PATH,
-                    },
-                    "candidates": [
-                        {
-                            "index": 1,
-                            "angle_deg": best.angle_deg,
-                            "ratio1": best.ratio1,
-                            "ratio2": best.ratio2,
-                            "layer1_vector1": list(best.layer1_vector1),
-                            "layer1_vector2": list(best.layer1_vector2),
-                            "layer2_vector1": list(best.layer2_vector1),
-                            "layer2_vector2": list(best.layer2_vector2),
-                            "strain_avg": best.strain_avg,
-                            "strain_layer1": best.strain_layer1,
-                            "strain_layer2": best.strain_layer2,
-                            "eps1": best.eps1,
-                            "eps2": best.eps2,
-                            "vector_product": best.vector_product,
-                            "area1": best.area1,
-                            "area2": best.area2,
-                            "total_atoms": best.total_atoms,
-                        }
-                    ],
-                }
                 temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
                 temp_root.mkdir(parents=True, exist_ok=False)
                 try:
-                    json_path = temp_root / "find_results.json"
-                    json_path.write_text(json.dumps(payload, indent=2), encoding='utf-8')
-                    run = make.generate_from_results(str(json_path), index=1, interlayer_distance=0.0)
+                    dat_path = temp_root / "find_results.dat"
+                    finder.write_results_dat(
+                        str(dat_path),
+                        MOS2_PATH,
+                        MOS2_PATH,
+                        [best],
+                        run_id="test_reference",
+                        parameters={"test_case": angle},
+                    )
+                    run = make.generate_from_results(str(dat_path), index=1, interlayer_distance=0.0)
                     generated = io.read_poscar(str(run.output_path))
                     reference = io.read_poscar(reference_path)
                     self.assertEqual(generated.counts, reference.counts)

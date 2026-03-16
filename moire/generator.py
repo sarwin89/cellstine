@@ -54,6 +54,7 @@ def parse_results(filename: str) -> Tuple[str, str, List[dict], dict]:
         return str(top_path), str(bottom_path), records, payload
 
     records: List[dict] = []
+    meta: Dict[str, object] = {}
     with open(filename, "r", encoding="utf-8") as handle:
         first_line = handle.readline().strip().split()
         if len(first_line) < 2:
@@ -62,6 +63,12 @@ def parse_results(filename: str) -> Tuple[str, str, List[dict], dict]:
 
         for raw_line in handle:
             stripped = raw_line.strip()
+            if stripped.startswith("#"):
+                content = stripped[1:].strip()
+                if "=" in content:
+                    key, value = content.split("=", 1)
+                    meta[key.strip()] = value.strip()
+                continue
             if not stripped or stripped.startswith("-") or not stripped.startswith("|"):
                 continue
             parts = [part.strip() for part in stripped.split("|") if part.strip()]
@@ -89,7 +96,7 @@ def parse_results(filename: str) -> Tuple[str, str, List[dict], dict]:
                     "j22": j22,
                 }
             )
-    return file1, file2, records, {}
+    return file1, file2, records, {"meta": meta}
 
 
 def _expand_species(species: Sequence[str], counts: Sequence[int], fallback: str) -> List[str]:
