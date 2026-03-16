@@ -5,7 +5,8 @@ Made by Sarwin Chandran.
 
 from __future__ import annotations
 
-from typing import Dict, List, Sequence
+from datetime import datetime
+from typing import Dict, List, Mapping, Sequence
 
 import numpy as np
 
@@ -131,16 +132,23 @@ def candidate_to_dict(candidate: lat.SupercellCandidate, index: int | None = Non
 
 
 def format_results_table(candidates: Sequence[lat.SupercellCandidate], limit: int | None = None) -> str:
-    """Format candidates as a readable Markdown table."""
+    """Format candidates as a fixed-width CLI table."""
 
-    shown = list(candidates if limit is None else candidates[: max(limit, 0)])
-    lines = [
-        "| idx | angle (deg) | strain_avg | strain1 | strain2 | atoms | ratio | i11 i12 | i21 i22 | j11 j12 | j21 j22 | eps1 | eps2 |",
-        "| ---:| ----------: | ---------: | ------: | ------: | ----: | :---- | :------ | :------ | :------ | :------ | ---: | ---: |",
-    ]
+    shown = list(candidates if limit is None or limit < 0 else candidates[: max(limit, 0)])
+    if not shown:
+        return "No candidates found."
+
+    header = (
+        " idx  angle(deg)   strain_avg    strain_1      strain_2    atoms   ratio"
+        "      i1          i2          j1          j2          eps1        eps2"
+    )
+    separator = "-" * len(header)
+    lines = [header, separator]
     for index, candidate in enumerate(shown, start=1):
         lines.append(
-            "| {idx} | {angle:.4f} | {strain_avg:.6f} | {strain1:.6f} | {strain2:.6f} | {atoms} | {ratio1}/{ratio2} | {i11} {i12} | {i21} {i22} | {j11} {j12} | {j21} {j22} | {eps1:.2e} | {eps2:.2e} |".format(
+            "{idx:4d}  {angle:10.4f}  {strain_avg:11.6f}  {strain1:11.6f}  {strain2:11.6f}  {atoms:7d}  "
+            "{ratio1:3d}/{ratio2:<3d}  ({i11:3d},{i12:3d})  ({i21:3d},{i22:3d})  "
+            "({j11:3d},{j12:3d})  ({j21:3d},{j22:3d})  {eps1:10.2e}  {eps2:10.2e}".format(
                 idx=index,
                 angle=candidate.angle_deg,
                 strain_avg=candidate.strain_avg,
@@ -164,11 +172,22 @@ def format_results_table(candidates: Sequence[lat.SupercellCandidate], limit: in
     return "\n".join(lines)
 
 
-def write_results_dat(path: str, pos1: str, pos2: str, candidates: Sequence[lat.SupercellCandidate]) -> None:
-    """Write a legacy-compatible DAT table for downstream tools."""
+def write_results_dat(
+    path: str,
+    pos1: str,
+    pos2: str,
+    candidates: Sequence[lat.SupercellCandidate],
+    *,
+    run_id: str,
+    parameters: Mapping[str, object],
+) -> None:
+    """Write one DAT file with results plus the parameters used to create them."""
 
     with open(path, "w", encoding="utf-8") as handle:
         handle.write(f"{pos1} {pos2}\n")
+        handle.write(f"# run_id = {run_id}\n")
+        handle.write(f"# created_at = {datetime.now().isoformat(timespec='seconds')}\n")
+        handle.write("# credit = Made by Sarwin Chandran\n")
         handle.write(
             "| idx | angle (deg) | strain_avg | strain1 | strain2 | atoms | ratio | i11 i12 | i21 i22 | j11 j12 | j21 j22 | eps1 | eps2 |\n"
         )
@@ -200,3 +219,7 @@ def write_results_dat(path: str, pos1: str, pos2: str, candidates: Sequence[lat.
                     eps2=candidate.eps2,
                 )
             )
+        handle.write("\n")
+        handle.write("# parameters\n")
+        for key, value in parameters.items():
+            handle.write(f"# {key} = {value}\n")

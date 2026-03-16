@@ -19,6 +19,26 @@ from moire import lattice as lattice_backend
 from moire import make as make_stage
 
 
+def _parse_index_spec(raw: str) -> List[int]:
+    values: List[int] = []
+    for chunk in raw.split(","):
+        token = chunk.strip()
+        if not token:
+            continue
+        if "-" in token:
+            start_text, end_text = token.split("-", 1)
+            start = int(start_text.strip())
+            end = int(end_text.strip())
+            step = 1 if end >= start else -1
+            values.extend(list(range(start, end + step, step)))
+        else:
+            values.append(int(token))
+    if not values:
+        raise ValueError("please provide at least one index")
+    ordered_unique = list(dict.fromkeys(values))
+    return ordered_unique
+
+
 def _suggest_find_defaults(top_lattice, bottom_lattice) -> dict[str, float | int | str]:
     top_a, top_b, _ = lattice_backend.in_plane_lengths_and_angle(top_lattice)
     bottom_a, bottom_b, _ = lattice_backend.in_plane_lengths_and_angle(bottom_lattice)
@@ -150,17 +170,27 @@ def _latest_results_file() -> str | None:
     run_root = Path("runs")
     if not run_root.exists():
         return None
-    candidates = sorted(run_root.glob("*/find_results.json"), key=lambda path: path.stat().st_mtime, reverse=True)
-    if candidates:
-        return str(candidates[0])
-    dat_candidates = sorted(run_root.glob("*/find_results.dat"), key=lambda path: path.stat().st_mtime, reverse=True)
+    dat_candidates = sorted(run_root.glob("*.dat"), key=lambda path: path.stat().st_mtime, reverse=True)
     if dat_candidates:
         return str(dat_candidates[0])
     return None
 
 
+def _suggest_make_defaults(records: List[dict]) -> dict[str, object]:
+    return {
+        "index_spec": "1",
+        "interlayer": 3.35,
+        "generator_tolerance": 1,
+        "generator_tolerance_float": 1e-4,
+        "output_dir": "",
+        "zfix": None,
+        "record_count": len(records),
+    }
+
+
 def _print_find_summary(run: find_stage.FindRun, bottom_path: str, top_path: str, top_count: int) -> None:
     print("\n=== Moire Find Stage (Made by Sarwin Chandran) ===")
+    print(f"Run identifier      : {run.run_id}")
     print(f"Bottom layer        : {bottom_path}")
     print(f"Top layer           : {top_path}")
     print(f"Symmetry(top,bottom): ({run.symmetry_top}, {run.symmetry_bottom})")
@@ -168,12 +198,10 @@ def _print_find_summary(run: find_stage.FindRun, bottom_path: str, top_path: str
     print(f"Search window       : {run.search_min_angle:.4f} -> {run.search_max_angle:.4f} deg")
     print(f"Angles checked      : {len(run.angle_values)}")
     print(f"Candidates found    : {len(run.candidates)}")
-    print(f"Saved JSON          : {run.json_path}")
-    print(f"Saved Markdown      : {run.markdown_path}")
     print(f"Saved DAT           : {run.dat_path}")
 
-    if run.candidates and top_count > 0:
-        print("\nTop candidates:")
+    if run.candidates and top_count != 0:
+        print("\nShown rows          : all" if top_count < 0 else f"\nShown rows          : {top_count}")
         print(finder_backend.format_results_table(run.candidates, limit=top_count))
 
 
@@ -183,6 +211,20 @@ def _print_make_summary(run: make_stage.MakeRun) -> None:
     print(f"Angle (deg)    : {run.angle_deg:.4f}")
     print(f"Total atoms    : {run.total_atoms}")
     print(f"Output POSCAR  : {run.output_path}")
+
+
+def _print_make_batch_summary(runs: List[make_stage.MakeRun]) -> None:
+    print("\n=== Moire Make Stage (Made by Sarwin Chandran) ===")
+    print(f"Generated cells : {len(runs)}")
+    for run in runs:
+        print(
+            "  idx {idx:3d} | angle {angle:8.4f} deg | atoms {atoms:6d} | {path}".format(
+                idx=run.selected_index,
+                angle=run.angle_deg,
+                atoms=run.total_atoms,
+                path=run.output_path,
+            )
+        )
 
 
 def _run_find(args: argparse.Namespace) -> find_stage.FindRun:
@@ -258,25 +300,32 @@ def _run_find(args: argparse.Namespace) -> find_stage.FindRun:
     return run
 
 
-def _run_make(args: argparse.Namespace) -> make_stage.MakeRun:
+def _run_make(args: argparse.Namespace) -> List[make_stage.MakeRun]:
     _, _, records, _ = generator_backend.parse_results(args.results)
     if not records:
         raise ValueError("results file has no candidate records")
 
-    index = 1 if args.index is None else args.index
+    index_spec = "1" if args.index is None else args.index
+    indexes = _parse_index_spec(index_spec)
     interlayer = 3.35 if args.interlayer is None else args.interlayer
+    if len(indexes) > 1 and args.output is not None:
+        raise ValueError("use --output only with a single index; use --output-dir for multiple indexes")
 
-    run = make_stage.generate_from_results(
+    runs = make_stage.generate_many_from_results(
         args.results,
-        index=index,
+        indexes=indexes,
         interlayer_distance=interlayer,
-        output_path=args.output,
+        output_path=args.output if len(indexes) == 1 else None,
+        output_dir=args.output_dir,
         tolerance=args.generator_tolerance,
         tolerance_float=args.generator_tolerance_float,
         zfix=args.zfix,
     )
-    _print_make_summary(run)
-    return run
+    if len(runs) == 1:
+        _print_make_summary(runs[0])
+    else:
+        _print_make_batch_summary(runs)
+    return runs
 
 
 def _interactive_find_then_maybe_make(*, offer_make: bool) -> None:
@@ -342,7 +391,7 @@ def _interactive_find_then_maybe_make(*, offer_make: bool) -> None:
         strain_tolerance = _prompt_optional_float("Final strain cutoff", float(suggested["strain_tolerance"]))
         strain_layer = _prompt_text("Which strain column to filter on? avg / 1 / 2", str(suggested["strain_layer"]))
         max_atoms = _prompt_int("Maximum total atoms", int(suggested["max_atoms"]))
-        top_rows = _prompt_int("How many top rows should be printed", int(suggested["top_rows"]))
+        top_rows = _prompt_int("How many rows to print? (-1 for all, 0 for none)", int(suggested["top_rows"]))
         output_root = _prompt_text("Output folder for find results", str(suggested["output_root"]))
 
     args = argparse.Namespace(
@@ -377,32 +426,86 @@ def _interactive_find_then_maybe_make(*, offer_make: bool) -> None:
     if not _prompt_yes_no("Generate a stacked structure from these results now?", False):
         return
 
+    suggested_make = _suggest_make_defaults([{"idx": candidate_index} for candidate_index in range(1, len(find_run.candidates) + 1)])
+    print("\nGenerator defaults:")
+    print(f"- indexes: {suggested_make['index_spec']}")
+    print(f"- interlayer distance: {float(suggested_make['interlayer']):.2f} angstrom")
+    print(f"- generator tolerance: {int(suggested_make['generator_tolerance'])}")
+    print(f"- floating tolerance: {float(suggested_make['generator_tolerance_float']):.1e}")
+    print("- output: auto-named POSCAR files next to the results .dat")
+
+    use_make_defaults = _prompt_yes_no("Use generator defaults and continue?", True)
+    if use_make_defaults:
+        index_spec = str(suggested_make["index_spec"])
+        interlayer = float(suggested_make["interlayer"])
+        output_dir = None
+        output_path = None
+        generator_tolerance = int(suggested_make["generator_tolerance"])
+        generator_tolerance_float = float(suggested_make["generator_tolerance_float"])
+        zfix = None
+    else:
+        index_spec = _prompt_text("Indexes to generate (examples: 1 or 1,2,5-7)", str(suggested_make["index_spec"]))
+        interlayer = _prompt_float("Interlayer distance in angstrom", float(suggested_make["interlayer"]))
+        output_dir = _prompt_text("Optional output directory for generated POSCARs", "", allow_empty=True) or None
+        output_path = None
+        generator_tolerance = _prompt_int("Integer padding tolerance for generator", int(suggested_make["generator_tolerance"]))
+        generator_tolerance_float = _prompt_float("Floating tolerance for generator", float(suggested_make["generator_tolerance_float"]))
+        zfix = _prompt_optional_float("Optional zfix cutoff (blank to skip)", None)
+
     make_args = argparse.Namespace(
-        results=str(find_run.json_path),
-        index=_prompt_int("Candidate index to generate", 1),
-        interlayer=_prompt_float("Interlayer distance in angstrom", 3.35),
-        output=_prompt_text("Optional output POSCAR path (leave blank for auto-name)", "", allow_empty=True) or None,
-        generator_tolerance=_prompt_int("Integer padding tolerance for generator", 1),
-        generator_tolerance_float=_prompt_float("Floating tolerance for generator", 1e-4),
-        zfix=_prompt_optional_float("Optional zfix cutoff (blank to skip)", None),
+        results=str(find_run.dat_path),
+        index=index_spec,
+        interlayer=interlayer,
+        output=output_path,
+        output_dir=output_dir,
+        generator_tolerance=generator_tolerance,
+        generator_tolerance_float=generator_tolerance_float,
+        zfix=zfix,
     )
     _run_make(make_args)
 
 
 def _interactive_make() -> None:
     latest_results = _latest_results_file()
-    results_path = _prompt_text("Path to find_results.json or find_results.dat", latest_results)
+    results_path = _prompt_text("Path to results .dat file", latest_results)
     _, _, records, _ = generator_backend.parse_results(results_path)
     print(f"Loaded {len(records)} candidate rows from {results_path}")
 
+    suggested_make = _suggest_make_defaults(records)
+    print("\nGenerator defaults:")
+    print(f"- indexes: {suggested_make['index_spec']}")
+    print(f"- interlayer distance: {float(suggested_make['interlayer']):.2f} angstrom")
+    print(f"- generator tolerance: {int(suggested_make['generator_tolerance'])}")
+    print(f"- floating tolerance: {float(suggested_make['generator_tolerance_float']):.1e}")
+    print("- output: auto-named POSCAR files next to the results .dat")
+
+    use_defaults = _prompt_yes_no("Use generator defaults and continue?", True)
+    if use_defaults:
+        index_spec = str(suggested_make["index_spec"])
+        interlayer = float(suggested_make["interlayer"])
+        output_dir = None
+        output_path = None
+        generator_tolerance = int(suggested_make["generator_tolerance"])
+        generator_tolerance_float = float(suggested_make["generator_tolerance_float"])
+        zfix = None
+    else:
+        index_spec = _prompt_text("Indexes to generate (examples: 1 or 1,2,5-7)", str(suggested_make["index_spec"]))
+        interlayer = _prompt_float("Interlayer distance in angstrom", float(suggested_make["interlayer"]))
+        output_dir = _prompt_text("Optional output directory for generated POSCARs", "", allow_empty=True) or None
+        output_path = None
+        generator_tolerance = _prompt_int("Integer padding tolerance for generator", int(suggested_make["generator_tolerance"]))
+        generator_tolerance_float = _prompt_float("Floating tolerance for generator", float(suggested_make["generator_tolerance_float"]))
+        zfix = _prompt_optional_float("Optional zfix cutoff (blank to skip)", None)
+
     args = argparse.Namespace(
         results=results_path,
-        index=_prompt_int("Candidate index to generate", 1),
-        interlayer=_prompt_float("Interlayer distance in angstrom", 3.35),
-        output=_prompt_text("Optional output POSCAR path (leave blank for auto-name)", "", allow_empty=True) or None,
-        generator_tolerance=_prompt_int("Integer padding tolerance for generator", 1),
-        generator_tolerance_float=_prompt_float("Floating tolerance for generator", 1e-4),
-        zfix=_prompt_optional_float("Optional zfix cutoff (blank to skip)", None),
+        index=index_spec,
+        interlayer=interlayer,
+        output=output_path,
+        output_dir=output_dir,
+        generator_tolerance=generator_tolerance,
+        generator_tolerance_float=generator_tolerance_float,
+        zfix=zfix,
     )
     _run_make(args)
 
@@ -456,14 +559,15 @@ def build_parser() -> argparse.ArgumentParser:
     find_parser.add_argument("--unique-strain-tolerance", type=float, default=1e-4)
     find_parser.add_argument("--unique-ratio-tolerance", type=float, default=1e-5)
     find_parser.add_argument("--output-root", type=str, default="runs")
-    find_parser.add_argument("--top", type=int, default=10, help="top candidates to print")
+    find_parser.add_argument("--top", type=int, default=10, help="rows to print; use -1 for all and 0 for none")
     find_parser.set_defaults(func=_run_find)
 
     make_parser = subparsers.add_parser("make", help="advanced mode: build final stacked structure from saved results")
-    make_parser.add_argument("results", help="path to find_results.json or find_results.dat")
-    make_parser.add_argument("--index", type=int, default=None, help="1-based candidate index")
+    make_parser.add_argument("results", help="path to finder results .dat file")
+    make_parser.add_argument("--index", type=str, default=None, help="candidate index spec, e.g. 1 or 1,2,5-7")
     make_parser.add_argument("--interlayer", type=float, default=None, help="top-layer z offset in angstrom")
-    make_parser.add_argument("--output", type=str, default=None, help="output POSCAR filename")
+    make_parser.add_argument("--output", type=str, default=None, help="explicit output POSCAR filename for a single index")
+    make_parser.add_argument("--output-dir", type=str, default=None, help="directory for auto-named generated POSCARs")
     make_parser.add_argument("--generator-tolerance", type=int, default=1)
     make_parser.add_argument("--generator-tolerance-float", type=float, default=1e-4)
     make_parser.add_argument("--zfix", type=float, default=None)
@@ -485,7 +589,7 @@ def main() -> None:
 
     if args.command == "make":
         if args.index is None:
-            args.index = 1
+            args.index = "1"
         if args.interlayer is None:
             args.interlayer = 3.35
 

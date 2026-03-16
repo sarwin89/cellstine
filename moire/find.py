@@ -5,7 +5,6 @@ Made by Sarwin Chandran.
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -20,9 +19,7 @@ from . import lattice as lat
 
 @dataclass
 class FindRun:
-    run_dir: Path
-    json_path: Path
-    markdown_path: Path
+    run_id: str
     dat_path: Path
     candidates: List[lat.SupercellCandidate]
     shortlisted_angles: List[angle_backend.AngleCandidate]
@@ -32,6 +29,7 @@ class FindRun:
     symmetry_lcm: int
     search_min_angle: float
     search_max_angle: float
+    parameters: Dict[str, object]
 
 
 def _slug(value: str) -> str:
@@ -44,30 +42,12 @@ def _slug(value: str) -> str:
     return "".join(safe).strip("_") or "structure"
 
 
-def _make_run_dir(output_root: str, bottom_path: str, top_path: str, nindex: int) -> Path:
+def _make_result_path(output_root: str, bottom_path: str, top_path: str, nindex: int) -> tuple[str, Path]:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    run_name = f"{timestamp}_{_slug(Path(bottom_path).stem)}_below__{_slug(Path(top_path).stem)}_above_n{nindex}"
-    run_dir = Path(output_root) / run_name
-    run_dir.mkdir(parents=True, exist_ok=True)
-    return run_dir
-
-
-def _serialize_shortlist(candidates: Sequence[angle_backend.AngleCandidate]) -> List[Dict[str, object]]:
-    payload: List[Dict[str, object]] = []
-    for index, candidate in enumerate(candidates, start=1):
-        payload.append(
-            {
-                "index": index,
-                "angle_deg": float(candidate.angle_deg),
-                "coeffs1": [int(candidate.coeffs1[0]), int(candidate.coeffs1[1])],
-                "coeffs2": [int(candidate.coeffs2[0]), int(candidate.coeffs2[1])],
-                "length1": float(candidate.length1),
-                "length2": float(candidate.length2),
-                "relative_mismatch": float(candidate.relative_mismatch),
-            }
-        )
-    return payload
-
+    run_id = f"{timestamp}_{_slug(Path(bottom_path).stem)}_below__{_slug(Path(top_path).stem)}_above_n{nindex}"
+    output_dir = Path(output_root)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return run_id, output_dir / f"{run_id}.dat"
 
 def _resolve_angles(
     lattice_top: np.ndarray,
@@ -170,40 +150,49 @@ def run_find(
         vector_strain_tol=vector_strain_tolerance,
     )
 
-    run_dir = _make_run_dir(output_root, bottom_poscar, top_poscar, nindex)
-    dat_path = run_dir / "find_results.dat"
-    markdown_path = run_dir / "find_results.md"
-    json_path = run_dir / "find_results.json"
-
-    finder_backend.write_results_dat(str(dat_path), top_poscar, bottom_poscar, candidates)
-    markdown_path.write_text(finder_backend.format_results_table(candidates, limit=None) + "\n", encoding="utf-8")
-
-    payload = {
-        "meta": {
-            "created_at": datetime.now().isoformat(timespec="seconds"),
-            "credit": "Made by Sarwin Chandran",
-            "top_poscar": str(top_poscar),
-            "bottom_poscar": str(bottom_poscar),
-            "nindex": int(nindex),
-            "symmetry_top_deg": int(symmetry_top),
-            "symmetry_bottom_deg": int(symmetry_bottom),
-            "symmetry_lcm_deg": int(symmetry_lcm),
-            "min_angle_deg": float(search_min_angle),
-            "max_angle_deg": float(search_max_angle),
-            "angle_count": len(angle_values),
-            "vector_tolerance": float(vector_tolerance),
-            "vector_strain_tolerance": None if vector_strain_tolerance is None else float(vector_strain_tolerance),
-            "candidate_tolerance": float(candidate_tolerance if candidate_tolerance is not None else vector_tolerance),
-        },
-        "shortlisted_angles": _serialize_shortlist(shortlist),
-        "candidates": [finder_backend.candidate_to_dict(candidate, idx + 1) for idx, candidate in enumerate(candidates)],
+    run_id, dat_path = _make_result_path(output_root, bottom_poscar, top_poscar, nindex)
+    parameters = {
+        "run_id": run_id,
+        "top_poscar": str(top_poscar),
+        "bottom_poscar": str(bottom_poscar),
+        "nindex": int(nindex),
+        "symmetry_top_deg": int(symmetry_top),
+        "symmetry_bottom_deg": int(symmetry_bottom),
+        "symmetry_lcm_deg": int(symmetry_lcm),
+        "min_angle_deg": float(search_min_angle),
+        "max_angle_deg": float(search_max_angle),
+        "angle_count": len(angle_values),
+        "angle_step_deg": float(angle_step),
+        "explicit_angles_deg": ",".join(f"{value:.6f}" for value in explicit_angles) if explicit_angles else "",
+        "angle_length_tolerance": float(angle_length_tolerance),
+        "angle_strain_tolerance": "" if angle_strain_tolerance is None else float(angle_strain_tolerance),
+        "angle_merge_tolerance": float(angle_merge_tolerance),
+        "vector_tolerance": float(vector_tolerance),
+        "vector_strain_tolerance": "" if vector_strain_tolerance is None else float(vector_strain_tolerance),
+        "candidate_tolerance": float(candidate_tolerance if candidate_tolerance is not None else vector_tolerance),
+        "strain_tolerance": "" if strain_tolerance is None else float(strain_tolerance),
+        "strain_layer": strain_layer,
+        "min_atoms": "" if min_atoms is None else int(min_atoms),
+        "max_atoms": "" if max_atoms is None else int(max_atoms),
+        "dedupe": bool(dedupe),
+        "unique_strain_tolerance": float(unique_strain_tolerance),
+        "unique_ratio_tolerance": float(unique_ratio_tolerance),
+        "shortlisted_angle_count": len(shortlist),
     }
-    json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    if shortlist:
+        parameters["shortlisted_angles_deg"] = ",".join(f"{candidate.angle_deg:.6f}" for candidate in shortlist)
+
+    finder_backend.write_results_dat(
+        str(dat_path),
+        top_poscar,
+        bottom_poscar,
+        candidates,
+        run_id=run_id,
+        parameters=parameters,
+    )
 
     return FindRun(
-        run_dir=run_dir,
-        json_path=json_path,
-        markdown_path=markdown_path,
+        run_id=run_id,
         dat_path=dat_path,
         candidates=list(candidates),
         shortlisted_angles=list(shortlist),
@@ -213,4 +202,5 @@ def run_find(
         symmetry_lcm=symmetry_lcm,
         search_min_angle=search_min_angle,
         search_max_angle=search_max_angle,
+        parameters=parameters,
     )

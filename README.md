@@ -75,16 +75,19 @@ Important options:
 
 If the fast exact-angle shortlist is empty, the finder automatically falls back to scanning the full symmetry-limited range `[0, LCM]`.
 
-Find stage artifacts are saved into a timestamped run directory:
-
-- `find_results.json`
-- `find_results.md`
-- `find_results.dat`
+Find stage output is saved as one timestamped `.dat` file in `runs/`.
+The filename itself is the run identifier, and the parameters used for the run are appended at the end of the file.
 
 ### 2) Make a final superstructure POSCAR
 
 ```bash
-python moire_cli.py make runs/<run_name>/find_results.json --index 1 --interlayer 3.35
+python moire_cli.py make runs/<run_id>.dat --index 1 --interlayer 3.35
+```
+
+You can also generate several saved candidates in one go:
+
+```bash
+python moire_cli.py make runs/<run_id>.dat --index 1,2,5-7 --interlayer 3.35
 ```
 
 Output naming format:

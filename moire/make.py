@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Sequence
+from typing import List, Sequence
 
 from . import generator as generator_backend
 
@@ -36,6 +36,7 @@ def generate_from_results(
     index: int,
     interlayer_distance: float,
     output_path: str | None = None,
+    output_dir: str | None = None,
     tolerance: int = 1,
     tolerance_float: float = 1e-4,
     zfix: float | None = None,
@@ -60,12 +61,13 @@ def generate_from_results(
     total_atoms = int(sum(counts))
     angle_deg = float(record.get("angle", 0.0))
     if output_path is None:
-        output_dir = Path(results_file).resolve().parent
+        destination_dir = Path(results_file).resolve().parent if output_dir is None else Path(output_dir).resolve()
+        destination_dir.mkdir(parents=True, exist_ok=True)
         output_name = (
             f"stack_idx{index:03d}_ang{angle_deg:.4f}_atoms{total_atoms}_"
             f"{_slug(Path(bottom_poscar).stem)}-below_{_slug(Path(top_poscar).stem)}-above.vasp"
         )
-        output_path = str(output_dir / output_name)
+        output_path = str(destination_dir / output_name)
 
     generator_backend.write_supercell_poscar(
         output_path,
@@ -83,3 +85,33 @@ def generate_from_results(
         angle_deg=angle_deg,
         total_atoms=total_atoms,
     )
+
+
+def generate_many_from_results(
+    results_file: str,
+    *,
+    indexes: Sequence[int],
+    interlayer_distance: float,
+    output_path: str | None = None,
+    output_dir: str | None = None,
+    tolerance: int = 1,
+    tolerance_float: float = 1e-4,
+    zfix: float | None = None,
+) -> List[MakeRun]:
+    """Generate one or more structures from a finder results file."""
+
+    resolved_indexes = [int(index) for index in indexes]
+    runs: List[MakeRun] = []
+    for index in resolved_indexes:
+        run = generate_from_results(
+            results_file,
+            index=index,
+            interlayer_distance=interlayer_distance,
+            output_path=output_path if len(resolved_indexes) == 1 else None,
+            output_dir=output_dir,
+            tolerance=tolerance,
+            tolerance_float=tolerance_float,
+            zfix=zfix,
+        )
+        runs.append(run)
+    return runs
