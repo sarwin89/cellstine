@@ -8,7 +8,7 @@ It is a guided workflow for:
 - generating the commensurate superlattice from saved candidate rows
 - moving a top-side molecule or shifting an upper layer in a stacked POSCAR
 
-Credits: **Made by Sarwin Chandran**.
+**Made by Sarwin Chandran**
 
 ## Standard Folder Flow
 
