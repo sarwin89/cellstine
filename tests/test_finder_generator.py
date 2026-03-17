@@ -430,6 +430,119 @@ class MoireToolkitTests(unittest.TestCase):
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 
+    def test_identify_top_group_respects_manual_cutoff_and_reports_matching_metadata(self):
+        coef = {
+            "angle": 43.3139,
+            "ratio1": 1,
+            "ratio2": 11,
+            "i11": -1,
+            "i12": 0,
+            "i21": 0,
+            "i22": -1,
+            "j11": -3,
+            "j12": -2,
+            "j21": 4,
+            "j22": -1,
+        }
+
+        lattice_out, positions_direct, counts, species, flags = generator.build_supercell(
+            RELAXED_OVERLAYER_PATH,
+            CU110_PATH,
+            coef,
+            interlayer_distance=3.35,
+            preserve_layer="2",
+        )
+
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            stack_path = temp_root / "stacked_cutoff.vasp"
+            io.write_poscar(
+                str(stack_path),
+                lattice_out,
+                positions_direct,
+                counts,
+                species,
+                comment="stacked cutoff test",
+                positions_are_cartesian=False,
+                selective_flags=flags,
+            )
+
+            stacked = io.read_poscar(str(stack_path))
+            selection = molecule.identify_top_group(stacked)
+            z_values = stacked.positions_cartesian[:, 2]
+
+            self.assertEqual(int(np.count_nonzero(z_values > selection.z_cutoff)), selection.molecule_atom_count)
+            self.assertAlmostEqual(selection.gap_size, 3.35, places=6)
+
+            manual_cutoff = float(selection.z_cutoff + 10.0)
+            manual_selection = molecule.identify_top_group(stacked, z_cutoff=manual_cutoff)
+            expected_manual_count = int(np.count_nonzero(z_values > manual_cutoff))
+
+            self.assertEqual(manual_selection.molecule_atom_count, expected_manual_count)
+            self.assertNotEqual(manual_selection.molecule_atom_count, selection.molecule_atom_count)
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_molecule_reframe_handles_boundary_crossing_adsorbate(self):
+        coef = {
+            "angle": 43.3139,
+            "ratio1": 1,
+            "ratio2": 11,
+            "i11": -1,
+            "i12": 0,
+            "i21": 0,
+            "i22": -1,
+            "j11": -3,
+            "j12": -2,
+            "j21": 4,
+            "j22": -1,
+        }
+
+        lattice_out, positions_direct, counts, species, flags = generator.build_supercell(
+            RELAXED_OVERLAYER_PATH,
+            CU110_PATH,
+            coef,
+            interlayer_distance=3.35,
+            preserve_layer="2",
+        )
+
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            stack_path = temp_root / "stacked_reframe.vasp"
+            io.write_poscar(
+                str(stack_path),
+                lattice_out,
+                positions_direct,
+                counts,
+                species,
+                comment="stacked reframe test",
+                positions_are_cartesian=False,
+                selective_flags=flags,
+            )
+
+            output_path = temp_root / "stacked_reframed.vasp"
+            run = molecule.transform_top_molecule(
+                str(stack_path),
+                output_path=str(output_path),
+                target_direct=(0.5, 0.5),
+                rotation_deg=90.0,
+                reframe_axes="xy",
+            )
+
+            reframed = io.read_poscar(str(output_path))
+            selection = molecule.identify_top_group(reframed, z_cutoff=run.z_cutoff)
+            molecule_direct = reframed.positions_direct[np.array(selection.molecule_indices, dtype=int)]
+
+            self.assertEqual(selection.molecule_atom_count, self.relaxed_overlayer.natoms)
+            self.assertTrue(np.allclose(selection.center_of_mass_cartesian, run.center_of_mass_after, atol=1e-6))
+            self.assertTrue(np.allclose(selection.center_of_mass_cartesian, run.target_cartesian, atol=1e-6))
+            self.assertLessEqual(float(np.max(molecule_direct[:, 0]) - np.min(molecule_direct[:, 0])), 1.0 + 1e-8)
+            self.assertLessEqual(float(np.max(molecule_direct[:, 1]) - np.min(molecule_direct[:, 1])), 1.0 + 1e-8)
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
     def test_layer_stage_shifts_only_the_upper_group(self):
         coef = {
             "angle": 43.3139,

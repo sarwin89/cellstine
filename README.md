@@ -49,12 +49,6 @@ Find candidates only near specific angles:
 python moire_cli.py find input/mos2.vasp input/mos2.vasp --angles 13.15,21.787,27.9 --nindex 12
 ```
 
-Check whether a commensuration exists with a specific set of matrix values:
-
-```bash
-python moire_cli.py find input/a.vasp input/b.vasp --matrix-values 1,2,3,4 --matrix-layer either
-```
-
 Generate the commensurate superlattice from saved results:
 
 ```bash
@@ -80,16 +74,6 @@ python moire_cli.py layer output/stacked.vasp --shift-direct 0.333,0.667
 - strain and mismatch tolerances are **fractions**, so `0.01 = 1%`
 - Cartesian move and shift values are in **angstrom**
 - Direct coordinates are fractional coordinates of the current cell
-
-## Matrix-Value Finder Mode
-
-The finder can optionally test whether a commensuration exists whose 2x2 supercell matrix uses one requested set of four values, ignoring entry order.
-
-- `--matrix-values 1,2,3,4` supplies the four values
-- `--matrix-layer 1|2|either|both` chooses which layer matrix to match
-- `--matrix-match-mode absolute|exact` chooses whether signs are ignored
-
-`absolute` is the default, so a matrix like `[-3, -2; 4, -1]` matches `1,2,3,4`.
 
 ## Documentation
 
