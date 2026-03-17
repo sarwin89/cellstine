@@ -151,11 +151,10 @@ def _relax_flags(z_value: float, zfix: float | None) -> Tuple[str, str, str] | N
     return ("F", "F", "F") if z_value < zfix else ("T", "T", "T")
 
 
-def _replicate_layer(
+def _replicate_layer_cartesian(
     positions_direct: np.ndarray,
     source_lattice: np.ndarray,
     source_supercell: np.ndarray,
-    final_lattice: np.ndarray,
     coef_pair1: Tuple[int, int],
     coef_pair2: Tuple[int, int],
     shift_direct: Sequence[float],
@@ -164,7 +163,6 @@ def _replicate_layer(
     tolerance_float: float,
     species: Sequence[str],
     selective_flags: Sequence[Tuple[str, str, str]] | None,
-    zfix: float | None,
 ) -> List[Tuple[str, np.ndarray, Tuple[str, str, str] | None]]:
     """Replicate one layer into the selected supercell."""
 
@@ -199,15 +197,8 @@ def _replicate_layer(
                 accepted_source_positions.append(wrapped_source)
 
                 shifted_cartesian = cartesian_image + shift_vector
-                final_direct = io_mod.cartesian_to_direct(shifted_cartesian.reshape(1, 3), final_lattice)[0]
-                final_direct = io_mod.wrap_direct(final_direct.reshape(1, 3))[0]
-                final_flag = _relax_flags(
-                    io_mod.direct_to_cartesian(final_direct.reshape(1, 3), final_lattice)[0][2],
-                    zfix,
-                )
-                if final_flag is None and selective_flags is not None:
-                    final_flag = tuple(selective_flags[atom_index])
-                results.append((species[atom_index], final_direct, final_flag))
+                source_flag = tuple(selective_flags[atom_index]) if selective_flags is not None else None
+                results.append((species[atom_index], shifted_cartesian, source_flag))
     return results
 
 
@@ -244,6 +235,76 @@ def _swap_if_left_handed(lattice: np.ndarray, positions_direct: np.ndarray) -> T
     return swapped_lattice, swapped_positions
 
 
+def _scale_vector(vector: np.ndarray, length: float) -> np.ndarray:
+    norm = float(np.linalg.norm(vector))
+    if norm <= 1e-12:
+        return np.array([0.0, 0.0, float(length)], dtype=float)
+    return np.asarray(vector, dtype=float) * (float(length) / norm)
+
+
+def _reference_c_vector(vector1: np.ndarray, vector2: np.ndarray) -> np.ndarray:
+    if float(np.linalg.norm(vector2)) >= float(np.linalg.norm(vector1)):
+        return np.asarray(vector2, dtype=float)
+    return np.asarray(vector1, dtype=float)
+
+
+def _shift_atoms_z(
+    atoms: Sequence[Tuple[str, np.ndarray, Tuple[str, str, str] | None]],
+    delta_z: float,
+) -> List[Tuple[str, np.ndarray, Tuple[str, str, str] | None]]:
+    shifted: List[Tuple[str, np.ndarray, Tuple[str, str, str] | None]] = []
+    for species, position, flags in atoms:
+        updated = np.array(position, dtype=float, copy=True)
+        updated[2] += float(delta_z)
+        shifted.append((species, updated, flags))
+    return shifted
+
+
+def _z_bounds(atoms: Sequence[Tuple[str, np.ndarray, Tuple[str, str, str] | None]]) -> Tuple[float, float]:
+    if not atoms:
+        return 0.0, 0.0
+    z_values = [float(position[2]) for _, position, _ in atoms]
+    return min(z_values), max(z_values)
+
+
+def _build_final_lattice(
+    in_plane_vector1: np.ndarray,
+    in_plane_vector2: np.ndarray,
+    reference_c: np.ndarray,
+    atoms: Sequence[Tuple[str, np.ndarray, Tuple[str, str, str] | None]],
+    tolerance_float: float,
+) -> Tuple[np.ndarray, float, float]:
+    min_z, max_z = _z_bounds(atoms)
+    z_span = max_z - min_z
+    reference_length = float(np.linalg.norm(reference_c))
+    lower_padding = max(float(tolerance_float), 1e-3)
+    padding = 2.0 * lower_padding
+    c_length = max(reference_length, z_span + padding)
+    final_c = _scale_vector(reference_c, c_length)
+    final_lattice = np.vstack((in_plane_vector1, in_plane_vector2, final_c))
+    return final_lattice, min_z, lower_padding
+
+
+def _finalise_cartesian_atoms(
+    atoms: Sequence[Tuple[str, np.ndarray, Tuple[str, str, str] | None]],
+    final_lattice: np.ndarray,
+    zfix: float | None,
+) -> Tuple[np.ndarray, List[int], List[str], List[Tuple[str, str, str]] | None]:
+    if not atoms:
+        return np.zeros((0, 3), dtype=float), [], [], None
+
+    cartesian_positions = np.array([position for _, position, _ in atoms], dtype=float)
+    direct_positions = io_mod.wrap_direct(io_mod.cartesian_to_direct(cartesian_positions, final_lattice))
+
+    final_atoms: List[Tuple[str, np.ndarray, Tuple[str, str, str] | None]] = []
+    for atom_index, (species, _, flags) in enumerate(atoms):
+        final_flag = _relax_flags(float(cartesian_positions[atom_index][2]), zfix)
+        if final_flag is None:
+            final_flag = flags
+        final_atoms.append((species, direct_positions[atom_index], final_flag))
+    return _finalise_species_order(final_atoms)
+
+
 def build_supercell(
     pos1: str,
     pos2: str,
@@ -255,6 +316,7 @@ def build_supercell(
     shift2_cart: Sequence[float] = (0.0, 0.0, 0.0),
     tolerance: int = 1,
     tolerance_float: float = 1e-4,
+    interlayer_distance: float | None = None,
     preserve_layer: str = "2",
     zfix: float | None = None,
 ) -> Tuple[np.ndarray, np.ndarray, List[int], List[str], List[Tuple[str, str, str]] | None]:
@@ -271,28 +333,28 @@ def build_supercell(
     g1 = coef["j11"] * structure2.lattice[0] + coef["j12"] * structure2.lattice[1]
     g2 = coef["j21"] * structure2.lattice[0] + coef["j22"] * structure2.lattice[1]
 
-    layer1_supercell = np.vstack((v1, v2, rotated_lattice1[2]))
-    layer2_supercell = np.vstack((g1, g2, structure2.lattice[2]))
-
     preserve_mode = str(preserve_layer).lower()
     if preserve_mode in {"1", "layer1", "first"}:
-        final_lattice = layer1_supercell.copy()
+        final_vector1 = v1.copy()
+        final_vector2 = v2.copy()
     elif preserve_mode in {"avg", "average"}:
-        norm_c1 = np.linalg.norm(rotated_lattice1[2])
-        norm_c2 = np.linalg.norm(structure2.lattice[2])
-        average_c = structure2.lattice[2] if norm_c2 >= norm_c1 else rotated_lattice1[2]
-        final_lattice = np.vstack(((v1 + g1) / 2.0, (v2 + g2) / 2.0, average_c))
+        final_vector1 = (v1 + g1) / 2.0
+        final_vector2 = (v2 + g2) / 2.0
     else:
-        final_lattice = layer2_supercell.copy()
+        final_vector1 = g1.copy()
+        final_vector2 = g2.copy()
+
+    layer1_supercell = np.vstack((v1, v2, rotated_lattice1[2]))
+    layer2_supercell = np.vstack((g1, g2, structure2.lattice[2]))
+    reference_c = _reference_c_vector(rotated_lattice1[2], structure2.lattice[2])
 
     species1 = _expand_species(structure1.species, structure1.counts, "L1")
     species2 = _expand_species(structure2.species, structure2.counts, "L2")
 
-    atoms_layer1 = _replicate_layer(
+    atoms_layer1 = _replicate_layer_cartesian(
         structure1.positions_direct,
         rotated_lattice1,
         layer1_supercell,
-        final_lattice,
         (coef["i11"], coef["i12"]),
         (coef["i21"], coef["i22"]),
         shift1_direct,
@@ -301,13 +363,11 @@ def build_supercell(
         tolerance_float,
         species1,
         structure1.selective_flags,
-        zfix,
     )
-    atoms_layer2 = _replicate_layer(
+    atoms_layer2 = _replicate_layer_cartesian(
         structure2.positions_direct,
         structure2.lattice,
         layer2_supercell,
-        final_lattice,
         (coef["j11"], coef["j12"]),
         (coef["j21"], coef["j22"]),
         shift2_direct,
@@ -316,7 +376,6 @@ def build_supercell(
         tolerance_float,
         species2,
         structure2.selective_flags,
-        zfix,
     )
 
     expected_layer1 = structure1.natoms * int(coef.get("ratio1", 0) or 0)
@@ -330,7 +389,23 @@ def build_supercell(
             f"layer 2 atom count mismatch: expected {expected_layer2}, found {len(atoms_layer2)}; try increasing tolerance"
         )
 
-    positions_direct, counts, species, flags = _finalise_species_order(atoms_layer1 + atoms_layer2)
+    if interlayer_distance is not None and atoms_layer1 and atoms_layer2:
+        top_min_z, _ = _z_bounds(atoms_layer1)
+        _, bottom_max_z = _z_bounds(atoms_layer2)
+        atoms_layer1 = _shift_atoms_z(atoms_layer1, bottom_max_z + float(interlayer_distance) - top_min_z)
+
+    all_atoms = atoms_layer1 + atoms_layer2
+    final_lattice, min_z, lower_padding = _build_final_lattice(
+        final_vector1,
+        final_vector2,
+        reference_c,
+        all_atoms,
+        tolerance_float,
+    )
+    z_shift = lower_padding - min_z
+    all_atoms = _shift_atoms_z(all_atoms, z_shift)
+
+    positions_direct, counts, species, flags = _finalise_cartesian_atoms(all_atoms, final_lattice, zfix)
     final_lattice, positions_direct = _swap_if_left_handed(final_lattice, positions_direct)
     return final_lattice, positions_direct, counts, species, flags
 
