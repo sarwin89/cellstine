@@ -113,6 +113,9 @@ def run_find(
     dedupe: bool = True,
     unique_strain_tolerance: float = 1e-4,
     unique_ratio_tolerance: float = 1e-5,
+    matrix_values: Sequence[int] | None = None,
+    matrix_layer: str = "either",
+    matrix_match_mode: str = "absolute",
     output_root: str = "runs",
 ) -> FindRun:
     shortlist, angle_values, symmetry_top, symmetry_bottom, symmetry_lcm, search_min_angle, search_max_angle = _resolve_angles(
@@ -148,6 +151,9 @@ def run_find(
         unique_strain_tol=unique_strain_tolerance,
         unique_ratio_tol=unique_ratio_tolerance,
         vector_strain_tol=vector_strain_tolerance,
+        matrix_values=matrix_values,
+        matrix_layer=matrix_layer,
+        matrix_match_mode=matrix_match_mode,
     )
 
     run_id, dat_path = _make_result_path(output_root, bottom_poscar, top_poscar, nindex)
@@ -155,6 +161,7 @@ def run_find(
         "run_id": run_id,
         "top_poscar": str(top_poscar),
         "bottom_poscar": str(bottom_poscar),
+        "units_note": "angles in degrees; angle_length_tolerance in angstrom; strain and mismatch values as fractions (0.01 = 1%)",
         "nindex": int(nindex),
         "symmetry_top_deg": int(symmetry_top),
         "symmetry_bottom_deg": int(symmetry_bottom),
@@ -177,6 +184,9 @@ def run_find(
         "dedupe": bool(dedupe),
         "unique_strain_tolerance": float(unique_strain_tolerance),
         "unique_ratio_tolerance": float(unique_ratio_tolerance),
+        "matrix_values": "" if matrix_values is None else ",".join(str(int(value)) for value in matrix_values),
+        "matrix_layer": matrix_layer,
+        "matrix_match_mode": matrix_match_mode,
         "shortlisted_angle_count": len(shortlist),
     }
     if shortlist:

@@ -4,8 +4,9 @@
 *.gif
 *.dat
 results.dat
-runs/
+tests/
 __pycache__/
 *.pyc
 *.pyo
 moire_test_*/
+*.vasp

@@ -6,10 +6,9 @@ import argparse
 from dataclasses import dataclass
 from typing import List, Sequence, Tuple
 
-import numpy as np
 
-from . import io as io_mod
-from . import lattice as lat
+class _HelpFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
+    """Help formatter with visible defaults and readable examples."""
 
 
 @dataclass(frozen=True)
@@ -56,6 +55,9 @@ def find_commensurate_angles(
     - compute the rotation angle between every matching pair
     - keep only angles in the symmetry-limited search window
     """
+    import numpy as np
+
+    from . import lattice as lat
 
     _, _, symmetry_lcm = lat.combined_symmetry_limit(lattice1, lattice2)
     bounded_min = max(0.0, float(min_angle))
@@ -143,21 +145,34 @@ def format_angle_table(candidates: Sequence[AngleCandidate]) -> str:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Find commensurate twist angles from two POSCAR files")
-    parser.add_argument("pos1", help="first POSCAR")
-    parser.add_argument("pos2", help="second POSCAR")
-    parser.add_argument("nindex", type=int, help="integer span from -nindex to nindex")
-    parser.add_argument("--length_tolerance", type=float, default=1e-5, help="absolute tolerance when matching vector lengths")
-    parser.add_argument("--strain_tolerance", type=float, default=None, help="relative length-mismatch tolerance")
-    parser.add_argument("--min_angle", type=float, default=0.0, help="minimum angle to report")
-    parser.add_argument("--max_angle", type=float, default=None, help="maximum angle to report; defaults to the symmetry LCM")
-    parser.add_argument("--merge_tolerance", type=float, default=1e-3, help="merge nearby angles within this tolerance")
-    parser.add_argument("--output", type=str, default=None, help="optional file to write the angle table")
+    parser = argparse.ArgumentParser(
+        description="Find a fast shortlist of commensurate twist angles from two POSCAR files.",
+        epilog=(
+            "Units:\n"
+            "  angles are in degrees\n"
+            "  length_tolerance is in angstrom\n"
+            "  strain_tolerance is a fraction (0.01 = 1 percent)\n\n"
+            "Example:\n"
+            "  python -m moire.angles input/a.vasp input/b.vasp 12 --strain_tolerance 0.002\n"
+        ),
+        formatter_class=_HelpFormatter,
+    )
+    parser.add_argument("pos1", help="path to the first POSCAR")
+    parser.add_argument("pos2", help="path to the second POSCAR")
+    parser.add_argument("nindex", type=int, help="integer span search from -nindex to +nindex")
+    parser.add_argument("--length_tolerance", type=float, default=1e-5, help="absolute span-length mismatch allowed in angstrom")
+    parser.add_argument("--strain_tolerance", type=float, default=None, help="relative span-length mismatch allowed as a fraction (0.01 = 1 percent)")
+    parser.add_argument("--min_angle", type=float, default=0.0, help="minimum angle to report, in degrees")
+    parser.add_argument("--max_angle", type=float, default=None, help="maximum angle to report in degrees; defaults to the symmetry LCM")
+    parser.add_argument("--merge_tolerance", type=float, default=1e-3, help="merge nearby angles within this tolerance, in degrees")
+    parser.add_argument("--output", type=str, default=None, help="optional file to write the shortlist table")
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+    from . import io as io_mod
+
     structure1 = io_mod.read_poscar(args.pos1)
     structure2 = io_mod.read_poscar(args.pos2)
     candidates = find_commensurate_angles(

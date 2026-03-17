@@ -32,6 +32,59 @@ def _build_angle_list(
     return [float(value) for value in values]
 
 
+def _matrix_signature(values: Sequence[int], match_mode: str) -> tuple[int, int, int, int]:
+    entries = [int(value) for value in values]
+    if len(entries) != 4:
+        raise ValueError("matrix filters require exactly four integer values")
+    if match_mode == "absolute":
+        entries = [abs(value) for value in entries]
+    elif match_mode != "exact":
+        raise ValueError("matrix_match_mode must be 'absolute' or 'exact'")
+    return tuple(sorted(entries))
+
+
+def _candidate_matrix_entries(candidate: lat.SupercellCandidate, layer: str) -> tuple[int, int, int, int]:
+    if layer == "1":
+        return (
+            int(candidate.layer1_vector1[0]),
+            int(candidate.layer1_vector1[1]),
+            int(candidate.layer1_vector2[0]),
+            int(candidate.layer1_vector2[1]),
+        )
+    if layer == "2":
+        return (
+            int(candidate.layer2_vector1[0]),
+            int(candidate.layer2_vector1[1]),
+            int(candidate.layer2_vector2[0]),
+            int(candidate.layer2_vector2[1]),
+        )
+    raise ValueError("layer must be '1' or '2'")
+
+
+def candidate_matches_matrix_values(
+    candidate: lat.SupercellCandidate,
+    matrix_values: Sequence[int],
+    *,
+    matrix_layer: str = "either",
+    matrix_match_mode: str = "absolute",
+) -> bool:
+    """Return True when a candidate uses the requested matrix values, ignoring entry order."""
+
+    target_signature = _matrix_signature(matrix_values, matrix_match_mode)
+    layer1_signature = _matrix_signature(_candidate_matrix_entries(candidate, "1"), matrix_match_mode)
+    layer2_signature = _matrix_signature(_candidate_matrix_entries(candidate, "2"), matrix_match_mode)
+
+    if matrix_layer == "1":
+        return layer1_signature == target_signature
+    if matrix_layer == "2":
+        return layer2_signature == target_signature
+    if matrix_layer == "either":
+        return layer1_signature == target_signature or layer2_signature == target_signature
+    if matrix_layer == "both":
+        return layer1_signature == target_signature and layer2_signature == target_signature
+    raise ValueError("matrix_layer must be '1', '2', 'either', or 'both'")
+
+
 def find_supercells(
     lattice1: np.ndarray,
     lattice2: np.ndarray,
@@ -52,6 +105,9 @@ def find_supercells(
     unique_strain_tol: float = 1e-4,
     unique_ratio_tol: float = 1e-5,
     vector_strain_tol: float | None = None,
+    matrix_values: Sequence[int] | None = None,
+    matrix_layer: str = "either",
+    matrix_match_mode: str = "absolute",
 ) -> List[lat.SupercellCandidate]:
     """Return commensurate supercell candidates between two lattices."""
 
@@ -92,6 +148,13 @@ def find_supercells(
                 continue
             if strain_layer == "2" and candidate.strain_layer2 > strain_tol:
                 continue
+        if matrix_values is not None and not candidate_matches_matrix_values(
+            candidate,
+            matrix_values,
+            matrix_layer=matrix_layer,
+            matrix_match_mode=matrix_match_mode,
+        ):
+            continue
         filtered.append(candidate)
 
     if dedupe:
@@ -187,7 +250,9 @@ def write_results_dat(
         handle.write(f"{pos1} {pos2}\n")
         handle.write(f"# run_id = {run_id}\n")
         handle.write(f"# created_at = {datetime.now().isoformat(timespec='seconds')}\n")
-        handle.write("# credit = Made by Sarwin Chandran\n")
+        handle.write("# credit = CELLSTINE (CELL Superlattice Transformation INterface and Engine) | Made by Sarwin Chandran\n")
+        handle.write("# units = angles in degrees; strain and mismatch values are fractions (0.01 = 1%)\n")
+        handle.write("# note = strain_avg is the symmetric strain measure; strain1 and strain2 are the one-sided layer strain measures\n")
         handle.write(
             "| idx | angle (deg) | strain_avg | strain1 | strain2 | atoms | ratio | i11 i12 | i21 i22 | j11 j12 | j21 j22 | eps1 | eps2 |\n"
         )

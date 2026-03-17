@@ -1,117 +1,103 @@
-# Moire Superstructure Toolkit
+# CELLSTINE
 
-End-to-end commensurate moire workflow with:
+CELLSTINE stands for **CELL Superlattice Transformation INterface and Engine**.
 
-- one **finder stage** (`moire/find.py`)
-- one **maker stage** (`moire/make.py`)
-- one user CLI wrapper (`moire_cli.py`)
+It is a guided workflow for:
+
+- finding commensurate superlattice candidates between two POSCAR structures
+- generating the commensurate superlattice from saved candidate rows
+- moving a top-side molecule or shifting an upper layer in a stacked POSCAR
 
 Credits: **Made by Sarwin Chandran**.
 
-## Design
+## Standard Folder Flow
 
-The code is split into two core stages and shared common modules.
+CELLSTINE uses these folders by default:
 
-```text
-.
-+-- moire_cli.py              # single user-facing CLI (find + make)
-+-- moire/
-|   +-- find.py               # stage 1: find commensurate candidates
-|   +-- make.py               # stage 2: generate superstructure POSCAR
-|   +-- angles.py             # fast commensurate-angle shortlist utility
-|   +-- finder.py             # vectorized candidate search backend
-|   +-- generator.py          # exact structure construction backend
-|   +-- lattice.py            # geometry, symmetry, strain helpers
-|   +-- io.py                 # POSCAR read/write + coordinate transforms
-|   +-- __init__.py
-+-- tests/
-+-- Reference/                # legacy code kept only for comparison
-+-- Results/                  # reference outputs
-```
+- `input/` for source POSCAR files
+- `runs/` for saved finder result tables (`.dat`)
+- `output/` for generated and adjusted POSCAR files
 
-## Features
+If you pass a bare filename, the CLI will try these standard folders first.
 
-- Commensurate angle search from integer spans up to `nindex`
-- Strain-aware matching via relative vector-length mismatch tolerances
-- Symmetry-aware angle range:
-  - infer each lattice periodicity (`60`, `90`, or `180` degrees)
-  - search in `[0, LCM(sym_top, sym_bottom)]`
-- Candidate ranking and deduplication
-- Exact POSCAR generation with user-selected candidate index
-- Interactive prompts for bottom/top selection and interlayer spacing
-
-## CLI Usage
-
-The same script works on Windows, Linux, and macOS.
+## Quick Start
 
 ```bash
 python moire_cli.py
+python moire_cli.py --help
 python moire_cli.py find --help
-python moire_cli.py make --help
 ```
 
-Running `python moire_cli.py` opens the guided interactive workflow for normal use.
-The wizard only requires the POSCAR paths and `nindex` up front, then offers recommended defaults for the rest.
+The interactive workflow covers the normal path:
 
-### 1) Find commensurate candidates
+1. Search for commensurate candidates.
+2. Review the saved rows in `runs/`.
+3. Generate the commensurate superlattice into `output/`.
+4. Optionally move a molecule or shift an upper layer afterwards.
+
+## Simple CLI Examples
+
+Find candidates:
 
 ```bash
-python moire_cli.py find mos2.vasp mos2.vasp --nindex 12 --max-atoms 300
+python moire_cli.py find input/mos2.vasp input/mos2.vasp --nindex 12 --max-atoms 300
 ```
 
-Optional explicit angles:
+Find candidates only near specific angles:
 
 ```bash
-python moire_cli.py find mos2.vasp mos2.vasp --angles 13.15,21.787,27.9 --nindex 12
+python moire_cli.py find input/mos2.vasp input/mos2.vasp --angles 13.15,21.787,27.9 --nindex 12
 ```
 
-Important options:
+Check whether a commensuration exists with a specific set of matrix values:
 
-- `--bottom a|b` choose which input goes below
-- `--angle-strain-tolerance` shortlist tolerance on vector length mismatch
-- `--vector-strain-tolerance` tolerance during vector-pair matching
-- `--strain-tolerance` final strain filter on candidates
-- `--output-root runs` where find artifacts are saved
+```bash
+python moire_cli.py find input/a.vasp input/b.vasp --matrix-values 1,2,3,4 --matrix-layer either
+```
 
-If the fast exact-angle shortlist is empty, the finder automatically falls back to scanning the full symmetry-limited range `[0, LCM]`.
-
-Find stage output is saved as one timestamped `.dat` file in `runs/`.
-The filename itself is the run identifier, and the parameters used for the run are appended at the end of the file.
-
-### 2) Make a final superstructure POSCAR
+Generate the commensurate superlattice from saved results:
 
 ```bash
 python moire_cli.py make runs/<run_id>.dat --index 1 --interlayer 3.35
 ```
 
-You can also generate several saved candidates in one go:
+Move a top-side molecule by its center of mass:
 
 ```bash
-python moire_cli.py make runs/<run_id>.dat --index 1,2,5-7 --interlayer 3.35
+python moire_cli.py molecule output/stacked.vasp --target-direct 0.5,0.5 --rotate 30 --reframe xy
 ```
 
-Output naming format:
+Shift only the upper layer in a bilayer:
 
-- `stack_idx{index}_ang{angle}_atoms{count}_{bottom}-below_{top}-above.vasp`
+```bash
+python moire_cli.py layer output/stacked.vasp --shift-direct 0.333,0.667
+```
 
-## Notes on Strain Handling
+## Important Units
 
-- Angle shortlist can accept near-equal lengths through `--angle-strain-tolerance`
-- Finder vector pairing uses `--vector-strain-tolerance`
-- Final candidate filtering uses `--strain-tolerance` with `--strain-layer avg|1|2`
+- angles are in **degrees**
+- `--angle-length-tolerance` is in **angstrom**
+- strain and mismatch tolerances are **fractions**, so `0.01 = 1%`
+- Cartesian move and shift values are in **angstrom**
+- Direct coordinates are fractional coordinates of the current cell
 
-This gives practical strain tolerance in percentage-like relative mismatch terms.
+## Matrix-Value Finder Mode
+
+The finder can optionally test whether a commensuration exists whose 2x2 supercell matrix uses one requested set of four values, ignoring entry order.
+
+- `--matrix-values 1,2,3,4` supplies the four values
+- `--matrix-layer 1|2|either|both` chooses which layer matrix to match
+- `--matrix-match-mode absolute|exact` chooses whether signs are ignored
+
+`absolute` is the default, so a matrix like `[-3, -2; 4, -1]` matches `1,2,3,4`.
+
+## Documentation
+
+- For a detailed walkthrough of the interface and CLI, see [USAGE_GUIDE.md](USAGE_GUIDE.md).
+- For quick command summaries, use `python moire_cli.py --help` and the subcommand `--help` pages.
 
 ## Testing
 
 ```bash
 python -m unittest discover -s tests -q
 ```
-
-Current tests validate:
-
-- symmetry inference and LCM angle bounds
-- MoS2 reference commensurate-angle families
-- candidate atom counts near reference angles
-- end-to-end `find -> make` workflow
-- generated counts against saved `Results/` references

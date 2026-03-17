@@ -1,4 +1,4 @@
-"""Core functionality for the moire toolkit."""
+"""Core functionality for CELLSTINE."""
 
 __all__ = [
     'find',
@@ -8,6 +8,7 @@ __all__ = [
     'angles',
     'io',
     'lattice',
+    'molecule',
 ]
 
-__version__ = '0.4.0'
+__version__ = '0.6.0'
