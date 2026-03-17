@@ -157,6 +157,14 @@ class LayerShiftRun:
     shift_direct: np.ndarray
 
 
+@dataclass(frozen=True)
+class _TopGroupSplit:
+    molecule_mask: np.ndarray
+    substrate_mask: np.ndarray
+    z_cutoff: float
+    gap_size: float
+
+
 def _expand_species(species: Sequence[str], counts: Sequence[int]) -> List[str]:
     if not species:
         raise ValueError("POSCAR species labels are required to compute the molecule center of mass")
@@ -169,9 +177,10 @@ def _expand_species(species: Sequence[str], counts: Sequence[int]) -> List[str]:
 def _species_disjoint_split(
     structure: io_mod.PoscarData,
     order: np.ndarray,
+    sorted_z: np.ndarray,
     gaps: np.ndarray,
     min_gap: float,
-) -> tuple[np.ndarray, np.ndarray] | None:
+) -> _TopGroupSplit | None:
     """Use the lowest z-separated cluster as the substrate when species are disjoint.
 
     This helps for adsorbates that are wrapped across the cell boundary in z,
@@ -202,7 +211,12 @@ def _species_disjoint_split(
         substrate_mask = np.array([str(symbol) in bottom_species for symbol in expanded_species], dtype=bool)
         molecule_mask = ~substrate_mask
         if np.any(substrate_mask) and np.any(molecule_mask):
-            return molecule_mask, substrate_mask
+            return _TopGroupSplit(
+                molecule_mask=molecule_mask,
+                substrate_mask=substrate_mask,
+                z_cutoff=float(0.5 * (sorted_z[gap_index] + sorted_z[gap_index + 1])),
+                gap_size=float(gaps[gap_index]),
+            )
     return None
 
 
@@ -248,7 +262,6 @@ def identify_top_group(
     order = np.argsort(z_values)
     sorted_z = z_values[order]
     gaps = np.diff(sorted_z)
-    split_masks = _species_disjoint_split(structure, order, gaps, float(min_gap))
 
     auto_detect = z_cutoff is None
     if auto_detect:
@@ -261,16 +274,21 @@ def identify_top_group(
             raise ValueError(
                 f"largest internal z gap is only {gap_size:.4f} A; provide --z-cutoff if the molecule is not cleanly separated"
             )
-        z_cutoff = float(0.5 * (sorted_z[gap_index] + sorted_z[gap_index + 1]))
+        split = _species_disjoint_split(structure, order, sorted_z, gaps, float(min_gap))
+        if split is None:
+            z_cutoff = float(0.5 * (sorted_z[gap_index] + sorted_z[gap_index + 1]))
+            molecule_mask = z_values > z_cutoff
+            substrate_mask = ~molecule_mask
+        else:
+            molecule_mask = split.molecule_mask
+            substrate_mask = split.substrate_mask
+            z_cutoff = split.z_cutoff
+            gap_size = split.gap_size
     else:
         gap_size = float("nan")
         z_cutoff = float(z_cutoff)
-
-    if split_masks is None:
         molecule_mask = z_values > z_cutoff
         substrate_mask = ~molecule_mask
-    else:
-        molecule_mask, substrate_mask = split_masks
 
     if not np.any(molecule_mask):
         raise ValueError(f"no atoms were found above z_cutoff={z_cutoff:.6f} A")
@@ -380,7 +398,7 @@ def _transform_molecule_cartesian(
     target_cartesian: Sequence[float] | None,
     target_direct: Sequence[float] | None,
     rotation_deg: float,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     positions_array = np.asarray(positions, dtype=float)
     com_before = center_of_mass_cartesian(positions_array, species)
     pivot = _resolve_target_cartesian(lattice, com_before, target_cartesian, target_direct)
@@ -390,8 +408,7 @@ def _transform_molecule_cartesian(
         rotation = lattice_mod.rotation_matrix_z(float(rotation_deg))
         translated = (translated - pivot) @ rotation.T + pivot
 
-    com_after = center_of_mass_cartesian(translated, species)
-    return translated, com_before, com_after
+    return translated, com_before
 
 
 def _normalise_reframe_axes(reframe_axes: str | Sequence[str] | None) -> tuple[int, ...]:
@@ -414,28 +431,45 @@ def _normalise_reframe_axes(reframe_axes: str | Sequence[str] | None) -> tuple[i
     return tuple(seen)
 
 
+def _unwrap_periodic_axis_with_start(values: np.ndarray) -> tuple[np.ndarray, float]:
+    wrapped = np.mod(np.asarray(values, dtype=float), 1.0)
+    if wrapped.size <= 1:
+        return wrapped, 0.0
+
+    ordered = np.sort(wrapped)
+    gaps = np.diff(np.concatenate((ordered, ordered[:1] + 1.0)))
+    gap_index = int(np.argmax(gaps))
+    interval_start = float(ordered[(gap_index + 1) % ordered.size])
+
+    unwrapped = wrapped.copy()
+    unwrapped[unwrapped < interval_start] += 1.0
+    return unwrapped, interval_start
+
+
 def _reframe_direct_positions(
     direct_positions: np.ndarray,
     molecule_indices: Sequence[int],
     axes: Sequence[int],
 ) -> tuple[np.ndarray, np.ndarray]:
-    direct_array = np.asarray(direct_positions, dtype=float)
+    direct_array = np.array(direct_positions, dtype=float, copy=True)
     if not axes:
         return direct_array, np.zeros(3, dtype=float)
 
-    molecule_direct = direct_array[np.array(molecule_indices, dtype=int)]
+    molecule_index_array = np.array(molecule_indices, dtype=int)
     shift = np.zeros(3, dtype=float)
     for axis in axes:
-        span = float(np.max(molecule_direct[:, axis]) - np.min(molecule_direct[:, axis]))
+        molecule_direct, _ = _unwrap_periodic_axis_with_start(direct_array[molecule_index_array, axis])
+        span = float(np.max(molecule_direct) - np.min(molecule_direct))
         if span > 1.0 + 1e-8:
             axis_name = "xyz"[axis]
             raise ValueError(
                 f"molecule spans {span:.4f} of the cell along {axis_name}; it cannot be contained in one periodic image without enlarging the lattice"
             )
-        shift[axis] = 0.5 * (float(np.max(molecule_direct[:, axis])) + float(np.min(molecule_direct[:, axis]))) - 0.5
+        direct_array[molecule_index_array, axis] = molecule_direct
+        shift[axis] = 0.5 * (float(np.max(molecule_direct)) + float(np.min(molecule_direct))) - 0.5
+        direct_array[:, axis] -= shift[axis]
 
-    shifted = direct_array - shift
-    return shifted, shift
+    return direct_array, shift
 
 
 def transform_top_molecule(
@@ -455,24 +489,29 @@ def transform_top_molecule(
     expanded_species = _expand_species(structure.species, structure.counts)
     molecule_indices = np.array(selection.molecule_indices, dtype=int)
     molecule_species = [expanded_species[index] for index in selection.molecule_indices]
+    resolved_target_cartesian = _resolve_target_cartesian(structure.lattice, selection.center_of_mass_cartesian, target_cartesian, target_direct)
 
     all_cartesian = np.array(structure.positions_cartesian, dtype=float, copy=True)
-    transformed_molecule, com_before, com_after = _transform_molecule_cartesian(
+    transformed_molecule, com_before = _transform_molecule_cartesian(
         all_cartesian[molecule_indices],
         molecule_species,
         structure.lattice,
-        target_cartesian=target_cartesian,
-        target_direct=target_direct,
+        target_cartesian=resolved_target_cartesian,
+        target_direct=None,
         rotation_deg=rotation_deg,
     )
     all_cartesian[molecule_indices] = transformed_molecule
 
     direct_positions = io_mod.cartesian_to_direct(all_cartesian, structure.lattice)
+    reframe_axes_normalised = _normalise_reframe_axes(reframe_axes)
     reframed_direct, shift_direct = _reframe_direct_positions(
         direct_positions,
         selection.molecule_indices,
-        _normalise_reframe_axes(reframe_axes),
+        reframe_axes_normalised,
     )
+    final_cartesian = io_mod.direct_to_cartesian(reframed_direct, structure.lattice)
+    final_molecule_positions = final_cartesian[molecule_indices]
+    final_center_of_mass = center_of_mass_cartesian(final_molecule_positions, molecule_species)
 
     if output_path is None:
         input_path = Path(poscar_path).resolve()
@@ -502,8 +541,8 @@ def transform_top_molecule(
         z_cutoff=selection.z_cutoff,
         gap_size=selection.gap_size,
         center_of_mass_before=com_before,
-        center_of_mass_after=com_after,
-        target_cartesian=_resolve_target_cartesian(structure.lattice, com_before, target_cartesian, target_direct),
+        center_of_mass_after=final_center_of_mass,
+        target_cartesian=final_center_of_mass,
         reframe_shift_direct=shift_direct,
     )
 

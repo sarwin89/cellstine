@@ -736,8 +736,6 @@ def _interactive_find_then_maybe_make() -> None:
     print(f"- final strain cutoff ({suggested['strain_layer']}): {_format_fraction(float(suggested['strain_tolerance']))}")
     print(f"- max atoms: {int(suggested['max_atoms'])}")
     print(f"- output folder: {suggested['output_root']}")
-    print("- optional matrix filter: leave off unless you want one exact set of 2x2 matrix values")
-
     use_defaults = _prompt_yes_no("Use these recommended finder settings?", True)
     if use_defaults:
         min_angle = float(suggested["min_angle"])
@@ -912,7 +910,6 @@ def build_parser() -> argparse.ArgumentParser:
             "Examples:\n"
             "  python moire_cli.py find input/mos2.vasp input/mos2.vasp --nindex 12\n"
             "  python moire_cli.py find input/a.vasp input/b.vasp --angles 13.2,21.8\n"
-            "  python moire_cli.py find input/a.vasp input/b.vasp --matrix-values 1,2,3,4 --matrix-layer either\n"
         ),
         formatter_class=_HelpFormatter,
     )
