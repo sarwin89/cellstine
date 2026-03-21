@@ -114,6 +114,57 @@ def read_poscar(path: str) -> PoscarData:
     )
 
 
+def repeat_structure_along_c(structure: PoscarData, repeats: int) -> PoscarData:
+    """Return a new structure with the input repeated along the lattice c axis."""
+
+    repeats = int(repeats)
+    if repeats < 1:
+        raise ValueError("c-axis repeats must be at least 1")
+    if repeats == 1:
+        return PoscarData(
+            comment=str(structure.comment),
+            lattice=np.array(structure.lattice, dtype=float, copy=True),
+            species=list(structure.species),
+            counts=[int(value) for value in structure.counts],
+            positions_direct=np.array(structure.positions_direct, dtype=float, copy=True),
+            positions_cartesian=np.array(structure.positions_cartesian, dtype=float, copy=True),
+            coordinate_mode=str(structure.coordinate_mode),
+            selective_dynamics=bool(structure.selective_dynamics),
+            selective_flags=None
+            if structure.selective_flags is None
+            else [tuple(flags) for flags in structure.selective_flags],
+        )
+
+    lattice = np.array(structure.lattice, dtype=float, copy=True)
+    lattice[2] *= float(repeats)
+
+    direct_blocks = []
+    for repeat_index in range(repeats):
+        shifted = np.array(structure.positions_direct, dtype=float, copy=True)
+        shifted[:, 2] = (shifted[:, 2] + float(repeat_index)) / float(repeats)
+        direct_blocks.append(shifted)
+    positions_direct = np.vstack(direct_blocks) if direct_blocks else np.zeros((0, 3), dtype=float)
+    positions_cartesian = direct_to_cartesian(positions_direct, lattice)
+
+    selective_flags = None
+    if structure.selective_flags is not None:
+        selective_flags = []
+        for _ in range(repeats):
+            selective_flags.extend(tuple(flags) for flags in structure.selective_flags)
+
+    return PoscarData(
+        comment=f"{structure.comment} | c-repeat x{repeats}",
+        lattice=lattice,
+        species=list(structure.species),
+        counts=[int(count) * repeats for count in structure.counts],
+        positions_direct=positions_direct,
+        positions_cartesian=positions_cartesian,
+        coordinate_mode="Direct",
+        selective_dynamics=bool(structure.selective_dynamics),
+        selective_flags=selective_flags,
+    )
+
+
 def parse_poscar(path: str) -> Tuple[np.ndarray, np.ndarray, List[int], List[str]]:
     """Backward-compatible POSCAR parser used by older tests and scripts."""
 

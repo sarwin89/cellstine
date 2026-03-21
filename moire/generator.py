@@ -319,11 +319,13 @@ def build_supercell(
     interlayer_distance: float | None = None,
     preserve_layer: str = "2",
     zfix: float | None = None,
+    repeat1_c: int = 1,
+    repeat2_c: int = 1,
 ) -> Tuple[np.ndarray, np.ndarray, List[int], List[str], List[Tuple[str, str, str]] | None]:
     """Build the exact supercell defined by one finder result record."""
 
-    structure1 = io_mod.read_poscar(pos1)
-    structure2 = io_mod.read_poscar(pos2)
+    structure1 = io_mod.repeat_structure_along_c(io_mod.read_poscar(pos1), repeat1_c)
+    structure2 = io_mod.repeat_structure_along_c(io_mod.read_poscar(pos2), repeat2_c)
 
     angle = float(coef.get("angle", 0.0))
     rotated_lattice1 = lat.rotate_lattice(structure1.lattice, angle)

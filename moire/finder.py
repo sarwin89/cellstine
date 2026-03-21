@@ -5,6 +5,8 @@ Made by Sarwin Chandran.
 
 from __future__ import annotations
 
+import os
+from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
 from typing import Dict, List, Mapping, Sequence
 
@@ -30,6 +32,44 @@ def _build_angle_list(
         raise ValueError("angle_step must be positive")
     values = np.arange(angle_lower, angle_upper + angle_step * 0.5, angle_step, dtype=float)
     return [float(value) for value in values]
+
+
+def _limit_worker_threads() -> None:
+    for variable in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
+        os.environ.setdefault(variable, "1")
+
+
+def _find_candidates_for_angle(
+    task: tuple[np.ndarray, np.ndarray, float, int, float, float | None, float, int, int]
+) -> List[lat.SupercellCandidate]:
+    (
+        lattice1,
+        lattice2,
+        angle_deg,
+        nindex,
+        tolerance,
+        vector_strain_tol,
+        candidate_tolerance,
+        atom_count1,
+        atom_count2,
+    ) = task
+    rotated_lattice1 = lat.rotate_lattice(lattice1, angle_deg)
+    matches = lat.find_coincident_vector_pairs(
+        rotated_lattice1,
+        lattice2,
+        nindex,
+        tolerance,
+        strain_tolerance=vector_strain_tol,
+    )
+    return lat.build_supercell_candidates(
+        matches,
+        rotated_lattice1,
+        lattice2,
+        atom_count1,
+        atom_count2,
+        candidate_tolerance,
+        angle_deg,
+    )
 
 
 def _matrix_signature(values: Sequence[int], match_mode: str) -> tuple[int, int, int, int]:
@@ -108,6 +148,7 @@ def find_supercells(
     matrix_values: Sequence[int] | None = None,
     matrix_layer: str = "either",
     matrix_match_mode: str = "absolute",
+    workers: int = 1,
 ) -> List[lat.SupercellCandidate]:
     """Return commensurate supercell candidates between two lattices."""
 
@@ -115,25 +156,46 @@ def find_supercells(
     angle_values = _build_angle_list(angle_lower, angle_upper, angle_step, angles)
 
     all_candidates: List[lat.SupercellCandidate] = []
-    for angle_deg in angle_values:
-        rotated_lattice1 = lat.rotate_lattice(lattice1, angle_deg)
-        matches = lat.find_coincident_vector_pairs(
-            rotated_lattice1,
-            lattice2,
-            nindex,
-            tol,
-            strain_tolerance=vector_strain_tol,
-        )
-        candidates = lat.build_supercell_candidates(
-            matches,
-            rotated_lattice1,
-            lattice2,
-            atom_count1,
-            atom_count2,
-            candidate_tolerance,
-            angle_deg,
-        )
-        all_candidates.extend(candidates)
+    resolved_workers = max(1, int(workers))
+    if resolved_workers <= 1 or len(angle_values) <= 1:
+        for angle_deg in angle_values:
+            all_candidates.extend(
+                _find_candidates_for_angle(
+                    (
+                        np.asarray(lattice1, dtype=float),
+                        np.asarray(lattice2, dtype=float),
+                        float(angle_deg),
+                        int(nindex),
+                        float(tol),
+                        vector_strain_tol,
+                        float(candidate_tolerance),
+                        int(atom_count1),
+                        int(atom_count2),
+                    )
+                )
+            )
+    else:
+        tasks = [
+            (
+                np.asarray(lattice1, dtype=float),
+                np.asarray(lattice2, dtype=float),
+                float(angle_deg),
+                int(nindex),
+                float(tol),
+                vector_strain_tol,
+                float(candidate_tolerance),
+                int(atom_count1),
+                int(atom_count2),
+            )
+            for angle_deg in angle_values
+        ]
+        try:
+            with ProcessPoolExecutor(max_workers=resolved_workers, initializer=_limit_worker_threads) as executor:
+                for candidates in executor.map(_find_candidates_for_angle, tasks):
+                    all_candidates.extend(candidates)
+        except (OSError, PermissionError):
+            for task in tasks:
+                all_candidates.extend(_find_candidates_for_angle(task))
 
     filtered: List[lat.SupercellCandidate] = []
     for candidate in all_candidates:

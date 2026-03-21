@@ -5,6 +5,7 @@ Made by Sarwin Chandran.
 
 from __future__ import annotations
 
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Sequence
@@ -22,6 +23,15 @@ class MakeRun:
     total_atoms: int
 
 
+def _limit_worker_threads() -> None:
+    """Avoid nested BLAS thread pools inside multiprocessing workers."""
+
+    import os
+
+    for variable in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
+        os.environ.setdefault(variable, "1")
+
+
 def _slug(value: str) -> str:
     safe = []
     for char in value:
@@ -30,6 +40,33 @@ def _slug(value: str) -> str:
         else:
             safe.append("_")
     return "".join(safe).strip("_") or "structure"
+
+
+def _generate_from_results_worker(
+    task: tuple[str, int, float, str | None, int, float, float | None, int | None, int | None]
+) -> MakeRun:
+    (
+        task_results,
+        task_index,
+        task_interlayer,
+        task_output_dir,
+        task_tolerance,
+        task_tolerance_float,
+        task_zfix,
+        task_top_repeat,
+        task_bottom_repeat,
+    ) = task
+    return generate_from_results(
+        task_results,
+        index=task_index,
+        interlayer_distance=task_interlayer,
+        output_dir=task_output_dir,
+        tolerance=task_tolerance,
+        tolerance_float=task_tolerance_float,
+        zfix=task_zfix,
+        top_c_repeat=task_top_repeat,
+        bottom_c_repeat=task_bottom_repeat,
+    )
 
 
 def generate_from_results(
@@ -42,11 +79,17 @@ def generate_from_results(
     tolerance: int = 1,
     tolerance_float: float = 1e-4,
     zfix: float | None = None,
+    top_c_repeat: int | None = None,
+    bottom_c_repeat: int | None = None,
 ) -> MakeRun:
     top_poscar, bottom_poscar, records, payload = generator_backend.parse_results(results_file)
     by_index = {int(record["idx"]): record for record in records}
     if index not in by_index:
         raise ValueError(f"index {index} not found in {results_file}")
+
+    metadata = payload.get("meta", {}) if isinstance(payload, dict) else {}
+    resolved_top_c_repeat = int(top_c_repeat if top_c_repeat is not None else metadata.get("top_c_repeat", 1))
+    resolved_bottom_c_repeat = int(bottom_c_repeat if bottom_c_repeat is not None else metadata.get("bottom_c_repeat", 1))
 
     record = by_index[index]
     lattice_out, positions_direct, counts, species, flags = generator_backend.build_supercell(
@@ -58,6 +101,8 @@ def generate_from_results(
         tolerance=tolerance,
         tolerance_float=tolerance_float,
         zfix=zfix,
+        repeat1_c=resolved_top_c_repeat,
+        repeat2_c=resolved_bottom_c_repeat,
     )
 
     total_atoms = int(sum(counts))
@@ -101,21 +146,52 @@ def generate_many_from_results(
     tolerance: int = 1,
     tolerance_float: float = 1e-4,
     zfix: float | None = None,
+    top_c_repeat: int | None = None,
+    bottom_c_repeat: int | None = None,
+    workers: int = 1,
 ) -> List[MakeRun]:
     """Generate one or more structures from a finder results file."""
 
     resolved_indexes = [int(index) for index in indexes]
-    runs: List[MakeRun] = []
-    for index in resolved_indexes:
-        run = generate_from_results(
+    resolved_workers = max(1, int(workers))
+    if len(resolved_indexes) > 1 and output_path is not None:
+        raise ValueError("use output_path only when generating a single index")
+
+    if resolved_workers <= 1 or len(resolved_indexes) <= 1:
+        runs: List[MakeRun] = []
+        for index in resolved_indexes:
+            run = generate_from_results(
+                results_file,
+                index=index,
+                interlayer_distance=interlayer_distance,
+                output_path=output_path if len(resolved_indexes) == 1 else None,
+                output_dir=output_dir,
+                tolerance=tolerance,
+                tolerance_float=tolerance_float,
+                zfix=zfix,
+                top_c_repeat=top_c_repeat,
+                bottom_c_repeat=bottom_c_repeat,
+            )
+            runs.append(run)
+        return runs
+
+    task_inputs = [
+        (
             results_file,
-            index=index,
-            interlayer_distance=interlayer_distance,
-            output_path=output_path if len(resolved_indexes) == 1 else None,
-            output_dir=output_dir,
-            tolerance=tolerance,
-            tolerance_float=tolerance_float,
-            zfix=zfix,
+            int(index),
+            float(interlayer_distance),
+            output_dir,
+            tolerance,
+            tolerance_float,
+            zfix,
+            top_c_repeat,
+            bottom_c_repeat,
         )
-        runs.append(run)
-    return runs
+        for index in resolved_indexes
+    ]
+
+    try:
+        with ProcessPoolExecutor(max_workers=resolved_workers, initializer=_limit_worker_threads) as executor:
+            return list(executor.map(_generate_from_results_worker, task_inputs))
+    except (OSError, PermissionError):
+        return [_generate_from_results_worker(task) for task in task_inputs]

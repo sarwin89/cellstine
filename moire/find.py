@@ -117,6 +117,9 @@ def run_find(
     matrix_layer: str = "either",
     matrix_match_mode: str = "absolute",
     output_root: str = "runs",
+    top_c_repeat: int = 1,
+    bottom_c_repeat: int = 1,
+    workers: int = 1,
 ) -> FindRun:
     shortlist, angle_values, symmetry_top, symmetry_bottom, symmetry_lcm, search_min_angle, search_max_angle = _resolve_angles(
         top_lattice,
@@ -154,6 +157,7 @@ def run_find(
         matrix_values=matrix_values,
         matrix_layer=matrix_layer,
         matrix_match_mode=matrix_match_mode,
+        workers=workers,
     )
 
     run_id, dat_path = _make_result_path(output_root, bottom_poscar, top_poscar, nindex)
@@ -162,6 +166,9 @@ def run_find(
         "top_poscar": str(top_poscar),
         "bottom_poscar": str(bottom_poscar),
         "units_note": "angles in degrees; angle_length_tolerance in angstrom; strain and mismatch values as fractions (0.01 = 1%)",
+        "top_c_repeat": int(top_c_repeat),
+        "bottom_c_repeat": int(bottom_c_repeat),
+        "workers": int(workers),
         "nindex": int(nindex),
         "symmetry_top_deg": int(symmetry_top),
         "symmetry_bottom_deg": int(symmetry_bottom),
