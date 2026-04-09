@@ -2,13 +2,17 @@
 
 __all__ = [
     'find',
+    'findn',
     'make',
+    'maken',
     'finder',
     'generator',
     'angles',
     'io',
     'lattice',
     'molecule',
+    'surface',
+    'visualize',
 ]
 
-__version__ = '0.6.0'
+__version__ = '3.2.0'

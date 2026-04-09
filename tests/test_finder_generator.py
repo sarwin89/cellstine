@@ -6,7 +6,7 @@ from uuid import uuid4
 import numpy as np
 
 import moire_cli
-from moire import angles, find, finder, generator, io, lattice, make, molecule
+from moire import angles, find, finder, findn, generator, io, lattice, make, maken, molecule, surface, visualize
 
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -167,6 +167,57 @@ class MoireToolkitTests(unittest.TestCase):
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 
+    def test_repeat_structure_along_c_scales_cell_and_atom_counts(self):
+        repeated = io.repeat_structure_along_c(self.mos2, 3)
+
+        self.assertEqual(repeated.natoms, 3 * self.mos2.natoms)
+        self.assertEqual(repeated.counts, [3 * count for count in self.mos2.counts])
+        self.assertAlmostEqual(
+            float(np.linalg.norm(repeated.lattice[2])),
+            3.0 * float(np.linalg.norm(self.mos2.lattice[2])),
+            places=8,
+        )
+        self.assertTrue(np.all(repeated.positions_direct[:, 2] >= -1e-10))
+        self.assertTrue(np.all(repeated.positions_direct[:, 2] <= 1.0 + 1e-10))
+
+    def test_parallel_finder_matches_serial_results_for_explicit_angles(self):
+        serial = finder.find_supercells(
+            self.mos2.lattice,
+            self.mos2.lattice,
+            None,
+            None,
+            angles=[13.15, 21.787],
+            nindex=12,
+            tol=2e-3,
+            lin_tol=2e-3,
+            atom_count1=self.mos2.natoms,
+            atom_count2=self.mos2.natoms,
+            max_atoms=200,
+            vector_strain_tol=2e-3,
+            workers=1,
+        )
+        parallel = finder.find_supercells(
+            self.mos2.lattice,
+            self.mos2.lattice,
+            None,
+            None,
+            angles=[13.15, 21.787],
+            nindex=12,
+            tol=2e-3,
+            lin_tol=2e-3,
+            atom_count1=self.mos2.natoms,
+            atom_count2=self.mos2.natoms,
+            max_atoms=200,
+            vector_strain_tol=2e-3,
+            workers=2,
+        )
+
+        self.assertEqual(len(serial), len(parallel))
+        self.assertEqual(
+            [finder.candidate_to_dict(item) for item in serial[:5]],
+            [finder.candidate_to_dict(item) for item in parallel[:5]],
+        )
+
     def test_make_matches_reference_counts(self):
         if not all(Path(path).exists() for path in REFERENCE_FILES.values()):
             self.skipTest("reference POSCAR files are not present in Results/")
@@ -314,11 +365,58 @@ class MoireToolkitTests(unittest.TestCase):
         )
         self.assertEqual(impossible, [])
 
+    def test_findn_and_maken_can_generate_an_n_layer_stack(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            nlayer_run = findn.run_findn(
+                bottom_poscar=MOS2_PATH,
+                bottom_lattice=self.mos2.lattice,
+                upper_poscars=[MOS2_PATH, MOS2_PATH],
+                upper_lattices=[self.mos2.lattice, self.mos2.lattice],
+                bottom_atoms=self.mos2.natoms,
+                upper_atoms=[self.mos2.natoms, self.mos2.natoms],
+                nindex=12,
+                min_angles=[0.0, 0.0],
+                max_angles=[60.0, 60.0],
+                explicit_angles_by_layer=[[13.15], [13.15]],
+                vector_tolerance=2e-3,
+                vector_strain_tolerance=2e-3,
+                candidate_tolerance=2e-3,
+                max_atoms=400,
+                output_root=str(temp_root),
+            )
+            self.assertTrue(nlayer_run.result_path.exists())
+            self.assertGreaterEqual(len(nlayer_run.candidates), 1)
+
+            make_run = maken.generate_from_results(
+                str(nlayer_run.result_path),
+                index=1,
+                interlayers=[3.35, 3.35],
+                output_dir=str(temp_root),
+            )
+            self.assertTrue(make_run.output_path.exists())
+            self.assertEqual(make_run.total_atoms, 171)
+
+            generated = io.read_poscar(str(make_run.output_path))
+            self.assertEqual(generated.natoms, 171)
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
     def test_cli_help_text_mentions_matrix_filter(self):
         parser = moire_cli.build_parser()
         help_text = parser._subparsers._group_actions[0].choices["find"].format_help()
         self.assertIn("matrix-values", help_text)
         self.assertIn("commensurate superlattice candidates", help_text)
+        self.assertIn("workers", help_text)
+
+    def test_cli_help_text_mentions_nlayer_surface_and_visualizer_commands(self):
+        parser = moire_cli.build_parser()
+        choices = parser._subparsers._group_actions[0].choices
+        self.assertIn("findn", choices)
+        self.assertIn("maken", choices)
+        self.assertIn("surface", choices)
+        self.assertIn("visualize", choices)
 
     def test_substrate_stack_uses_sufficient_c_axis_and_requested_gap(self):
         coef = {
@@ -364,6 +462,37 @@ class MoireToolkitTests(unittest.TestCase):
             float(np.linalg.norm(self.cu110.lattice[2])),
         )
         self.assertGreaterEqual(output_c + 1e-9, reference_c)
+
+    def test_surface_builder_creates_a_slab_from_a_simple_cubic_bulk(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            bulk_path = temp_root / "bulk_simple.vasp"
+            io.write_poscar(
+                str(bulk_path),
+                np.eye(3),
+                np.array([[0.0, 0.0, 0.0]], dtype=float),
+                [1],
+                ["X"],
+                comment="simple cubic bulk",
+                positions_are_cartesian=False,
+            )
+
+            run = surface.build_surface(
+                str(bulk_path),
+                miller=(1, 1, 0),
+                layers=3,
+                vacuum=8.0,
+                output_path=str(temp_root / "surface_110.vasp"),
+            )
+            self.assertTrue(run.output_path.exists())
+            self.assertEqual(run.total_atoms, 6)
+
+            slab = io.read_poscar(str(run.output_path))
+            self.assertEqual(slab.natoms, 6)
+            self.assertGreater(float(np.linalg.norm(slab.lattice[2])), 3.0)
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
 
     def test_molecule_stage_isolates_and_rigidly_rotates_adsorbate(self):
         coef = {
@@ -596,6 +725,64 @@ class MoireToolkitTests(unittest.TestCase):
             expected_top = before.positions_direct[top_index] + np.array([0.25, 0.125, 0.0])
             self.assertTrue(np.allclose(after.positions_direct[top_index], expected_top, atol=1e-8))
             self.assertTrue(np.allclose(after.positions_direct[bottom_index], before.positions_direct[bottom_index], atol=1e-8))
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_visualize_writes_html_for_bilayer_and_nlayer_results(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            bilayer_run = find.run_find(
+                top_poscar=MOS2_PATH,
+                bottom_poscar=MOS2_PATH,
+                top_lattice=self.mos2.lattice,
+                bottom_lattice=self.mos2.lattice,
+                top_atoms=self.mos2.natoms,
+                bottom_atoms=self.mos2.natoms,
+                nindex=12,
+                explicit_angles=[13.15],
+                vector_tolerance=2e-3,
+                vector_strain_tolerance=2e-3,
+                candidate_tolerance=2e-3,
+                max_atoms=200,
+                output_root=str(temp_root),
+            )
+            bilayer_html = temp_root / "bilayer_viewer.html"
+            bilayer_view = visualize.build_visualization(
+                str(bilayer_run.dat_path),
+                indices=[1],
+                output_path=str(bilayer_html),
+            )
+            self.assertEqual(bilayer_view.results_type, "bilayer")
+            self.assertTrue(bilayer_html.exists())
+            self.assertIn("CELLSTINE Visualizer", bilayer_html.read_text(encoding="utf-8"))
+
+            nlayer_run = findn.run_findn(
+                bottom_poscar=MOS2_PATH,
+                bottom_lattice=self.mos2.lattice,
+                upper_poscars=[MOS2_PATH, MOS2_PATH],
+                upper_lattices=[self.mos2.lattice, self.mos2.lattice],
+                bottom_atoms=self.mos2.natoms,
+                upper_atoms=[self.mos2.natoms, self.mos2.natoms],
+                nindex=12,
+                min_angles=[0.0, 0.0],
+                max_angles=[60.0, 60.0],
+                explicit_angles_by_layer=[[13.15], [13.15]],
+                vector_tolerance=2e-3,
+                vector_strain_tolerance=2e-3,
+                candidate_tolerance=2e-3,
+                max_atoms=400,
+                output_root=str(temp_root),
+            )
+            nlayer_html = temp_root / "nlayer_viewer.html"
+            nlayer_view = visualize.build_visualization(
+                str(nlayer_run.result_path),
+                indices=[1],
+                output_path=str(nlayer_html),
+            )
+            self.assertEqual(nlayer_view.results_type, "nlayer")
+            self.assertTrue(nlayer_html.exists())
+            self.assertIn("3-layer commensurate twist sequence", nlayer_html.read_text(encoding="utf-8"))
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 

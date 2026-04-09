@@ -4,10 +4,10 @@
 *.gif
 *.dat
 results.dat
-tests/
 __pycache__/
 *.pyc
 *.pyo
 moire_test_*/
 *.vasp
-*.pyc
+runs/*.json
+output/*.html
