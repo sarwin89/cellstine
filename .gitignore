@@ -1,13 +1,43 @@
-*.pdf
+# Python caches and local tooling
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Packaging and build outputs
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local scratch files
+moire_test_*/
+tmp*/
+*.tmp
+
+# Generated scientific outputs
+results.dat
+*.dat
+*.html
+*.vasp
+output/*
+!output/.gitkeep
+runs/*
+!runs/.gitkeep
+
+# Local notebooks and exports
 *.ipynb
+*.pdf
 *.png
 *.gif
-*.dat
-results.dat
-__pycache__/
-*.pyc
-*.pyo
-moire_test_*/
-*.vasp
-runs/*.json
-output/*.html

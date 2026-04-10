@@ -1,11 +1,18 @@
 import shutil
+import sys
 import unittest
 from pathlib import Path
 from uuid import uuid4
 
 import numpy as np
 
+sys.path.insert(0, str((Path(__file__).resolve().parents[1] / "src")))
+
+import cellstine
 import moire_cli
+from cellstine.interface.surface import Surface as InterfaceSurface
+from cellstine.interface.interface import Interface as InterfaceWorkflow
+from cellstine.moire.moire import Moire as MoireWorkflow
 from moire import angles, find, finder, findn, generator, io, lattice, make, maken, molecule, surface, visualize
 
 
@@ -405,18 +412,99 @@ class MoireToolkitTests(unittest.TestCase):
 
     def test_cli_help_text_mentions_matrix_filter(self):
         parser = moire_cli.build_parser()
-        help_text = parser._subparsers._group_actions[0].choices["find"].format_help()
+        moire_group = parser._subparsers._group_actions[0].choices["moire"]
+        help_text = moire_group._subparsers._group_actions[0].choices["find"].format_help()
         self.assertIn("matrix-values", help_text)
-        self.assertIn("commensurate superlattice candidates", help_text)
+        self.assertIn("bilayer commensurate candidates", help_text)
         self.assertIn("workers", help_text)
 
-    def test_cli_help_text_mentions_nlayer_surface_and_visualizer_commands(self):
+    def test_cli_help_text_mentions_grouped_workflows_and_subcommands(self):
         parser = moire_cli.build_parser()
         choices = parser._subparsers._group_actions[0].choices
-        self.assertIn("findn", choices)
-        self.assertIn("maken", choices)
-        self.assertIn("surface", choices)
-        self.assertIn("visualize", choices)
+        self.assertIn("moire", choices)
+        self.assertIn("adsorbate", choices)
+        self.assertIn("interface", choices)
+
+        moire_group = choices["moire"]
+        moire_choices = moire_group._subparsers._group_actions[0].choices
+        self.assertIn("findn", moire_choices)
+        self.assertIn("maken", moire_choices)
+        self.assertIn("visualize", moire_choices)
+
+        adsorbate_choices = choices["adsorbate"]._subparsers._group_actions[0].choices
+        self.assertIn("place", adsorbate_choices)
+        self.assertIn("assemble", adsorbate_choices)
+
+        interface_choices = choices["interface"]._subparsers._group_actions[0].choices
+        self.assertIn("surface", interface_choices)
+        self.assertIn("sites", interface_choices)
+        self.assertIn("build", interface_choices)
+        self.assertIn("match", interface_choices)
+
+    def test_cellstine_package_exports_public_classes(self):
+        self.assertEqual(cellstine.__version__, "4.0.0")
+        self.assertTrue(hasattr(cellstine, "Moire"))
+        self.assertTrue(hasattr(cellstine, "Molecule"))
+        self.assertTrue(hasattr(cellstine, "Interface"))
+
+    def test_moire_workflow_wrapper_writes_manifest(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            tool = MoireWorkflow(runs_root=str(temp_root / "runs"), output_root=str(temp_root / "output"))
+            result = tool.find(
+                top_poscar=MOS2_PATH,
+                bottom_poscar=MOS2_PATH,
+                nindex=4,
+                explicit_angles=[13.15],
+                max_atoms=200,
+                workers=1,
+            )
+            self.assertTrue(Path(result.manifest_path).exists())
+            self.assertIn("results_dat", result.artifacts)
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_interface_surface_and_build_wrappers_create_artifacts(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            bulk_path = temp_root / "bulk_simple.vasp"
+            io.write_poscar(
+                str(bulk_path),
+                np.eye(3),
+                np.array([[0.0, 0.0, 0.0]], dtype=float),
+                [1],
+                ["X"],
+                comment="simple cubic bulk",
+                positions_are_cartesian=False,
+            )
+
+            surface_tool = InterfaceSurface(runs_root=str(temp_root / "runs"), output_root=str(temp_root / "output"))
+            bottom_result = surface_tool.surface(
+                bulk_poscar=str(bulk_path),
+                miller="1,0,0",
+                layers=3,
+                vacuum=8.0,
+            )
+            top_result = surface_tool.surface(
+                bulk_poscar=str(bulk_path),
+                miller="1,1,0",
+                layers=3,
+                vacuum=8.0,
+            )
+            self.assertTrue(Path(bottom_result.artifacts["slab_poscar"]).exists())
+            self.assertTrue(Path(top_result.artifacts["slab_poscar"]).exists())
+
+            interface_tool = InterfaceWorkflow(runs_root=str(temp_root / "runs"), output_root=str(temp_root / "output"))
+            build_result = interface_tool.build(
+                bottom_input=bottom_result.artifacts["slab_poscar"],
+                top_input=top_result.artifacts["slab_poscar"],
+                gap=3.0,
+            )
+            self.assertTrue(Path(build_result.artifacts["interface_poscar"]).exists())
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
 
     def test_substrate_stack_uses_sufficient_c_axis_and_requested_gap(self):
         coef = {
@@ -491,6 +579,192 @@ class MoireToolkitTests(unittest.TestCase):
             slab = io.read_poscar(str(run.output_path))
             self.assertEqual(slab.natoms, 6)
             self.assertGreater(float(np.linalg.norm(slab.lattice[2])), 3.0)
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_surface_builder_scales_in_plane_with_supercell_matrix(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            bulk_path = temp_root / "bulk_simple.vasp"
+            io.write_poscar(
+                str(bulk_path),
+                np.eye(3),
+                np.array([[0.0, 0.0, 0.0]], dtype=float),
+                [1],
+                ["X"],
+                comment="simple cubic bulk",
+                positions_are_cartesian=False,
+            )
+
+            base_run = surface.build_surface(
+                str(bulk_path),
+                miller=(1, 0, 0),
+                layers=3,
+                vacuum=8.0,
+                output_path=str(temp_root / "surface_base.vasp"),
+            )
+            scaled_run = surface.build_surface(
+                str(bulk_path),
+                miller=(1, 0, 0),
+                layers=3,
+                vacuum=8.0,
+                supercell_matrix=(2, 0, 0, 3),
+                output_path=str(temp_root / "surface_scaled.vasp"),
+            )
+
+            self.assertEqual(scaled_run.total_atoms, 6 * base_run.total_atoms)
+
+            base_slab = io.read_poscar(str(base_run.output_path))
+            scaled_slab = io.read_poscar(str(scaled_run.output_path))
+            base_area = float(np.linalg.norm(np.cross(base_slab.lattice[0], base_slab.lattice[1])))
+            scaled_area = float(np.linalg.norm(np.cross(scaled_slab.lattice[0], scaled_slab.lattice[1])))
+            self.assertAlmostEqual(scaled_area, 6.0 * base_area, places=8)
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_surface_builder_reports_top_bridge_hcp_and_fcc_sites_for_fcc_111(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            bulk_path = temp_root / "au_bulk.vasp"
+            lattice_bulk = np.array(
+                [
+                    [4.08, 0.0, 0.0],
+                    [0.0, 4.08, 0.0],
+                    [0.0, 0.0, 4.08],
+                ],
+                dtype=float,
+            )
+            positions_bulk = np.array(
+                [
+                    [0.0, 0.0, 0.0],
+                    [0.0, 0.5, 0.5],
+                    [0.5, 0.0, 0.5],
+                    [0.5, 0.5, 0.0],
+                ],
+                dtype=float,
+            )
+            io.write_poscar(
+                str(bulk_path),
+                lattice_bulk,
+                positions_bulk,
+                [4],
+                ["Au"],
+                comment="fcc gold bulk",
+                positions_are_cartesian=False,
+            )
+
+            run = surface.build_surface(
+                str(bulk_path),
+                miller=(1, 1, 1),
+                layers=4,
+                vacuum=12.0,
+                analyse_sites=True,
+                output_path=str(temp_root / "au111.vasp"),
+            )
+            self.assertTrue(run.output_path.exists())
+            self.assertIsNotNone(run.site_output_path)
+            self.assertEqual(run.site_counts.get("top"), 8)
+            self.assertEqual(run.site_counts.get("bridge"), 24)
+            self.assertEqual(run.site_counts.get("hcp_hollow"), 8)
+            self.assertEqual(run.site_counts.get("fcc_hollow"), 8)
+
+            slab = io.read_poscar(str(run.output_path))
+            report = surface.find_adsorption_sites(slab)
+            self.assertAlmostEqual(report.average_top_layer_coordination, 6.0, places=6)
+            self.assertEqual(report.site_counts.get("top"), 8)
+            self.assertEqual(report.site_counts.get("bridge"), 24)
+            self.assertEqual(report.site_counts.get("hcp_hollow"), 8)
+            self.assertEqual(report.site_counts.get("fcc_hollow"), 8)
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_adsorb_places_molecule_on_selected_site_with_requested_height(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            bulk_path = temp_root / "au_bulk.vasp"
+            lattice_bulk = np.array(
+                [
+                    [4.08, 0.0, 0.0],
+                    [0.0, 4.08, 0.0],
+                    [0.0, 0.0, 4.08],
+                ],
+                dtype=float,
+            )
+            positions_bulk = np.array(
+                [
+                    [0.0, 0.0, 0.0],
+                    [0.0, 0.5, 0.5],
+                    [0.5, 0.0, 0.5],
+                    [0.5, 0.5, 0.0],
+                ],
+                dtype=float,
+            )
+            io.write_poscar(
+                str(bulk_path),
+                lattice_bulk,
+                positions_bulk,
+                [4],
+                ["Au"],
+                comment="fcc gold bulk",
+                positions_are_cartesian=False,
+            )
+            molecule_path = temp_root / "co.vasp"
+            io.write_poscar(
+                str(molecule_path),
+                10.0 * np.eye(3),
+                np.array(
+                    [
+                        [0.5, 0.5, 0.5],
+                        [0.5, 0.5, 0.613],
+                    ],
+                    dtype=float,
+                ),
+                [1, 1],
+                ["C", "O"],
+                comment="co molecule",
+                positions_are_cartesian=False,
+            )
+
+            slab_run = surface.build_surface(
+                str(bulk_path),
+                miller=(1, 1, 1),
+                layers=4,
+                vacuum=12.0,
+                output_path=str(temp_root / "au111.vasp"),
+            )
+            adsorb_run = molecule.place_molecule_on_site(
+                str(slab_run.output_path),
+                str(molecule_path),
+                site_type="fcc",
+                site_index=1,
+                height=2.3,
+                reframe_axes="none",
+                output_path=str(temp_root / "au111_co.vasp"),
+            )
+
+            self.assertEqual(adsorb_run.site_type, "fcc_hollow")
+            combined = io.read_poscar(str(adsorb_run.output_path))
+            expanded_species = []
+            for symbol, count in zip(combined.species, combined.counts):
+                expanded_species.extend([symbol] * int(count))
+            molecule_mask = np.array([symbol in {"C", "O"} for symbol in expanded_species], dtype=bool)
+            self.assertEqual(int(np.count_nonzero(molecule_mask)), 2)
+
+            molecule_positions = combined.positions_cartesian[molecule_mask]
+            molecule_species = [expanded_species[index] for index in np.flatnonzero(molecule_mask).tolist()]
+            molecule_com = molecule.center_of_mass_cartesian(molecule_positions, molecule_species)
+            slab_normal = surface._surface_normal(combined.lattice)
+
+            site_inplane = np.asarray(adsorb_run.site_cartesian, dtype=float) - float(np.dot(adsorb_run.site_cartesian, slab_normal)) * slab_normal
+            com_inplane = molecule_com - float(np.dot(molecule_com, slab_normal)) * slab_normal
+            self.assertTrue(np.allclose(com_inplane, site_inplane, atol=1e-6))
+
+            lowest_projection = float(np.min(molecule_positions @ slab_normal))
+            site_projection = float(np.dot(adsorb_run.site_cartesian, slab_normal))
+            self.assertAlmostEqual(lowest_projection - site_projection, 2.3, places=6)
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 

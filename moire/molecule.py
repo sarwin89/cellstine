@@ -11,6 +11,7 @@ import numpy as np
 
 from . import io as io_mod
 from . import lattice as lattice_mod
+from . import surface as surface_mod
 
 
 _ATOMIC_MASS_ROWS = """
@@ -155,6 +156,22 @@ class LayerShiftRun:
     gap_size: float
     shift_cartesian: np.ndarray
     shift_direct: np.ndarray
+
+
+@dataclass(frozen=True)
+class AdsorbRun:
+    output_path: Path
+    substrate_atom_count: int
+    molecule_atom_count: int
+    site_type: str
+    site_index: int
+    surface_side: str
+    height: float
+    center_of_mass_before: np.ndarray
+    center_of_mass_after: np.ndarray
+    site_cartesian: np.ndarray
+    site_direct: np.ndarray
+    reframe_shift_direct: np.ndarray
 
 
 @dataclass(frozen=True)
@@ -431,6 +448,97 @@ def _normalise_reframe_axes(reframe_axes: str | Sequence[str] | None) -> tuple[i
     return tuple(seen)
 
 
+def _surface_outward_normal(lattice: np.ndarray, surface_side: str) -> np.ndarray:
+    if surface_side not in {"top", "bottom"}:
+        raise ValueError("surface_side must be 'top' or 'bottom'")
+    normal = surface_mod._surface_normal(lattice)
+    return normal if surface_side == "top" else -normal
+
+
+def _translate_molecule_to_site(
+    molecule_positions: np.ndarray,
+    molecule_species: Sequence[str],
+    substrate_lattice: np.ndarray,
+    site_cartesian: Sequence[float],
+    *,
+    surface_side: str,
+    height: float,
+    rotation_deg: float,
+) -> tuple[np.ndarray, np.ndarray]:
+    if float(height) < 0.0:
+        raise ValueError("height must be non-negative")
+
+    slab_normal = surface_mod._surface_normal(substrate_lattice)
+    outward_normal = _surface_outward_normal(substrate_lattice, surface_side)
+    site_cart = np.asarray(site_cartesian, dtype=float)
+
+    rotated_positions, com_before = _transform_molecule_cartesian(
+        np.asarray(molecule_positions, dtype=float),
+        molecule_species,
+        substrate_lattice,
+        target_cartesian=None,
+        target_direct=None,
+        rotation_deg=rotation_deg,
+    )
+    rotated_com = center_of_mass_cartesian(rotated_positions, molecule_species)
+    site_inplane = site_cart - float(np.dot(site_cart, slab_normal)) * slab_normal
+    com_inplane = rotated_com - float(np.dot(rotated_com, slab_normal)) * slab_normal
+    translated = rotated_positions + (site_inplane - com_inplane)
+
+    lowest_projection = float(np.min(translated @ outward_normal))
+    target_projection = float(np.dot(site_cart, outward_normal)) + float(height)
+    translated = translated + (target_projection - lowest_projection) * outward_normal
+    return translated, com_before
+
+
+def _default_flag_list(natoms: int) -> list[tuple[str, str, str]]:
+    return [("T", "T", "T")] * int(natoms)
+
+
+def _combine_substrate_and_molecule(
+    substrate: io_mod.PoscarData,
+    molecule: io_mod.PoscarData,
+    molecule_positions_cartesian: np.ndarray,
+    *,
+    reframe_axes: str | Sequence[str] | None,
+) -> tuple[np.ndarray, list[int], list[str], list[tuple[str, str, str]] | None, np.ndarray, np.ndarray]:
+    substrate_species_expanded = _expand_species(substrate.species, substrate.counts)
+    molecule_species_expanded = _expand_species(molecule.species, molecule.counts)
+
+    combined_cartesian = np.vstack((np.asarray(substrate.positions_cartesian, dtype=float), np.asarray(molecule_positions_cartesian, dtype=float)))
+    molecule_indices = tuple(range(substrate.natoms, substrate.natoms + molecule.natoms))
+    combined_direct = io_mod.cartesian_to_direct(combined_cartesian, substrate.lattice)
+    reframed_direct, shift_direct = _reframe_direct_positions(
+        combined_direct,
+        molecule_indices,
+        _normalise_reframe_axes(reframe_axes),
+    )
+    reframed_cartesian = io_mod.direct_to_cartesian(reframed_direct, substrate.lattice)
+
+    substrate_flags = _default_flag_list(substrate.natoms) if substrate.selective_flags is None else [tuple(flags) for flags in substrate.selective_flags]
+    molecule_flags = _default_flag_list(molecule.natoms) if molecule.selective_flags is None else [tuple(flags) for flags in molecule.selective_flags]
+    use_flags = substrate.selective_flags is not None or molecule.selective_flags is not None
+    combined_flags = substrate_flags + molecule_flags
+
+    combined_species_expanded = substrate_species_expanded + molecule_species_expanded
+    species_order: list[str] = []
+    for symbol in list(substrate.species) + list(molecule.species):
+        if symbol not in species_order:
+            species_order.append(str(symbol))
+
+    ordered_indices: list[int] = []
+    counts: list[int] = []
+    for symbol in species_order:
+        indices_for_species = [index for index, entry in enumerate(combined_species_expanded) if entry == symbol]
+        ordered_indices.extend(indices_for_species)
+        counts.append(len(indices_for_species))
+
+    positions_direct_out = reframed_direct[np.array(ordered_indices, dtype=int)]
+    flags_out = [combined_flags[index] for index in ordered_indices] if use_flags else None
+    final_molecule_cartesian = reframed_cartesian[np.array(molecule_indices, dtype=int)]
+    return positions_direct_out, counts, species_order, flags_out, shift_direct, final_molecule_cartesian
+
+
 def _unwrap_periodic_axis_with_start(values: np.ndarray) -> tuple[np.ndarray, float]:
     wrapped = np.mod(np.asarray(values, dtype=float), 1.0)
     if wrapped.size <= 1:
@@ -543,6 +651,96 @@ def transform_top_molecule(
         center_of_mass_before=com_before,
         center_of_mass_after=final_center_of_mass,
         target_cartesian=final_center_of_mass,
+        reframe_shift_direct=shift_direct,
+    )
+
+
+def place_molecule_on_site(
+    substrate_poscar: str,
+    molecule_poscar: str,
+    *,
+    site_type: str,
+    site_index: int = 1,
+    height: float = 2.5,
+    rotation_deg: float = 0.0,
+    surface_side: str = "top",
+    layer_tolerance: float = 0.35,
+    neighbour_tolerance: float = 0.15,
+    hollow_match_tolerance: float | None = None,
+    reframe_axes: str | Sequence[str] | None = "xy",
+    output_path: str | None = None,
+) -> AdsorbRun:
+    substrate = io_mod.read_poscar(substrate_poscar)
+    molecule = io_mod.read_poscar(molecule_poscar)
+
+    site_report = surface_mod.find_adsorption_sites(
+        substrate,
+        surface_side=surface_side,
+        layer_tolerance=layer_tolerance,
+        neighbour_tolerance=neighbour_tolerance,
+        hollow_match_tolerance=hollow_match_tolerance,
+    )
+    selected_site = surface_mod.select_adsorption_site(site_report, site_type, site_index)
+
+    molecule_species_expanded = _expand_species(molecule.species, molecule.counts)
+    placed_molecule_cartesian, center_before = _translate_molecule_to_site(
+        molecule.positions_cartesian,
+        molecule_species_expanded,
+        substrate.lattice,
+        selected_site.cartesian,
+        surface_side=surface_side,
+        height=height,
+        rotation_deg=rotation_deg,
+    )
+    positions_direct_out, counts_out, species_out, flags_out, shift_direct, final_molecule_cartesian = _combine_substrate_and_molecule(
+        substrate,
+        molecule,
+        placed_molecule_cartesian,
+        reframe_axes=reframe_axes,
+    )
+    center_after = center_of_mass_cartesian(final_molecule_cartesian, molecule_species_expanded)
+
+    if output_path is None:
+        substrate_path = Path(substrate_poscar).resolve()
+        molecule_path = Path(molecule_poscar).resolve()
+        DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        canonical_site = surface_mod.canonical_site_type(site_type)
+        output_path = str(
+            (
+                DEFAULT_OUTPUT_DIR
+                / f"{substrate_path.stem}__{molecule_path.stem}_{canonical_site}{int(site_index):02d}{substrate_path.suffix or '.vasp'}"
+            ).resolve()
+        )
+    else:
+        Path(output_path).resolve().parent.mkdir(parents=True, exist_ok=True)
+
+    io_mod.write_poscar(
+        output_path,
+        substrate.lattice,
+        positions_direct_out,
+        counts_out,
+        species_out,
+        comment=(
+            f"{substrate.comment} | adsorbed {Path(molecule_poscar).stem} on "
+            f"{surface_mod.canonical_site_type(site_type)} #{int(site_index)}"
+        ),
+        positions_are_cartesian=False,
+        wrap_positions=False,
+        selective_flags=flags_out,
+    )
+
+    return AdsorbRun(
+        output_path=Path(output_path).resolve(),
+        substrate_atom_count=substrate.natoms,
+        molecule_atom_count=molecule.natoms,
+        site_type=surface_mod.canonical_site_type(site_type),
+        site_index=int(site_index),
+        surface_side=str(surface_side),
+        height=float(height),
+        center_of_mass_before=center_before,
+        center_of_mass_after=center_after,
+        site_cartesian=np.array(selected_site.cartesian, dtype=float),
+        site_direct=np.array(selected_site.direct, dtype=float),
         reframe_shift_direct=shift_direct,
     )
 

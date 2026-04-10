@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cellstine"
+version = "4.0.0"
+description = "CELLSTINE: commensurate moire, adsorbate, and interface workflows for VASP structures."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Sarwin Chandran" }
+]
+dependencies = [
+  "numpy>=1.26,<3"
+]
+
+[project.optional-dependencies]
+pymatgen = [
+  "pymatgen>=2024.5,<2027"
+]
+viz = [
+  "matplotlib>=3.8,<4",
+  "plotly>=5.24,<6"
+]
+all = [
+  "pymatgen>=2024.5,<2027",
+  "matplotlib>=3.8,<4",
+  "plotly>=5.24,<6"
+]
+
+[project.scripts]
+cellstine = "cellstine.cli.main:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = [".", "src"]
+include = ["cellstine*", "moire"]

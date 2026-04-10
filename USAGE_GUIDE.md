@@ -1,359 +1,489 @@
 # CELLSTINE Usage Guide
 
-This guide covers both the guided interface and the command-line workflow in more detail than the README.
+This guide covers the current grouped CELLSTINE package and CLI in more detail than the README.
 
-## 1. Standard Working Layout
+The package is organized around three top-level workflows:
+
+- `moire`
+- `adsorbate`
+- `interface`
+
+Examples below use the installed command `cellstine`. Inside the repository, `python moire_cli.py ...` works as a compatibility entrypoint too.
+
+## 1. Installation And Entry Points
+
+Base install:
+
+```bash
+pip install -e .
+```
+
+Optional extras:
+
+```bash
+pip install -e ".[pymatgen]"
+pip install -e ".[viz]"
+pip install -e ".[all]"
+```
+
+Main entry points:
+
+```bash
+cellstine --help
+cellstine --version
+python moire_cli.py --help
+```
+
+## 2. Standard Working Layout
 
 CELLSTINE assumes this folder structure by default:
 
 ```text
-input/   -> source POSCAR files
-runs/    -> saved search results (.dat for bilayers, .json for findn)
-output/  -> generated POSCARs, adjusted POSCARs, slabs, and HTML visualizers
+input/   -> source structures and local sample POSCARs
+runs/    -> manifests and saved workflow artifacts
+output/  -> generated POSCARs, slabs, interfaces, moved structures, and HTML viewers
 ```
 
-If you pass only a bare filename, CELLSTINE checks these folders first.
+Each grouped stage writes a manifest to:
 
-## 2. Interactive Interface
+```text
+runs/<workflow>/<run-id>/manifest.json
+```
 
-Launch the interface with:
+Build stages can consume either a raw results file or a manifest from the previous stage.
+
+## 3. Interactive Interface
+
+Launch the guided interface with:
 
 ```bash
-python moire_cli.py
+cellstine
 ```
 
-The current interactive interface is focused on the common bilayer workflow:
+The interactive flow is now grouped:
 
-1. Search for commensurate candidates
-2. Generate the commensurate superlattice from a saved search
-3. Move a top molecule or shift the upper layer in a stacked POSCAR
+1. choose `moire`, `adsorbate`, or `interface`
+2. choose the stage within that workflow
+3. enter only the inputs needed for that stage
+4. use the manifest or generated artifact for the next step
 
-The newer `findn`, `maken`, `surface`, and `visualize` workflows are CLI-first.
+It is meant to be a guided launcher over the same backend classes used by the CLI.
 
-## 3. CLI Help Pages
+## 4. CLI Help Pages
 
 ```bash
-python moire_cli.py --help
-python moire_cli.py find --help
-python moire_cli.py findn --help
-python moire_cli.py make --help
-python moire_cli.py maken --help
-python moire_cli.py molecule --help
-python moire_cli.py layer --help
-python moire_cli.py surface --help
-python moire_cli.py visualize --help
-python -m moire.angles --help
+cellstine --help
+cellstine moire --help
+cellstine moire find --help
+cellstine moire findn --help
+cellstine moire make --help
+cellstine moire maken --help
+cellstine moire translate --help
+cellstine moire visualize --help
+cellstine adsorbate --help
+cellstine adsorbate place --help
+cellstine adsorbate move --help
+cellstine adsorbate assemble --help
+cellstine interface --help
+cellstine interface surface --help
+cellstine interface sites --help
+cellstine interface build --help
+cellstine interface match --help
+cellstine interface visualize --help
 ```
 
-## 4. Bilayer Finder Stage
+## 5. `moire` Workflow
+
+### 5.1 Bilayer Search With `moire find`
 
 Basic search:
 
 ```bash
-python moire_cli.py find input/mos2.vasp input/mos2.vasp --nindex 12 --max-atoms 300
+cellstine moire find input/mos2.vasp input/mos2.vasp --nindex 12 --max-angle 30
 ```
 
-Search only a few explicit angles:
+Search explicit angles only:
 
 ```bash
-python moire_cli.py find input/mos2.vasp input/mos2.vasp --angles 13.15,21.787,27.9 --nindex 12
+cellstine moire find input/mos2.vasp input/mos2.vasp --angles 13.15,21.787,27.9 --nindex 12
 ```
 
-Search with thicker input slabs along `c`:
+Search with thicker slabs along `c`:
 
 ```bash
-python moire_cli.py find input/top.vasp input/bottom.vasp --nindex 12 --top-c-repeat 2 --bottom-c-repeat 4
+cellstine moire find input/graph.vasp input/mos2.vasp --nindex 12 --top-c-repeat 2 --bottom-c-repeat 4
 ```
 
-Use multiple workers for a larger angle search:
+Use optional prestrain before the commensuration search:
 
 ```bash
-python moire_cli.py find input/top.vasp input/bottom.vasp --nindex 18 --workers 4
+cellstine moire find input/graph.vasp input/mos2.vasp --nindex 12 --prestrain-top-mode biaxial --prestrain-top-value 0.01
+cellstine moire find input/graph.vasp input/mos2.vasp --nindex 12 --prestrain-top-mode uniaxial --prestrain-top-value 0.01 --prestrain-top-axis a
 ```
 
-### Bilayer Finder Units
+Use multiple workers for angle-parallel search:
 
-- `--min-angle`, `--max-angle`, `--angles`, `--angle-step`, and `--angle-merge-tolerance` are in **degrees**
-- `--angle-length-tolerance` is an **absolute** tolerance in **angstrom**
+```bash
+cellstine moire find input/top.vasp input/bottom.vasp --nindex 18 --workers 4
+```
+
+### 5.2 Bilayer Finder Units And Tolerances
+
+- twist angles are in **degrees**
+- length tolerances are in **angstrom**
 - strain and mismatch tolerances are **fractions**
-- `--top-c-repeat` and `--bottom-c-repeat` are integer repeat counts
-
-Fraction examples:
-
 - `0.002 = 0.2%`
 - `0.01 = 1%`
 - `0.05 = 5%`
+- `--top-c-repeat` and `--bottom-c-repeat` are integer repeat counts
 
-### Matrix-Value Finder Mode
+### 5.3 Matrix-Value Finder Mode
 
-This is the mode for cases where you already know the four entries that should appear in a `2x2` supercell matrix, but not their order.
-
-Example:
-
-```bash
-python moire_cli.py find input/a.vasp input/b.vasp --matrix-values 1,2,3,4 --matrix-layer either
-```
-
-Control options:
-
-- `--matrix-values 1,2,3,4`
-- `--matrix-layer 1|2|either|both`
-- `--matrix-match-mode absolute|exact`
-
-## 5. Bilayer Generation Stage
-
-Generate one candidate:
+Use this when you know the four entries of a `2x2` supercell matrix but not their order.
 
 ```bash
-python moire_cli.py make runs/<run_id>.dat --index 1 --interlayer 3.35
+cellstine moire find input/mos2.vasp input/mos2.vasp --matrix-values 1,2,3,4 --matrix-layer either --matrix-match-mode absolute
 ```
 
-Generate several candidates:
+### 5.4 N-Layer Search With `moire findn`
+
+`findn` is a bottom-reference multi-layer workflow. It supports three modes:
+
+- `base_shared`
+  This is the default and recommended mode. All upper layers must share the same base-layer supercell before they can be built together.
+- `base_independent`
+  Each upper layer is matched against the same bottom layer and reported independently.
+- `pairwise`
+  All layer pairs are searched. This is available, but not recommended for routine use.
+
+Basic search:
 
 ```bash
-python moire_cli.py make runs/<run_id>.dat --index 1,2,5-7 --interlayer 3.35 --output-dir output
+cellstine moire findn input/mos2.vasp input/graph.vasp input/mos2x.vasp --match-mode base_shared --nindex 12
 ```
 
-Override the slab thickness used during generation:
+Explicit per-layer angles:
 
 ```bash
-python moire_cli.py make runs/<run_id>.dat --index 1 --bottom-c-repeat 4 --top-c-repeat 2
+cellstine moire findn input/mos2.vasp input/graph.vasp input/mos2x.vasp --angles-by-layer "13.2;21.8"
 ```
 
-Parallel batch generation:
+Per-layer angle windows:
 
 ```bash
-python moire_cli.py make runs/<run_id>.dat --index 1,2,5-7 --workers 4
+cellstine moire findn input/mos2.vasp input/graph.vasp input/mos2x.vasp --min-angles 0,5 --max-angles 30,20
 ```
 
-## 6. General N-Layer Commensuration With `findn`
-
-`findn` is a **bottom-reference N-layer search**.
-
-It does not try to solve a completely free all-to-all commensuration problem at once.
-Instead it:
-
-1. searches each upper layer against the same bottom layer
-2. groups those pairwise candidates by the bottom-layer supercell
-3. keeps only combinations that share that same bottom-layer commensurate cell
-
-That is the scalable version of the earlier trilayer idea, and it now covers `3`, `4`, `5`, or more layers in the same command.
-
-Basic usage:
+Per-layer prestrain:
 
 ```bash
-python moire_cli.py findn input/substrate.vasp input/layer_b.vasp input/layer_c.vasp --nindex 12
+cellstine moire findn input/mos2.vasp input/graph.vasp input/mos2x.vasp --prestrain-modes none,biaxial,uniaxial --prestrain-values 0,0.01,0.005 --prestrain-axes a,a,b
 ```
 
-Four-layer example with explicit angle sets:
+Thicker bottom and upper slabs:
 
 ```bash
-python moire_cli.py findn input/substrate.vasp input/layer_b.vasp input/layer_c.vasp input/layer_d.vasp --angles 13.2 --angles 21.8 --angles 5.5
+cellstine moire findn input/mos2.vasp input/graph.vasp input/mos2x.vasp --bottom-c-repeat 4 --upper-c-repeats 2,3
 ```
 
-Use one shared min/max angle for all upper layers:
+### 5.5 Generation With `moire make` And `moire maken`
+
+Generate one bilayer candidate from a manifest:
 
 ```bash
-python moire_cli.py findn input/substrate.vasp input/layer_b.vasp input/layer_c.vasp --min-angle 0 --max-angle 30
+cellstine moire make runs/moire/<run-id>/manifest.json --indexes 1 --interlayer-distance 3.35
 ```
 
-Use separate min/max values for different upper layers:
+Generate several bilayer candidates:
 
 ```bash
-python moire_cli.py findn input/substrate.vasp input/layer_b.vasp input/layer_c.vasp --min-angle 0 --min-angle 5 --max-angle 30 --max-angle 20
+cellstine moire make runs/moire/<run-id>/manifest.json --indexes 1,2,5-7 --interlayer-distance 3.35 --workers 4
 ```
-
-Search with thicker slabs:
-
-```bash
-python moire_cli.py findn input/substrate.vasp input/layer_b.vasp input/layer_c.vasp input/layer_d.vasp --bottom-c-repeat 5 --upper-c-repeat 2 --upper-c-repeat 2 --upper-c-repeat 3
-```
-
-Use multiple workers inside each pairwise search:
-
-```bash
-python moire_cli.py findn input/substrate.vasp input/layer_b.vasp input/layer_c.vasp input/layer_d.vasp --workers 4
-```
-
-### `findn` Output
-
-`findn` writes a JSON results file to `runs/`.
-
-Each candidate records:
-
-- `strain_max`
-- `strain_mean`
-- `ratio_bottom`
-- `total_atoms`
-- the common bottom-layer `2x2` supercell matrix
-- an `upper_layers` list containing one entry per upper layer with its angle, strain, ratio, and `2x2` matrix
-
-## 7. N-Layer Generation With `maken`
 
 Generate one `N`-layer candidate:
 
 ```bash
-python moire_cli.py maken runs/<run_id>.json --index 1 --interlayer 3.35 --interlayer 3.35
-```
-
-Generate several candidates:
-
-```bash
-python moire_cli.py maken runs/<run_id>.json --index 1,2 --output-dir output --interlayer 3.35 --interlayer 3.35
-```
-
-Four-layer example with three independent gaps:
-
-```bash
-python moire_cli.py maken runs/<run_id>.json --index 1 --interlayer 3.0 --interlayer 3.2 --interlayer 3.4
-```
-
-Override the stored slab thickness:
-
-```bash
-python moire_cli.py maken runs/<run_id>.json --index 1 --bottom-c-repeat 5 --upper-c-repeat 2 --upper-c-repeat 2 --upper-c-repeat 3
+cellstine moire maken runs/moire/<run-id>/manifest.json --indexes 1 --interlayers 3.0,3.2
 ```
 
 Notes:
 
-- `maken` preserves the shared bottom-layer in-plane cell
-- `--interlayer` is repeated once per gap between consecutive layers
-- if you give a single `--interlayer`, it is reused for every gap
+- `make` uses `--interlayer-distance`
+- `maken` uses `--interlayers`
+- `maken` is only meaningful for shared-base candidates
+- manifests are often easier to use than hunting for the raw `.dat` or `.json` file yourself
 
-## 8. Extending Structures Along `c`
+### 5.6 Translation And Visualization
 
-CELLSTINE now lets you thicken each input structure along the `c` axis before atom counting and generation.
-
-This is useful for:
-
-- metal substrates where you want more slab layers
-- oxide or perovskite top slabs that should not be treated as single-layer sheets
-- multi-layer stacks where each component needs a different slab thickness
-
-Examples:
+Shift the upper layer in a stacked structure:
 
 ```bash
-python moire_cli.py find input/top.vasp input/bottom.vasp --top-c-repeat 2 --bottom-c-repeat 5
-python moire_cli.py make runs/<run_id>.dat --index 1 --top-c-repeat 2 --bottom-c-repeat 5
-python moire_cli.py findn input/substrate.vasp input/layer_b.vasp input/layer_c.vasp input/layer_d.vasp --bottom-c-repeat 5 --upper-c-repeat 2 --upper-c-repeat 2 --upper-c-repeat 3
+cellstine moire translate output/stacked.vasp --shift-direct 0.333,0.667
+cellstine moire translaten output/stacked.vasp --shift-cart 1.2,0.5
 ```
 
-These are repeat counts, not vacuum distances and not angstrom values.
-
-## 9. Experimental Surface Builder
-
-Build a `(100)` slab:
+Create a commensurate-results HTML viewer:
 
 ```bash
-python moire_cli.py surface input/bulk.vasp --miller 1,0,0 --layers 6 --vacuum 15
+cellstine moire visualize runs/moire/<run-id>/manifest.json --indices 1,2,3
 ```
 
-Build a `(110)` slab and repeat it in-plane:
+## 6. `adsorbate` Workflow
+
+### 6.1 Placement With `adsorbate place`
+
+The substrate input can be:
+
+- `substrate`
+- `patch`
+- `surface`
+- `slab`
+- `bulk`
+
+If you pass `bulk`, CELLSTINE first generates a surface slab through the `interface surface` machinery.
+
+Place on an existing slab:
 
 ```bash
-python moire_cli.py surface input/bulk.vasp --miller 1,1,0 --layers 4 --repeat-a 2 --repeat-b 2 --vacuum 18
+cellstine adsorbate place output/surface_Au_Bulk_111_layers4.vasp input/papd_gasp_mol2_final-coor_at_.vasp --site-type fcc --site-index 1 --height 2.3
 ```
 
-Current limitations:
-
-- this is marked experimental on purpose
-- it currently supports **orthogonal bulk cells only**
-- that means cubic, tetragonal, and orthorhombic-like inputs are the intended first target
-- it is not yet a general arbitrary-crystal slab generator
-
-## 10. Interactive Plotly Visualizer
-
-Create an HTML viewer for bilayer results:
+Place on a bulk-derived substrate:
 
 ```bash
-python moire_cli.py visualize runs/<run_id>.dat --index 1,2,3
+cellstine adsorbate place input/Au_Bulk.vasp input/papd_gasp_mol2_final-coor_at_.vasp --substrate-kind bulk --miller 1,1,1 --layers 4 --vacuum 15 --site-type top --height 2.0
 ```
 
-Create an HTML viewer for `findn` results:
+How placement works:
+
+- the site list is determined from the slab geometry
+- the molecule is rotated rigidly about its center of mass
+- the molecule is aligned in-plane to the chosen site
+- the closest molecule atom is then placed `--height` angstrom above the selected surface plane
+
+This means `--height` is a molecule-to-surface gap, not a COM height.
+
+### 6.2 Rigid Molecular Movement With `adsorbate move`
+
+Move a top-side molecule by Direct coordinates:
 
 ```bash
-python moire_cli.py visualize runs/<run_id>.json --index 1,2
+cellstine adsorbate move output/stacked.vasp --target-direct 0.5,0.5 --rotate 30
 ```
 
-The viewer:
-
-- snaps one frame at a time through the selected commensurate twist angles
-- supports free mouse rotation because it uses a Plotly `scatter3d` scene
-- draws the commensurate unit cell only on those saved commensurate frames
-- writes an HTML file into `output/` by default
-
-For `findn` results, the visualizer uses the saved bottom-reference stack order and interlayer gaps.
-If there are more than three layers, it currently reuses the `--interlayer-bottom-middle` value for all gaps beyond the first two.
-
-## 11. Molecule Stage In Detail
-
-Move a molecule by Direct center-of-mass coordinates:
+Move by Cartesian coordinates:
 
 ```bash
-python moire_cli.py molecule output/stacked.vasp --target-direct 0.5,0.5 --rotate 30 --reframe xy
+cellstine adsorbate move output/stacked.vasp --target-cart 12.0,8.0,10.5 --rotate 45
 ```
 
-Move a molecule by Cartesian center-of-mass coordinates:
+### 6.3 Molecular Assembly With `adsorbate assemble`
+
+This mode uses an experimental target lattice to search for a commensurate substrate supercell beneath it.
 
 ```bash
-python moire_cli.py molecule output/stacked.vasp --target-cart 12.0,8.0,10.5 --rotate 45
+cellstine adsorbate assemble input/Au_1x1.vasp --a-length 12.0 --b-length 12.0 --angle 60 --max-strain 0.05
 ```
 
-Notes:
+By default, strain above `5%` is rejected unless you override `--max-strain`.
 
-- the molecule is moved rigidly by its center of mass
-- rotation is about the moved center of mass around an axis parallel to `z`
-- reframing changes the visible periodic image, not the lattice itself
-
-## 12. Upper-Layer Shift Stage In Detail
-
-Shift the upper layer by Direct coordinates:
+### 6.4 Adsorbate Visualization
 
 ```bash
-python moire_cli.py layer output/stacked.vasp --shift-direct 0.333,0.667
+cellstine adsorbate visualize output/stacked.vasp
 ```
 
-Shift the upper layer by Cartesian coordinates:
+## 7. `interface` Workflow
+
+### 7.1 Surface Generation With `interface surface`
+
+Build an `Au(111)`-style slab:
 
 ```bash
-python moire_cli.py layer output/stacked.vasp --shift-cart 1.2,0.5
+cellstine interface surface input/Au_Bulk.vasp --miller 1,1,1 --layers 6 --vacuum 15
 ```
 
-## 13. Parallel Execution
+Use negative-index notation with `x`:
 
-CELLSTINE now keeps both the original serial mode and an optional multiprocessing mode.
+```bash
+cellstine interface surface input/Au_Bulk.vasp --miller 1,1,2x --layers 6 --vacuum 15
+```
 
-Rules of thumb:
+Repeat in plane:
 
-- `--workers 1` gives the original single-threaded behavior
-- use `--workers 2`, `--workers 4`, and so on when you have many angles to check
-- the biggest speedup usually comes from larger angle lists or larger `nindex` searches
-- batch `make` generation can also use multiple workers
+```bash
+cellstine interface surface input/Au_Bulk.vasp --miller 1,1,0 --layers 4 --repeat-a 2 --repeat-b 2
+```
 
-If a restricted environment blocks process-pool creation, CELLSTINE falls back to the serial path rather than failing outright.
+Apply an explicit in-plane `2x2` supercell matrix:
 
-## 14. Troubleshooting
+```bash
+cellstine interface surface input/Au_Bulk.vasp --miller 1,0,0 --layers 6 --supercell-matrix 2,0,0,3
+```
 
-If the finder returns too many candidates:
+Also write the adsorption-site report:
 
-- lower `--max-atoms`
-- tighten the strain cutoff
-- reduce the angle window
-- use explicit angle lists if you already know the interesting region
+```bash
+cellstine interface surface input/Au_Bulk.vasp --miller 1,1,1 --layers 6 --vacuum 15 --analyse-sites
+```
 
-If the slab builder fails:
+Current practical limitation:
 
-- check that the bulk input cell is orthogonal
-- start with simple Miller planes like `(100)` or `(110)`
+- use a conventional **orthogonal** bulk cell for the native surface builder
 
-If the visualizer HTML opens but appears blank:
+### 7.2 Site Analysis With `interface sites`
 
-- make sure the results file actually contains candidates
-- try `--index 1` first
-- if the output HTML is opened without internet access, the Plotly CDN script may not load
+Analyse an existing slab:
 
-## 15. Testing
+```bash
+cellstine interface sites output/surface_Au_Bulk_111_layers4.vasp
+cellstine interface sites output/surface_Au_Bulk_111_layers4.vasp --surface-side bottom
+```
+
+The site finder reports:
+
+- `top`
+- `bridge`
+- `hcp_hollow`
+- `fcc_hollow`
+- `hollow`
+- `fourfold_hollow`
+
+For close-packed surfaces such as `(111)`, the native classifier distinguishes `hcp` and `fcc` hollows by subsurface registry.
+
+### 7.3 Interface Construction With `interface build`
+
+Build from two existing slabs:
+
+```bash
+cellstine interface build output/bottom_slab.vasp output/top_slab.vasp --gap 3.0
+```
+
+Build from two bulks:
+
+```bash
+cellstine interface build input/Au_Bulk.vasp input/Au_Bulk.vasp --bottom-kind bulk --top-kind bulk --bottom-miller 1,1,1 --top-miller 1,0,0 --bottom-layers 6 --top-layers 4 --gap 3.0
+```
+
+Behavior:
+
+- the bottom slab is fixed
+- the top slab is strained in-plane to the bottom slab lattice
+- the final heterostructure is written as a VASP structure in `output/`
+
+### 7.4 Bulk Surface Matching With `interface match`
+
+Scan surface combinations from two bulks:
+
+```bash
+cellstine interface match input/Au_Bulk.vasp input/Au_Bulk.vasp --bottom-millers 1,1,1 1,0,0 --top-millers 1,1,1 1,1,0 --bottom-layers-list 4 6 --top-layers-list 4 6 --max-strain 0.05
+```
+
+Ranking priority:
+
+1. strain
+2. total atom count
+3. surface area
+
+This means smaller commensurate cells are preferred when strain is otherwise comparable.
+
+### 7.5 Interface Visualization
+
+```bash
+cellstine interface visualize output/interface.vasp
+```
+
+## 8. Python API Examples
+
+The grouped classes are also usable directly from Python.
+
+Bilayer moire:
+
+```python
+from cellstine import Moire
+
+result = Moire().find(
+    top_poscar="input/mos2.vasp",
+    bottom_poscar="input/mos2.vasp",
+    nindex=12,
+    explicit_angles=[13.15],
+)
+print(result.manifest_path)
+```
+
+Adsorbate placement:
+
+```python
+from cellstine import Molecule
+
+result = Molecule().place(
+    substrate_poscar="input/Au_Bulk.vasp",
+    molecule_poscar="input/papd_gasp_mol2_final-coor_at_.vasp",
+    substrate_kind="bulk",
+    miller="1,1,1",
+    layers=4,
+    site_type="fcc",
+    height=2.3,
+)
+print(result.artifacts["output_poscar"])
+```
+
+Surface generation:
+
+```python
+from cellstine import Surface
+
+result = Surface().surface(
+    bulk_poscar="input/Au_Bulk.vasp",
+    miller="1,1,1",
+    layers=6,
+    vacuum=15.0,
+    analyse_sites=True,
+)
+print(result.summary)
+```
+
+## 9. Optional Dependencies And Backends
+
+Current backend behavior:
+
+- `numpy` is required
+- VASP I/O is native and always available
+- XYZ conversion is handled natively
+- `pymatgen` is used first for broad-format conversion when installed
+- `plotly` is used for HTML visualizations
+- `matplotlib` is reserved for future fallback/static visualization backends
+
+Check installed versions:
+
+```bash
+cellstine --version
+```
+
+## 10. Testing
+
+Run the current test suite with:
 
 ```bash
 python -m unittest discover -s tests -q
 ```
+
+## 11. Troubleshooting
+
+If a moire search returns too many candidates:
+
+- tighten the strain cutoff
+- narrow the angle window
+- lower `--max-atoms`
+- use explicit angle lists where possible
+
+If slab generation fails:
+
+- check that the bulk input is conventional and orthogonal
+- start with simple Miller planes like `1,0,0`, `1,1,0`, or `1,1,1`
+
+If a visualization HTML opens blank:
+
+- verify the results file actually contains candidates
+- try a single index first
+- if you are offline, remember that the current HTML viewer uses the Plotly CDN
