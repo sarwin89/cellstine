@@ -455,6 +455,27 @@ def _surface_outward_normal(lattice: np.ndarray, surface_side: str) -> np.ndarra
     return normal if surface_side == "top" else -normal
 
 
+def _estimate_inplane_repeats_for_molecule(
+    substrate: io_mod.PoscarData,
+    molecule: io_mod.PoscarData,
+    *,
+    rotation_deg: float,
+    fit_padding: float,
+) -> tuple[int, int]:
+    molecule_species = _expand_species(molecule.species, molecule.counts)
+    positions = np.asarray(molecule.positions_cartesian, dtype=float)
+    com = center_of_mass_cartesian(positions, molecule_species)
+    centered = positions - com
+    if abs(float(rotation_deg)) > 0.0:
+        centered = centered @ lattice_mod.rotation_matrix_z(float(rotation_deg)).T
+    direct_delta = io_mod.cartesian_to_direct(centered, substrate.lattice)
+    spans = np.ptp(direct_delta[:, :2], axis=0) if direct_delta.size else np.zeros(2, dtype=float)
+    padding = max(0.0, float(fit_padding))
+    repeat_a = max(1, int(np.ceil(float(spans[0]) + 2.0 * padding)))
+    repeat_b = max(1, int(np.ceil(float(spans[1]) + 2.0 * padding)))
+    return repeat_a, repeat_b
+
+
 def _translate_molecule_to_site(
     molecule_positions: np.ndarray,
     molecule_species: Sequence[str],
@@ -540,10 +561,11 @@ def _combine_substrate_and_molecule(
 
 
 def _unwrap_periodic_axis_with_start(values: np.ndarray) -> tuple[np.ndarray, float]:
-    wrapped = np.mod(np.asarray(values, dtype=float), 1.0)
-    if wrapped.size <= 1:
-        return wrapped, 0.0
+    values_array = np.asarray(values, dtype=float)
+    if values_array.size <= 1:
+        return values_array.copy(), 0.0
 
+    wrapped = np.mod(values_array, 1.0)
     ordered = np.sort(wrapped)
     gaps = np.diff(np.concatenate((ordered, ordered[:1] + 1.0)))
     gap_index = int(np.argmax(gaps))
@@ -551,6 +573,14 @@ def _unwrap_periodic_axis_with_start(values: np.ndarray) -> tuple[np.ndarray, fl
 
     unwrapped = wrapped.copy()
     unwrapped[unwrapped < interval_start] += 1.0
+    raw_span = float(np.max(values_array) - np.min(values_array))
+    unwrapped_span = float(np.max(unwrapped) - np.min(unwrapped))
+    if (
+        raw_span > 1.0 + 1e-8
+        and raw_span - unwrapped_span > 1.0 + 1e-8
+        and not np.all((-1e-8 <= values_array) & (values_array <= 1.0 + 1e-8))
+    ):
+        return values_array.copy(), 0.0
     return unwrapped, interval_start
 
 
@@ -668,10 +698,20 @@ def place_molecule_on_site(
     neighbour_tolerance: float = 0.15,
     hollow_match_tolerance: float | None = None,
     reframe_axes: str | Sequence[str] | None = "xy",
+    auto_repeat_substrate: bool = False,
+    fit_padding: float = 0.15,
     output_path: str | None = None,
 ) -> AdsorbRun:
     substrate = io_mod.read_poscar(substrate_poscar)
     molecule = io_mod.read_poscar(molecule_poscar)
+    if auto_repeat_substrate:
+        repeat_a, repeat_b = _estimate_inplane_repeats_for_molecule(
+            substrate,
+            molecule,
+            rotation_deg=float(rotation_deg),
+            fit_padding=float(fit_padding),
+        )
+        substrate = surface_mod._repeat_structure_inplane(substrate, repeat_a, repeat_b)
 
     site_report = surface_mod.find_adsorption_sites(
         substrate,

@@ -8,7 +8,7 @@ from typing import Iterable, Sequence
 
 import numpy as np
 
-from ..core.base import Base, legacy_modules
+from ..core.base import Base, legacy_modules, run_output_suffix
 from ..core.lattice import lattice_mismatch_fraction
 from ..core.models import CommandResult
 from ..core.transforms import strained_copy
@@ -23,9 +23,24 @@ def parse_miller_notation(miller: str | Sequence[int]) -> tuple[int, int, int]:
         if len(values) != 3:
             raise ValueError("Miller indices must have exactly three values")
         return values[0], values[1], values[2]
-    tokens = [token.strip() for token in miller.replace(";", ",").split(",") if token.strip()]
+    raw = miller.strip()
+    if "," not in raw and ";" not in raw and " " not in raw:
+        tokens = []
+        index = 0
+        while index < len(raw):
+            char = raw[index]
+            if not char.isdigit():
+                raise ValueError("compact Miller notation must look like 111, 001, 1x11, or 111x")
+            token = char
+            if index + 1 < len(raw) and raw[index + 1].lower() == "x":
+                token += "x"
+                index += 1
+            tokens.append(token)
+            index += 1
+    else:
+        tokens = [token.strip() for token in miller.replace(";", ",").replace(" ", ",").split(",") if token.strip()]
     if len(tokens) != 3:
-        raise ValueError("Miller indices must be given as h,k,l such as 1,1,1 or 1,1,2x")
+        raise ValueError("Miller indices must be given as h,k,l such as 1,1,1 or compact notation such as 111, 001, or 111x")
     values = []
     for token in tokens:
         if token.lower().endswith("x"):
@@ -35,6 +50,12 @@ def parse_miller_notation(miller: str | Sequence[int]) -> tuple[int, int, int]:
     if values == [0, 0, 0]:
         raise ValueError("Miller indices cannot all be zero")
     return int(values[0]), int(values[1]), int(values[2])
+
+
+def _safe_token(value: object) -> str:
+    text = str(value).strip().replace("-", "m").replace(".", "p")
+    safe = [char if char.isalnum() or char in {"_", "m", "p"} else "_" for char in text]
+    return "".join(safe).strip("_") or "x"
 
 
 def _expand_species(record) -> list[str]:
@@ -208,7 +229,8 @@ class Interface(Base):
         strained_top = strained_copy(top, bottom.lattice)
         final_lattice, positions_direct, counts, species, flags = _stack_structures(bottom, strained_top, gap=float(gap))
         if output_path is None:
-            destination = self.output_root / f"{Path(bottom_path).stem}__{Path(top_path).stem}_interface.vasp"
+            output_suffix = run_output_suffix(run_id)
+            destination = self.output_root / f"interface_gap{_safe_token(f'{float(gap):.2f}')}_{output_suffix}.vasp"
         else:
             destination = Path(output_path).resolve()
         output_record = bottom.copy()

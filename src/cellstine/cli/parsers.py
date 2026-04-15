@@ -84,16 +84,22 @@ def build_parser() -> argparse.ArgumentParser:
         formatter_class=HelpFormatter,
         description=(
             f"{APP_NAME} | {APP_EXPANSION}\n\n"
-            "Three grouped workflows are available:\n"
+            "Four grouped workflows are available:\n"
             "  moire      Build commensurate moire supercells\n"
             "  adsorbate  Place and manipulate molecules on substrates\n"
-            "  interface  Build surfaces and heterointerfaces from bulk or slab inputs"
+            "  interface  Build surfaces and heterointerfaces from bulk or slab inputs\n"
+            "  defect     Analyse and generate vacancy, substitution, interstitial, and adatom defects"
         ),
     )
     parser.add_argument("--version", action="store_true", help="show package and optional dependency versions")
     groups = parser.add_subparsers(dest="group")
 
-    moire = groups.add_parser("moire", formatter_class=HelpFormatter, help="moire supercell construction")
+    moire = groups.add_parser(
+        "moire",
+        formatter_class=HelpFormatter,
+        help="moire supercell construction",
+        description="Moire supercell construction. Run `cellstine moire` with no stage to start the guided workflow.",
+    )
     moire_sub = moire.add_subparsers(dest="stage")
 
     moire_find = moire_sub.add_parser(
@@ -125,6 +131,7 @@ def build_parser() -> argparse.ArgumentParser:
     moire_find.add_argument("--prestrain-bottom-mode", choices=["none", "biaxial", "uniaxial"], default="none")
     moire_find.add_argument("--prestrain-bottom-value", type=float, default=0.0)
     moire_find.add_argument("--prestrain-bottom-axis", default=None)
+    moire_find.add_argument("--preview-limit", type=int, default=10, help="number of lowest-strain candidates to print after the search; use 0 to hide")
 
     moire_findn = moire_sub.add_parser("findn", formatter_class=HelpFormatter, help="search N-layer commensuration candidates")
     moire_findn.add_argument("bottom_poscar")
@@ -144,6 +151,7 @@ def build_parser() -> argparse.ArgumentParser:
     moire_findn.add_argument("--prestrain-modes", type=parse_prestrain_modes, default=None, help="comma-separated prestrain modes for bottom then upper layers")
     moire_findn.add_argument("--prestrain-values", type=parse_optional_float_list, default=None, help="comma-separated prestrain magnitudes for bottom then upper layers")
     moire_findn.add_argument("--prestrain-axes", type=parse_string_list, default=None, help="comma-separated strain axes for bottom then upper layers")
+    moire_findn.add_argument("--preview-limit", type=int, default=10, help="number of lowest-strain candidates to print after the search; use 0 to hide")
 
     moire_make = moire_sub.add_parser("make", formatter_class=HelpFormatter, help="generate bilayer supercells from saved results")
     moire_make.add_argument("results_file")
@@ -168,12 +176,29 @@ def build_parser() -> argparse.ArgumentParser:
     moire_translaten.add_argument("--shift-cart", type=parse_float_vector, default=None)
     moire_translaten.add_argument("--shift-direct", type=parse_float_vector, default=None)
 
-    moire_visualize = moire_sub.add_parser("visualize", formatter_class=HelpFormatter, help="build a moire visualization HTML")
+    moire_visualize = moire_sub.add_parser(
+        "visualize",
+        formatter_class=HelpFormatter,
+        help="plot moire search results",
+        description=(
+            "Plot moire search results. The default is a Matplotlib PNG summary with labelled axes, "
+            "legends, strain-vs-angle, atom-count, ranking, and angle-distribution panels. "
+            "Use --plotly when you specifically want the optional interactive 3D HTML viewer."
+        ),
+    )
     moire_visualize.add_argument("results_file")
     moire_visualize.add_argument("--indices", type=parse_index_spec, default=None)
     moire_visualize.add_argument("--interlayer", type=float, default=3.35)
+    moire_visualize.add_argument("--output", default=None, help="output PNG path by default, or HTML path with --plotly")
+    moire_visualize.add_argument("--plotly", action="store_true", help="write the optional interactive 3D HTML viewer instead of the default Matplotlib PNG")
+    moire_visualize.add_argument("--show", action="store_true", help="also open the Matplotlib window after saving when a GUI backend is available")
 
-    adsorbate = groups.add_parser("adsorbate", formatter_class=HelpFormatter, help="molecule on substrate workflows")
+    adsorbate = groups.add_parser(
+        "adsorbate",
+        formatter_class=HelpFormatter,
+        help="molecule on substrate workflows",
+        description="Molecule-on-substrate workflows. Run `cellstine adsorbate` with no stage to start the guided workflow.",
+    )
     adsorbate_sub = adsorbate.add_subparsers(dest="stage")
 
     ads_place = adsorbate_sub.add_parser("place", formatter_class=HelpFormatter, help="place a molecule on a substrate site")
@@ -183,7 +208,12 @@ def build_parser() -> argparse.ArgumentParser:
     ads_place.add_argument("--miller", default="1,1,1", help="surface Miller indices for bulk inputs")
     ads_place.add_argument("--layers", type=int, default=4)
     ads_place.add_argument("--vacuum", type=float, default=15.0)
-    ads_place.add_argument("--site-type", required=True, choices=["top", "bridge", "hcp", "fcc", "hollow", "fourfold_hollow"])
+    ads_place.add_argument("--substrate-repeat-a", type=int, default=1, help="repeat a bulk-derived substrate along surface a before placement")
+    ads_place.add_argument("--substrate-repeat-b", type=int, default=1, help="repeat a bulk-derived substrate along surface b before placement")
+    ads_place.add_argument("--substrate-supercell-matrix", type=parse_int_matrix, default=None, help="2x2 in-plane matrix for a bulk-derived substrate, e.g. 1,1,0,2")
+    ads_place.add_argument("--auto-repeat-substrate", action="store_true", help="enlarge the selected substrate if the molecule cannot fit in one periodic image")
+    ads_place.add_argument("--fit-padding", type=float, default=0.15, help="fractional in-plane padding used with --auto-repeat-substrate")
+    ads_place.add_argument("--site-type", required=True, choices=["top", "bridge", "hcp", "hcp_hollow", "fcc", "fcc_hollow", "hollow", "fourfold_hollow"])
     ads_place.add_argument("--site-index", type=int, default=1)
     ads_place.add_argument("--height", type=float, default=2.5, help="height above the top layer in angstrom")
     ads_place.add_argument("--rotate", type=float, default=0.0, help="rotation about the c axis in degrees")
@@ -194,23 +224,48 @@ def build_parser() -> argparse.ArgumentParser:
     ads_move.add_argument("--target-direct", type=parse_float_vector, default=None)
     ads_move.add_argument("--rotate", type=float, default=0.0)
 
-    ads_assemble = adsorbate_sub.add_parser("assemble", formatter_class=HelpFormatter, help="find a commensurate substrate cell for a molecular assembly lattice")
+    ads_assemble = adsorbate_sub.add_parser(
+        "assemble",
+        formatter_class=HelpFormatter,
+        help="match a substrate cell to an experimental molecular assembly lattice",
+        description=(
+            "Advanced search mode: build a synthetic molecular lattice from a, b, and angle, then find "
+            "substrate supercells that can support that periodic assembly. This does not place a molecule."
+        ),
+    )
     ads_assemble.add_argument("substrate_poscar")
     ads_assemble.add_argument("--a-length", type=float, required=True, help="target a length in angstrom")
     ads_assemble.add_argument("--b-length", type=float, default=None, help="target b length in angstrom; defaults to a")
     ads_assemble.add_argument("--angle", type=float, default=60.0, help="target in-plane angle in degrees")
     ads_assemble.add_argument("--nindex", type=int, default=12)
     ads_assemble.add_argument("--max-strain", type=float, default=0.05, help="maximum allowed strain as a fraction")
+    ads_assemble.add_argument("--preview-limit", type=int, default=10, help="number of lowest-strain candidates to print after the search; use 0 to hide")
 
-    ads_visualize = adsorbate_sub.add_parser("visualize", formatter_class=HelpFormatter, help="visualize a slab or adsorbate POSCAR")
+    ads_visualize = adsorbate_sub.add_parser(
+        "visualize",
+        formatter_class=HelpFormatter,
+        help="plot a slab or adsorbate POSCAR",
+        description=(
+            "Plot a slab or adsorbate structure. The default is a Matplotlib multi-view PNG with x-y, x-z, y-z, "
+            "and 3D overview panels. Use --plotly for the optional interactive 3D HTML viewer."
+        ),
+    )
     ads_visualize.add_argument("structure_path")
+    ads_visualize.add_argument("--output", default=None, help="output PNG path by default, or HTML path with --plotly")
+    ads_visualize.add_argument("--plotly", action="store_true", help="write the optional interactive 3D HTML viewer instead of the default Matplotlib PNG")
+    ads_visualize.add_argument("--show", action="store_true", help="also open the Matplotlib window after saving when a GUI backend is available")
 
-    interface = groups.add_parser("interface", formatter_class=HelpFormatter, help="surface and heterointerface workflows")
+    interface = groups.add_parser(
+        "interface",
+        formatter_class=HelpFormatter,
+        help="surface and heterointerface workflows",
+        description="Surface and heterointerface workflows. Run `cellstine interface` with no stage to start the guided workflow.",
+    )
     interface_sub = interface.add_subparsers(dest="stage")
 
     int_surface = interface_sub.add_parser("surface", formatter_class=HelpFormatter, help="build a slab from a bulk structure")
     int_surface.add_argument("bulk_poscar")
-    int_surface.add_argument("--miller", required=True, help="Miller indices like 1,1,1 or 1,1,2x")
+    int_surface.add_argument("--miller", required=True, help="Miller indices like 111, 001, 111x, 1,1,1, or 1,1,2x")
     int_surface.add_argument("--layers", type=int, default=4)
     int_surface.add_argument("--vacuum", type=float, default=15.0)
     int_surface.add_argument("--repeat-a", type=int, default=1)
@@ -245,7 +300,82 @@ def build_parser() -> argparse.ArgumentParser:
     int_match.add_argument("--vacuum", type=float, default=15.0)
     int_match.add_argument("--max-strain", type=float, default=0.05)
 
-    int_visualize = interface_sub.add_parser("visualize", formatter_class=HelpFormatter, help="visualize a slab or interface POSCAR")
+    int_visualize = interface_sub.add_parser(
+        "visualize",
+        formatter_class=HelpFormatter,
+        help="plot a slab or interface POSCAR",
+        description=(
+            "Plot a slab or interface structure. The default is a Matplotlib multi-view PNG with x-y, x-z, y-z, "
+            "and 3D overview panels. Use --plotly for the optional interactive 3D HTML viewer."
+        ),
+    )
     int_visualize.add_argument("structure_path")
+    int_visualize.add_argument("--output", default=None, help="output PNG path by default, or HTML path with --plotly")
+    int_visualize.add_argument("--plotly", action="store_true", help="write the optional interactive 3D HTML viewer instead of the default Matplotlib PNG")
+    int_visualize.add_argument("--show", action="store_true", help="also open the Matplotlib window after saving when a GUI backend is available")
+
+    defect = groups.add_parser(
+        "defect",
+        formatter_class=HelpFormatter,
+        help="defect-site analysis and generation",
+        description=(
+            "Defect workflows. Run `cellstine defect` with no stage to start the guided workflow. "
+            "The default output is one POSCAR per inequivalent selected site."
+        ),
+    )
+    defect_sub = defect.add_subparsers(dest="stage")
+
+    defect_analyse = defect_sub.add_parser(
+        "analyse",
+        formatter_class=HelpFormatter,
+        help="analyse inequivalent defect sites in a structure",
+        description=(
+            "Analyse inequivalent atom sites, approximate native interstitial candidates, and surface adatom sites when relevant. "
+            "For bulk equivalence, --backend auto uses pymatgen when installed; surface/slab analysis prefers native layer-aware grouping."
+        ),
+    )
+    defect_analyse.add_argument("structure")
+    defect_analyse.add_argument("--structure-kind", choices=["auto", "bulk", "surface", "slab", "molecule-on-substrate"], default="auto")
+    defect_analyse.add_argument("--backend", choices=["auto", "native", "pymatgen"], default="auto")
+    defect_analyse.add_argument("--surface-side", choices=["top", "bottom"], default="top")
+    defect_analyse.add_argument("--layer-tolerance", type=float, default=0.35, help="layer grouping tolerance in angstrom")
+    defect_analyse.add_argument("--symprec", type=float, default=0.01, help="pymatgen symmetry tolerance in fractional-coordinate units")
+
+    defect_generate = defect_sub.add_parser(
+        "generate",
+        formatter_class=HelpFormatter,
+        help="generate defect POSCARs from an analysis or structure",
+        description=(
+            "Generate inequivalent defect structures. ANALYSIS_OR_STRUCTURE may be a defect manifest, "
+            "a defect_analysis.json file, or a raw POSCAR/CONTCAR/.vasp structure."
+        ),
+    )
+    defect_generate.add_argument("analysis_or_structure")
+    defect_generate.add_argument("--defect-type", required=True, choices=["vacancy", "substitution", "interstitial", "adatom", "antisite"])
+    defect_generate.add_argument("--site-ids", type=parse_string_list, default=None, help="comma-separated site IDs to generate; defaults to all valid inequivalent sites")
+    defect_generate.add_argument("--species", default=None, help="inserted species for interstitial/adatom, or replacement fallback for substitution")
+    defect_generate.add_argument("--substitution-species", default=None, help="replacement species for substitution or antisite defects")
+    defect_generate.add_argument("--original-species", default=None, help="restrict atom-site defects to this original species")
+    defect_generate.add_argument("--generate", choices=["inequivalent"], default="inequivalent")
+    defect_generate.add_argument("--height", type=float, default=2.5, help="adatom height above the detected surface site in angstrom")
+    defect_generate.add_argument("--output-dir", default=None)
+    defect_generate.add_argument("--structure-kind", choices=["auto", "bulk", "surface", "slab", "molecule-on-substrate"], default="auto")
+    defect_generate.add_argument("--backend", choices=["auto", "native", "pymatgen"], default="auto")
+    defect_generate.add_argument("--surface-side", choices=["top", "bottom"], default="top")
+    defect_generate.add_argument("--layer-tolerance", type=float, default=0.35, help="layer grouping tolerance in angstrom")
+    defect_generate.add_argument("--symprec", type=float, default=0.01, help="pymatgen symmetry tolerance in fractional-coordinate units")
+
+    defect_preview = defect_sub.add_parser(
+        "preview",
+        formatter_class=HelpFormatter,
+        help="print a compact table of available defect sites",
+    )
+    defect_preview.add_argument("analysis_or_structure")
+    defect_preview.add_argument("--limit", type=int, default=30)
+    defect_preview.add_argument("--structure-kind", choices=["auto", "bulk", "surface", "slab", "molecule-on-substrate"], default="auto")
+    defect_preview.add_argument("--backend", choices=["auto", "native", "pymatgen"], default="auto")
+    defect_preview.add_argument("--surface-side", choices=["top", "bottom"], default="top")
+    defect_preview.add_argument("--layer-tolerance", type=float, default=0.35, help="layer grouping tolerance in angstrom")
+    defect_preview.add_argument("--symprec", type=float, default=0.01, help="pymatgen symmetry tolerance in fractional-coordinate units")
 
     return parser

@@ -47,14 +47,26 @@ def legacy_modules() -> SimpleNamespace:
     )
 
 
-def _slug(value: str) -> str:
+def _slug(value: str, max_length: int = 64) -> str:
     safe = []
     for char in value:
         if char.isalnum() or char in {"-", "_"}:
             safe.append(char)
         else:
             safe.append("_")
-    return "".join(safe).strip("_") or "run"
+    slug = "".join(safe).strip("_") or "run"
+    if len(slug) > int(max_length):
+        slug = slug[: int(max_length)].rstrip("_-") or "run"
+    return slug
+
+
+def run_output_suffix(run_id: str) -> str:
+    """Return the short unique suffix used at the end of generated filenames."""
+
+    parts = str(run_id).split("_")
+    if len(parts) >= 2 and parts[-2].isdigit() and len(parts[-2]) == 2:
+        return f"{parts[-2]}_{parts[-1]}"
+    return parts[-1]
 
 
 def _json_ready(value: Any) -> Any:
@@ -93,12 +105,18 @@ class Base:
         return self.dependency_manager.choose_backend(self.backend, feature=feature)
 
     def create_run_dir(self, stage: str, label: str | None = None) -> tuple[str, Path]:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        run_id = f"{timestamp}_{_slug(stage)}"
+        timestamp = datetime.now().strftime("%y%m%d-%H%M")
+        base_id = _slug(stage)
         if label:
-            run_id = f"{run_id}_{_slug(label)}"
+            base_id = f"{base_id}_{_slug(label)}"
+        run_id = f"{base_id}_{timestamp}"
         run_dir = self.runs_root / self.workflow_name / run_id
-        run_dir.mkdir(parents=True, exist_ok=True)
+        suffix = 1
+        while run_dir.exists():
+            suffix += 1
+            run_id = f"{base_id}_{suffix:02d}_{timestamp}"
+            run_dir = self.runs_root / self.workflow_name / run_id
+        run_dir.mkdir(parents=True, exist_ok=False)
         return run_id, run_dir
 
     def write_manifest(
@@ -138,7 +156,7 @@ class Base:
         return CommandResult(
             manifest_path=manifest_path.resolve(),
             run_dir=run_dir.resolve(),
-            artifacts={key: str(value) for key, value in _json_ready(artifacts).items()},
+            artifacts=_json_ready(artifacts),
             summary=_json_ready(summary),
             payload=_json_ready(payload or {}),
         )

@@ -18,10 +18,12 @@ pip-wheel-metadata/
 
 # Virtual environments
 .venv/
+.venv*/
 venv/
 env/
 
 # Local scratch files
+.codex_pip_tmp/
 moire_test_*/
 tmp*/
 *.tmp
@@ -41,3 +43,11 @@ runs/*
 *.pdf
 *.png
 *.gif
+
+# Documentation assets
+!docs/
+!docs/logo.png
+!docs/logo.jpg
+!docs/logo.jpeg
+!docs/logo.webp
+!docs/logo.svg

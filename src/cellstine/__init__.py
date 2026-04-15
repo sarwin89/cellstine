@@ -4,6 +4,7 @@ from .adsorbate.adsorbate import Adsorbate
 from .adsorbate.molecule import Molecule
 from .core.dependencies import DependencyManager
 from .core.manifests import RunManifest
+from .defect.defect import Defect
 from .interface.interface import Interface
 from .interface.surface import Surface
 from .io.converters import StructureConverter
@@ -14,6 +15,7 @@ from .visualize.visualize import Visualize
 
 __all__ = [
     "Adsorbate",
+    "Defect",
     "DependencyManager",
     "Interface",
     "Molecule",

@@ -5,12 +5,19 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Sequence
 
-from ..core.base import Base, legacy_modules
+from ..core.base import Base, legacy_modules, run_output_suffix
 from ..core.lattice import build_target_lattice
 from ..core.models import CommandResult
+from ..core.previews import format_bilayer_candidates
 from ..interface.surface import Surface
 from ..io.converters import StructureConverter
 from ..io.vasp import VaspIO
+
+
+def _safe_token(value: object) -> str:
+    text = str(value).strip().replace("-", "m").replace(".", "p")
+    safe = [char if char.isalnum() or char in {"_", "m", "p"} else "_" for char in text]
+    return "".join(safe).strip("_") or "x"
 
 
 class Adsorbate(Base):
@@ -31,6 +38,9 @@ class Adsorbate(Base):
         miller: str | Sequence[int] | None = None,
         layers: int = 4,
         vacuum: float = 15.0,
+        repeat_a: int = 1,
+        repeat_b: int = 1,
+        supercell_matrix: Sequence[int] | None = None,
     ) -> tuple[str, dict[str, object]]:
         resolved_kind = str(substrate_kind).lower()
         if resolved_kind in {"slab", "substrate", "patch", "surface"}:
@@ -47,6 +57,9 @@ class Adsorbate(Base):
             miller=miller or "1,1,1",
             layers=int(layers),
             vacuum=float(vacuum),
+            repeat_a=int(repeat_a),
+            repeat_b=int(repeat_b),
+            supercell_matrix=supercell_matrix,
         )
         return slab_result.artifacts["slab_poscar"], {"substrate_kind": "bulk", "surface_manifest": str(slab_result.manifest_path)}
 
@@ -59,6 +72,11 @@ class Adsorbate(Base):
         miller: str | Sequence[int] | None = None,
         layers: int = 4,
         vacuum: float = 15.0,
+        substrate_repeat_a: int = 1,
+        substrate_repeat_b: int = 1,
+        substrate_supercell_matrix: Sequence[int] | None = None,
+        auto_repeat_substrate: bool = False,
+        fit_padding: float = 0.15,
         site_type: str,
         site_index: int = 1,
         height: float = 2.5,
@@ -68,22 +86,43 @@ class Adsorbate(Base):
     ) -> CommandResult:
         backend = self.choose_backend(feature="adsorbate.place")
         run_id, run_dir = self.create_run_dir("place", f"{Path(substrate_poscar).stem}_{Path(molecule_poscar).stem}")
+        output_suffix = run_output_suffix(run_id)
+        molecule_path = Path(molecule_poscar).resolve()
+        if molecule_path.suffix.lower() not in {".vasp", ".poscar", ".contcar", ""}:
+            converted_molecule_path = run_dir / f"{_safe_token(molecule_path.stem)}_molecule.vasp"
+            molecule_record = self.converter.read(str(molecule_path), canonicalize=False)
+            self.vasp_io.write(molecule_record, str(converted_molecule_path), positions_are_cartesian=False, wrap_positions=False)
+            resolved_molecule_path = converted_molecule_path
+        else:
+            resolved_molecule_path = molecule_path
         resolved_substrate, extra_inputs = self._resolve_substrate(
             substrate_path=substrate_poscar,
             substrate_kind=substrate_kind,
             miller=miller,
             layers=layers,
             vacuum=vacuum,
+            repeat_a=substrate_repeat_a,
+            repeat_b=substrate_repeat_b,
+            supercell_matrix=substrate_supercell_matrix,
+        )
+        resolved_output_path = output_path or str(
+            self.output_root
+            / (
+                f"adsorbate_{_safe_token(site_type)}{int(site_index):02d}_h{_safe_token(f'{float(height):.2f}')}"
+                f"_rot{_safe_token(f'{float(rotation_deg):.2f}')}_{output_suffix}.vasp"
+            )
         )
         run = legacy_modules().molecule_stage.place_molecule_on_site(
             substrate_poscar=resolved_substrate,
-            molecule_poscar=str(Path(molecule_poscar).resolve()),
+            molecule_poscar=str(resolved_molecule_path),
             site_type=str(site_type),
             site_index=int(site_index),
             height=float(height),
             rotation_deg=float(rotation_deg),
             surface_side=str(surface_side),
-            output_path=output_path,
+            auto_repeat_substrate=bool(auto_repeat_substrate),
+            fit_padding=float(fit_padding),
+            output_path=resolved_output_path,
         )
         manifest_path = self.write_manifest(
             stage="place",
@@ -92,7 +131,8 @@ class Adsorbate(Base):
             backend=backend,
             inputs={
                 "substrate_poscar": str(Path(substrate_poscar).resolve()),
-                "molecule_poscar": str(Path(molecule_poscar).resolve()),
+                "molecule_poscar": str(molecule_path),
+                "resolved_molecule_poscar": str(resolved_molecule_path),
                 **extra_inputs,
             },
             parameters={
@@ -101,15 +141,25 @@ class Adsorbate(Base):
                 "height": float(height),
                 "rotation_deg": float(rotation_deg),
                 "surface_side": str(surface_side),
+                "substrate_repeat_a": int(substrate_repeat_a),
+                "substrate_repeat_b": int(substrate_repeat_b),
+                "substrate_supercell_matrix": list(substrate_supercell_matrix or []),
+                "auto_repeat_substrate": bool(auto_repeat_substrate),
+                "fit_padding": float(fit_padding),
             },
             artifacts={"output_poscar": run.output_path},
-            summary={"site_type": run.site_type, "site_index": run.site_index, "molecule_atom_count": run.molecule_atom_count},
+            summary={
+                "site_type": run.site_type,
+                "site_index": run.site_index,
+                "molecule_atom_count": run.molecule_atom_count,
+                "substrate_atom_count": run.substrate_atom_count,
+            },
         )
         return self.result(
             manifest_path=manifest_path,
             run_dir=run_dir,
             artifacts={"output_poscar": run.output_path},
-            summary={"site_type": run.site_type, "site_index": run.site_index},
+            summary={"site_type": run.site_type, "site_index": run.site_index, "substrate_atom_count": run.substrate_atom_count},
             payload={"site_direct": run.site_direct, "site_cartesian": run.site_cartesian},
         )
 
@@ -127,9 +177,21 @@ class Adsorbate(Base):
     ) -> CommandResult:
         backend = self.choose_backend(feature="adsorbate.move")
         run_id, run_dir = self.create_run_dir("move", Path(poscar_path).stem)
+        output_suffix = run_output_suffix(run_id)
+        target_token = "same"
+        if target_cartesian is not None:
+            target_token = "cart_" + "_".join(_safe_token(f"{float(value):.3f}") for value in target_cartesian)
+        if target_direct is not None:
+            target_token = "direct_" + "_".join(_safe_token(f"{float(value):.3f}") for value in target_direct)
+        resolved_output_path = output_path or str(
+            self.output_root
+            / (
+                f"move_{target_token}_rot{_safe_token(f'{float(rotation_deg):.2f}')}_{output_suffix}.vasp"
+            )
+        )
         run = legacy_modules().molecule_stage.transform_top_molecule(
             poscar_path=str(Path(poscar_path).resolve()),
-            output_path=output_path,
+            output_path=resolved_output_path,
             target_cartesian=target_cartesian,
             target_direct=target_direct,
             rotation_deg=float(rotation_deg),
@@ -166,6 +228,7 @@ class Adsorbate(Base):
         max_strain: float = 0.05,
         max_atoms: int | None = 2000,
         output_root: str | None = None,
+        preview_limit: int = 10,
     ) -> CommandResult:
         backend = self.choose_backend(feature="adsorbate.assemble")
         run_id, run_dir = self.create_run_dir("assemble", Path(substrate_poscar).stem)
@@ -206,9 +269,11 @@ class Adsorbate(Base):
             artifacts={"target_poscar": target_path, "results_dat": run.dat_path},
             summary={"candidate_count": len(run.candidates)},
         )
+        preview = format_bilayer_candidates(run.candidates, limit=int(preview_limit)) if int(preview_limit) > 0 else ""
         return self.result(
             manifest_path=manifest_path,
             run_dir=run_dir,
             artifacts={"target_poscar": target_path, "results_dat": run.dat_path},
             summary={"candidate_count": len(run.candidates)},
+            payload={"candidate_preview": preview},
         )

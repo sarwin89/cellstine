@@ -6,9 +6,10 @@ from itertools import combinations
 from pathlib import Path
 from typing import Sequence
 
-from ..core.base import legacy_modules
+from ..core.base import legacy_modules, run_output_suffix
 from ..core.lattice import apply_inplane_prestrain
 from ..core.models import CommandResult, PrestrainConfig
+from ..core.previews import format_bilayer_candidates, format_nlayer_candidates
 from .moire import Moire
 
 
@@ -38,6 +39,7 @@ class Supermoire(Moire):
         upper_c_repeats: Sequence[int] | None = None,
         workers: int = 1,
         prestrains: Sequence[PrestrainConfig] | None = None,
+        preview_limit: int = 10,
     ) -> CommandResult:
         backend = self.choose_backend(feature="moire.findn")
         resolved_mode = str(match_mode).lower()
@@ -96,11 +98,16 @@ class Supermoire(Moire):
             )
             artifacts = {"results_json": run.result_path}
             summary = {"candidate_count": len(run.candidates), "match_mode": resolved_mode}
-            payload = {"result_path": str(run.result_path), "layer_count": len(upper_poscars) + 1}
+            payload = {
+                "result_path": str(run.result_path),
+                "layer_count": len(upper_poscars) + 1,
+                "candidate_preview": format_nlayer_candidates(run.candidates, limit=int(preview_limit)) if int(preview_limit) > 0 else "",
+            }
         elif resolved_mode == "base_independent":
             artifacts = {}
             summary = {"match_mode": resolved_mode, "layer_count": len(upper_poscars) + 1}
-            payload = {"result_paths": []}
+            payload = {"result_paths": [], "candidate_preview": ""}
+            preview_sections = []
             for index, (upper_path, upper, upper_lattice) in enumerate(zip(upper_poscars, uppers, upper_lattices), start=1):
                 subdir = run_dir / f"upper_{index:02d}"
                 subdir.mkdir(parents=True, exist_ok=True)
@@ -129,10 +136,14 @@ class Supermoire(Moire):
                 artifacts[f"results_dat_upper_{index}"] = run.dat_path
                 summary[f"candidate_count_upper_{index}"] = len(run.candidates)
                 payload["result_paths"].append(str(run.dat_path))
+                if int(preview_limit) > 0:
+                    preview_sections.append(format_bilayer_candidates(run.candidates, limit=int(preview_limit), title=f"Upper layer {index} candidates"))
+            payload["candidate_preview"] = "\n\n".join(preview_sections)
         elif resolved_mode == "pairwise":
             artifacts = {}
             summary = {"match_mode": resolved_mode, "pair_count": 0}
-            payload = {"result_paths": []}
+            payload = {"result_paths": [], "candidate_preview": ""}
+            preview_sections = []
             structures = [bottom] + uppers
             lattices = [bottom_lattice] + upper_lattices
             paths = [bottom_poscar] + list(upper_poscars)
@@ -163,6 +174,15 @@ class Supermoire(Moire):
                 artifacts[f"results_dat_pair_{pair_index}"] = run.dat_path
                 payload["result_paths"].append(str(run.dat_path))
                 summary["pair_count"] = int(summary["pair_count"]) + 1
+                if int(preview_limit) > 0:
+                    preview_sections.append(
+                        format_bilayer_candidates(
+                            run.candidates,
+                            limit=int(preview_limit),
+                            title=f"Pair {i_value + 1}-{j_value + 1} candidates",
+                        )
+                    )
+            payload["candidate_preview"] = "\n\n".join(preview_sections)
         else:
             raise ValueError("findn match_mode must be one of: base_shared, base_independent, pairwise")
 
@@ -198,15 +218,23 @@ class Supermoire(Moire):
         backend = self.choose_backend(feature="moire.maken")
         resolved_results = self.resolve_results_file(results_file, artifact_keys=("results_json",))
         run_id, run_dir = self.create_run_dir("maken", Path(resolved_results).stem)
+        output_suffix = run_output_suffix(run_id)
+        resolved_output_dir = output_dir or str(self.output_root / run_id)
         runs = legacy_modules().maken_stage.generate_many_from_results(
             resolved_results,
             indexes=[int(value) for value in indexes],
             interlayers=[float(value) for value in interlayers],
-            output_dir=output_dir or str(self.output_root),
+            output_dir=resolved_output_dir,
             bottom_c_repeat=bottom_c_repeat,
             upper_c_repeats=upper_c_repeats,
             zfix=zfix,
         )
+        if output_dir is None:
+            for run in runs:
+                current_path = Path(run.output_path)
+                renamed_path = current_path.with_name(f"{current_path.stem}_{output_suffix}{current_path.suffix}")
+                current_path.replace(renamed_path)
+                run.output_path = renamed_path.resolve()
         artifact_paths = [str(run.output_path) for run in runs]
         manifest_path = self.write_manifest(
             stage="maken",

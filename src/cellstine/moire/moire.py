@@ -5,10 +5,17 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Sequence
 
-from ..core.base import Base, legacy_modules
+from ..core.base import Base, legacy_modules, run_output_suffix
 from ..core.lattice import apply_inplane_prestrain
 from ..core.models import CommandResult, PrestrainConfig
+from ..core.previews import format_bilayer_candidates
 from ..io.converters import StructureConverter
+
+
+def _safe_token(value: object) -> str:
+    text = str(value).strip().replace("-", "m").replace(".", "p")
+    safe = [char if char.isalnum() or char in {"_", "m", "p"} else "_" for char in text]
+    return "".join(safe).strip("_") or "x"
 
 
 class Moire(Base):
@@ -51,6 +58,7 @@ class Moire(Base):
         workers: int = 1,
         prestrain_top: PrestrainConfig | None = None,
         prestrain_bottom: PrestrainConfig | None = None,
+        preview_limit: int = 10,
     ) -> CommandResult:
         backend = self.choose_backend(feature="moire.find")
         top = self.converter.read(top_poscar)
@@ -121,12 +129,18 @@ class Moire(Base):
                 "symmetry_lcm_deg": run.symmetry_lcm,
             },
         )
+        preview = format_bilayer_candidates(run.candidates, limit=int(preview_limit)) if int(preview_limit) > 0 else ""
         return self.result(
             manifest_path=manifest_path,
             run_dir=run_dir,
             artifacts={"results_dat": run.dat_path},
             summary={"candidate_count": len(run.candidates), "symmetry_lcm_deg": run.symmetry_lcm},
-            payload={"run_id": run.run_id, "search_min_angle": run.search_min_angle, "search_max_angle": run.search_max_angle},
+            payload={
+                "run_id": run.run_id,
+                "search_min_angle": run.search_min_angle,
+                "search_max_angle": run.search_max_angle,
+                "candidate_preview": preview,
+            },
         )
 
     def make(
@@ -147,12 +161,14 @@ class Moire(Base):
         backend = self.choose_backend(feature="moire.make")
         resolved_results = self.resolve_results_file(results_file, artifact_keys=("results_dat",))
         run_id, run_dir = self.create_run_dir("make", Path(resolved_results).stem)
+        output_suffix = run_output_suffix(run_id)
+        resolved_output_dir = output_dir or str(self.output_root / run_id)
         runs = legacy_modules().make_stage.generate_many_from_results(
             resolved_results,
             indexes=[int(value) for value in indexes],
             interlayer_distance=float(interlayer_distance),
             output_path=output_path if len(indexes) == 1 else None,
-            output_dir=output_dir or str(self.output_root),
+            output_dir=resolved_output_dir,
             tolerance=int(tolerance),
             tolerance_float=float(tolerance_float),
             zfix=zfix,
@@ -160,6 +176,12 @@ class Moire(Base):
             bottom_c_repeat=bottom_c_repeat,
             workers=int(workers),
         )
+        if output_path is None and output_dir is None:
+            for run in runs:
+                current_path = Path(run.output_path)
+                renamed_path = current_path.with_name(f"{current_path.stem}_{output_suffix}{current_path.suffix}")
+                current_path.replace(renamed_path)
+                run.output_path = renamed_path.resolve()
         artifact_paths = [str(run.output_path) for run in runs]
         manifest_path = self.write_manifest(
             stage="make",
@@ -191,9 +213,13 @@ class Moire(Base):
     ) -> CommandResult:
         backend = self.choose_backend(feature="moire.translate")
         run_id, run_dir = self.create_run_dir("translate", Path(poscar_path).stem)
+        output_suffix = run_output_suffix(run_id)
+        resolved_output_path = output_path or str(
+            self.output_root / f"{_safe_token(Path(poscar_path).stem)}_upper_layer_shifted_{output_suffix}.vasp"
+        )
         run = legacy_modules().molecule_stage.shift_top_layer(
             poscar_path=str(Path(poscar_path).resolve()),
-            output_path=output_path,
+            output_path=resolved_output_path,
             shift_cartesian=shift_cartesian,
             shift_direct=shift_direct,
             z_cutoff=z_cutoff,
@@ -226,33 +252,21 @@ class Moire(Base):
         interlayer: float = 3.35,
         top_c_repeat: int | None = None,
         bottom_c_repeat: int | None = None,
+        plotly: bool = False,
+        show: bool = False,
     ) -> CommandResult:
-        backend = self.choose_backend(feature="moire.visualize")
-        resolved_results = self.resolve_results_file(results_file, artifact_keys=("results_dat", "results_json"))
-        run_id, run_dir = self.create_run_dir("visualize", Path(resolved_results).stem)
-        run = legacy_modules().visualize_stage.build_visualization(
-            resolved_results,
+        from ..visualize.visualize import Visualize
+
+        visualizer = Visualize(backend=self.backend, runs_root=self.runs_root, output_root=self.output_root, dependency_manager=self.dependency_manager)
+        return visualizer.moire_results(
+            results_file=results_file,
             indices=indices,
-            output_path=output_path or str(self.output_root / f"{Path(resolved_results).stem}_viewer.html"),
-            interlayer=float(interlayer),
+            output_path=output_path,
+            interlayer=interlayer,
             top_c_repeat=top_c_repeat,
             bottom_c_repeat=bottom_c_repeat,
-        )
-        manifest_path = self.write_manifest(
-            stage="visualize",
-            run_id=run_id,
-            run_dir=run_dir,
-            backend=backend,
-            inputs={"results_file": str(Path(resolved_results).resolve())},
-            parameters={"indices": list(indices or []), "interlayer": float(interlayer)},
-            artifacts={"html": run.output_path},
-            summary={"frame_count": run.frame_count, "results_type": run.results_type},
-        )
-        return self.result(
-            manifest_path=manifest_path,
-            run_dir=run_dir,
-            artifacts={"html": run.output_path},
-            summary={"frame_count": run.frame_count, "results_type": run.results_type},
+            plotly=plotly,
+            show=show,
         )
 
     def resolve_results_file(self, path_or_manifest: str, artifact_keys: Sequence[str]) -> str:

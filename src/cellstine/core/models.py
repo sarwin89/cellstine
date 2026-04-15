@@ -22,6 +22,6 @@ class CommandResult:
 
     manifest_path: Path
     run_dir: Path
-    artifacts: Dict[str, str]
+    artifacts: Dict[str, Any]
     summary: Dict[str, Any]
     payload: Dict[str, Any] = field(default_factory=dict)

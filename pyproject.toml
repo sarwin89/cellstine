@@ -5,12 +5,24 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "cellstine"
 version = "4.0.0"
-description = "CELLSTINE: commensurate moire, adsorbate, and interface workflows for VASP structures."
+description = "CELLSTINE: moire, adsorbate, interface, and defect workflows for VASP structures."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
   { name = "Sarwin Chandran" }
+]
+keywords = ["atomistic-simulation", "moire", "supercell", "vasp", "materials-science"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Chemistry",
+  "Topic :: Scientific/Engineering :: Physics"
 ]
 dependencies = [
   "numpy>=1.26,<3"
@@ -21,7 +33,9 @@ pymatgen = [
   "pymatgen>=2024.5,<2027"
 ]
 viz = [
-  "matplotlib>=3.8,<4",
+  "matplotlib>=3.8,<4"
+]
+plotly = [
   "plotly>=5.24,<6"
 ]
 all = [

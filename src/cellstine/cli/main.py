@@ -9,6 +9,7 @@ from .. import __version__
 from ..adsorbate.molecule import Molecule
 from ..core.dependencies import DependencyManager
 from ..core.models import PrestrainConfig
+from ..defect.defect import Defect
 from ..interface.interface import Interface
 from ..interface.surface import Surface
 from ..moire.moire import Moire
@@ -31,16 +32,28 @@ def _print_result(result) -> None:
         print(f"{key}: {value}")
     for key, value in result.summary.items():
         print(f"{key}: {value}")
+    candidate_preview = getattr(result, "payload", {}).get("candidate_preview") if hasattr(result, "payload") else None
+    if candidate_preview:
+        print()
+        print("Candidate preview:")
+        print(candidate_preview)
+    site_preview = getattr(result, "payload", {}).get("site_preview") if hasattr(result, "payload") else None
+    if site_preview:
+        print()
+        print("Site preview:")
+        print(site_preview)
+    defect_preview = getattr(result, "payload", {}).get("defect_preview") if hasattr(result, "payload") else None
+    if defect_preview:
+        print()
+        print("Defect preview:")
+        print(defect_preview)
 
 
-def dispatch_namespace(args) -> int:
+def execute_namespace(args):
     if getattr(args, "version", False):
-        _print_versions()
-        return 0
+        return "version"
     if not getattr(args, "group", None):
-        from .interactive import run_interactive
-
-        return run_interactive()
+        raise ValueError("interactive mode should be handled before execution")
 
     if args.group == "moire":
         if args.stage == "find":
@@ -65,9 +78,9 @@ def dispatch_namespace(args) -> int:
                 bottom_c_repeat=args.bottom_c_repeat,
                 prestrain_top=PrestrainConfig(args.prestrain_top_mode, args.prestrain_top_value, args.prestrain_top_axis),
                 prestrain_bottom=PrestrainConfig(args.prestrain_bottom_mode, args.prestrain_bottom_value, args.prestrain_bottom_axis),
+                preview_limit=args.preview_limit,
             )
-            _print_result(result)
-            return 0
+            return result
         if args.stage == "findn":
             modes = args.prestrain_modes or ["none"] * (len(args.upper_poscars) + 1)
             values = args.prestrain_values or [0.0] * (len(args.upper_poscars) + 1)
@@ -95,72 +108,67 @@ def dispatch_namespace(args) -> int:
                 bottom_c_repeat=args.bottom_c_repeat,
                 upper_c_repeats=None if args.upper_c_repeats is None else [int(value) for value in args.upper_c_repeats],
                 prestrains=prestrains,
+                preview_limit=args.preview_limit,
             )
-            _print_result(result)
-            return 0
+            return result
         if args.stage == "make":
-            result = Moire().make(results_file=args.results_file, indexes=args.indexes, interlayer_distance=args.interlayer_distance, workers=args.workers, output_dir=args.output_dir)
-            _print_result(result)
-            return 0
+            return Moire().make(results_file=args.results_file, indexes=args.indexes, interlayer_distance=args.interlayer_distance, workers=args.workers, output_dir=args.output_dir)
         if args.stage == "maken":
-            result = Supermoire().maken(results_file=args.results_file, indexes=args.indexes, interlayers=args.interlayers, output_dir=args.output_dir)
-            _print_result(result)
-            return 0
+            return Supermoire().maken(results_file=args.results_file, indexes=args.indexes, interlayers=args.interlayers, output_dir=args.output_dir)
         if args.stage == "translate":
-            result = Moire().translate(poscar_path=args.poscar_path, shift_cartesian=args.shift_cart, shift_direct=args.shift_direct)
-            _print_result(result)
-            return 0
+            return Moire().translate(poscar_path=args.poscar_path, shift_cartesian=args.shift_cart, shift_direct=args.shift_direct)
         if args.stage == "translaten":
-            result = Supermoire().translaten(poscar_path=args.poscar_path, shift_cartesian=args.shift_cart, shift_direct=args.shift_direct)
-            _print_result(result)
-            return 0
+            return Supermoire().translaten(poscar_path=args.poscar_path, shift_cartesian=args.shift_cart, shift_direct=args.shift_direct)
         if args.stage == "visualize":
-            result = Moire().visualize(results_file=args.results_file, indices=args.indices, interlayer=args.interlayer)
-            _print_result(result)
-            return 0
+            return Moire().visualize(
+                results_file=args.results_file,
+                indices=args.indices,
+                interlayer=args.interlayer,
+                output_path=args.output,
+                plotly=args.plotly,
+                show=args.show,
+            )
 
     if args.group == "adsorbate":
         tool = Molecule()
         if args.stage == "place":
-            result = tool.place(
+            return tool.place(
                 substrate_poscar=args.substrate_poscar,
                 molecule_poscar=args.molecule_poscar,
                 substrate_kind=args.substrate_kind,
                 miller=args.miller,
                 layers=args.layers,
                 vacuum=args.vacuum,
+                substrate_repeat_a=args.substrate_repeat_a,
+                substrate_repeat_b=args.substrate_repeat_b,
+                substrate_supercell_matrix=args.substrate_supercell_matrix,
+                auto_repeat_substrate=args.auto_repeat_substrate,
+                fit_padding=args.fit_padding,
                 site_type=args.site_type,
                 site_index=args.site_index,
                 height=args.height,
                 rotation_deg=args.rotate,
             )
-            _print_result(result)
-            return 0
         if args.stage == "move":
-            result = tool.move(poscar_path=args.poscar_path, target_cartesian=args.target_cart, target_direct=args.target_direct, rotation_deg=args.rotate)
-            _print_result(result)
-            return 0
+            return tool.move(poscar_path=args.poscar_path, target_cartesian=args.target_cart, target_direct=args.target_direct, rotation_deg=args.rotate)
         if args.stage == "assemble":
-            result = tool.assemble(
+            return tool.assemble(
                 substrate_poscar=args.substrate_poscar,
                 a_length=args.a_length,
                 b_length=args.b_length,
                 angle_deg=args.angle,
                 nindex=args.nindex,
                 max_strain=args.max_strain,
+                preview_limit=args.preview_limit,
             )
-            _print_result(result)
-            return 0
         if args.stage == "visualize":
-            result = Visualize().structure(structure_path=args.structure_path)
-            _print_result(result)
-            return 0
+            return Visualize().structure(structure_path=args.structure_path, output_path=args.output, plotly=args.plotly, show=args.show)
 
     if args.group == "interface":
         surface_tool = Surface()
         interface_tool = Interface()
         if args.stage == "surface":
-            result = surface_tool.surface(
+            return surface_tool.surface(
                 bulk_poscar=args.bulk_poscar,
                 miller=args.miller,
                 layers=args.layers,
@@ -170,14 +178,10 @@ def dispatch_namespace(args) -> int:
                 supercell_matrix=args.supercell_matrix,
                 analyse_sites=args.analyse_sites,
             )
-            _print_result(result)
-            return 0
         if args.stage == "sites":
-            result = surface_tool.sites(slab_poscar=args.slab_poscar, surface_side=args.surface_side)
-            _print_result(result)
-            return 0
+            return surface_tool.sites(slab_poscar=args.slab_poscar, surface_side=args.surface_side)
         if args.stage == "build":
-            result = interface_tool.build(
+            return interface_tool.build(
                 bottom_input=args.bottom_input,
                 top_input=args.top_input,
                 bottom_kind=args.bottom_kind,
@@ -190,10 +194,8 @@ def dispatch_namespace(args) -> int:
                 top_vacuum=args.top_vacuum,
                 gap=args.gap,
             )
-            _print_result(result)
-            return 0
         if args.stage == "match":
-            result = interface_tool.match(
+            return interface_tool.match(
                 bottom_bulk=args.bottom_bulk,
                 top_bulk=args.top_bulk,
                 bottom_millers=args.bottom_millers,
@@ -203,14 +205,70 @@ def dispatch_namespace(args) -> int:
                 vacuum=args.vacuum,
                 max_strain=args.max_strain,
             )
-            _print_result(result)
-            return 0
         if args.stage == "visualize":
-            result = Visualize().structure(structure_path=args.structure_path)
-            _print_result(result)
-            return 0
+            return Visualize().structure(structure_path=args.structure_path, output_path=args.output, plotly=args.plotly, show=args.show)
+
+    if args.group == "defect":
+        tool = Defect()
+        if args.stage == "analyse":
+            return tool.analyse(
+                structure_path=args.structure,
+                structure_kind=args.structure_kind,
+                backend=args.backend,
+                surface_side=args.surface_side,
+                layer_tolerance=args.layer_tolerance,
+                symprec=args.symprec,
+            )
+        if args.stage == "generate":
+            return tool.generate(
+                structure_path_or_manifest=args.analysis_or_structure,
+                defect_type=args.defect_type,
+                site_ids=args.site_ids,
+                species=args.species,
+                substitution_species=args.substitution_species,
+                original_species=args.original_species,
+                generate=args.generate,
+                output_dir=args.output_dir,
+                structure_kind=args.structure_kind,
+                backend=args.backend,
+                surface_side=args.surface_side,
+                layer_tolerance=args.layer_tolerance,
+                symprec=args.symprec,
+                height=args.height,
+            )
+        if args.stage == "preview":
+            return tool.preview(
+                analysis_or_structure=args.analysis_or_structure,
+                limit=args.limit,
+                structure_kind=args.structure_kind,
+                backend=args.backend,
+                surface_side=args.surface_side,
+                layer_tolerance=args.layer_tolerance,
+                symprec=args.symprec,
+            )
 
     raise SystemExit("No workflow stage was selected. Use --help for usage.")
+
+
+def dispatch_namespace(args) -> int:
+    if getattr(args, "version", False):
+        _print_versions()
+        return 0
+    if not getattr(args, "group", None):
+        from .interactive import run_interactive
+
+        return run_interactive()
+    if not getattr(args, "stage", None):
+        from .interactive import run_interactive
+
+        return run_interactive(group=str(args.group))
+
+    result = execute_namespace(args)
+    if result == "version":
+        _print_versions()
+        return 0
+    _print_result(result)
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -50,6 +50,26 @@ class SurfaceRun:
     site_counts: Dict[str, int] | None
 
 
+@dataclass(frozen=True)
+class PrimitiveSurfaceAnalysis:
+    miller: tuple[int, int, int]
+    centering: str
+    probe_layers: int
+    atoms_per_layer: tuple[int, ...]
+    stacking_sequence: str
+    stacking_period: str
+    inplane_angle_deg: float
+    lattice: np.ndarray
+
+
+@dataclass(frozen=True)
+class SurfaceStructureBuild:
+    structure: io_mod.PoscarData
+    repeat_a: int
+    repeat_b: int
+    supercell_matrix: tuple[int, int, int, int] | None
+
+
 SITE_TYPE_ALIASES = {
     "top": "top",
     "bridge": "bridge",
@@ -63,60 +83,393 @@ SITE_TYPE_ALIASES = {
 }
 
 
-def _reduce_integer_vector(values: Sequence[int]) -> tuple[int, int, int]:
-    entries = [int(value) for value in values]
-    divisor = 0
-    for entry in entries:
-        divisor = math.gcd(divisor, abs(entry))
-    divisor = max(divisor, 1)
-    return tuple(int(entry // divisor) for entry in entries)
+def _expanded_species(structure: io_mod.PoscarData) -> list[str]:
+    expanded: list[str] = []
+    for symbol, count in zip(structure.species, structure.counts):
+        expanded.extend([str(symbol)] * int(count))
+    if len(expanded) < structure.natoms:
+        expanded.extend(["X"] * (structure.natoms - len(expanded)))
+    return expanded[: structure.natoms]
 
 
-def _is_orthogonal_lattice(lattice: np.ndarray, tolerance: float = 1e-6) -> bool:
-    vectors = np.asarray(lattice, dtype=float)
-    return (
-        abs(float(np.dot(vectors[0], vectors[1]))) <= tolerance
-        and abs(float(np.dot(vectors[0], vectors[2]))) <= tolerance
-        and abs(float(np.dot(vectors[1], vectors[2]))) <= tolerance
-    )
+def _periodic_direct_distance(a_values: np.ndarray, b_values: np.ndarray) -> np.ndarray:
+    delta = np.asarray(a_values, dtype=float) - np.asarray(b_values, dtype=float)
+    return delta - np.round(delta)
 
 
-def _choose_in_plane_vectors(miller: tuple[int, int, int]) -> tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]]:
+def _translation_maps_structure(structure: io_mod.PoscarData, translation: Sequence[float], tolerance: float = 1e-5) -> bool:
+    positions = np.mod(np.asarray(structure.positions_direct, dtype=float), 1.0)
+    species = _expanded_species(structure)
+    translation_array = np.asarray(translation, dtype=float)
+    for atom_index, position in enumerate(positions):
+        shifted = np.mod(position + translation_array, 1.0)
+        matched = False
+        for candidate_index, candidate in enumerate(positions):
+            if species[candidate_index] != species[atom_index]:
+                continue
+            if np.all(np.abs(_periodic_direct_distance(shifted, candidate)) <= tolerance):
+                matched = True
+                break
+        if not matched:
+            return False
+    return True
+
+
+def _centering_type(structure: io_mod.PoscarData) -> str:
+    candidates = {
+        "A": np.array([0.0, 0.5, 0.5], dtype=float),
+        "B": np.array([0.5, 0.0, 0.5], dtype=float),
+        "C": np.array([0.5, 0.5, 0.0], dtype=float),
+        "I": np.array([0.5, 0.5, 0.5], dtype=float),
+    }
+    valid = {key for key, value in candidates.items() if _translation_maps_structure(structure, value)}
+    if {"A", "B", "C"}.issubset(valid):
+        return "F"
+    if "I" in valid:
+        return "I"
+    for key in ("A", "B", "C"):
+        if key in valid:
+            return key
+    return "P"
+
+
+def _primitive_translation_lattice(structure: io_mod.PoscarData) -> tuple[np.ndarray, str]:
+    centering = _centering_type(structure)
+    matrices = {
+        "P": np.array(
+            [
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0],
+            ],
+            dtype=float,
+        ),
+        "F": np.array(
+            [
+                [0.0, 0.5, 0.5],
+                [0.5, 0.0, 0.5],
+                [0.5, 0.5, 0.0],
+            ],
+            dtype=float,
+        ),
+        "I": np.array(
+            [
+                [-0.5, 0.5, 0.5],
+                [0.5, -0.5, 0.5],
+                [0.5, 0.5, -0.5],
+            ],
+            dtype=float,
+        ),
+        "A": np.array(
+            [
+                [1.0, 0.0, 0.0],
+                [0.0, 0.5, 0.5],
+                [0.0, -0.5, 0.5],
+            ],
+            dtype=float,
+        ),
+        "B": np.array(
+            [
+                [0.0, 1.0, 0.0],
+                [0.5, 0.0, 0.5],
+                [-0.5, 0.0, 0.5],
+            ],
+            dtype=float,
+        ),
+        "C": np.array(
+            [
+                [0.0, 0.0, 1.0],
+                [0.5, 0.5, 0.0],
+                [-0.5, 0.5, 0.0],
+            ],
+            dtype=float,
+        ),
+    }
+    return matrices[centering] @ np.asarray(structure.lattice, dtype=float), centering
+
+
+def _reciprocal_normal(lattice: np.ndarray, miller: tuple[int, int, int]) -> np.ndarray:
     h, k, l = (int(value) for value in miller)
     if h == 0 and k == 0 and l == 0:
         raise ValueError("Miller indices cannot all be zero")
+    reciprocal_rows = np.linalg.inv(np.asarray(lattice, dtype=float)).T
+    normal = float(h) * reciprocal_rows[0] + float(k) * reciprocal_rows[1] + float(l) * reciprocal_rows[2]
+    norm = float(np.linalg.norm(normal))
+    if norm <= 1e-12:
+        raise ValueError("could not determine a surface normal for the requested Miller indices")
+    return normal / norm
 
-    normal = np.array([h, k, l], dtype=int)
-    axis_candidates = [
-        np.array([1, 0, 0], dtype=int),
-        np.array([0, 1, 0], dtype=int),
-        np.array([0, 0, 1], dtype=int),
-    ]
-    first = None
-    for axis in axis_candidates:
-        candidate = np.cross(normal, axis)
-        if np.any(candidate != 0):
-            first = candidate
-            break
-    if first is None:
-        raise ValueError(f"could not build an in-plane basis for Miller indices {miller}")
 
-    second = np.cross(normal, first)
-    first_reduced = _reduce_integer_vector(first.tolist())
-    second_reduced = _reduce_integer_vector(second.tolist())
-    normal_reduced = _reduce_integer_vector(normal.tolist())
+def _enumerate_lattice_vectors(primitive_lattice: np.ndarray, search: int) -> list[tuple[tuple[int, int, int], np.ndarray]]:
+    vectors: list[tuple[tuple[int, int, int], np.ndarray]] = []
+    for i_value in range(-search, search + 1):
+        for j_value in range(-search, search + 1):
+            for k_value in range(-search, search + 1):
+                coeffs = (int(i_value), int(j_value), int(k_value))
+                if coeffs == (0, 0, 0):
+                    continue
+                vector = i_value * primitive_lattice[0] + j_value * primitive_lattice[1] + k_value * primitive_lattice[2]
+                vectors.append((coeffs, vector))
+    return vectors
 
-    transform = np.array([first_reduced, second_reduced, normal_reduced], dtype=int)
-    determinant = int(round(np.linalg.det(transform)))
-    if determinant == 0:
-        raise ValueError(f"surface transform for Miller indices {miller} is singular")
-    if determinant < 0:
-        transform[[0, 1]] = transform[[1, 0]]
-        first_reduced, second_reduced = second_reduced, first_reduced
-    return first_reduced, second_reduced, normal_reduced
+
+def _primitive_surface_vectors_from_lattice(
+    primitive_lattice: np.ndarray,
+    normal: np.ndarray,
+    *,
+    search: int = 4,
+    tolerance: float = 1e-7,
+) -> tuple[np.ndarray, np.ndarray]:
+    candidates = []
+    for _, vector in _enumerate_lattice_vectors(primitive_lattice, search):
+        if abs(float(np.dot(vector, normal))) > tolerance:
+            continue
+        length = float(np.linalg.norm(vector))
+        if length <= tolerance:
+            continue
+        candidates.append(vector)
+    if len(candidates) < 2:
+        raise ValueError("could not find primitive in-plane surface vectors")
+
+    candidates.sort(key=lambda item: (float(np.linalg.norm(item)), tuple(round(float(value), 12) for value in item.tolist())))
+    best: tuple[float, float, float, np.ndarray, np.ndarray] | None = None
+    for first_index, first in enumerate(candidates):
+        for second in candidates[first_index + 1:]:
+            cross = np.cross(first, second)
+            oriented_area = float(np.dot(cross, normal))
+            area = abs(oriented_area)
+            if area <= tolerance:
+                continue
+            first_length = float(np.linalg.norm(first))
+            second_length = float(np.linalg.norm(second))
+            score = (max(first_length, second_length), first_length + second_length, area)
+            if best is None or score < best[:3]:
+                first_out = np.array(first, dtype=float, copy=True)
+                second_out = np.array(second, dtype=float, copy=True)
+                if oriented_area < 0.0:
+                    first_out, second_out = second_out, first_out
+                best = (score[0], score[1], score[2], first_out, second_out)
+    if best is None:
+        raise ValueError("could not find a non-singular primitive surface cell")
+    surface_a = best[3]
+    surface_b = best[4]
+    cosine = np.clip(
+        float(np.dot(surface_a, surface_b) / max(float(np.linalg.norm(surface_a) * np.linalg.norm(surface_b)), 1e-12)),
+        -1.0,
+        1.0,
+    )
+    angle_deg = float(np.degrees(np.arccos(cosine)))
+    if angle_deg <= 60.0 + 1e-8:
+        surface_b = surface_b - surface_a
+    return surface_a, surface_b
+
+
+def _surface_vector_search_limit(miller: Sequence[int]) -> int:
+    return max(5, 2 * max(abs(int(value)) for value in miller) + 3)
+
+
+def _surface_coordinate_frame(surface_a: np.ndarray, surface_b: np.ndarray, normal: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    x_axis = np.asarray(surface_a, dtype=float) / float(np.linalg.norm(surface_a))
+    y_axis = np.asarray(surface_b, dtype=float) - float(np.dot(surface_b, x_axis)) * x_axis
+    y_norm = float(np.linalg.norm(y_axis))
+    if y_norm <= 1e-12:
+        raise ValueError("surface in-plane vectors are linearly dependent")
+    y_axis /= y_norm
+    if float(np.dot(np.cross(x_axis, y_axis), normal)) < 0.0:
+        y_axis *= -1.0
+    basis_2d = np.array(
+        [
+            [float(np.dot(surface_a, x_axis)), float(np.dot(surface_b, x_axis))],
+            [float(np.dot(surface_a, y_axis)), float(np.dot(surface_b, y_axis))],
+        ],
+        dtype=float,
+    )
+    return x_axis, y_axis, basis_2d
+
+
+def _deduplicate_scalar_levels(values: Sequence[float], tolerance: float) -> list[float]:
+    levels: list[float] = []
+    for value in sorted(float(item) for item in values):
+        if not levels or abs(value - levels[-1]) > tolerance:
+            levels.append(value)
+    return levels
+
+
+def _same_surface_uv(uv_a: np.ndarray, uv_b: np.ndarray, lattice: np.ndarray, tolerance: float) -> bool:
+    delta = np.asarray(uv_a, dtype=float) - np.asarray(uv_b, dtype=float)
+    delta -= np.round(delta)
+    cartesian = delta[0] * np.asarray(lattice, dtype=float)[0] + delta[1] * np.asarray(lattice, dtype=float)[1]
+    return float(np.linalg.norm(cartesian)) <= float(tolerance)
+
+
+def _group_surface_atoms_by_species(
+    atoms: Sequence[tuple[str, np.ndarray, tuple[str, str, str] | None]],
+    species_order: Sequence[str],
+) -> tuple[np.ndarray, list[int], list[str], list[tuple[str, str, str]] | None]:
+    grouped: dict[str, list[np.ndarray]] = {str(symbol): [] for symbol in species_order}
+    grouped_flags: dict[str, list[tuple[str, str, str] | None]] = {str(symbol): [] for symbol in species_order}
+    order = [str(symbol) for symbol in species_order]
+    for symbol, direct, flags in atoms:
+        if symbol not in grouped:
+            grouped[symbol] = []
+            grouped_flags[symbol] = []
+            order.append(symbol)
+        grouped[symbol].append(np.asarray(direct, dtype=float))
+        grouped_flags[symbol].append(flags)
+
+    positions = []
+    counts = []
+    species = []
+    flags_out: list[tuple[str, str, str]] = []
+    has_flags = any(flags is not None for _, _, flags in atoms)
+    for symbol in order:
+        if not grouped[symbol]:
+            continue
+        species.append(symbol)
+        counts.append(len(grouped[symbol]))
+        positions.extend(grouped[symbol])
+        if has_flags:
+            for flags in grouped_flags[symbol]:
+                flags_out.append(tuple(flags or ("T", "T", "T")))
+    return np.asarray(positions, dtype=float), counts, species, flags_out if has_flags else None
+
+
+def _integer_shift_grid_3d(limit: int) -> np.ndarray:
+    values = np.arange(-int(limit), int(limit) + 1, dtype=float)
+    return np.stack(np.meshgrid(values, values, values, indexing="ij"), axis=-1).reshape(-1, 3)
+
+
+def _integer_shift_grid_2d(limit: int) -> np.ndarray:
+    values = np.arange(-int(limit), int(limit) + 1, dtype=float)
+    return np.stack(np.meshgrid(values, values, indexing="ij"), axis=-1).reshape(-1, 2)
+
+
+def _build_native_primitive_surface_cell(
+    structure: io_mod.PoscarData,
+    miller: tuple[int, int, int],
+    *,
+    layers: int,
+    vacuum: float,
+    search_padding: int = 5,
+    tolerance: float = 1e-5,
+) -> io_mod.PoscarData:
+    layers = int(layers)
+    if layers < 1:
+        raise ValueError("layers must be at least 1")
+    if float(vacuum) < 0.0:
+        raise ValueError("vacuum must be non-negative")
+
+    bulk_lattice = np.asarray(structure.lattice, dtype=float)
+    primitive_lattice, centering = _primitive_translation_lattice(structure)
+    normal = _reciprocal_normal(bulk_lattice, miller)
+    surface_a, surface_b = _primitive_surface_vectors_from_lattice(
+        primitive_lattice,
+        normal,
+        search=_surface_vector_search_limit(miller),
+        tolerance=1e-7,
+    )
+    if float(np.dot(np.cross(surface_a, surface_b), normal)) < 0.0:
+        surface_a, surface_b = surface_b, surface_a
+    x_axis, y_axis, basis_2d = _surface_coordinate_frame(surface_a, surface_b, normal)
+
+    species_expanded = _expanded_species(structure)
+    flags_expanded = structure.selective_flags or [None] * structure.natoms
+    base_direct = np.asarray(structure.positions_direct, dtype=float)
+    base_cartesian = io_mod.direct_to_cartesian(base_direct, bulk_lattice)
+    base_projections = base_cartesian @ normal
+    base_projected_2d = np.column_stack((base_cartesian @ x_axis, base_cartesian @ y_axis))
+
+    image_limit = max(layers + search_padding, 6)
+    shifts = _integer_shift_grid_3d(image_limit)
+    shift_cartesian = shifts @ bulk_lattice
+    shift_projections = shift_cartesian @ normal
+    shift_projected_2d = np.column_stack((shift_cartesian @ x_axis, shift_cartesian @ y_axis))
+    basis_inverse_transposed = np.linalg.inv(basis_2d).T
+
+    all_projections = (base_projections[:, None] + shift_projections[None, :]).reshape(-1)
+    all_levels = _deduplicate_scalar_levels(all_projections, tolerance)
+    start_candidates = [index for index, level in enumerate(all_levels) if level >= -tolerance]
+    if not start_candidates:
+        raise ValueError("could not locate a starting atomic layer for the requested surface")
+    start_index = start_candidates[0]
+    selected_levels = all_levels[start_index : start_index + layers]
+    if len(selected_levels) < layers:
+        raise ValueError("could not generate enough atomic layers; try a smaller layer count or check the bulk cell")
+
+    slab_thickness = float(selected_levels[-1] - selected_levels[0]) if len(selected_levels) > 1 else 0.0
+    c_length = slab_thickness + float(vacuum)
+    if c_length <= 1e-12:
+        raise ValueError("surface c axis would have zero length")
+    surface_lattice = np.vstack([surface_a, surface_b, normal * c_length])
+    if len(selected_levels) > 1:
+        interlayer_spacing = float(selected_levels[1] - selected_levels[0])
+    elif start_index + 1 < len(all_levels):
+        interlayer_spacing = float(all_levels[start_index + 1] - selected_levels[0])
+    else:
+        interlayer_spacing = 0.0
+    lower_vacuum = min(max(interlayer_spacing, 0.0), float(vacuum))
+
+    atoms: list[tuple[str, np.ndarray, tuple[str, str, str] | None]] = []
+    uv_tolerance = max(1e-4, float(np.linalg.norm(surface_a) + np.linalg.norm(surface_b)) * 1e-7)
+    for layer_index, level in enumerate(selected_levels):
+        layer_unique: list[tuple[str, np.ndarray, tuple[str, str, str] | None]] = []
+        for atom_index in range(structure.natoms):
+            matching_shifts = np.abs(base_projections[atom_index] + shift_projections - float(level)) <= tolerance
+            if not np.any(matching_shifts):
+                continue
+            projected_2d = base_projected_2d[atom_index] + shift_projected_2d[matching_shifts]
+            uv_values = projected_2d @ basis_inverse_transposed
+            uv_values = np.mod(uv_values, 1.0)
+            uv_values[np.isclose(uv_values, 1.0, atol=tolerance)] = 0.0
+            uv_values[np.isclose(uv_values, 0.0, atol=tolerance)] = 0.0
+            for uv in uv_values:
+                duplicate = False
+                for existing_species, existing_uv, _ in layer_unique:
+                    if existing_species != species_expanded[atom_index]:
+                        continue
+                    if _same_surface_uv(uv, existing_uv, surface_lattice, uv_tolerance):
+                        duplicate = True
+                        break
+                if duplicate:
+                    continue
+                layer_unique.append(
+                    (
+                        str(species_expanded[atom_index]),
+                        np.asarray(uv, dtype=float),
+                        None if flags_expanded[atom_index] is None else tuple(flags_expanded[atom_index]),
+                    )
+                )
+        if not layer_unique:
+            raise ValueError(f"surface layer {layer_index + 1} did not contain any atoms")
+        w_value = (lower_vacuum + (float(level) - float(selected_levels[0]))) / c_length
+        for species, uv, flags in layer_unique:
+            atoms.append((species, np.array([float(uv[0]), float(uv[1]), float(w_value)], dtype=float), flags))
+
+    positions_direct, counts, species, flags = _group_surface_atoms_by_species(atoms, structure.species or sorted(set(species_expanded)))
+    return io_mod.PoscarData(
+        comment=(
+            f"{structure.comment} | primitive {centering}-lattice surface cell "
+            f"({int(miller[0])} {int(miller[1])} {int(miller[2])})"
+        ),
+        lattice=surface_lattice,
+        species=species,
+        counts=counts,
+        positions_direct=positions_direct,
+        positions_cartesian=io_mod.direct_to_cartesian(positions_direct, surface_lattice),
+        coordinate_mode="Direct",
+        selective_dynamics=bool(structure.selective_dynamics),
+        selective_flags=flags,
+    )
 
 
 def _structure_from_transform(structure: io_mod.PoscarData, transform: np.ndarray, tolerance: float = 1e-8) -> io_mod.PoscarData:
+    if np.allclose(transform[2], np.array([0, 0, 1], dtype=float), atol=tolerance) and np.allclose(
+        transform[:2, 2],
+        np.zeros(2, dtype=float),
+        atol=tolerance,
+    ):
+        return _structure_from_inplane_transform(structure, transform[:2, :2], tolerance=tolerance)
+
     lattice_old = np.asarray(structure.lattice, dtype=float)
     lattice_new = transform @ lattice_old
     inverse_new = np.linalg.inv(lattice_new)
@@ -168,6 +521,85 @@ def _structure_from_transform(structure: io_mod.PoscarData, transform: np.ndarra
         coordinate_mode="Direct",
         selective_dynamics=bool(structure.selective_dynamics),
         selective_flags=collected_flags,
+    )
+
+
+def _structure_from_inplane_transform(
+    structure: io_mod.PoscarData,
+    matrix_2d: np.ndarray,
+    tolerance: float = 1e-8,
+) -> io_mod.PoscarData:
+    matrix = np.asarray(matrix_2d, dtype=float)
+    determinant = int(round(abs(np.linalg.det(matrix))))
+    if determinant == 0:
+        raise ValueError("in-plane supercell matrix must have a non-zero determinant")
+
+    lattice_old = np.asarray(structure.lattice, dtype=float)
+    transform_3d = np.array(
+        [
+            [matrix[0, 0], matrix[0, 1], 0.0],
+            [matrix[1, 0], matrix[1, 1], 0.0],
+            [0.0, 0.0, 1.0],
+        ],
+        dtype=float,
+    )
+    lattice_new = transform_3d @ lattice_old
+    inverse_2d = np.linalg.inv(matrix)
+
+    search_pad = max(2, int(np.max(np.abs(matrix))) + determinant + 1)
+    shifts_2d = _integer_shift_grid_2d(search_pad)
+    species_expanded = _expanded_species(structure)
+    flags_expanded = structure.selective_flags or [None] * structure.natoms
+    collected_atoms: list[tuple[str, np.ndarray, tuple[str, str, str] | None]] = []
+
+    for atom_index, base_direct in enumerate(np.asarray(structure.positions_direct, dtype=float)):
+        shifted_2d = base_direct[:2] + shifts_2d
+        new_2d = shifted_2d @ inverse_2d
+        inside = np.all((-tolerance <= new_2d) & (new_2d <= 1.0 + tolerance), axis=1)
+        for candidate_2d in new_2d[inside]:
+            wrapped = np.array([candidate_2d[0], candidate_2d[1], base_direct[2]], dtype=float)
+            wrapped = np.mod(wrapped, 1.0)
+            wrapped[np.isclose(wrapped, 1.0, atol=tolerance)] = 0.0
+            wrapped[np.isclose(wrapped, 0.0, atol=tolerance)] = 0.0
+            duplicate = False
+            for existing_species, existing_direct, _ in collected_atoms:
+                if existing_species != species_expanded[atom_index]:
+                    continue
+                difference = wrapped - existing_direct
+                if np.all(np.abs(difference - np.round(difference)) <= tolerance):
+                    duplicate = True
+                    break
+            if duplicate:
+                continue
+            collected_atoms.append(
+                (
+                    str(species_expanded[atom_index]),
+                    wrapped,
+                    None if flags_expanded[atom_index] is None else tuple(flags_expanded[atom_index]),
+                )
+            )
+
+    expected_atoms = determinant * structure.natoms
+    if len(collected_atoms) != expected_atoms:
+        raise ValueError(
+            f"in-plane surface transform captured {len(collected_atoms)} atoms, expected {expected_atoms}; "
+            "try a simpler matrix or check the input cell"
+        )
+
+    positions_direct, counts, species, flags = _group_surface_atoms_by_species(
+        collected_atoms,
+        structure.species or sorted(set(species_expanded)),
+    )
+    return io_mod.PoscarData(
+        comment=f"{structure.comment} | in-plane transformed surface cell",
+        lattice=lattice_new,
+        species=species,
+        counts=counts,
+        positions_direct=positions_direct,
+        positions_cartesian=io_mod.direct_to_cartesian(positions_direct, lattice_new),
+        coordinate_mode="Direct",
+        selective_dynamics=bool(structure.selective_dynamics),
+        selective_flags=flags,
     )
 
 
@@ -255,37 +687,6 @@ def _resolve_inplane_repeats(
     return resolved_a, resolved_b
 
 
-def _add_vacuum_along_c(structure: io_mod.PoscarData, vacuum: float, padding: float = 0.5) -> io_mod.PoscarData:
-    vacuum = float(vacuum)
-    if vacuum < 0.0:
-        raise ValueError("vacuum must be non-negative")
-
-    lattice = np.array(structure.lattice, dtype=float, copy=True)
-    c_vector = lattice[2]
-    c_length = float(np.linalg.norm(c_vector))
-    if c_length <= 1e-12:
-        raise ValueError("surface cell has a zero-length c vector")
-    c_unit = c_vector / c_length
-
-    cartesian = np.array(structure.positions_cartesian, dtype=float, copy=True)
-    projections = cartesian @ c_unit
-    cartesian += (padding - float(projections.min())) * c_unit
-
-    lattice[2] = c_unit * (c_length + vacuum)
-    positions_direct = io_mod.cartesian_to_direct(cartesian, lattice)
-    return io_mod.PoscarData(
-        comment=f"{structure.comment} | vacuum {vacuum:.3f} A",
-        lattice=lattice,
-        species=list(structure.species),
-        counts=[int(count) for count in structure.counts],
-        positions_direct=positions_direct,
-        positions_cartesian=cartesian,
-        coordinate_mode="Direct",
-        selective_dynamics=bool(structure.selective_dynamics),
-        selective_flags=None if structure.selective_flags is None else [tuple(flags) for flags in structure.selective_flags],
-    )
-
-
 def _surface_normal(lattice: np.ndarray) -> np.ndarray:
     normal = np.cross(np.asarray(lattice, dtype=float)[0], np.asarray(lattice, dtype=float)[1])
     norm = float(np.linalg.norm(normal))
@@ -294,35 +695,131 @@ def _surface_normal(lattice: np.ndarray) -> np.ndarray:
     return normal / norm
 
 
-def _shift_boundary_into_interlayer_gap(structure: io_mod.PoscarData) -> io_mod.PoscarData:
-    lattice = np.asarray(structure.lattice, dtype=float)
-    normal = _surface_normal(lattice)
-    c_length = float(np.linalg.norm(lattice[2]))
-    if c_length <= 1e-12:
-        return structure
+def _stacking_sequence_for_structure(structure: io_mod.PoscarData, z_tolerance: float = 0.35, xy_tolerance: float = 1e-3) -> tuple[str, tuple[int, ...]]:
+    direct = np.asarray(structure.positions_direct, dtype=float)
+    cartesian = np.asarray(structure.positions_cartesian, dtype=float)
+    if direct.size == 0:
+        return "", tuple()
+    normal = _surface_normal(structure.lattice)
+    projections = cartesian @ normal
+    order = np.argsort(projections)
+    groups: list[list[int]] = []
+    current = [int(order[0])]
+    last_projection = float(projections[order[0]])
+    for atom_index in order[1:]:
+        projection = float(projections[atom_index])
+        if abs(projection - last_projection) <= float(z_tolerance):
+            current.append(int(atom_index))
+        else:
+            groups.append(current)
+            current = [int(atom_index)]
+        last_projection = projection
+    groups.append(current)
 
-    projections = np.mod(np.asarray(structure.positions_cartesian, dtype=float) @ normal, c_length)
-    if projections.size == 0:
-        return structure
+    signature_to_letter: dict[tuple[tuple[float, float], ...], str] = {}
+    letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    sequence = []
+    for group in groups:
+        points = np.mod(direct[np.asarray(group, dtype=int), :2], 1.0)
+        points[np.isclose(points, 1.0, atol=xy_tolerance)] = 0.0
+        points[np.isclose(points, 0.0, atol=xy_tolerance)] = 0.0
+        signature = tuple(
+            sorted(
+                (
+                    round(float(point[0]) / xy_tolerance) * xy_tolerance,
+                    round(float(point[1]) / xy_tolerance) * xy_tolerance,
+                )
+                for point in points
+            )
+        )
+        if signature not in signature_to_letter:
+            signature_to_letter[signature] = letters[len(signature_to_letter) % len(letters)]
+        sequence.append(signature_to_letter[signature])
+    return "".join(sequence), tuple(len(group) for group in groups)
 
-    ordered = np.sort(projections)
-    cyclic = np.concatenate([ordered, ordered[:1] + c_length])
-    gaps = np.diff(cyclic)
-    gap_index = int(np.argmax(gaps))
-    cut = float((ordered[gap_index] + 0.5 * gaps[gap_index]) % c_length)
-    shifted_cartesian = np.asarray(structure.positions_cartesian, dtype=float) - cut * normal
-    shifted_direct = io_mod.cartesian_to_direct(shifted_cartesian, lattice)
-    shifted_direct = io_mod.wrap_direct(shifted_direct)
-    return io_mod.PoscarData(
-        comment=f"{structure.comment} | shifted to keep full surface planes at the boundaries",
-        lattice=np.array(structure.lattice, dtype=float, copy=True),
-        species=list(structure.species),
-        counts=[int(count) for count in structure.counts],
-        positions_direct=shifted_direct,
-        positions_cartesian=io_mod.direct_to_cartesian(shifted_direct, lattice),
-        coordinate_mode="Direct",
-        selective_dynamics=bool(structure.selective_dynamics),
-        selective_flags=None if structure.selective_flags is None else [tuple(flags) for flags in structure.selective_flags],
+
+def _shortest_repeating_prefix(sequence: str) -> str:
+    if not sequence:
+        return ""
+    for size in range(1, len(sequence) + 1):
+        prefix = sequence[:size]
+        repeats = (prefix * ((len(sequence) // size) + 1))[: len(sequence)]
+        if repeats == sequence:
+            return prefix
+    return sequence
+
+
+def analyse_primitive_surface(
+    bulk_poscar: str,
+    *,
+    miller: tuple[int, int, int],
+    probe_layers: int = 8,
+) -> PrimitiveSurfaceAnalysis:
+    structure = io_mod.read_poscar(bulk_poscar)
+    primitive_lattice, centering = _primitive_translation_lattice(structure)
+    normal = _reciprocal_normal(np.asarray(structure.lattice, dtype=float), miller)
+    surface_a, surface_b = _primitive_surface_vectors_from_lattice(
+        primitive_lattice,
+        normal,
+        search=_surface_vector_search_limit(miller),
+    )
+    probe = _build_native_primitive_surface_cell(
+        structure,
+        miller,
+        layers=max(1, int(probe_layers)),
+        vacuum=0.0,
+    )
+    sequence, atoms_per_layer = _stacking_sequence_for_structure(probe)
+    cosine = np.clip(
+        float(np.dot(surface_a, surface_b) / max(float(np.linalg.norm(surface_a) * np.linalg.norm(surface_b)), 1e-12)),
+        -1.0,
+        1.0,
+    )
+    return PrimitiveSurfaceAnalysis(
+        miller=(int(miller[0]), int(miller[1]), int(miller[2])),
+        centering=centering,
+        probe_layers=max(1, int(probe_layers)),
+        atoms_per_layer=atoms_per_layer,
+        stacking_sequence=sequence,
+        stacking_period=_shortest_repeating_prefix(sequence),
+        inplane_angle_deg=float(np.degrees(np.arccos(cosine))),
+        lattice=np.array(probe.lattice, dtype=float, copy=True),
+    )
+
+
+def build_surface_structure(
+    bulk_poscar: str,
+    *,
+    miller: tuple[int, int, int],
+    layers: int,
+    vacuum: float,
+    repeat_a: int = 1,
+    repeat_b: int = 1,
+    min_length_a: float | None = None,
+    min_length_b: float | None = None,
+    supercell_matrix: Sequence[int] | None = None,
+) -> SurfaceStructureBuild:
+    structure = io_mod.read_poscar(bulk_poscar)
+    primitive_surface = _build_native_primitive_surface_cell(
+        structure,
+        miller,
+        layers=int(layers),
+        vacuum=float(vacuum),
+    )
+    resolved_repeat_a, resolved_repeat_b = _resolve_inplane_repeats(
+        primitive_surface,
+        int(repeat_a),
+        int(repeat_b),
+        min_length_a,
+        min_length_b,
+    )
+    repeated = _repeat_structure_inplane(primitive_surface, resolved_repeat_a, resolved_repeat_b)
+    surfaced, applied_matrix = _apply_inplane_supercell_matrix(repeated, supercell_matrix)
+    return SurfaceStructureBuild(
+        structure=surfaced,
+        repeat_a=int(resolved_repeat_a),
+        repeat_b=int(resolved_repeat_b),
+        supercell_matrix=applied_matrix,
     )
 
 
@@ -689,28 +1186,21 @@ def build_surface(
     analyse_sites: bool = False,
     site_surface_side: str = "top",
 ) -> SurfaceRun:
-    structure = io_mod.read_poscar(bulk_poscar)
-    if not _is_orthogonal_lattice(structure.lattice):
-        raise ValueError(
-            "the current surface builder expects a conventional orthogonal bulk cell "
-            "(for example cubic, tetragonal, or orthorhombic)."
-        )
-
-    in_plane_a, in_plane_b, normal = _choose_in_plane_vectors(miller)
-    oriented = _structure_from_transform(structure, np.array([in_plane_a, in_plane_b, normal], dtype=int))
-    oriented = _shift_boundary_into_interlayer_gap(oriented)
-    layered = io_mod.repeat_structure_along_c(oriented, int(layers))
-
-    resolved_repeat_a, resolved_repeat_b = _resolve_inplane_repeats(
-        oriented,
-        int(repeat_a),
-        int(repeat_b),
-        min_length_a,
-        min_length_b,
+    build = build_surface_structure(
+        bulk_poscar,
+        miller=miller,
+        layers=int(layers),
+        vacuum=float(vacuum),
+        repeat_a=int(repeat_a),
+        repeat_b=int(repeat_b),
+        min_length_a=min_length_a,
+        min_length_b=min_length_b,
+        supercell_matrix=supercell_matrix,
     )
-    repeated = _repeat_structure_inplane(layered, resolved_repeat_a, resolved_repeat_b)
-    scaled, applied_matrix = _apply_inplane_supercell_matrix(repeated, supercell_matrix)
-    surfaced = _add_vacuum_along_c(scaled, float(vacuum))
+    surfaced = build.structure
+    resolved_repeat_a = build.repeat_a
+    resolved_repeat_b = build.repeat_b
+    applied_matrix = build.supercell_matrix
 
     if output_path is None:
         DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
