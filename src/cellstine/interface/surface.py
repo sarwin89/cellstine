@@ -7,11 +7,12 @@ from typing import Sequence
 
 import numpy as np
 
-from ..core.base import legacy_modules, run_output_suffix
+from ..core.base import run_output_suffix
 from ..core.models import CommandResult
 from ..core.previews import format_site_report
 from ..io.converters import StructureConverter
 from .interface import Interface, parse_miller_notation
+from . import surface_backend
 
 
 def _safe_token(value: object) -> str:
@@ -130,7 +131,7 @@ class Surface(Interface):
         )
         resolved_output_path = output_path or str(self.output_root / f"{descriptor}_surface_{output_suffix}.vasp")
         resolved_sites_output_path = sites_output_path or (str(self.output_root / f"{descriptor}_sites_{output_suffix}.json") if analyse_sites else None)
-        run = legacy_modules().surface_stage.build_surface(
+        run = surface_backend.build_surface(
             str(Path(bulk_poscar).resolve()),
             miller=miller_values,
             layers=int(layers),
@@ -190,7 +191,7 @@ class Surface(Interface):
         run_id, run_dir = self.create_run_dir("sites", Path(slab_path).stem)
         output_suffix = run_output_suffix(run_id)
         resolved_output_path = output_path or str(self.output_root / f"{_safe_token(Path(slab_path).stem)}_sites_{output_suffix}.json")
-        report = legacy_modules().surface_stage.find_adsorption_sites(
+        report = surface_backend.find_adsorption_sites(
             slab_path,
             surface_side=str(surface_side),
             layer_tolerance=float(layer_tolerance),

@@ -1,7 +1,4 @@
-"""Finder backend for commensurate moire supercells.
-
-Made by Sarwin Chandran.
-"""
+"""Finder backend for commensurate moire supercells."""
 
 from __future__ import annotations
 
@@ -15,9 +12,6 @@ import numpy as np
 from . import lattice as lat
 
 
-# Made by Sarwin Chandran: this module hosts the commensuration finder backend.
-
-
 def _build_angle_list(
     angle_lower: float | None,
     angle_upper: float | None,
@@ -25,7 +19,7 @@ def _build_angle_list(
     angles: Sequence[float] | None,
 ) -> List[float]:
     if angles:
-        return [float(angle) for angle in angles]
+        return sorted({float(angle) for angle in angles})
     if angle_lower is None or angle_upper is None:
         raise ValueError("must provide either an explicit angle list or numeric angle bounds")
     if angle_step <= 0.0:
@@ -108,8 +102,6 @@ def candidate_matches_matrix_values(
     matrix_layer: str = "either",
     matrix_match_mode: str = "absolute",
 ) -> bool:
-    """Return True when a candidate uses the requested matrix values, ignoring entry order."""
-
     target_signature = _matrix_signature(matrix_values, matrix_match_mode)
     layer1_signature = _matrix_signature(_candidate_matrix_entries(candidate, "1"), matrix_match_mode)
     layer2_signature = _matrix_signature(_candidate_matrix_entries(candidate, "2"), matrix_match_mode)
@@ -150,52 +142,42 @@ def find_supercells(
     matrix_match_mode: str = "absolute",
     workers: int = 1,
 ) -> List[lat.SupercellCandidate]:
-    """Return commensurate supercell candidates between two lattices."""
-
     candidate_tolerance = lin_tol if lin_tol is not None else tol
     angle_values = _build_angle_list(angle_lower, angle_upper, angle_step, angles)
+    lattice1_array = np.asarray(lattice1, dtype=float)
+    lattice2_array = np.asarray(lattice2, dtype=float)
 
     all_candidates: List[lat.SupercellCandidate] = []
     resolved_workers = max(1, int(workers))
-    if resolved_workers <= 1 or len(angle_values) <= 1:
-        for angle_deg in angle_values:
-            all_candidates.extend(
-                _find_candidates_for_angle(
-                    (
-                        np.asarray(lattice1, dtype=float),
-                        np.asarray(lattice2, dtype=float),
-                        float(angle_deg),
-                        int(nindex),
-                        float(tol),
-                        vector_strain_tol,
-                        float(candidate_tolerance),
-                        int(atom_count1),
-                        int(atom_count2),
-                    )
-                )
-            )
+    task_inputs = [
+        (
+            lattice1_array,
+            lattice2_array,
+            float(angle_deg),
+            int(nindex),
+            float(tol),
+            vector_strain_tol,
+            float(candidate_tolerance),
+            int(atom_count1),
+            int(atom_count2),
+        )
+        for angle_deg in angle_values
+    ]
+    if resolved_workers <= 1 or len(task_inputs) <= 1:
+        for task in task_inputs:
+            all_candidates.extend(_find_candidates_for_angle(task))
     else:
-        tasks = [
-            (
-                np.asarray(lattice1, dtype=float),
-                np.asarray(lattice2, dtype=float),
-                float(angle_deg),
-                int(nindex),
-                float(tol),
-                vector_strain_tol,
-                float(candidate_tolerance),
-                int(atom_count1),
-                int(atom_count2),
-            )
-            for angle_deg in angle_values
-        ]
         try:
             with ProcessPoolExecutor(max_workers=resolved_workers, initializer=_limit_worker_threads) as executor:
-                for candidates in executor.map(_find_candidates_for_angle, tasks):
+                for candidates in executor.map(_find_candidates_for_angle, task_inputs):
                     all_candidates.extend(candidates)
         except (OSError, PermissionError):
-            for task in tasks:
+            for task in task_inputs:
                 all_candidates.extend(_find_candidates_for_angle(task))
+
+    resolved_strain_layer = str(strain_layer).lower()
+    if resolved_strain_layer not in {"avg", "1", "2"}:
+        raise ValueError("strain_layer must be 'avg', '1', or '2'")
 
     filtered: List[lat.SupercellCandidate] = []
     for candidate in all_candidates:
@@ -204,11 +186,11 @@ def find_supercells(
         if max_atoms is not None and candidate.total_atoms > max_atoms:
             continue
         if strain_tol is not None:
-            if strain_layer == "avg" and candidate.strain_avg > strain_tol:
+            if resolved_strain_layer == "avg" and candidate.strain_avg > strain_tol:
                 continue
-            if strain_layer == "1" and candidate.strain_layer1 > strain_tol:
+            if resolved_strain_layer == "1" and candidate.strain_layer1 > strain_tol:
                 continue
-            if strain_layer == "2" and candidate.strain_layer2 > strain_tol:
+            if resolved_strain_layer == "2" and candidate.strain_layer2 > strain_tol:
                 continue
         if matrix_values is not None and not candidate_matches_matrix_values(
             candidate,
@@ -231,8 +213,6 @@ def find_supercells(
 
 
 def candidate_to_dict(candidate: lat.SupercellCandidate, index: int | None = None) -> Dict[str, object]:
-    """Serialize one supercell candidate into a JSON-friendly dictionary."""
-
     payload: Dict[str, object] = {
         "angle_deg": float(candidate.angle_deg),
         "strain_avg": float(candidate.strain_avg),
@@ -257,8 +237,6 @@ def candidate_to_dict(candidate: lat.SupercellCandidate, index: int | None = Non
 
 
 def format_results_table(candidates: Sequence[lat.SupercellCandidate], limit: int | None = None) -> str:
-    """Format candidates as a fixed-width CLI table."""
-
     shown = list(candidates if limit is None or limit < 0 else candidates[: max(limit, 0)])
     if not shown:
         return "No candidates found."
@@ -306,8 +284,6 @@ def write_results_dat(
     run_id: str,
     parameters: Mapping[str, object],
 ) -> None:
-    """Write one DAT file with results plus the parameters used to create them."""
-
     with open(path, "w", encoding="utf-8") as handle:
         handle.write(f"{pos1} {pos2}\n")
         handle.write(f"# run_id = {run_id}\n")

@@ -9,9 +9,10 @@ from typing import List, Sequence
 
 import numpy as np
 
-from . import io as io_mod
+from ..interface import surface_backend as surface_mod
+from ..io import native as io_mod
 from . import lattice as lattice_mod
-from . import surface as surface_mod
+from .structure_helpers import expand_species as _expand_species_shared
 
 
 _ATOMIC_MASS_ROWS = """
@@ -183,12 +184,7 @@ class _TopGroupSplit:
 
 
 def _expand_species(species: Sequence[str], counts: Sequence[int]) -> List[str]:
-    if not species:
-        raise ValueError("POSCAR species labels are required to compute the molecule center of mass")
-    expanded: List[str] = []
-    for symbol, count in zip(species, counts):
-        expanded.extend([str(symbol)] * int(count))
-    return expanded
+    return _expand_species_shared(species, counts)
 
 
 def _species_disjoint_split(
@@ -198,11 +194,7 @@ def _species_disjoint_split(
     gaps: np.ndarray,
     min_gap: float,
 ) -> _TopGroupSplit | None:
-    """Use the lowest z-separated cluster as the substrate when species are disjoint.
-
-    This helps for adsorbates that are wrapped across the cell boundary in z,
-    where a pure largest-gap rule can split the adsorbate itself.
-    """
+    """Use the lowest z-separated cluster as the substrate when species are disjoint."""
 
     if not structure.species:
         return None
@@ -325,10 +317,7 @@ def identify_top_group(
         z_cutoff=float(z_cutoff),
         gap_size=gap_size,
         center_of_mass_cartesian=com_cart,
-        center_of_mass_direct=io_mod.cartesian_to_direct(
-            com_cart.reshape(1, 3),
-            structure.lattice,
-        )[0],
+        center_of_mass_direct=io_mod.cartesian_to_direct(com_cart.reshape(1, 3), structure.lattice)[0],
     )
 
 
@@ -526,7 +515,12 @@ def _combine_substrate_and_molecule(
     substrate_species_expanded = _expand_species(substrate.species, substrate.counts)
     molecule_species_expanded = _expand_species(molecule.species, molecule.counts)
 
-    combined_cartesian = np.vstack((np.asarray(substrate.positions_cartesian, dtype=float), np.asarray(molecule_positions_cartesian, dtype=float)))
+    combined_cartesian = np.vstack(
+        (
+            np.asarray(substrate.positions_cartesian, dtype=float),
+            np.asarray(molecule_positions_cartesian, dtype=float),
+        )
+    )
     molecule_indices = tuple(range(substrate.natoms, substrate.natoms + molecule.natoms))
     combined_direct = io_mod.cartesian_to_direct(combined_cartesian, substrate.lattice)
     reframed_direct, shift_direct = _reframe_direct_positions(
@@ -536,8 +530,16 @@ def _combine_substrate_and_molecule(
     )
     reframed_cartesian = io_mod.direct_to_cartesian(reframed_direct, substrate.lattice)
 
-    substrate_flags = _default_flag_list(substrate.natoms) if substrate.selective_flags is None else [tuple(flags) for flags in substrate.selective_flags]
-    molecule_flags = _default_flag_list(molecule.natoms) if molecule.selective_flags is None else [tuple(flags) for flags in molecule.selective_flags]
+    substrate_flags = (
+        _default_flag_list(substrate.natoms)
+        if substrate.selective_flags is None
+        else [tuple(flags) for flags in substrate.selective_flags]
+    )
+    molecule_flags = (
+        _default_flag_list(molecule.natoms)
+        if molecule.selective_flags is None
+        else [tuple(flags) for flags in molecule.selective_flags]
+    )
     use_flags = substrate.selective_flags is not None or molecule.selective_flags is not None
     combined_flags = substrate_flags + molecule_flags
 
@@ -627,7 +629,12 @@ def transform_top_molecule(
     expanded_species = _expand_species(structure.species, structure.counts)
     molecule_indices = np.array(selection.molecule_indices, dtype=int)
     molecule_species = [expanded_species[index] for index in selection.molecule_indices]
-    resolved_target_cartesian = _resolve_target_cartesian(structure.lattice, selection.center_of_mass_cartesian, target_cartesian, target_direct)
+    resolved_target_cartesian = _resolve_target_cartesian(
+        structure.lattice,
+        selection.center_of_mass_cartesian,
+        target_cartesian,
+        target_direct,
+    )
 
     all_cartesian = np.array(structure.positions_cartesian, dtype=float, copy=True)
     transformed_molecule, com_before = _transform_molecule_cartesian(
@@ -732,11 +739,13 @@ def place_molecule_on_site(
         height=height,
         rotation_deg=rotation_deg,
     )
-    positions_direct_out, counts_out, species_out, flags_out, shift_direct, final_molecule_cartesian = _combine_substrate_and_molecule(
-        substrate,
-        molecule,
-        placed_molecule_cartesian,
-        reframe_axes=reframe_axes,
+    positions_direct_out, counts_out, species_out, flags_out, shift_direct, final_molecule_cartesian = (
+        _combine_substrate_and_molecule(
+            substrate,
+            molecule,
+            placed_molecule_cartesian,
+            reframe_axes=reframe_axes,
+        )
     )
     center_after = center_of_mass_cartesian(final_molecule_cartesian, molecule_species_expanded)
 
@@ -832,3 +841,18 @@ def shift_top_layer(
         shift_cartesian=cartesian_shift,
         shift_direct=direct_shift,
     )
+
+
+__all__ = [
+    "ATOMIC_MASSES",
+    "AdsorbRun",
+    "LayerShiftRun",
+    "MoleculeSelection",
+    "MoleculeTransformRun",
+    "center_of_mass_cartesian",
+    "identify_top_group",
+    "identify_top_molecule",
+    "place_molecule_on_site",
+    "shift_top_layer",
+    "transform_top_molecule",
+]

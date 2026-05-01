@@ -16,12 +16,17 @@ from cellstine.cli import interactive as interactive_cli
 from cellstine.cli import main as cli_main
 from cellstine.core.previews import format_adsorption_sites, format_bilayer_candidates
 from cellstine.defect.defect import Defect as DefectWorkflow
+from cellstine.io import native as io
+from cellstine.moire import finder as cell_finder
+from cellstine.moire import generator as cell_generator
+from cellstine.moire import angles, find, finder, findn, generator, lattice, make, maken, molecule
 from cellstine.adsorbate.molecule import Molecule as MoleculeWorkflow
+from cellstine.interface import surface_backend as surface
 from cellstine.interface.surface import Surface as InterfaceSurface, _stacking_sequence
 from cellstine.interface.interface import Interface as InterfaceWorkflow, parse_miller_notation
 from cellstine.visualize.matplotlib_backend import _marker_size
+from cellstine.visualize import results_plotly as visualize
 from cellstine.moire.moire import Moire as MoireWorkflow
-from moire import angles, find, finder, findn, generator, io, lattice, make, maken, molecule, surface, visualize
 
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -233,6 +238,42 @@ class MoireToolkitTests(unittest.TestCase):
             [finder.candidate_to_dict(item) for item in parallel[:5]],
         )
 
+    def test_src_finder_matches_legacy_finder_for_explicit_angles(self):
+        legacy = finder.find_supercells(
+            self.mos2.lattice,
+            self.mos2.lattice,
+            None,
+            None,
+            angles=[13.15, 21.787],
+            nindex=12,
+            tol=2e-3,
+            lin_tol=2e-3,
+            atom_count1=self.mos2.natoms,
+            atom_count2=self.mos2.natoms,
+            max_atoms=200,
+            vector_strain_tol=2e-3,
+            workers=1,
+        )
+        migrated = cell_finder.find_supercells(
+            self.mos2.lattice,
+            self.mos2.lattice,
+            None,
+            None,
+            angles=[13.15, 21.787],
+            nindex=12,
+            tol=2e-3,
+            lin_tol=2e-3,
+            atom_count1=self.mos2.natoms,
+            atom_count2=self.mos2.natoms,
+            max_atoms=200,
+            vector_strain_tol=2e-3,
+            workers=1,
+        )
+        self.assertEqual(
+            [finder.candidate_to_dict(item) for item in legacy[:5]],
+            [cell_finder.candidate_to_dict(item) for item in migrated[:5]],
+        )
+
     def test_make_matches_reference_counts(self):
         if not all(Path(path).exists() for path in REFERENCE_FILES.values()):
             self.skipTest("reference POSCAR files are not present in Results/")
@@ -276,6 +317,49 @@ class MoireToolkitTests(unittest.TestCase):
                     self.assertEqual(generated.counts, reference.counts)
                 finally:
                     shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_src_generator_matches_legacy_supercell_build(self):
+        results = finder.find_supercells(
+            self.mos2.lattice,
+            self.mos2.lattice,
+            None,
+            None,
+            angles=[13.15],
+            nindex=12,
+            tol=2e-3,
+            lin_tol=2e-3,
+            atom_count1=self.mos2.natoms,
+            atom_count2=self.mos2.natoms,
+            max_atoms=200,
+            vector_strain_tol=2e-3,
+        )
+        best = results[0]
+        candidate_dict = finder.candidate_to_dict(best, 1)
+        record = cell_generator.record_from_candidate_dict(candidate_dict, 1)
+
+        legacy_output = generator.build_supercell(
+            MOS2_PATH,
+            MOS2_PATH,
+            record,
+            interlayer_distance=3.35,
+            preserve_layer="2",
+            tolerance=1,
+            tolerance_float=1e-4,
+        )
+        migrated_output = cell_generator.build_supercell(
+            MOS2_PATH,
+            MOS2_PATH,
+            record,
+            interlayer_distance=3.35,
+            preserve_layer="2",
+            tolerance=1,
+            tolerance_float=1e-4,
+        )
+
+        self.assertTrue(np.allclose(legacy_output[0], migrated_output[0]))
+        self.assertTrue(np.allclose(legacy_output[1], migrated_output[1]))
+        self.assertEqual(legacy_output[2], migrated_output[2])
+        self.assertEqual(legacy_output[3], migrated_output[3])
 
     def test_matrix_value_helper_matches_any_order(self):
         candidate = lattice.SupercellCandidate(
@@ -415,6 +499,85 @@ class MoireToolkitTests(unittest.TestCase):
 
             generated = io.read_poscar(str(make_run.output_path))
             self.assertEqual(generated.natoms, 171)
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_supermoire_wrapper_supports_base_independent_and_pairwise_modes(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            tool = cellstine.Supermoire(runs_root=str(temp_root / "runs"), output_root=str(temp_root / "output"))
+            independent = tool.findn(
+                bottom_poscar=MOS2_PATH,
+                upper_poscars=[MOS2_PATH],
+                nindex=8,
+                match_mode="base_independent",
+                min_angles=[0.0],
+                max_angles=[60.0],
+                explicit_angles_by_layer=[[13.15]],
+                vector_tolerance=2e-3,
+                vector_strain_tolerance=2e-3,
+                candidate_tolerance=2e-3,
+                max_atoms=300,
+                workers=1,
+            )
+            self.assertIn("results_dat_upper_1", independent.artifacts)
+            self.assertTrue(Path(independent.artifacts["results_dat_upper_1"]).exists())
+
+            pairwise = tool.findn(
+                bottom_poscar=MOS2_PATH,
+                upper_poscars=[MOS2_PATH],
+                nindex=8,
+                match_mode="pairwise",
+                min_angles=[0.0],
+                max_angles=[60.0],
+                explicit_angles_by_layer=[[13.15]],
+                vector_tolerance=2e-3,
+                vector_strain_tolerance=2e-3,
+                candidate_tolerance=2e-3,
+                max_atoms=300,
+                workers=1,
+            )
+            self.assertEqual(pairwise.summary["pair_count"], 1)
+            self.assertIn("results_dat_pair_1", pairwise.artifacts)
+            self.assertTrue(Path(pairwise.artifacts["results_dat_pair_1"]).exists())
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_moire_translate_and_translaten_shift_only_the_top_group(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            stacked_path = temp_root / "stacked_simple.vasp"
+            io.write_poscar(
+                str(stacked_path),
+                np.diag([4.0, 4.0, 12.0]),
+                np.array(
+                    [
+                        [0.1, 0.1, 0.10],
+                        [0.6, 0.6, 0.18],
+                        [0.2, 0.2, 0.78],
+                        [0.7, 0.7, 0.86],
+                    ],
+                    dtype=float,
+                ),
+                [2, 2],
+                ["A", "B"],
+                comment="simple stacked structure",
+                positions_are_cartesian=False,
+            )
+
+            moire_tool = MoireWorkflow(runs_root=str(temp_root / "runs"), output_root=str(temp_root / "output"))
+            shifted = moire_tool.translate(poscar_path=str(stacked_path), shift_direct=[0.25, 0.0, 0.0])
+            shifted_record = io.read_poscar(str(shifted.artifacts["output_poscar"]))
+            self.assertTrue(np.allclose(shifted_record.positions_direct[:2], np.array([[0.1, 0.1, 0.10], [0.6, 0.6, 0.18]])))
+            self.assertTrue(np.allclose(shifted_record.positions_direct[2:, 0], np.array([0.45, 0.95])))
+
+            super_tool = cellstine.Supermoire(runs_root=str(temp_root / "runs2"), output_root=str(temp_root / "output2"))
+            shifted_n = super_tool.translaten(poscar_path=str(stacked_path), shift_direct=[0.0, 0.25, 0.0])
+            shifted_n_record = io.read_poscar(str(shifted_n.artifacts["output_poscar"]))
+            self.assertTrue(np.allclose(shifted_n_record.positions_direct[:2], np.array([[0.1, 0.1, 0.10], [0.6, 0.6, 0.18]])))
+            self.assertTrue(np.allclose(shifted_n_record.positions_direct[2:, 1], np.array([0.45, 0.95])))
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 

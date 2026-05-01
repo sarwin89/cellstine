@@ -6,10 +6,13 @@ from itertools import combinations
 from pathlib import Path
 from typing import Sequence
 
-from ..core.base import legacy_modules, run_output_suffix
+from ..core.base import run_output_suffix
 from ..core.lattice import apply_inplane_prestrain
 from ..core.models import CommandResult, PrestrainConfig
 from ..core.previews import format_bilayer_candidates, format_nlayer_candidates
+from .find import run_find
+from .findn import run_findn
+from .maken import generate_many_from_results
 from .moire import Moire
 
 
@@ -71,7 +74,7 @@ class Supermoire(Moire):
         resolved_max_angles = list(max_angles or [60.0] * len(upper_poscars))
 
         if resolved_mode == "base_shared":
-            run = legacy_modules().findn_stage.run_findn(
+            run = run_findn(
                 bottom_poscar=str(Path(bottom_poscar).resolve()),
                 upper_poscars=[str(Path(path).resolve()) for path in upper_poscars],
                 bottom_lattice=bottom_lattice,
@@ -111,7 +114,7 @@ class Supermoire(Moire):
             for index, (upper_path, upper, upper_lattice) in enumerate(zip(upper_poscars, uppers, upper_lattices), start=1):
                 subdir = run_dir / f"upper_{index:02d}"
                 subdir.mkdir(parents=True, exist_ok=True)
-                run = legacy_modules().find_stage.run_find(
+                run = run_find(
                     top_poscar=str(Path(upper_path).resolve()),
                     bottom_poscar=str(Path(bottom_poscar).resolve()),
                     top_lattice=upper_lattice,
@@ -150,7 +153,7 @@ class Supermoire(Moire):
             for pair_index, (i_value, j_value) in enumerate(combinations(range(len(paths)), 2), start=1):
                 subdir = run_dir / f"pair_{i_value + 1}_{j_value + 1}"
                 subdir.mkdir(parents=True, exist_ok=True)
-                run = legacy_modules().find_stage.run_find(
+                run = run_find(
                     top_poscar=str(Path(paths[j_value]).resolve()),
                     bottom_poscar=str(Path(paths[i_value]).resolve()),
                     top_lattice=lattices[j_value],
@@ -220,7 +223,7 @@ class Supermoire(Moire):
         run_id, run_dir = self.create_run_dir("maken", Path(resolved_results).stem)
         output_suffix = run_output_suffix(run_id)
         resolved_output_dir = output_dir or str(self.output_root / run_id)
-        runs = legacy_modules().maken_stage.generate_many_from_results(
+        runs = generate_many_from_results(
             resolved_results,
             indexes=[int(value) for value in indexes],
             interlayers=[float(value) for value in interlayers],

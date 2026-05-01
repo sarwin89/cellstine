@@ -45,8 +45,6 @@ class SupercellCandidate:
 
 
 def in_plane_lengths_and_angle(lattice: np.ndarray) -> Tuple[float, float, float]:
-    """Return (|a|, |b|, gamma_deg) for the in-plane primitive vectors."""
-
     basis = np.asarray(lattice, dtype=float)[:2, :2]
     vector_a = basis[0]
     vector_b = basis[1]
@@ -59,14 +57,6 @@ def in_plane_lengths_and_angle(lattice: np.ndarray) -> Tuple[float, float, float
 
 
 def infer_rotational_symmetry_angle(lattice: np.ndarray, tolerance: float = 1e-2) -> int:
-    """Infer the smallest rotational periodicity angle for a 2D lattice.
-
-    Heuristic classes:
-    - hexagonal: a=b and gamma~60 or 120 -> 60 deg
-    - square: a=b and gamma~90 -> 90 deg
-    - other Bravais classes -> 180 deg
-    """
-
     length_a, length_b, gamma_deg = in_plane_lengths_and_angle(lattice)
     relative_length_delta = abs(length_a - length_b) / max((length_a + length_b) * 0.5, 1e-12)
     equal_lengths = relative_length_delta <= tolerance
@@ -78,16 +68,12 @@ def infer_rotational_symmetry_angle(lattice: np.ndarray, tolerance: float = 1e-2
 
 
 def combined_symmetry_limit(lattice1: np.ndarray, lattice2: np.ndarray) -> Tuple[int, int, int]:
-    """Return (sym1, sym2, lcm(sym1, sym2)) for two lattices."""
-
     symmetry_1 = infer_rotational_symmetry_angle(lattice1)
     symmetry_2 = infer_rotational_symmetry_angle(lattice2)
     return symmetry_1, symmetry_2, int(math.lcm(symmetry_1, symmetry_2))
 
 
 def rotate_vector(vector: Sequence[float], theta_rad: float) -> np.ndarray:
-    """Rotate a 2D vector by theta_rad around the z-axis."""
-
     cos_theta = math.cos(theta_rad)
     sin_theta = math.sin(theta_rad)
     x_value, y_value = float(vector[0]), float(vector[1])
@@ -101,8 +87,6 @@ def rotate_vector(vector: Sequence[float], theta_rad: float) -> np.ndarray:
 
 
 def rotation_matrix_z(angle_deg: float) -> np.ndarray:
-    """Return the 3D rotation matrix for an in-plane rotation."""
-
     theta = math.radians(angle_deg)
     cos_theta = math.cos(theta)
     sin_theta = math.sin(theta)
@@ -117,20 +101,14 @@ def rotation_matrix_z(angle_deg: float) -> np.ndarray:
 
 
 def rotate_lattice(lattice: np.ndarray, angle_deg: float) -> np.ndarray:
-    """Rotate a lattice in the x-y plane."""
-
     return np.asarray(lattice, dtype=float) @ rotation_matrix_z(angle_deg).T
 
 
 def rotate_cartesian_positions(positions: np.ndarray, angle_deg: float) -> np.ndarray:
-    """Rotate Cartesian coordinates in the x-y plane."""
-
     return np.asarray(positions, dtype=float) @ rotation_matrix_z(angle_deg).T
 
 
 def unit_area(v1: Sequence[float], v2: Sequence[float]) -> float:
-    """Absolute 2D cross product."""
-
     return abs(float(v1[0]) * float(v2[1]) - float(v1[1]) * float(v2[0]))
 
 
@@ -152,8 +130,6 @@ def _metric_tensor(a_vec: Sequence[float], b_vec: Sequence[float], c_vec: Sequen
 
 
 def calculate_strain(a1: Sequence[float], b1: Sequence[float], c1: Sequence[float], a2: Sequence[float], b2: Sequence[float], c2: Sequence[float]) -> float:
-    """Legacy-compatible deformation strain metric from CellMatch."""
-
     metric_tensor1 = _metric_tensor(a1, b1, c1)
     metric_tensor2 = _metric_tensor(a2, b2, c2)
 
@@ -167,8 +143,6 @@ def calculate_strain(a1: Sequence[float], b1: Sequence[float], c1: Sequence[floa
 
 
 def calculate_strain_batch(layer1_vectors: np.ndarray, layer2_vectors: np.ndarray) -> np.ndarray:
-    """Vectorized deformation strain metric for batches of 2D vector pairs."""
-
     basis1 = np.stack(
         (
             np.stack((layer1_vectors[:, 0, 0], layer1_vectors[:, 1, 0]), axis=1),
@@ -193,8 +167,6 @@ def calculate_strain_batch(layer1_vectors: np.ndarray, layer2_vectors: np.ndarra
 
 
 def enumerate_integer_coefficients(nindex: int) -> np.ndarray:
-    """Return all integer coefficient pairs except the origin."""
-
     values = np.arange(-nindex, nindex + 1, dtype=int)
     grid_x, grid_y = np.meshgrid(values, values, indexing="ij")
     coeffs = np.stack((grid_x.ravel(), grid_y.ravel()), axis=1)
@@ -202,8 +174,6 @@ def enumerate_integer_coefficients(nindex: int) -> np.ndarray:
 
 
 def enumerate_in_plane_vectors(lattice: np.ndarray, nindex: int) -> Tuple[np.ndarray, np.ndarray]:
-    """Enumerate all in-plane lattice vectors a*v1 + b*v2."""
-
     coeffs = enumerate_integer_coefficients(nindex)
     basis = np.asarray(lattice, dtype=float)[:2, :2]
     vectors = coeffs @ basis
@@ -218,8 +188,6 @@ def find_coincident_vector_pairs(
     *,
     strain_tolerance: float | None = None,
 ) -> List[VectorMatch]:
-    """Find nearly coincident vectors between two in-plane lattices."""
-
     coeffs1, vectors1 = enumerate_in_plane_vectors(lattice1, nindex)
     coeffs2, vectors2 = enumerate_in_plane_vectors(lattice2, nindex)
 
@@ -253,23 +221,6 @@ def find_coincident_vector_pairs(
     return matches
 
 
-def _vector_pair_strains(v1: np.ndarray, v2: np.ndarray, g1: np.ndarray, g2: np.ndarray) -> Tuple[float, float]:
-    norm_v1 = np.linalg.norm(v1)
-    norm_v2 = np.linalg.norm(v2)
-    norm_g1 = np.linalg.norm(g1)
-    norm_g2 = np.linalg.norm(g2)
-
-    strain1 = 0.0
-    if norm_v1 > 0.0 and norm_v2 > 0.0:
-        strain1 = math.sqrt(((norm_g1 / norm_v1 - 1.0) ** 2 + (norm_g2 / norm_v2 - 1.0) ** 2) / 2.0)
-
-    strain2 = 0.0
-    if norm_g1 > 0.0 and norm_g2 > 0.0:
-        strain2 = math.sqrt(((norm_v1 / norm_g1 - 1.0) ** 2 + (norm_v2 / norm_g2 - 1.0) ** 2) / 2.0)
-
-    return float(strain1), float(strain2)
-
-
 def build_supercell_candidates(
     matches: Sequence[VectorMatch],
     rotated_lattice1: np.ndarray,
@@ -279,8 +230,6 @@ def build_supercell_candidates(
     candidate_tolerance: float,
     angle_deg: float,
 ) -> List[SupercellCandidate]:
-    """Build commensurate supercell candidates from matched vectors."""
-
     base_area1 = unit_area(rotated_lattice1[0, :2], rotated_lattice1[1, :2])
     base_area2 = unit_area(lattice2[0, :2], lattice2[1, :2])
     if base_area1 == 0.0 or base_area2 == 0.0:
@@ -398,8 +347,6 @@ def deduplicate_candidates(
     ratio_tolerance: float = 1e-5,
     angle_tolerance: float = 1e-9,
 ) -> List[SupercellCandidate]:
-    """Collapse near-identical candidates while keeping the shortest cell."""
-
     ordered = sorted(candidates, key=lambda item: (item.angle_deg, item.strain_avg, item.vector_product, item.total_atoms))
     unique: List[SupercellCandidate] = []
 

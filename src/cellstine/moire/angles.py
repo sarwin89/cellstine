@@ -6,6 +6,10 @@ import argparse
 from dataclasses import dataclass
 from typing import List, Sequence, Tuple
 
+import numpy as np
+
+from . import lattice as lat
+
 
 class _HelpFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
     """Help formatter with visible defaults and readable examples."""
@@ -47,18 +51,6 @@ def find_commensurate_angles(
     angle_round_decimals: int = 4,
     merge_tolerance: float = 1e-3,
 ) -> List[AngleCandidate]:
-    """Find unique candidate commensurate angles from matching span lengths.
-
-    This follows the fast `cellfind` idea:
-    - generate full integer spans with NumPy
-    - match vectors by equal length (or allowed relative mismatch)
-    - compute the rotation angle between every matching pair
-    - keep only angles in the symmetry-limited search window
-    """
-    import numpy as np
-
-    from . import lattice as lat
-
     _, _, symmetry_lcm = lat.combined_symmetry_limit(lattice1, lattice2)
     bounded_min = max(0.0, float(min_angle))
     bounded_max = float(symmetry_lcm if max_angle is None else min(float(max_angle), symmetry_lcm))
@@ -121,8 +113,6 @@ def find_commensurate_angles(
 
 
 def format_angle_table(candidates: Sequence[AngleCandidate]) -> str:
-    """Format candidate angles as a simple GitHub-friendly table."""
-
     lines = [
         "| idx | angle (deg) | coeffs1 | coeffs2 | length1 | length2 | rel mismatch |",
         "| ---:| ----------: | :------ | :------ | ------: | ------: | -----------: |",
@@ -171,7 +161,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    from . import io as io_mod
+    from ..io import native as io_mod
 
     structure1 = io_mod.read_poscar(args.pos1)
     structure2 = io_mod.read_poscar(args.pos2)
@@ -188,8 +178,8 @@ def main() -> None:
     table = format_angle_table(candidates)
     print(table)
     if args.output:
-        with open(args.output, 'w', encoding='utf-8') as handle:
-            handle.write(table + '\n')
+        with open(args.output, "w", encoding="utf-8") as handle:
+            handle.write(table + "\n")
 
 
 if __name__ == "__main__":

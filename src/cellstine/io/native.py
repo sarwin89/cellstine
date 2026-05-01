@@ -1,4 +1,4 @@
-"""POSCAR helpers shared by the finder and generator flows."""
+"""Native POSCAR helpers shared by the finder and generator flows."""
 
 from __future__ import annotations
 

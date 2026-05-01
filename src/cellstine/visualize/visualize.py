@@ -5,11 +5,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Sequence
 
-from ..core.base import Base, legacy_modules, run_output_suffix
+from ..core.base import Base, run_output_suffix
 from ..core.models import CommandResult
 from ..io.converters import StructureConverter
 from .matplotlib_backend import plot_moire_summary, plot_structure_multiview
 from .plotly_backend import write_structure_html
+from .results_plotly import build_visualization
 
 
 class Visualize(Base):
@@ -38,7 +39,7 @@ class Visualize(Base):
         resolved_results = self.resolve_results_file(results_file, artifact_keys=("results_dat", "results_json"))
         if plotly:
             output = output_path or str(self.output_root / f"moire_viewer_{output_suffix}.html")
-            run = legacy_modules().visualize_stage.build_visualization(
+            run = build_visualization(
                 resolved_results,
                 indices=indices,
                 output_path=output,

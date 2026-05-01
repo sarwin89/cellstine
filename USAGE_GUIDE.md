@@ -11,6 +11,8 @@ The package is organized around four top-level workflows:
 
 Examples below use the installed command `cellstine`. Inside the repository, `python moire_cli.py ...` works as a compatibility entrypoint too.
 
+The older top-level `moire` Python package has been retired. Import workflow classes and helpers from `cellstine...` modules going forward.
+
 ## 1. Installation And Entry Points
 
 Base install:

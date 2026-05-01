@@ -5,11 +5,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Sequence
 
-from ..core.base import Base, legacy_modules, run_output_suffix
+from ..core.base import Base, run_output_suffix
 from ..core.lattice import apply_inplane_prestrain
 from ..core.models import CommandResult, PrestrainConfig
 from ..core.previews import format_bilayer_candidates
 from ..io.converters import StructureConverter
+from .find import run_find
+from .make import generate_many_from_results
+from .molecule import shift_top_layer
 
 
 def _safe_token(value: object) -> str:
@@ -70,7 +73,7 @@ class Moire(Base):
 
         label = f"{Path(bottom_poscar).stem}_{Path(top_poscar).stem}"
         run_id, run_dir = self.create_run_dir("find", label)
-        run = legacy_modules().find_stage.run_find(
+        run = run_find(
             top_poscar=str(Path(top_poscar).resolve()),
             bottom_poscar=str(Path(bottom_poscar).resolve()),
             top_lattice=top_lattice,
@@ -163,7 +166,7 @@ class Moire(Base):
         run_id, run_dir = self.create_run_dir("make", Path(resolved_results).stem)
         output_suffix = run_output_suffix(run_id)
         resolved_output_dir = output_dir or str(self.output_root / run_id)
-        runs = legacy_modules().make_stage.generate_many_from_results(
+        runs = generate_many_from_results(
             resolved_results,
             indexes=[int(value) for value in indexes],
             interlayer_distance=float(interlayer_distance),
@@ -217,7 +220,7 @@ class Moire(Base):
         resolved_output_path = output_path or str(
             self.output_root / f"{_safe_token(Path(poscar_path).stem)}_upper_layer_shifted_{output_suffix}.vasp"
         )
-        run = legacy_modules().molecule_stage.shift_top_layer(
+        run = shift_top_layer(
             poscar_path=str(Path(poscar_path).resolve()),
             output_path=resolved_output_path,
             shift_cartesian=shift_cartesian,

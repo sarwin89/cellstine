@@ -4,9 +4,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, is_dataclass
 from datetime import datetime
-from functools import lru_cache
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Any, Dict
 
 import numpy as np
@@ -14,37 +12,6 @@ import numpy as np
 from .dependencies import DependencyManager
 from .manifests import RunManifest
 from .models import CommandResult
-
-
-@lru_cache(maxsize=1)
-def legacy_modules() -> SimpleNamespace:
-    """Import the legacy numerical backend lazily."""
-
-    from moire import find as find_stage
-    from moire import findn as findn_stage
-    from moire import finder as finder_backend
-    from moire import generator as generator_backend
-    from moire import io as io_mod
-    from moire import lattice as lattice_backend
-    from moire import make as make_stage
-    from moire import maken as maken_stage
-    from moire import molecule as molecule_stage
-    from moire import surface as surface_stage
-    from moire import visualize as visualize_stage
-
-    return SimpleNamespace(
-        find_stage=find_stage,
-        findn_stage=findn_stage,
-        finder_backend=finder_backend,
-        generator_backend=generator_backend,
-        io_mod=io_mod,
-        lattice_backend=lattice_backend,
-        make_stage=make_stage,
-        maken_stage=maken_stage,
-        molecule_stage=molecule_stage,
-        surface_stage=surface_stage,
-        visualize_stage=visualize_stage,
-    )
 
 
 def _slug(value: str, max_length: int = 64) -> str:

@@ -8,11 +8,12 @@ from typing import Iterable, Sequence
 
 import numpy as np
 
-from ..core.base import Base, legacy_modules, run_output_suffix
+from ..core.base import Base, run_output_suffix
 from ..core.lattice import lattice_mismatch_fraction
 from ..core.models import CommandResult
 from ..core.transforms import strained_copy
 from ..io.converters import StructureConverter
+from ..io import native as io_mod
 from ..io.orientation import OrientationNormalizer
 from ..io.vasp import VaspIO
 
@@ -93,7 +94,6 @@ def _group_by_species(record, positions_direct: np.ndarray, selective_flags):
 
 
 def _stack_structures(bottom, top, *, gap: float):
-    io_mod = legacy_modules().io_mod
     bottom_cartesian = np.array(bottom.positions_cartesian, dtype=float, copy=True)
     top_cartesian = np.array(top.positions_cartesian, dtype=float, copy=True)
     lower_padding = 2.0
@@ -237,7 +237,7 @@ class Interface(Base):
         output_record.comment = f"{bottom.comment} | interface with {Path(top_path).stem}"
         output_record.lattice = final_lattice
         output_record.positions_direct = positions_direct
-        output_record.positions_cartesian = legacy_modules().io_mod.direct_to_cartesian(positions_direct, final_lattice)
+        output_record.positions_cartesian = io_mod.direct_to_cartesian(positions_direct, final_lattice)
         output_record.species = species
         output_record.counts = counts
         output_record.selective_flags = flags

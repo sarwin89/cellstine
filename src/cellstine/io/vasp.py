@@ -6,8 +6,8 @@ from pathlib import Path
 
 import numpy as np
 
-from ..core.base import legacy_modules
 from .models import StructureRecord
+from . import native as native_vasp
 
 
 class VaspIO:
@@ -16,7 +16,7 @@ class VaspIO:
     extensions = {".vasp", ".poscar", ".contcar", ""}
 
     def read(self, path: str) -> StructureRecord:
-        data = legacy_modules().io_mod.read_poscar(path)
+        data = native_vasp.read_poscar(path)
         return StructureRecord(
             comment=str(data.comment),
             lattice=np.array(data.lattice, dtype=float, copy=True),
@@ -44,7 +44,7 @@ class VaspIO:
         output_path = Path(path).resolve()
         output_path.parent.mkdir(parents=True, exist_ok=True)
         positions = record.positions_cartesian if positions_are_cartesian else record.positions_direct
-        legacy_modules().io_mod.write_poscar(
+        native_vasp.write_poscar(
             str(output_path),
             np.asarray(record.lattice, dtype=float),
             np.asarray(positions, dtype=float),

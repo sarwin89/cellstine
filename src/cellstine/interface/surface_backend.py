@@ -10,7 +10,7 @@ from typing import Dict, List, Sequence, Tuple
 
 import numpy as np
 
-from . import io as io_mod
+from ..io import native as io_mod
 
 DEFAULT_OUTPUT_DIR = Path("output")
 

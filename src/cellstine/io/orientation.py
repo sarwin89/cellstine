@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from ..core.base import legacy_modules
 from ..core.transforms import right_handed_lattice
+from . import native as native_vasp
 from .models import StructureRecord
 
 
@@ -14,7 +14,7 @@ class OrientationNormalizer:
 
     def ensure_right_handed(self, record: StructureRecord) -> StructureRecord:
         lattice, positions_direct = right_handed_lattice(record.lattice, record.positions_direct)
-        positions_cartesian = legacy_modules().io_mod.direct_to_cartesian(positions_direct, lattice)
+        positions_cartesian = native_vasp.direct_to_cartesian(positions_direct, lattice)
         updated = record.copy()
         updated.lattice = lattice
         updated.positions_direct = positions_direct
@@ -40,7 +40,7 @@ class OrientationNormalizer:
         rotation = np.column_stack((x_hat, y_hat, z_hat))
         rotated_lattice = lattice @ rotation
         rotated_cartesian = cartesian @ rotation
-        rotated_direct = legacy_modules().io_mod.cartesian_to_direct(rotated_cartesian, rotated_lattice)
+        rotated_direct = native_vasp.cartesian_to_direct(rotated_cartesian, rotated_lattice)
         updated.lattice = rotated_lattice
         updated.positions_cartesian = rotated_cartesian
         updated.positions_direct = rotated_direct

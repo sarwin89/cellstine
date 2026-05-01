@@ -20,6 +20,8 @@
 
 CELLSTINE is a Python package and guided command-line tool for building atomistic structures used in VASP-style materials workflows. It provides grouped workflows for commensurate moire supercells, molecule-on-substrate placement, surface generation, adsorption-site analysis, slab-on-slab interface construction, and defect-structure generation.
 
+The codebase now lives fully under `src/cellstine`, with the earlier top-level `moire/` compatibility layer retired after migration into the package modules.
+
 ## Features
 
 - Commensurate bilayer and N-layer moire search and construction.
@@ -85,8 +87,7 @@ Detailed CLI examples and workflow notes are in [USAGE_GUIDE.md](USAGE_GUIDE.md)
 ## Repository Layout
 
 ```text
-src/cellstine/   Main Python package
-moire/           Compatibility layer and established moire kernels
+src/cellstine/   Main Python package and workflow backends
 tests/           Unit tests
 input/           Local source structures
 runs/            Saved manifests and intermediate workflow artifacts

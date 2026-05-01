@@ -7,11 +7,16 @@ from typing import Sequence
 
 import numpy as np
 
-from .base import legacy_modules
-
-
 def in_plane_lengths_and_angle(lattice: np.ndarray) -> tuple[float, float, float]:
-    return legacy_modules().lattice_backend.in_plane_lengths_and_angle(np.asarray(lattice, dtype=float))
+    basis = np.asarray(lattice, dtype=float)[:2, :2]
+    vector_a = basis[0]
+    vector_b = basis[1]
+    length_a = float(np.linalg.norm(vector_a))
+    length_b = float(np.linalg.norm(vector_b))
+    denominator = max(length_a * length_b, 1e-12)
+    cosine = np.clip(float(np.dot(vector_a, vector_b) / denominator), -1.0, 1.0)
+    gamma_deg = float(np.degrees(np.arccos(cosine)))
+    return length_a, length_b, gamma_deg
 
 
 def build_target_lattice(a_length: float, b_length: float, angle_deg: float, c_length: float = 30.0) -> np.ndarray:

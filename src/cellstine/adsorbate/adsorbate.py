@@ -5,13 +5,15 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Sequence
 
-from ..core.base import Base, legacy_modules, run_output_suffix
+from ..core.base import Base, run_output_suffix
 from ..core.lattice import build_target_lattice
 from ..core.models import CommandResult
 from ..core.previews import format_bilayer_candidates
 from ..interface.surface import Surface
 from ..io.converters import StructureConverter
 from ..io.vasp import VaspIO
+from ..moire.find import run_find
+from ..moire.molecule import place_molecule_on_site, transform_top_molecule
 
 
 def _safe_token(value: object) -> str:
@@ -112,7 +114,7 @@ class Adsorbate(Base):
                 f"_rot{_safe_token(f'{float(rotation_deg):.2f}')}_{output_suffix}.vasp"
             )
         )
-        run = legacy_modules().molecule_stage.place_molecule_on_site(
+        run = place_molecule_on_site(
             substrate_poscar=resolved_substrate,
             molecule_poscar=str(resolved_molecule_path),
             site_type=str(site_type),
@@ -189,7 +191,7 @@ class Adsorbate(Base):
                 f"move_{target_token}_rot{_safe_token(f'{float(rotation_deg):.2f}')}_{output_suffix}.vasp"
             )
         )
-        run = legacy_modules().molecule_stage.transform_top_molecule(
+        run = transform_top_molecule(
             poscar_path=str(Path(poscar_path).resolve()),
             output_path=resolved_output_path,
             target_cartesian=target_cartesian,
@@ -244,7 +246,7 @@ class Adsorbate(Base):
         target_record.positions_cartesian = target_record.positions_direct @ target_lattice
         target_path = run_dir / "assembly_target.vasp"
         self.vasp_io.write(target_record, str(target_path), positions_are_cartesian=False, wrap_positions=False)
-        run = legacy_modules().find_stage.run_find(
+        run = run_find(
             top_poscar=str(target_path),
             bottom_poscar=str(Path(substrate_poscar).resolve()),
             top_lattice=target_lattice,

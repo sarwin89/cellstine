@@ -5,10 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Sequence
 
-from ..core.base import legacy_modules
 from ..core.manifests import RunManifest
 from ..core.previews import format_adsorption_sites, preview_moire_results_file
 from ..defect.defect import Defect
+from ..interface import surface_backend
 from ..interface.interface import parse_miller_notation
 from .main import _print_result, execute_namespace
 from .parsers import build_parser
@@ -16,6 +16,15 @@ from .parsers import build_parser
 INPUT_DIR = Path("input")
 RUNS_DIR = Path("runs")
 OUTPUT_DIR = Path("output")
+
+MAIN_MENU_BANNER = r"""
+ ██████╗███████╗██╗     ██╗     ███████╗████████╗██╗███╗   ██╗███████╗
+██╔════╝██╔════╝██║     ██║     ██╔════╝╚══██╔══╝██║████╗  ██║██╔════╝
+██║     █████╗  ██║     ██║     ███████╗   ██║   ██║██╔██╗ ██║█████╗
+██║     ██╔══╝  ██║     ██║     ╚════██║   ██║   ██║██║╚██╗██║██╔══╝
+╚██████╗███████╗███████╗███████╗███████║   ██║   ██║██║ ╚████║███████╗
+ ╚═════╝╚══════╝╚══════╝╚══════╝╚══════╝   ╚═╝   ╚═╝╚═╝  ╚═══╝╚══════╝
+""".strip("\n")
 
 
 class _QuitInteractive(Exception):
@@ -32,6 +41,13 @@ def _print_title(title: str, subtitle: str | None = None) -> None:
     print("-" * len(title))
     if subtitle:
         print(subtitle)
+
+
+def _print_main_menu_banner() -> None:
+    print()
+    print(MAIN_MENU_BANNER)
+    print()
+    print("Made by Sarwin Chandran 2026")
 
 
 def _prompt(
@@ -254,7 +270,7 @@ def _print_saved_moire_preview(results_file: str, limit: int = 15) -> None:
 
 
 def _print_site_index_options(site_report, site_type: str, limit: int = 30) -> None:
-    sites = legacy_modules().surface_stage.sorted_sites_for_type(site_report, site_type)
+    sites = surface_backend.sorted_sites_for_type(site_report, site_type)
     print()
     print(format_adsorption_sites(sites, limit=int(limit), title=f"{_SITE_LABELS.get(site_type, site_type)} site positions"))
     if len(sites) > int(limit):
@@ -546,7 +562,7 @@ def _build_adsorbate_place() -> list[str]:
             matrix_values = _parse_matrix_entries(matrix_text)
             argv.extend(["--substrate-supercell-matrix", matrix_text])
         try:
-            preview = legacy_modules().surface_stage.build_surface_structure(
+            preview = surface_backend.build_surface_structure(
                 substrate,
                 miller=parse_miller_notation(miller),
                 layers=layers,
@@ -555,13 +571,13 @@ def _build_adsorbate_place() -> list[str]:
                 repeat_b=repeat_b,
                 supercell_matrix=matrix_values,
             )
-            site_report = legacy_modules().surface_stage.find_adsorption_sites(preview.structure)
+            site_report = surface_backend.find_adsorption_sites(preview.structure)
         except Exception as exc:
             print()
             print(f"Site preview failed for this bulk-derived substrate: {exc}")
     else:
         try:
-            site_report = legacy_modules().surface_stage.find_adsorption_sites(substrate)
+            site_report = surface_backend.find_adsorption_sites(substrate)
         except Exception as exc:
             print()
             print(f"Site analysis failed for the selected substrate: {exc}")
@@ -642,7 +658,7 @@ def _build_interface_surface() -> list[str]:
     bulk = _prompt_path("Choose the bulk POSCAR", patterns=("*.vasp",), roots=(INPUT_DIR, OUTPUT_DIR))
     miller = _prompt("Miller indices (compact 111/001/111x or comma form 1,1,2x)", "111")
     try:
-        preview = legacy_modules().surface_stage.analyse_primitive_surface(
+        preview = surface_backend.analyse_primitive_surface(
             bulk,
             miller=parse_miller_notation(miller),
             probe_layers=6,
@@ -1095,6 +1111,7 @@ def _run_interactive(group: str | None = None) -> int:
     while True:
         try:
             if active_group is None:
+                _print_main_menu_banner()
                 active_group = _choice(
                     "CELLSTINE Interactive Mode",
                     [

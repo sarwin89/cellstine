@@ -1,7 +1,4 @@
-"""Generator backend for exact moire supercell construction.
-
-Made by Sarwin Chandran.
-"""
+"""Generator backend for exact moire supercell construction."""
 
 from __future__ import annotations
 
@@ -11,17 +8,13 @@ from typing import Dict, List, Sequence, Tuple
 
 import numpy as np
 
-from . import io as io_mod
 from . import lattice as lat
-
-
-# Made by Sarwin Chandran: this module hosts the supercell generator backend.
+from ..io import native as io_mod
+from .structure_helpers import expand_species
 
 
 def record_from_candidate_dict(candidate: Dict[str, object], index: int | None = None) -> Dict[str, object]:
-    """Convert a serialized finder candidate into generator coefficients."""
-
-    payload: Dict[str, object] = {
+    return {
         "idx": int(index) if index is not None else int(candidate.get("index", 0)),
         "angle": float(candidate["angle_deg"]),
         "ratio1": int(candidate["ratio1"]),
@@ -35,12 +28,9 @@ def record_from_candidate_dict(candidate: Dict[str, object], index: int | None =
         "j21": int(candidate["layer2_vector2"][0]),
         "j22": int(candidate["layer2_vector2"][1]),
     }
-    return payload
 
 
 def parse_results(filename: str) -> Tuple[str, str, List[dict], dict]:
-    """Parse finder results from JSON or legacy DAT format."""
-
     if filename.lower().endswith(".json"):
         with open(filename, "r", encoding="utf-8") as handle:
             payload = json.load(handle)
@@ -100,14 +90,7 @@ def parse_results(filename: str) -> Tuple[str, str, List[dict], dict]:
 
 
 def _expand_species(species: Sequence[str], counts: Sequence[int], fallback: str) -> List[str]:
-    if species:
-        labels = list(species)
-    else:
-        labels = [fallback] * len(counts)
-    expanded: List[str] = []
-    for symbol, count in zip(labels, counts):
-        expanded.extend([symbol] * int(count))
-    return expanded
+    return expand_species(species, counts, fallback)
 
 
 def _search_range(coef_a: int, coef_b: int, tolerance_r: int) -> range:
@@ -164,41 +147,51 @@ def _replicate_layer_cartesian(
     species: Sequence[str],
     selective_flags: Sequence[Tuple[str, str, str]] | None,
 ) -> List[Tuple[str, np.ndarray, Tuple[str, str, str] | None]]:
-    """Replicate one layer into the selected supercell."""
-
     results: List[Tuple[str, np.ndarray, Tuple[str, str, str] | None]] = []
     accepted_source_positions: List[np.ndarray] = []
     shift_vector = _shift_vector(source_lattice, shift_direct, shift_cart)
 
-    range1 = _search_range(coef_pair1[0], coef_pair2[0], tolerance)
-    range2 = _search_range(coef_pair1[1], coef_pair2[1], tolerance)
+    range1 = np.array(list(_search_range(coef_pair1[0], coef_pair2[0], tolerance)), dtype=float)
+    range2 = np.array(list(_search_range(coef_pair1[1], coef_pair2[1], tolerance)), dtype=float)
+    grid1, grid2 = np.meshgrid(range1, range2, indexing="ij")
+    translations = np.stack((grid1.ravel(), grid2.ravel()), axis=1)
+
+    source_lattice_array = np.asarray(source_lattice, dtype=float)
+    source_supercell_inverse = np.linalg.inv(np.asarray(source_supercell, dtype=float))
+    basis_a = source_lattice_array[0]
+    basis_b = source_lattice_array[1]
+    basis_c = source_lattice_array[2]
 
     for atom_index, base_direct in enumerate(np.asarray(positions_direct, dtype=float)):
-        for shift1 in range1:
-            for shift2 in range2:
-                direct_image = np.array(
-                    [shift1 + base_direct[0], shift2 + base_direct[1], base_direct[2]],
-                    dtype=float,
-                )
-                cartesian_image = io_mod.direct_to_cartesian(direct_image.reshape(1, 3), source_lattice)[0]
-                source_direct = io_mod.cartesian_to_direct(cartesian_image.reshape(1, 3), source_supercell)[0]
-                if not (
-                    -tolerance_float <= source_direct[0] <= 1.0 + tolerance_float
-                    and -tolerance_float <= source_direct[1] <= 1.0 + tolerance_float
-                ):
-                    continue
+        direct_xy = translations + base_direct[:2]
+        cartesian_images = (
+            direct_xy[:, :1] * basis_a.reshape(1, 3)
+            + direct_xy[:, 1:2] * basis_b.reshape(1, 3)
+            + base_direct[2] * basis_c.reshape(1, 3)
+        )
+        source_direct = cartesian_images @ source_supercell_inverse
+        valid_mask = (
+            (source_direct[:, 0] >= -tolerance_float)
+            & (source_direct[:, 0] <= 1.0 + tolerance_float)
+            & (source_direct[:, 1] >= -tolerance_float)
+            & (source_direct[:, 1] <= 1.0 + tolerance_float)
+        )
+        if not np.any(valid_mask):
+            continue
 
-                wrapped_source = np.array(
-                    [source_direct[0] % 1.0, source_direct[1] % 1.0, source_direct[2]],
-                    dtype=float,
-                )
-                if _is_duplicate(accepted_source_positions, wrapped_source, tolerance_float):
-                    continue
-                accepted_source_positions.append(wrapped_source)
+        valid_source = source_direct[valid_mask]
+        valid_cartesian = cartesian_images[valid_mask] + shift_vector.reshape(1, 3)
+        source_flag = tuple(selective_flags[atom_index]) if selective_flags is not None else None
 
-                shifted_cartesian = cartesian_image + shift_vector
-                source_flag = tuple(selective_flags[atom_index]) if selective_flags is not None else None
-                results.append((species[atom_index], shifted_cartesian, source_flag))
+        for source_position, shifted_cartesian in zip(valid_source, valid_cartesian):
+            wrapped_source = np.array(
+                [source_position[0] % 1.0, source_position[1] % 1.0, source_position[2]],
+                dtype=float,
+            )
+            if _is_duplicate(accepted_source_positions, wrapped_source, tolerance_float):
+                continue
+            accepted_source_positions.append(wrapped_source)
+            results.append((species[atom_index], shifted_cartesian, source_flag))
     return results
 
 
@@ -322,8 +315,6 @@ def build_supercell(
     repeat1_c: int = 1,
     repeat2_c: int = 1,
 ) -> Tuple[np.ndarray, np.ndarray, List[int], List[str], List[Tuple[str, str, str]] | None]:
-    """Build the exact supercell defined by one finder result record."""
-
     structure1 = io_mod.repeat_structure_along_c(io_mod.read_poscar(pos1), repeat1_c)
     structure2 = io_mod.repeat_structure_along_c(io_mod.read_poscar(pos2), repeat2_c)
 
@@ -404,8 +395,7 @@ def build_supercell(
         all_atoms,
         tolerance_float,
     )
-    z_shift = lower_padding - min_z
-    all_atoms = _shift_atoms_z(all_atoms, z_shift)
+    all_atoms = _shift_atoms_z(all_atoms, lower_padding - min_z)
 
     positions_direct, counts, species, flags = _finalise_cartesian_atoms(all_atoms, final_lattice, zfix)
     final_lattice, positions_direct = _swap_if_left_handed(final_lattice, positions_direct)
@@ -421,8 +411,6 @@ def write_supercell_poscar(
     flags: Sequence[Sequence[str]] | None,
     comment: str,
 ) -> None:
-    """Write a generated supercell POSCAR."""
-
     io_mod.write_poscar(
         output_path,
         lattice,

@@ -9,9 +9,10 @@ from typing import Any, Sequence
 
 import numpy as np
 
-from ..core.base import Base, legacy_modules, run_output_suffix
+from ..core.base import Base, run_output_suffix
 from ..core.manifests import RunManifest
 from ..core.models import CommandResult
+from ..interface import surface_backend
 from ..io.converters import StructureConverter
 from ..io.models import StructureRecord
 from ..io.vasp import VaspIO
@@ -414,7 +415,7 @@ class Defect(Base):
         layer_tolerance: float,
     ) -> tuple[list[DefectSite], dict[str, int], str | None]:
         try:
-            report = legacy_modules().surface_stage.find_adsorption_sites(
+            report = surface_backend.find_adsorption_sites(
                 structure_path,
                 surface_side=surface_side,
                 layer_tolerance=layer_tolerance,
