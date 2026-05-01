@@ -24,6 +24,8 @@ env/
 
 # Local scratch files
 .codex_pip_tmp/
+.tmp/
+.tmpdist/
 moire_test_*/
 tmp*/
 *.tmp

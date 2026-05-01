@@ -8,7 +8,7 @@ version = "4.0.0"
 description = "CELLSTINE: moire, adsorbate, interface, and defect workflows for VASP structures."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
 authors = [
   { name = "Sarwin Chandran" }
 ]
@@ -16,7 +16,6 @@ keywords = ["atomistic-simulation", "moire", "supercell", "vasp", "materials-sci
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -50,6 +49,9 @@ cellstine = "cellstine.cli.main:main"
 [tool.setuptools]
 include-package-data = true
 
+[tool.setuptools.package-dir]
+"" = "src"
+
 [tool.setuptools.packages.find]
-where = [".", "src"]
-include = ["cellstine*", "moire"]
+where = ["src"]
+include = ["cellstine*"]

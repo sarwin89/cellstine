@@ -1,4 +1,4 @@
-"""Common workflow base class and legacy backend imports."""
+"""Common workflow base class and shared manifest helpers."""
 
 from __future__ import annotations
 
