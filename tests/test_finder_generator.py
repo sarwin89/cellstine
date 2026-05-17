@@ -1,6 +1,7 @@
 import shutil
 import sys
 import unittest
+from importlib.util import find_spec
 from io import StringIO
 from pathlib import Path
 from unittest import mock
@@ -27,6 +28,7 @@ from cellstine.interface.interface import Interface as InterfaceWorkflow, parse_
 from cellstine.visualize.matplotlib_backend import _marker_size
 from cellstine.visualize import results_plotly as visualize
 from cellstine.moire.moire import Moire as MoireWorkflow
+from cellstine.symmetry.symmetry import Symmetry as SymmetryWorkflow
 
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -37,8 +39,8 @@ def _sample_path(filename: str) -> str:
     input_path = INPUT_DIR / filename
     if input_path.exists():
         return str(input_path)
-    legacy_path = BASE_DIR / filename
-    return str(legacy_path)
+    fallback_path = BASE_DIR / filename
+    return str(fallback_path)
 
 
 MOS2_PATH = _sample_path('mos2.vasp')
@@ -238,8 +240,8 @@ class MoireToolkitTests(unittest.TestCase):
             [finder.candidate_to_dict(item) for item in parallel[:5]],
         )
 
-    def test_src_finder_matches_legacy_finder_for_explicit_angles(self):
-        legacy = finder.find_supercells(
+    def test_src_finder_matches_reference_finder_for_explicit_angles(self):
+        reference = finder.find_supercells(
             self.mos2.lattice,
             self.mos2.lattice,
             None,
@@ -254,7 +256,7 @@ class MoireToolkitTests(unittest.TestCase):
             vector_strain_tol=2e-3,
             workers=1,
         )
-        migrated = cell_finder.find_supercells(
+        package_native = cell_finder.find_supercells(
             self.mos2.lattice,
             self.mos2.lattice,
             None,
@@ -270,8 +272,8 @@ class MoireToolkitTests(unittest.TestCase):
             workers=1,
         )
         self.assertEqual(
-            [finder.candidate_to_dict(item) for item in legacy[:5]],
-            [cell_finder.candidate_to_dict(item) for item in migrated[:5]],
+            [finder.candidate_to_dict(item) for item in reference[:5]],
+            [cell_finder.candidate_to_dict(item) for item in package_native[:5]],
         )
 
     def test_make_matches_reference_counts(self):
@@ -318,7 +320,7 @@ class MoireToolkitTests(unittest.TestCase):
                 finally:
                     shutil.rmtree(temp_root, ignore_errors=True)
 
-    def test_src_generator_matches_legacy_supercell_build(self):
+    def test_src_generator_matches_reference_supercell_build(self):
         results = finder.find_supercells(
             self.mos2.lattice,
             self.mos2.lattice,
@@ -337,7 +339,7 @@ class MoireToolkitTests(unittest.TestCase):
         candidate_dict = finder.candidate_to_dict(best, 1)
         record = cell_generator.record_from_candidate_dict(candidate_dict, 1)
 
-        legacy_output = generator.build_supercell(
+        reference_output = generator.build_supercell(
             MOS2_PATH,
             MOS2_PATH,
             record,
@@ -346,7 +348,7 @@ class MoireToolkitTests(unittest.TestCase):
             tolerance=1,
             tolerance_float=1e-4,
         )
-        migrated_output = cell_generator.build_supercell(
+        package_native_output = cell_generator.build_supercell(
             MOS2_PATH,
             MOS2_PATH,
             record,
@@ -356,10 +358,10 @@ class MoireToolkitTests(unittest.TestCase):
             tolerance_float=1e-4,
         )
 
-        self.assertTrue(np.allclose(legacy_output[0], migrated_output[0]))
-        self.assertTrue(np.allclose(legacy_output[1], migrated_output[1]))
-        self.assertEqual(legacy_output[2], migrated_output[2])
-        self.assertEqual(legacy_output[3], migrated_output[3])
+        self.assertTrue(np.allclose(reference_output[0], package_native_output[0]))
+        self.assertTrue(np.allclose(reference_output[1], package_native_output[1]))
+        self.assertEqual(reference_output[2], package_native_output[2])
+        self.assertEqual(reference_output[3], package_native_output[3])
 
     def test_matrix_value_helper_matches_any_order(self):
         candidate = lattice.SupercellCandidate(
@@ -595,6 +597,7 @@ class MoireToolkitTests(unittest.TestCase):
         self.assertIn("moire", choices)
         self.assertIn("adsorbate", choices)
         self.assertIn("interface", choices)
+        self.assertIn("symmetry", choices)
         self.assertIn("defect", choices)
 
         moire_group = choices["moire"]
@@ -618,12 +621,38 @@ class MoireToolkitTests(unittest.TestCase):
         self.assertIn("generate", defect_choices)
         self.assertIn("preview", defect_choices)
 
+        symmetry_choices = choices["symmetry"]._subparsers._group_actions[0].choices
+        self.assertIn("analyse", symmetry_choices)
+        self.assertIn("reduce", symmetry_choices)
+        self.assertIn("lattice-reduce", symmetry_choices)
+
     def test_cellstine_package_exports_public_classes(self):
         self.assertEqual(cellstine.__version__, "4.0.0")
         self.assertTrue(hasattr(cellstine, "Moire"))
         self.assertTrue(hasattr(cellstine, "Molecule"))
         self.assertTrue(hasattr(cellstine, "Interface"))
         self.assertTrue(hasattr(cellstine, "Defect"))
+        self.assertTrue(hasattr(cellstine, "Symmetry"))
+
+    def test_docs_reference_current_entrypoints_and_imports(self):
+        readme_text = (BASE_DIR / "README.md").read_text(encoding="utf-8")
+        guide_text = (BASE_DIR / "USAGE_GUIDE.md").read_text(encoding="utf-8")
+
+        self.assertNotIn("top-level `moire` Python package has been retired", guide_text)
+        self.assertNotIn("compatibility layer retired", readme_text)
+        self.assertIn("cellstine symmetry", readme_text)
+        self.assertIn("from cellstine import Symmetry", guide_text)
+
+    def test_packaging_metadata_targets_src_layout_and_console_entrypoint(self):
+        pyproject_text = (BASE_DIR / "pyproject.toml").read_text(encoding="utf-8")
+
+        self.assertIn('description = "CELLSTINE: moire, adsorbate, interface, symmetry, and defect workflows for VASP structures."', pyproject_text)
+        self.assertIn('cellstine = "cellstine.cli.main:main"', pyproject_text)
+        self.assertIn('where = ["src"]', pyproject_text)
+        self.assertIn('include = ["cellstine*"]', pyproject_text)
+
+    def test_removed_top_level_moire_package_is_not_present(self):
+        self.assertFalse((BASE_DIR / "moire").exists())
 
     def test_group_help_mentions_guided_mode(self):
         parser = moire_cli.build_parser()
@@ -815,6 +844,120 @@ class MoireToolkitTests(unittest.TestCase):
             self.assertEqual(len(atom_sites), 1)
             self.assertEqual(atom_sites[0]["multiplicity"], 4)
             self.assertIn("defect_analysis.json", result.artifacts["analysis_json"])
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_symmetry_native_analysis_writes_report_without_spglib(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            structure_path = temp_root / "Au_fcc.vasp"
+            io.write_poscar(
+                str(structure_path),
+                np.eye(3) * 4.0,
+                np.array(
+                    [
+                        [0.0, 0.0, 0.0],
+                        [0.0, 0.5, 0.5],
+                        [0.5, 0.0, 0.5],
+                        [0.5, 0.5, 0.0],
+                    ],
+                    dtype=float,
+                ),
+                [4],
+                ["Au"],
+                comment="fcc bulk",
+                positions_are_cartesian=False,
+            )
+            tool = SymmetryWorkflow(runs_root=str(temp_root / "runs"), output_root=str(temp_root / "output"))
+            result = tool.analyse(str(structure_path), backend="native")
+            self.assertEqual(result.summary["backend"], "native")
+            self.assertEqual(result.payload["analysis"]["operation_count"], 0)
+            self.assertIn("symmetry_analysis.json", result.artifacts["analysis_json"])
+            self.assertIn("exact space group", result.payload["symmetry_preview"].lower())
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_symmetry_cli_analyse_native(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            structure_path = temp_root / "single.vasp"
+            io.write_poscar(
+                str(structure_path),
+                np.eye(3) * 4.0,
+                np.array([[0.0, 0.0, 0.0]], dtype=float),
+                [1],
+                ["X"],
+                comment="single bulk",
+                positions_are_cartesian=False,
+            )
+            namespace = moire_cli.build_parser().parse_args(["symmetry", "analyse", str(structure_path), "--backend", "native"])
+            result = cli_main.execute_namespace(namespace)
+            self.assertIn("symmetry_preview", result.payload)
+            self.assertEqual(result.summary["backend"], "native")
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_symmetry_spglib_identifies_fcc_and_reduces_primitive(self):
+        if find_spec("spglib") is None:
+            self.skipTest("spglib is not installed")
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            structure_path = temp_root / "Au_fcc.vasp"
+            io.write_poscar(
+                str(structure_path),
+                np.eye(3) * 4.0,
+                np.array(
+                    [
+                        [0.0, 0.0, 0.0],
+                        [0.0, 0.5, 0.5],
+                        [0.5, 0.0, 0.5],
+                        [0.5, 0.5, 0.0],
+                    ],
+                    dtype=float,
+                ),
+                [4],
+                ["Au"],
+                comment="fcc bulk",
+                positions_are_cartesian=False,
+            )
+            tool = SymmetryWorkflow(runs_root=str(temp_root / "runs"), output_root=str(temp_root / "output"))
+            analysis = tool.analyse(str(structure_path), backend="spglib")
+            self.assertEqual(analysis.summary["space_group_number"], 225)
+            groups = analysis.payload["analysis"]["equivalent_groups"]
+            self.assertEqual(len(groups), 1)
+            self.assertEqual(groups[0]["multiplicity"], 4)
+
+            reduced = tool.reduce(str(structure_path), cell="primitive", backend="spglib")
+            primitive = io.read_poscar(reduced.artifacts["output_poscar"])
+            self.assertEqual(primitive.natoms, 1)
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_symmetry_cli_reduce_conventional_requires_spglib(self):
+        if find_spec("spglib") is None:
+            self.skipTest("spglib is not installed")
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            structure_path = temp_root / "single.vasp"
+            io.write_poscar(
+                str(structure_path),
+                np.eye(3) * 4.0,
+                np.array([[0.0, 0.0, 0.0]], dtype=float),
+                [1],
+                ["X"],
+                comment="single bulk",
+                positions_are_cartesian=False,
+            )
+            namespace = moire_cli.build_parser().parse_args(
+                ["symmetry", "reduce", str(structure_path), "--cell", "conventional", "--backend", "spglib"]
+            )
+            result = cli_main.execute_namespace(namespace)
+            self.assertTrue(Path(result.artifacts["output_poscar"]).exists())
+            self.assertEqual(result.summary["cell"], "conventional")
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 

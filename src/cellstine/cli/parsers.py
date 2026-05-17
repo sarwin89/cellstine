@@ -84,10 +84,11 @@ def build_parser() -> argparse.ArgumentParser:
         formatter_class=HelpFormatter,
         description=(
             f"{APP_NAME} | {APP_EXPANSION}\n\n"
-            "Four grouped workflows are available:\n"
+            "Five grouped workflows are available:\n"
             "  moire      Build commensurate moire supercells\n"
             "  adsorbate  Place and manipulate molecules on substrates\n"
             "  interface  Build surfaces and heterointerfaces from bulk or slab inputs\n"
+            "  symmetry  Analyse space groups and reduce cells\n"
             "  defect     Analyse and generate vacancy, substitution, interstitial, and adatom defects"
         ),
     )
@@ -314,6 +315,47 @@ def build_parser() -> argparse.ArgumentParser:
     int_visualize.add_argument("--plotly", action="store_true", help="write the optional interactive 3D HTML viewer instead of the default Matplotlib PNG")
     int_visualize.add_argument("--show", action="store_true", help="also open the Matplotlib window after saving when a GUI backend is available")
 
+    symmetry = groups.add_parser(
+        "symmetry",
+        formatter_class=HelpFormatter,
+        help="symmetry analysis and cell reduction",
+        description="Symmetry workflows using direct spglib when installed, with a native lattice-summary fallback.",
+    )
+    symmetry_sub = symmetry.add_subparsers(dest="stage")
+
+    sym_analyse = symmetry_sub.add_parser(
+        "analyse",
+        formatter_class=HelpFormatter,
+        help="analyse space group, operations, Wyckoff labels, and equivalent atoms",
+    )
+    sym_analyse.add_argument("structure")
+    sym_analyse.add_argument("--backend", choices=["auto", "native", "spglib"], default="auto")
+    sym_analyse.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for symmetry finding")
+    sym_analyse.add_argument("--angle-tolerance", type=float, default=5.0, help="angle tolerance in degrees for symmetry finding")
+
+    sym_reduce = symmetry_sub.add_parser(
+        "reduce",
+        formatter_class=HelpFormatter,
+        help="write a primitive, conventional, or refined cell",
+    )
+    sym_reduce.add_argument("structure")
+    sym_reduce.add_argument("--cell", choices=["primitive", "conventional", "refined"], default="primitive")
+    sym_reduce.add_argument("--backend", choices=["auto", "spglib"], default="auto")
+    sym_reduce.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for symmetry finding")
+    sym_reduce.add_argument("--angle-tolerance", type=float, default=5.0, help="angle tolerance in degrees for symmetry finding")
+    sym_reduce.add_argument("--output", default=None, help="optional output POSCAR path")
+
+    sym_lattice_reduce = symmetry_sub.add_parser(
+        "lattice-reduce",
+        formatter_class=HelpFormatter,
+        help="write a Niggli- or Delaunay-reduced lattice representation",
+    )
+    sym_lattice_reduce.add_argument("structure")
+    sym_lattice_reduce.add_argument("--reduction", choices=["niggli", "delaunay"], default="niggli")
+    sym_lattice_reduce.add_argument("--backend", choices=["auto", "spglib"], default="auto")
+    sym_lattice_reduce.add_argument("--symprec", type=float, default=1e-5, help="lattice reduction tolerance")
+    sym_lattice_reduce.add_argument("--output", default=None, help="optional output POSCAR path")
+
     defect = groups.add_parser(
         "defect",
         formatter_class=HelpFormatter,
@@ -331,15 +373,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="analyse inequivalent defect sites in a structure",
         description=(
             "Analyse inequivalent atom sites, approximate native interstitial candidates, and surface adatom sites when relevant. "
-            "For bulk equivalence, --backend auto uses pymatgen when installed; surface/slab analysis prefers native layer-aware grouping."
+            "For bulk equivalence, --backend auto uses spglib when installed; surface/slab analysis prefers native layer-aware grouping."
         ),
     )
     defect_analyse.add_argument("structure")
     defect_analyse.add_argument("--structure-kind", choices=["auto", "bulk", "surface", "slab", "molecule-on-substrate"], default="auto")
-    defect_analyse.add_argument("--backend", choices=["auto", "native", "pymatgen"], default="auto")
+    defect_analyse.add_argument("--backend", choices=["auto", "native", "spglib"], default="auto")
     defect_analyse.add_argument("--surface-side", choices=["top", "bottom"], default="top")
     defect_analyse.add_argument("--layer-tolerance", type=float, default=0.35, help="layer grouping tolerance in angstrom")
-    defect_analyse.add_argument("--symprec", type=float, default=0.01, help="pymatgen symmetry tolerance in fractional-coordinate units")
+    defect_analyse.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for spglib symmetry finding")
 
     defect_generate = defect_sub.add_parser(
         "generate",
@@ -360,10 +402,10 @@ def build_parser() -> argparse.ArgumentParser:
     defect_generate.add_argument("--height", type=float, default=2.5, help="adatom height above the detected surface site in angstrom")
     defect_generate.add_argument("--output-dir", default=None)
     defect_generate.add_argument("--structure-kind", choices=["auto", "bulk", "surface", "slab", "molecule-on-substrate"], default="auto")
-    defect_generate.add_argument("--backend", choices=["auto", "native", "pymatgen"], default="auto")
+    defect_generate.add_argument("--backend", choices=["auto", "native", "spglib"], default="auto")
     defect_generate.add_argument("--surface-side", choices=["top", "bottom"], default="top")
     defect_generate.add_argument("--layer-tolerance", type=float, default=0.35, help="layer grouping tolerance in angstrom")
-    defect_generate.add_argument("--symprec", type=float, default=0.01, help="pymatgen symmetry tolerance in fractional-coordinate units")
+    defect_generate.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for spglib symmetry finding")
 
     defect_preview = defect_sub.add_parser(
         "preview",
@@ -373,9 +415,9 @@ def build_parser() -> argparse.ArgumentParser:
     defect_preview.add_argument("analysis_or_structure")
     defect_preview.add_argument("--limit", type=int, default=30)
     defect_preview.add_argument("--structure-kind", choices=["auto", "bulk", "surface", "slab", "molecule-on-substrate"], default="auto")
-    defect_preview.add_argument("--backend", choices=["auto", "native", "pymatgen"], default="auto")
+    defect_preview.add_argument("--backend", choices=["auto", "native", "spglib"], default="auto")
     defect_preview.add_argument("--surface-side", choices=["top", "bottom"], default="top")
     defect_preview.add_argument("--layer-tolerance", type=float, default=0.35, help="layer grouping tolerance in angstrom")
-    defect_preview.add_argument("--symprec", type=float, default=0.01, help="pymatgen symmetry tolerance in fractional-coordinate units")
+    defect_preview.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for spglib symmetry finding")
 
     return parser

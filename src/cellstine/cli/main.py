@@ -14,6 +14,7 @@ from ..interface.interface import Interface
 from ..interface.surface import Surface
 from ..moire.moire import Moire
 from ..moire.supermoire import Supermoire
+from ..symmetry.symmetry import Symmetry
 from ..visualize.visualize import Visualize
 from .parsers import build_parser
 
@@ -47,6 +48,11 @@ def _print_result(result) -> None:
         print()
         print("Defect preview:")
         print(defect_preview)
+    symmetry_preview = getattr(result, "payload", {}).get("symmetry_preview") if hasattr(result, "payload") else None
+    if symmetry_preview:
+        print()
+        print("Symmetry preview:")
+        print(symmetry_preview)
 
 
 def execute_namespace(args):
@@ -245,6 +251,33 @@ def execute_namespace(args):
                 surface_side=args.surface_side,
                 layer_tolerance=args.layer_tolerance,
                 symprec=args.symprec,
+            )
+
+    if args.group == "symmetry":
+        tool = Symmetry()
+        if args.stage == "analyse":
+            return tool.analyse(
+                structure_path=args.structure,
+                backend=args.backend,
+                symprec=args.symprec,
+                angle_tolerance=args.angle_tolerance,
+            )
+        if args.stage == "reduce":
+            return tool.reduce(
+                structure_path=args.structure,
+                cell=args.cell,
+                backend=args.backend,
+                symprec=args.symprec,
+                angle_tolerance=args.angle_tolerance,
+                output_path=args.output,
+            )
+        if args.stage == "lattice-reduce":
+            return tool.lattice_reduce(
+                structure_path=args.structure,
+                reduction=args.reduction,
+                backend=args.backend,
+                symprec=args.symprec,
+                output_path=args.output,
             )
 
     raise SystemExit("No workflow stage was selected. Use --help for usage.")

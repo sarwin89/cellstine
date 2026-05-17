@@ -783,7 +783,7 @@ def _build_defect_analyse() -> list[str]:
         "What kind of structure is this?",
         [
             {"key": "auto", "label": "Auto-detect", "hint": "Recommended. Detect bulk versus slab from the vacuum gap."},
-            {"key": "bulk", "label": "Bulk cell", "hint": "Use exact pymatgen equivalence when available."},
+            {"key": "bulk", "label": "Bulk cell", "hint": "Use exact spglib equivalence when available."},
             {"key": "surface", "label": "Surface or slab", "hint": "Use layer-aware native grouping and adsorption-site detection."},
             {"key": "molecule-on-substrate", "label": "Molecule on substrate", "hint": "Treat it as a slab-like structure for layer/site logic."},
         ],
@@ -792,9 +792,9 @@ def _build_defect_analyse() -> list[str]:
     backend = _choice(
         "Which equivalence backend should be used?",
         [
-            {"key": "auto", "label": "Auto", "hint": "Recommended. pymatgen for bulk if available, native for slabs."},
+            {"key": "auto", "label": "Auto", "hint": "Recommended. spglib for bulk if available, native for slabs."},
             {"key": "native", "label": "Native", "hint": "Approximate, transparent grouping without optional dependencies."},
-            {"key": "pymatgen", "label": "pymatgen", "hint": "Exact bulk symmetry and Wyckoff labels when installed."},
+            {"key": "spglib", "label": "spglib", "hint": "Exact bulk symmetry and Wyckoff labels when installed."},
         ],
         default=1,
     )
@@ -810,6 +810,50 @@ def _build_defect_analyse() -> list[str]:
         )
         argv.extend(["--surface-side", side])
     return argv
+
+
+def _build_symmetry_analyse() -> list[str]:
+    _print_title("Symmetry Analysis", "Analyse space group, operations, Wyckoff labels, and equivalent atoms.")
+    structure = _prompt_path("Choose the structure to analyse", patterns=("*.vasp", "POSCAR", "CONTCAR"), roots=(INPUT_DIR, OUTPUT_DIR))
+    backend = _choice(
+        "Which symmetry backend should be used?",
+        [
+            {"key": "auto", "label": "Auto", "hint": "Recommended. Use spglib when installed, otherwise show the native lattice summary."},
+            {"key": "spglib", "label": "spglib", "hint": "Exact crystallographic symmetry."},
+            {"key": "native", "label": "Native", "hint": "Lattice geometry only; no exact space group."},
+        ],
+        default=1,
+    )
+    return ["symmetry", "analyse", structure, "--backend", backend]
+
+
+def _build_symmetry_reduce() -> list[str]:
+    _print_title("Cell Reduction", "Write a primitive, conventional, or refined cell using spglib.")
+    structure = _prompt_path("Choose the structure to reduce", patterns=("*.vasp", "POSCAR", "CONTCAR"), roots=(INPUT_DIR, OUTPUT_DIR))
+    cell = _choice(
+        "Which cell should be written?",
+        [
+            {"key": "primitive", "label": "Primitive", "hint": "Smallest periodic cell found by symmetry."},
+            {"key": "conventional", "label": "Conventional", "hint": "Standardized conventional cell."},
+            {"key": "refined", "label": "Refined", "hint": "Symmetry-refined version of the input setting."},
+        ],
+        default=1,
+    )
+    return ["symmetry", "reduce", structure, "--cell", cell]
+
+
+def _build_symmetry_lattice_reduce() -> list[str]:
+    _print_title("Lattice Reduction", "Write a Niggli- or Delaunay-reduced lattice representation.")
+    structure = _prompt_path("Choose the structure", patterns=("*.vasp", "POSCAR", "CONTCAR"), roots=(INPUT_DIR, OUTPUT_DIR))
+    reduction = _choice(
+        "Which lattice reduction should be used?",
+        [
+            {"key": "niggli", "label": "Niggli", "hint": "Recommended compact reduced lattice."},
+            {"key": "delaunay", "label": "Delaunay", "hint": "Alternative crystallographic lattice reduction."},
+        ],
+        default=1,
+    )
+    return ["symmetry", "lattice-reduce", structure, "--reduction", reduction]
 
 
 def _defect_analysis_from_preview(path: str, kind: str, backend: str, side: str):
@@ -852,7 +896,7 @@ def _build_defect_generate() -> list[str]:
         [
             {"key": "auto", "label": "Auto", "hint": "Recommended."},
             {"key": "native", "label": "Native", "hint": "No optional dependencies."},
-            {"key": "pymatgen", "label": "pymatgen", "hint": "Exact bulk equivalence and Wyckoff labels."},
+            {"key": "spglib", "label": "spglib", "hint": "Exact bulk equivalence and Wyckoff labels."},
         ],
         default=1,
     )
@@ -1002,6 +1046,27 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
             except _BackInteractive:
                 continue
 
+    if resolved_group == "symmetry":
+        while True:
+            stage = _choice(
+                "Symmetry workflow",
+                [
+                    {"key": "analyse", "label": "Analyse symmetry", "hint": "Report space group data and equivalent atom groups."},
+                    {"key": "reduce", "label": "Reduce cell", "hint": "Write primitive, conventional, or refined cells."},
+                    {"key": "lattice-reduce", "label": "Reduce lattice", "hint": "Write a Niggli- or Delaunay-reduced lattice."},
+                ],
+                default=1,
+                allow_back=allow_back,
+            )
+            try:
+                if stage == "analyse":
+                    return _build_symmetry_analyse()
+                if stage == "reduce":
+                    return _build_symmetry_reduce()
+                return _build_symmetry_lattice_reduce()
+            except _BackInteractive:
+                continue
+
     while True:
         stage = _choice(
             "Interface workflow",
@@ -1118,6 +1183,7 @@ def _run_interactive(group: str | None = None) -> int:
                         {"key": "moire", "label": "Moire supercell construction", "hint": "Search, build, translate, and visualize commensurate moire structures."},
                         {"key": "adsorbate", "label": "Molecule on substrate workflows", "hint": "Place, move, and study adsorbates on surfaces."},
                         {"key": "interface", "label": "Surface and interface workflows", "hint": "Build slabs, analyse sites, and construct interfaces."},
+                        {"key": "symmetry", "label": "Symmetry workflows", "hint": "Analyse space groups and reduce conventional or supercells."},
                         {"key": "defect", "label": "Defect workflows", "hint": "Analyse inequivalent defect sites and generate defect POSCARs."},
                     ],
                     default=1,

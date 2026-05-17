@@ -2,16 +2,17 @@
 
 This guide covers the current grouped CELLSTINE package and CLI in more detail than the README.
 
-The package is organized around four top-level workflows:
+The package is organized around five top-level workflows:
 
 - `moire`
 - `adsorbate`
 - `interface`
+- `symmetry`
 - `defect`
 
-Examples below use the installed command `cellstine`. Inside the repository, `python moire_cli.py ...` works as a compatibility entrypoint too.
+Examples below use the installed command `cellstine`. Inside the repository, `python moire_cli.py ...` is also available as a repository-local convenience entrypoint that forwards into the same package CLI.
 
-The older top-level `moire` Python package has been retired. Import workflow classes and helpers from `cellstine...` modules going forward.
+Import workflow classes and helpers from `cellstine...` modules.
 
 ## 1. Installation And Entry Points
 
@@ -25,6 +26,7 @@ Optional extras:
 
 ```bash
 pip install -e ".[pymatgen]"
+pip install -e ".[symmetry]"
 pip install -e ".[viz]"
 pip install -e ".[plotly]"
 pip install -e ".[all]"
@@ -71,12 +73,13 @@ You can also jump directly into one workflow group and let CELLSTINE ask only fo
 cellstine moire
 cellstine adsorbate
 cellstine interface
+cellstine symmetry
 cellstine defect
 ```
 
 The interactive flow is now grouped:
 
-1. choose `moire`, `adsorbate`, `interface`, or `defect`
+1. choose `moire`, `adsorbate`, `interface`, `symmetry`, or `defect`
 2. choose the stage within that workflow
 3. enter only the inputs needed for that stage
 4. use the manifest or generated artifact for the next step
@@ -87,7 +90,7 @@ The guided picker uses the standard folder flow:
 - generated slabs, interfaces, adsorbates, and stacked structures are suggested from `output/` first
 - saved searches, manifests, and intermediate workflow artifacts are suggested from `runs/` first
 
-At any picker, type `q`, `quit`, or `exit` to close the interactive interface cleanly.
+At any picker, type `b` to return to the previous menu, or type `q`, `quit`, or `exit` to close the interactive interface cleanly.
 
 It is meant to be a guided launcher over the same backend classes used by the CLI, not a separate hidden workflow.
 
@@ -112,6 +115,10 @@ cellstine interface sites --help
 cellstine interface build --help
 cellstine interface match --help
 cellstine interface visualize --help
+cellstine symmetry --help
+cellstine symmetry analyse --help
+cellstine symmetry reduce --help
+cellstine symmetry lattice-reduce --help
 cellstine defect --help
 cellstine defect analyse --help
 cellstine defect generate --help
@@ -450,11 +457,56 @@ cellstine interface visualize output/interface.vasp
 
 This uses the same labelled Matplotlib multi-view format as adsorbate visualization, which is usually more useful for checking slab orientation, vacuum, adsorption height, and layer separation than a free-rotating viewer alone.
 
-## 8. `defect` Workflow
+## 8. `symmetry` Workflow
+
+The `symmetry` workflow keeps symmetry operations out of the older `pymatgen` path. It uses direct `spglib` when installed, and falls back to a native metadata report for environments where exact symmetry detection is unavailable.
+
+### 8.1 Analyse Symmetry
+
+```bash
+cellstine symmetry analyse input/Au_Bulk.vasp --backend auto --symprec 0.01
+```
+
+The report includes lattice parameters, species counts, space group symbol and number, Hall symbol, point group, crystal system, rotations, translations, Wyckoff letters, equivalent atom groups, transformation matrix, origin shift, and backend notes when available.
+
+Use `--backend native` when you only want a dependency-free structure summary with a clear note that exact symmetry is unavailable.
+
+### 8.2 Reduce Cells
+
+Primitive reduction:
+
+```bash
+cellstine symmetry reduce input/Au_Bulk.vasp --cell primitive --output output/Au_primitive.vasp
+```
+
+Standard conventional cell:
+
+```bash
+cellstine symmetry reduce input/Au_Bulk.vasp --cell conventional --output output/Au_conventional.vasp
+```
+
+Refined cell:
+
+```bash
+cellstine symmetry reduce input/Au_Bulk.vasp --cell refined --output output/Au_refined.vasp
+```
+
+Reduction requires `spglib`; install it with `pip install -e ".[symmetry]"` or `pip install -e ".[all]"`.
+
+### 8.3 Lattice Reduction
+
+```bash
+cellstine symmetry lattice-reduce input/Au_Bulk.vasp --reduction niggli --output output/Au_niggli.vasp
+cellstine symmetry lattice-reduce input/Au_Bulk.vasp --reduction delaunay --output output/Au_delaunay.vasp
+```
+
+These commands are useful for cleaning lattice bases before comparing structures or preparing follow-up symmetry analysis.
+
+## 9. `defect` Workflow
 
 The `defect` workflow analyses valid defect sites first, then generates structures from the discovered site IDs. This is deliberately a two-step flow so users are not asked to guess site indices blindly.
 
-### 8.1 Analyse Defect Sites
+### 9.1 Analyse Defect Sites
 
 ```bash
 cellstine defect analyse output/Au_Bulk_111_surface.vasp --structure-kind surface
@@ -463,16 +515,16 @@ cellstine defect analyse output/Au_Bulk_111_surface.vasp --structure-kind surfac
 Useful options:
 
 - `--structure-kind auto|bulk|surface|slab|molecule-on-substrate`
-- `--backend auto|native|pymatgen`
+- `--backend auto|native|spglib`
 - `--surface-side top|bottom`
 - `--layer-tolerance 0.35`
 - `--symprec 0.01`
 
 Backend behavior:
 
-- `auto` uses `pymatgen` for bulk equivalence when it is installed.
+- `auto` uses direct `spglib` for bulk equivalence when it is installed.
 - slab and surface inputs prefer native layer-aware grouping because 3D bulk symmetry is often the wrong mental model for a finite slab.
-- exact Wyckoff labels are only guaranteed with the `pymatgen` backend.
+- exact Wyckoff labels are only guaranteed with the `spglib` backend.
 
 The analysis writes:
 
@@ -481,7 +533,7 @@ runs/defect/<run-id>/manifest.json
 runs/defect/<run-id>/defect_analysis.json
 ```
 
-### 8.2 Preview Site IDs
+### 9.2 Preview Site IDs
 
 ```bash
 cellstine defect preview runs/defect/<run-id>/manifest.json
@@ -493,9 +545,9 @@ The preview table lists:
 - defect-site kind: `atom`, `interstitial`, or `adatom`
 - species and layer where relevant
 - multiplicity and represented atom indices
-- Wyckoff label when available from `pymatgen`
+- Wyckoff label when available from `spglib`
 
-### 8.3 Generate Vacancy And Substitution Defects
+### 9.3 Generate Vacancy And Substitution Defects
 
 Generate one vacancy POSCAR from one inequivalent atom site:
 
@@ -521,7 +573,7 @@ Restrict substitutions to one original species:
 cellstine defect generate runs/defect/<run-id>/manifest.json --defect-type substitution --original-species Au --substitution-species Pt
 ```
 
-### 8.4 Generate Interstitials And Adatoms
+### 9.4 Generate Interstitials And Adatoms
 
 Generate interstitial candidate structures:
 
@@ -543,7 +595,7 @@ Generated structures are written to:
 output/defect_<type>_<site-id>_<species-info>_<yymmdd-hhmm>.vasp
 ```
 
-## 9. Python API Examples
+## 10. Python API Examples
 
 The grouped classes are also usable directly from Python.
 
@@ -611,14 +663,32 @@ generated = Defect().generate(
 print(generated.artifacts["structures"])
 ```
 
-## 10. Optional Dependencies And Backends
+Symmetry analysis and reduction:
+
+```python
+from cellstine import Symmetry
+
+symmetry = Symmetry()
+analysis = symmetry.analyse("input/Au_Bulk.vasp", backend="auto")
+print(analysis.summary["space_group"])
+
+reduced = symmetry.reduce(
+    "input/Au_Bulk.vasp",
+    cell="primitive",
+    output_path="output/Au_primitive.vasp",
+)
+print(reduced.artifacts["output_poscar"])
+```
+
+## 11. Optional Dependencies And Backends
 
 Current backend behavior:
 
 - `numpy` is required
 - VASP I/O is native and always available
 - XYZ conversion is handled natively
-- `pymatgen` is used first for broad-format conversion and exact bulk defect equivalence when installed
+- `spglib` is used directly for exact symmetry analysis, cell reduction, Wyckoff labels, and bulk defect equivalence when installed
+- `pymatgen` is temporarily used only for broad non-VASP structure conversion when installed
 - `matplotlib` is used by default for static, labelled PNG plots
 - `plotly` is secondary and only used when `--plotly` is requested for interactive 3D HTML viewers
 
@@ -628,7 +698,7 @@ Check installed versions:
 cellstine --version
 ```
 
-## 11. Testing
+## 12. Testing
 
 Run the current test suite with:
 
@@ -636,7 +706,7 @@ Run the current test suite with:
 python -m unittest discover -s tests -q
 ```
 
-## 12. Troubleshooting
+## 13. Troubleshooting
 
 If a moire search returns too many candidates:
 

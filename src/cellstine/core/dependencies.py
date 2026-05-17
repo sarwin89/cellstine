@@ -25,6 +25,7 @@ class DependencyManager:
         "matplotlib": "matplotlib",
         "plotly": "plotly",
         "pymatgen": "pymatgen",
+        "spglib": "spglib",
     }
 
     def __init__(self) -> None:
@@ -69,3 +70,23 @@ class DependencyManager:
                 raise RuntimeError(f"pymatgen is required{details}, but it is not installed")
             return "pymatgen"
         return "pymatgen" if self.has("pymatgen") else "native"
+
+    def choose_symmetry_backend(self, requested: str = "auto", *, feature: str | None = None) -> str:
+        """Resolve the crystallographic symmetry backend.
+
+        This intentionally prefers direct spglib over pymatgen. pymatgen remains
+        available to the IO converter for broad formats, but symmetry workflows
+        should not route through it.
+        """
+
+        choice = str(requested or "auto").lower()
+        if choice not in {"auto", "native", "spglib"}:
+            raise ValueError(f"unsupported symmetry backend '{requested}'")
+        if choice == "native":
+            return "native"
+        if choice == "spglib":
+            if not self.has("spglib"):
+                details = f" for {feature}" if feature else ""
+                raise RuntimeError(f"spglib is required{details}, but it is not installed")
+            return "spglib"
+        return "spglib" if self.has("spglib") else "native"

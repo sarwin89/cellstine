@@ -11,6 +11,7 @@ from .io.converters import StructureConverter
 from .io.vasp import VaspIO
 from .moire.moire import Moire
 from .moire.supermoire import Supermoire
+from .symmetry.symmetry import EquivalentAtomGroup, Symmetry, SymmetryAnalysis, SymmetryOperation
 from .visualize.results_plotly import VisualizationRun
 from .visualize.visualize import Visualize
 
@@ -20,6 +21,7 @@ __all__ = [
     "DefectAnalysis",
     "DefectSite",
     "DependencyManager",
+    "EquivalentAtomGroup",
     "Interface",
     "Molecule",
     "Moire",
@@ -27,6 +29,9 @@ __all__ = [
     "StructureConverter",
     "Supermoire",
     "Surface",
+    "Symmetry",
+    "SymmetryAnalysis",
+    "SymmetryOperation",
     "VaspIO",
     "Visualize",
     "VisualizationRun",

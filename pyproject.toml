@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "cellstine"
 version = "4.0.0"
-description = "CELLSTINE: moire, adsorbate, interface, and defect workflows for VASP structures."
+description = "CELLSTINE: moire, adsorbate, interface, symmetry, and defect workflows for VASP structures."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -28,6 +28,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+symmetry = [
+  "spglib>=2.3,<3"
+]
 pymatgen = [
   "pymatgen>=2024.5,<2027"
 ]
@@ -38,6 +41,7 @@ plotly = [
   "plotly>=5.24,<6"
 ]
 all = [
+  "spglib>=2.3,<3",
   "pymatgen>=2024.5,<2027",
   "matplotlib>=3.8,<4",
   "plotly>=5.24,<6"

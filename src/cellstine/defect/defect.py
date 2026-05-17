@@ -16,6 +16,7 @@ from ..interface import surface_backend
 from ..io.converters import StructureConverter
 from ..io.models import StructureRecord
 from ..io.vasp import VaspIO
+from ..symmetry.symmetry import Symmetry
 
 
 @dataclass
@@ -283,14 +284,16 @@ class Defect(Base):
 
     def _choose_defect_backend(self, requested: str, structure_kind: str) -> str:
         choice = str(requested or self.backend or "auto").lower()
-        if choice not in {"auto", "native", "pymatgen"}:
+        if choice == "pymatgen":
+            choice = "spglib"
+        if choice not in {"auto", "native", "spglib"}:
             raise ValueError(f"unsupported backend '{requested}'")
         if choice == "native":
             return "native"
-        if choice == "pymatgen":
-            return self.dependency_manager.choose_backend("pymatgen", feature="defect equivalence")
-        if structure_kind == "bulk" and self.dependency_manager.has("pymatgen"):
-            return "pymatgen"
+        if choice == "spglib":
+            return self.dependency_manager.choose_symmetry_backend("spglib", feature="defect equivalence")
+        if structure_kind == "bulk" and self.dependency_manager.has("spglib"):
+            return "spglib"
         return "native"
 
     def _native_atom_sites(
@@ -333,7 +336,7 @@ class Defect(Base):
             )
         return sites
 
-    def _pymatgen_atom_sites(
+    def _spglib_atom_sites(
         self,
         structure_path: str,
         record: StructureRecord,
@@ -341,32 +344,31 @@ class Defect(Base):
         layers: Sequence[dict[str, Any]],
         symprec: float,
     ) -> list[DefectSite]:
-        if not self.dependency_manager.has("pymatgen"):
-            raise RuntimeError("pymatgen is required for exact defect equivalence, but it is not installed")
-        from pymatgen.core import Structure
-        from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
-
-        structure = Structure.from_file(str(structure_path))
-        symmetrized = SpacegroupAnalyzer(structure, symprec=float(symprec)).get_symmetrized_structure()
+        analysis = Symmetry(dependency_manager=self.dependency_manager).analyse_record(
+            record,
+            structure_path=str(Path(structure_path).resolve()),
+            backend="spglib",
+            symprec=float(symprec),
+        )
         direct = np.asarray(record.positions_direct, dtype=float)
         cartesian = np.asarray(record.positions_cartesian, dtype=float)
         layer_lookup = _layer_lookup(layers)
         sites = []
-        for site_index, equivalent_sites in enumerate(symmetrized.equivalent_sites, start=1):
-            indices = sorted(int(structure.index(site)) for site in equivalent_sites)
-            representative = int(indices[0])
+        for site_index, group in enumerate(analysis.equivalent_groups, start=1):
+            indices = sorted(int(value) - 1 for value in group.equivalent_indices)
+            representative = int(group.representative_index) - 1
             sites.append(
                 DefectSite(
                     site_id=_serialise_site_id("atom", site_index),
-                    species=str(structure[representative].specie),
+                    species=str(group.species),
                     layer_id=layer_lookup.get(representative + 1),
                     direct=tuple(float(value) for value in direct[representative]),
                     cartesian=tuple(float(value) for value in cartesian[representative]),
                     equivalent_indices=[int(value) + 1 for value in indices],
                     multiplicity=int(len(indices)),
-                    wyckoff=str(symmetrized.wyckoff_symbols[representative]),
+                    wyckoff=group.wyckoff,
                     site_kind="atom",
-                    backend="pymatgen",
+                    backend="spglib",
                     representative_index=representative + 1,
                 )
             )
@@ -461,15 +463,15 @@ class Defect(Base):
         projections = np.asarray(record.positions_cartesian, dtype=float) @ normal
         layers = _cluster_projection_layers(projections, layer_tolerance)
         notes = [
-            "Native equivalence groups by species, layer where relevant, fractional fingerprints, and local-neighbour distances.",
+            "Surface/slab equivalence uses native species, layer, fractional fingerprint, and local-neighbour grouping.",
         ]
 
-        if resolved_backend == "pymatgen":
-            atom_sites = self._pymatgen_atom_sites(structure_path, record, layers=layers, symprec=symprec)
-            notes.append("Exact Wyckoff labels are supplied by pymatgen for atom sites.")
+        if resolved_backend == "spglib":
+            atom_sites = self._spglib_atom_sites(structure_path, record, layers=layers, symprec=symprec)
+            notes.append("Exact Wyckoff labels are supplied by direct spglib for atom sites.")
         else:
             atom_sites = self._native_atom_sites(record, structure_kind=resolved_kind, layers=layers)
-            notes.append("Wyckoff labels are only guaranteed with the pymatgen backend.")
+            notes.append("Wyckoff labels are only guaranteed with the spglib backend.")
 
         sites = list(atom_sites)
         sites.extend(self._interstitial_sites(record))

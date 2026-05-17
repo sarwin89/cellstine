@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compatibility shim for the new grouped CELLSTINE CLI."""
+"""Repository-local entrypoint for the grouped CELLSTINE CLI."""
 
 from __future__ import annotations
 
