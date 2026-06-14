@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Sequence
+from typing import Callable, Dict, List, Sequence
 
 import numpy as np
 
@@ -27,6 +28,7 @@ class FindRun:
     search_min_angle: float
     search_max_angle: float
     parameters: Dict[str, object]
+    timings: Dict[str, float]
 
 
 def _slug(value: str) -> str:
@@ -59,14 +61,16 @@ def _resolve_angles(
     angle_length_tolerance: float,
     angle_strain_tolerance: float | None,
     angle_merge_tolerance: float,
-) -> tuple[List[angle_backend.AngleCandidate], List[float], int, int, int, float, float]:
+    max_search_angles: int | None,
+) -> tuple[List[angle_backend.AngleCandidate], List[float], int, int, int, float, float, Dict[str, object]]:
     symmetry_top, symmetry_bottom, symmetry_lcm = lat.combined_symmetry_limit(lattice_top, lattice_bottom)
     bounded_min = max(0.0, float(min_angle))
     bounded_max = float(symmetry_lcm if max_angle is None else min(symmetry_lcm, max_angle))
+    angle_metadata: Dict[str, object] = {"angle_values_thinned": False}
 
     if explicit_angles:
         chosen_angles = [float(value) for value in explicit_angles if bounded_min <= float(value) <= bounded_max]
-        return [], sorted(set(chosen_angles)), symmetry_top, symmetry_bottom, symmetry_lcm, bounded_min, bounded_max
+        return [], sorted(set(chosen_angles)), symmetry_top, symmetry_bottom, symmetry_lcm, bounded_min, bounded_max, angle_metadata
 
     shortlist = angle_backend.find_commensurate_angles(
         lattice_top,
@@ -80,9 +84,49 @@ def _resolve_angles(
     )
     if shortlist:
         angle_values = sorted({bounded_min, bounded_max, *(float(candidate.angle_deg) for candidate in shortlist)})
+        # By default every commensurate twist angle is searched -- the analytic
+        # engine handles each angle by a cheap local slice, so there is no need
+        # to thin the angle list (the old behaviour silently dropped most angles
+        # at large nindex, e.g. down to ~10 angles at nindex=100).  Thinning is
+        # now strictly opt-in: it only happens when the caller passes a positive
+        # ``max_search_angles``.
+        if max_search_angles is None or int(max_search_angles) <= 0:
+            resolved_cap = None
+        else:
+            resolved_cap = max(2, int(max_search_angles))
+        if resolved_cap is not None and len(angle_values) > resolved_cap:
+            interior_cap = max(1, resolved_cap - 2)
+            edges = np.linspace(bounded_min, bounded_max, interior_cap + 1, dtype=float)
+            selected: List[angle_backend.AngleCandidate] = []
+            ordered = sorted(shortlist, key=lambda item: (item.angle_deg, item.relative_mismatch))
+            start_index = 0
+            for left, right in zip(edges[:-1], edges[1:]):
+                members: List[angle_backend.AngleCandidate] = []
+                while start_index < len(ordered) and ordered[start_index].angle_deg < left:
+                    start_index += 1
+                scan_index = start_index
+                while scan_index < len(ordered) and ordered[scan_index].angle_deg <= right:
+                    members.append(ordered[scan_index])
+                    scan_index += 1
+                if members:
+                    selected.append(min(members, key=lambda item: (item.relative_mismatch, item.angle_deg)))
+            angle_values = sorted({bounded_min, bounded_max, *(float(candidate.angle_deg) for candidate in selected)})
+            angle_metadata.update(
+                {
+                    "angle_values_thinned": True,
+                    "angle_values_before_thinning": len(shortlist) + 2,
+                    "angle_values_after_thinning": len(angle_values),
+                    "max_search_angles": resolved_cap,
+                }
+            )
     else:
         angle_values = list(np.arange(bounded_min, bounded_max + angle_step * 0.5, angle_step, dtype=float))
-    return shortlist, angle_values, symmetry_top, symmetry_bottom, symmetry_lcm, bounded_min, bounded_max
+    return shortlist, angle_values, symmetry_top, symmetry_bottom, symmetry_lcm, bounded_min, bounded_max, angle_metadata
+
+
+def _notify(progress_callback: Callable[[str, str], None] | None, stage: str, message: str) -> None:
+    if progress_callback is not None:
+        progress_callback(stage, message)
 
 
 def run_find(
@@ -118,8 +162,28 @@ def run_find(
     top_c_repeat: int = 1,
     bottom_c_repeat: int = 1,
     workers: int = 1,
+    fold_symmetry: bool = False,
+    max_search_angles: int | None = None,
+    max_pair_matches: int | None = None,
+    cull_redundant: bool = True,
+    reduce_basis: bool = True,
+    progress_callback: Callable[[str, str], None] | None = None,
 ) -> FindRun:
-    shortlist, angle_values, symmetry_top, symmetry_bottom, symmetry_lcm, search_min_angle, search_max_angle = _resolve_angles(
+    total_start = time.perf_counter()
+    timings: Dict[str, float] = {}
+
+    _notify(progress_callback, "angles", "building commensurate angle shortlist")
+    stage_start = time.perf_counter()
+    (
+        shortlist,
+        angle_values,
+        symmetry_top,
+        symmetry_bottom,
+        symmetry_lcm,
+        search_min_angle,
+        search_max_angle,
+        angle_metadata,
+    ) = _resolve_angles(
         top_lattice,
         bottom_lattice,
         nindex,
@@ -130,8 +194,29 @@ def run_find(
         angle_length_tolerance=angle_length_tolerance,
         angle_strain_tolerance=angle_strain_tolerance,
         angle_merge_tolerance=angle_merge_tolerance,
+        max_search_angles=max_search_angles,
     )
+    timings["angle_shortlist_s"] = time.perf_counter() - stage_start
+    _notify(
+        progress_callback,
+        "angles",
+        f"resolved {len(angle_values)} angle(s) in {timings['angle_shortlist_s']:.3f}s",
+    )
+    # ``max_pair_matches`` bounds, per twist angle, how many of the shortest
+    # coincident vectors are paired into supercells.  Dropping the longer ones
+    # only ever removes larger, Pareto-dominated cells, so this is a safe speed
+    # knob that keeps degenerate (highly symmetric) angles from exploding.  The
+    # default (None) resolves to a generous finite bound; pass a value <= 0 to
+    # disable it entirely for an exhaustive (and potentially very slow) search.
+    if max_pair_matches is None:
+        effective_max_pair_matches = 128
+    elif int(max_pair_matches) <= 0:
+        effective_max_pair_matches = None
+    else:
+        effective_max_pair_matches = int(max_pair_matches)
 
+    _notify(progress_callback, "search", f"searching supercells across {len(angle_values)} angle(s)")
+    stage_start = time.perf_counter()
     candidates = finder_backend.find_supercells(
         top_lattice,
         bottom_lattice,
@@ -156,8 +241,20 @@ def run_find(
         matrix_layer=matrix_layer,
         matrix_match_mode=matrix_match_mode,
         workers=workers,
+        fold_symmetry=fold_symmetry,
+        max_pair_matches=effective_max_pair_matches,
+        cull_redundant=cull_redundant,
+        reduce_basis=reduce_basis,
+    )
+    timings["supercell_search_s"] = time.perf_counter() - stage_start
+    _notify(
+        progress_callback,
+        "search",
+        f"found {len(candidates)} candidate(s) in {timings['supercell_search_s']:.3f}s",
     )
 
+    _notify(progress_callback, "write", "writing results table")
+    stage_start = time.perf_counter()
     run_id, dat_path = _make_result_path(output_root, bottom_poscar, top_poscar, nindex)
     parameters = {
         "run_id": run_id,
@@ -167,6 +264,9 @@ def run_find(
         "top_c_repeat": int(top_c_repeat),
         "bottom_c_repeat": int(bottom_c_repeat),
         "workers": int(workers),
+        "max_pair_matches": "" if effective_max_pair_matches is None else int(effective_max_pair_matches),
+        "cull_redundant": bool(cull_redundant),
+        "reduce_basis": bool(reduce_basis),
         "nindex": int(nindex),
         "symmetry_top_deg": int(symmetry_top),
         "symmetry_bottom_deg": int(symmetry_bottom),
@@ -193,7 +293,11 @@ def run_find(
         "matrix_layer": matrix_layer,
         "matrix_match_mode": matrix_match_mode,
         "shortlisted_angle_count": len(shortlist),
+        "angle_values_thinned": bool(angle_metadata.get("angle_values_thinned", False)),
     }
+    parameters.update(angle_metadata)
+    parameters["timing_angle_shortlist_s"] = round(timings["angle_shortlist_s"], 6)
+    parameters["timing_supercell_search_s"] = round(timings["supercell_search_s"], 6)
     if shortlist:
         parameters["shortlisted_angles_deg"] = ",".join(f"{candidate.angle_deg:.6f}" for candidate in shortlist)
 
@@ -205,6 +309,11 @@ def run_find(
         run_id=run_id,
         parameters=parameters,
     )
+    timings["write_results_s"] = time.perf_counter() - stage_start
+    timings["total_s"] = time.perf_counter() - total_start
+    parameters["timing_write_results_s"] = round(timings["write_results_s"], 6)
+    parameters["timing_total_s"] = round(timings["total_s"], 6)
+    _notify(progress_callback, "write", f"wrote results in {timings['write_results_s']:.3f}s")
 
     return FindRun(
         run_id=run_id,
@@ -218,6 +327,7 @@ def run_find(
         search_min_angle=search_min_angle,
         search_max_angle=search_max_angle,
         parameters=parameters,
+        timings=timings,
     )
 
 

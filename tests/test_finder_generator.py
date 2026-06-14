@@ -466,6 +466,46 @@ class MoireToolkitTests(unittest.TestCase):
         )
         self.assertEqual(impossible, [])
 
+    def test_canonicalized_degenerate_search_matches_full_dedup(self):
+        full_candidates = finder.find_supercells(
+            self.mos2.lattice,
+            self.mos2.lattice,
+            None,
+            None,
+            angles=[0.0],
+            nindex=4,
+            tol=2e-3,
+            lin_tol=2e-3,
+            atom_count1=self.mos2.natoms,
+            atom_count2=self.mos2.natoms,
+            max_atoms=200,
+            vector_strain_tol=2e-3,
+            dedupe=False,
+        )
+        reference = lattice.deduplicate_candidates(full_candidates)
+        reference.sort(key=lambda item: (item.strain_avg, item.total_atoms, item.angle_deg, item.vector_product))
+
+        optimized = finder.find_supercells(
+            self.mos2.lattice,
+            self.mos2.lattice,
+            None,
+            None,
+            angles=[0.0],
+            nindex=4,
+            tol=2e-3,
+            lin_tol=2e-3,
+            atom_count1=self.mos2.natoms,
+            atom_count2=self.mos2.natoms,
+            max_atoms=200,
+            vector_strain_tol=2e-3,
+            dedupe=True,
+        )
+
+        self.assertEqual(
+            [finder.candidate_to_dict(candidate) for candidate in reference],
+            [finder.candidate_to_dict(candidate) for candidate in optimized],
+        )
+
     def test_findn_and_maken_can_generate_an_n_layer_stack(self):
         temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
         temp_root.mkdir(parents=True, exist_ok=False)
@@ -590,6 +630,7 @@ class MoireToolkitTests(unittest.TestCase):
         self.assertIn("matrix-values", help_text)
         self.assertIn("bilayer commensurate candidates", help_text)
         self.assertIn("workers", help_text)
+        self.assertIn("progress", help_text)
 
     def test_cli_help_text_mentions_grouped_workflows_and_subcommands(self):
         parser = moire_cli.build_parser()
@@ -813,6 +854,9 @@ class MoireToolkitTests(unittest.TestCase):
             )
             self.assertTrue(Path(result.manifest_path).exists())
             self.assertIn("results_dat", result.artifacts)
+            self.assertIn("timings_s", result.payload)
+            self.assertIn("angle_shortlist_s", result.payload["timings_s"])
+            self.assertIn("supercell_search_s", result.payload["timings_s"])
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 
@@ -1063,6 +1107,228 @@ class MoireToolkitTests(unittest.TestCase):
             self.assertIn("atom_001", result.payload["defect_preview"])
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_defect_adatom_generation_top_and_bottom(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            structure_path = temp_root / "slab.vasp"
+            io.write_poscar(
+                str(structure_path),
+                np.array([[5.0, 0.0, 0.0], [0.0, 5.0, 0.0], [0.0, 0.0, 20.0]]),
+                np.array([
+                    [0.0, 0.0, 0.1],
+                    [0.5, 0.5, 0.5]
+                ], dtype=float),
+                [2],
+                ["Au"],
+                comment="slab",
+                positions_are_cartesian=False,
+            )
+            tool = DefectWorkflow(runs_root=str(temp_root / "runs"), output_root=str(temp_root / "output"))
+            
+            top_result = tool.generate(
+                str(structure_path),
+                "adatom",
+                structure_kind="surface",
+                backend="native",
+                surface_side="top",
+                species="H",
+                height=2.5,
+                site_ids=["adatom_top_001"],
+            )
+            self.assertEqual(len(top_result.artifacts["structures"]), 1)
+            top_adatom_struct = io.read_poscar(top_result.artifacts["structures"][0])
+            self.assertEqual(top_adatom_struct.natoms, 3)
+            self.assertAlmostEqual(float(top_adatom_struct.positions_direct[-1, 2]), 0.625, places=3)
+            
+            bottom_result = tool.generate(
+                str(structure_path),
+                "adatom",
+                structure_kind="surface",
+                backend="native",
+                surface_side="bottom",
+                species="H",
+                height=2.5,
+                site_ids=["adatom_top_001"],
+            )
+            self.assertEqual(len(bottom_result.artifacts["structures"]), 1)
+            bottom_adatom_struct = io.read_poscar(bottom_result.artifacts["structures"][0])
+            self.assertEqual(bottom_adatom_struct.natoms, 3)
+            self.assertAlmostEqual(float(bottom_adatom_struct.positions_direct[-1, 2]), -0.025, places=3)
+
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_rotation_matrices_x_y(self):
+        r_x = lattice.rotation_matrix_x(90.0)
+        res = r_x @ np.array([0.0, 1.0, 0.0])
+        self.assertAlmostEqual(res[0], 0.0)
+        self.assertAlmostEqual(res[1], 0.0)
+        self.assertAlmostEqual(res[2], 1.0)
+
+        r_y = lattice.rotation_matrix_y(90.0)
+        res_y = r_y @ np.array([1.0, 0.0, 0.0])
+        self.assertAlmostEqual(res_y[0], 0.0)
+        self.assertAlmostEqual(res_y[1], 0.0)
+        self.assertAlmostEqual(res_y[2], -1.0)
+
+        r_comb = lattice.yaw_pitch_roll_matrix(90.0, 90.0, 90.0)
+        self.assertEqual(r_comb.shape, (3, 3))
+
+    def test_adsorbate_place_with_tilt_and_roll(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            substrate_path = temp_root / "sub.vasp"
+            io.write_poscar(
+                str(substrate_path),
+                np.array([[4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 15.0]]),
+                np.array([[0.0, 0.0, 0.0], [0.5, 0.5, 0.2]], dtype=float),
+                [2],
+                ["Au"],
+                comment="sub",
+            )
+            molecule_path = temp_root / "mol.vasp"
+            io.write_poscar(
+                str(molecule_path),
+                np.array([[10.0, 0.0, 0.0], [0.0, 10.0, 0.0], [0.0, 0.0, 10.0]]),
+                np.array([[0.5, 0.5, 0.45], [0.5, 0.5, 0.55]], dtype=float),
+                [2],
+                ["H"],
+                comment="diatomic",
+            )
+            tool = MoleculeWorkflow(runs_root=str(temp_root / "runs"), output_root=str(temp_root / "output"))
+            res = tool.place(
+                substrate_poscar=str(substrate_path),
+                molecule_poscar=str(molecule_path),
+                site_type="top",
+                site_index=1,
+                height=2.0,
+                rotation_deg=45.0,
+                tilt_deg=30.0,
+                roll_deg=15.0,
+            )
+            output_poscar = io.read_poscar(res.artifacts["output_poscar"])
+            self.assertEqual(output_poscar.natoms, 4)
+            self.assertEqual(output_poscar.species, ["Au", "H"])
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_defect_divacancy_generation(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            structure_path = temp_root / "slab.vasp"
+            io.write_poscar(
+                str(structure_path),
+                np.array([[6.0, 0.0, 0.0], [0.0, 6.0, 0.0], [0.0, 0.0, 6.0]]),
+                np.array([
+                    [0.0, 0.0, 0.0],
+                    [0.5, 0.5, 0.0],
+                    [0.5, 0.0, 0.5],
+                    [0.0, 0.5, 0.5]
+                ], dtype=float),
+                [4],
+                ["Au"],
+                comment="cubic",
+            )
+            tool = DefectWorkflow(runs_root=str(temp_root / "runs"), output_root=str(temp_root / "output"))
+            analysis_res = tool.analyse(
+                str(structure_path),
+                divacancy_distance=5.0,
+                backend="native",
+            )
+            analysis_dict = analysis_res.payload["analysis"]
+            divacancy_sites = [s for s in analysis_dict["sites"] if s["site_kind"] == "divacancy"]
+            self.assertTrue(len(divacancy_sites) > 0)
+            
+            gen_res = tool.generate(
+                str(analysis_res.manifest_path),
+                defect_type="divacancy",
+                divacancy_distance=5.0,
+            )
+            self.assertEqual(len(gen_res.artifacts["structures"]), len(divacancy_sites))
+            first_struct = io.read_poscar(gen_res.artifacts["structures"][0])
+            self.assertEqual(first_struct.natoms, 2)
+            
+            manual_gen = tool.generate(
+                str(analysis_res.manifest_path),
+                defect_type="divacancy",
+                site_ids=["atom_001", "atom_002"],
+            )
+            self.assertEqual(len(manual_gen.artifacts["structures"]), 1)
+            manual_struct = io.read_poscar(manual_gen.artifacts["structures"][0])
+            self.assertEqual(manual_struct.natoms, 2)
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_defect_antisite_autoresolution(self):
+        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
+        temp_root.mkdir(parents=True, exist_ok=False)
+        try:
+            binary_path = temp_root / "gaas.vasp"
+            io.write_poscar(
+                str(binary_path),
+                np.eye(3) * 5.0,
+                np.array([[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]], dtype=float),
+                [1, 1],
+                ["Ga", "As"],
+                comment="gaas",
+            )
+            tool = DefectWorkflow(runs_root=str(temp_root / "runs"), output_root=str(temp_root / "output"))
+            res = tool.generate(
+                str(binary_path),
+                defect_type="antisite",
+                structure_kind="bulk",
+            )
+            self.assertEqual(len(res.artifacts["structures"]), 2)
+            struct1 = io.read_poscar(res.artifacts["structures"][0])
+            self.assertEqual(struct1.species, ["As"])
+            self.assertEqual(list(struct1.counts), [2])
+
+            struct2 = io.read_poscar(res.artifacts["structures"][1])
+            self.assertEqual(struct2.species, ["Ga"])
+            self.assertEqual(list(struct2.counts), [2])
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_moire_prefiltered_matching_equivalence(self):
+        from cellstine.moire import lattice as lat
+        lat1 = np.array([[2.46, 0.0, 0.0], [-1.23, 2.13, 0.0], [0.0, 0.0, 10.0]])
+        lat2 = np.array([[3.15, 0.0, 0.0], [-1.575, 2.728, 0.0], [0.0, 0.0, 10.0]])
+
+        # Test original brute force vs precomputed candidates in find_coincident_vector_pairs
+        nindex = 10
+        tol = 0.05
+        strain_tol = 0.05
+
+        # Brute force
+        res_brute = lat.find_coincident_vector_pairs(
+            lat1, lat2, nindex, tol, strain_tolerance=strain_tol, precomputed_candidates=None
+        )
+
+        # Precomputed candidates
+        # 1. Precompute norms and mismatch
+        coeffs1, vectors1 = lat.enumerate_in_plane_vectors(lat1, nindex)
+        coeffs2, vectors2 = lat.enumerate_in_plane_vectors(lat2, nindex)
+        norms1 = np.linalg.norm(vectors1, axis=1)
+        norms2 = np.linalg.norm(vectors2, axis=1)
+        length_mismatch = np.abs(norms1[:, None] - norms2[None, :]) / np.maximum((norms1[:, None] + norms2[None, :]) * 0.5, 1e-12)
+        limit = 2.0 * tol
+        candidate_mask = length_mismatch <= limit
+        match_rows, match_cols = np.nonzero(candidate_mask)
+        precomputed = (match_rows, match_cols, norms1, norms2, length_mismatch)
+
+        res_opt = lat.find_coincident_vector_pairs(
+            lat1, lat2, nindex, tol, strain_tolerance=strain_tol, precomputed_candidates=precomputed
+        )
+
+        # Assert they yield the exact same matches
+        self.assertEqual(len(res_brute), len(res_opt))
+        set_brute = {(m.layer1_coeffs, m.layer2_coeffs) for m in res_brute}
+        set_opt = {(m.layer1_coeffs, m.layer2_coeffs) for m in res_opt}
+        self.assertEqual(set_brute, set_opt)
 
     def test_interface_surface_and_build_wrappers_create_artifacts(self):
         temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"

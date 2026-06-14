@@ -404,14 +404,16 @@ def _transform_molecule_cartesian(
     target_cartesian: Sequence[float] | None,
     target_direct: Sequence[float] | None,
     rotation_deg: float,
+    tilt_deg: float = 0.0,
+    roll_deg: float = 0.0,
 ) -> tuple[np.ndarray, np.ndarray]:
     positions_array = np.asarray(positions, dtype=float)
     com_before = center_of_mass_cartesian(positions_array, species)
     pivot = _resolve_target_cartesian(lattice, com_before, target_cartesian, target_direct)
 
     translated = positions_array + (pivot - com_before)
-    if abs(float(rotation_deg)) > 0.0:
-        rotation = lattice_mod.rotation_matrix_z(float(rotation_deg))
+    if abs(float(rotation_deg)) > 0.0 or abs(float(tilt_deg)) > 0.0 or abs(float(roll_deg)) > 0.0:
+        rotation = lattice_mod.yaw_pitch_roll_matrix(float(rotation_deg), float(tilt_deg), float(roll_deg))
         translated = (translated - pivot) @ rotation.T + pivot
 
     return translated, com_before
@@ -449,14 +451,17 @@ def _estimate_inplane_repeats_for_molecule(
     molecule: io_mod.PoscarData,
     *,
     rotation_deg: float,
+    tilt_deg: float = 0.0,
+    roll_deg: float = 0.0,
     fit_padding: float,
 ) -> tuple[int, int]:
     molecule_species = _expand_species(molecule.species, molecule.counts)
     positions = np.asarray(molecule.positions_cartesian, dtype=float)
     com = center_of_mass_cartesian(positions, molecule_species)
     centered = positions - com
-    if abs(float(rotation_deg)) > 0.0:
-        centered = centered @ lattice_mod.rotation_matrix_z(float(rotation_deg)).T
+    if abs(float(rotation_deg)) > 0.0 or abs(float(tilt_deg)) > 0.0 or abs(float(roll_deg)) > 0.0:
+        rotation = lattice_mod.yaw_pitch_roll_matrix(float(rotation_deg), float(tilt_deg), float(roll_deg))
+        centered = centered @ rotation.T
     direct_delta = io_mod.cartesian_to_direct(centered, substrate.lattice)
     spans = np.ptp(direct_delta[:, :2], axis=0) if direct_delta.size else np.zeros(2, dtype=float)
     padding = max(0.0, float(fit_padding))
@@ -474,6 +479,8 @@ def _translate_molecule_to_site(
     surface_side: str,
     height: float,
     rotation_deg: float,
+    tilt_deg: float = 0.0,
+    roll_deg: float = 0.0,
 ) -> tuple[np.ndarray, np.ndarray]:
     if float(height) < 0.0:
         raise ValueError("height must be non-negative")
@@ -489,6 +496,8 @@ def _translate_molecule_to_site(
         target_cartesian=None,
         target_direct=None,
         rotation_deg=rotation_deg,
+        tilt_deg=tilt_deg,
+        roll_deg=roll_deg,
     )
     rotated_com = center_of_mass_cartesian(rotated_positions, molecule_species)
     site_inplane = site_cart - float(np.dot(site_cart, slab_normal)) * slab_normal
@@ -498,6 +507,7 @@ def _translate_molecule_to_site(
     lowest_projection = float(np.min(translated @ outward_normal))
     target_projection = float(np.dot(site_cart, outward_normal)) + float(height)
     translated = translated + (target_projection - lowest_projection) * outward_normal
+
     return translated, com_before
 
 
@@ -619,6 +629,8 @@ def transform_top_molecule(
     target_cartesian: Sequence[float] | None = None,
     target_direct: Sequence[float] | None = None,
     rotation_deg: float = 0.0,
+    tilt_deg: float = 0.0,
+    roll_deg: float = 0.0,
     z_cutoff: float | None = None,
     min_gap: float = 1.0,
     reframe_axes: str | Sequence[str] | None = None,
@@ -644,6 +656,8 @@ def transform_top_molecule(
         target_cartesian=resolved_target_cartesian,
         target_direct=None,
         rotation_deg=rotation_deg,
+        tilt_deg=tilt_deg,
+        roll_deg=roll_deg,
     )
     all_cartesian[molecule_indices] = transformed_molecule
 
@@ -700,6 +714,8 @@ def place_molecule_on_site(
     site_index: int = 1,
     height: float = 2.5,
     rotation_deg: float = 0.0,
+    tilt_deg: float = 0.0,
+    roll_deg: float = 0.0,
     surface_side: str = "top",
     layer_tolerance: float = 0.35,
     neighbour_tolerance: float = 0.15,
@@ -716,6 +732,8 @@ def place_molecule_on_site(
             substrate,
             molecule,
             rotation_deg=float(rotation_deg),
+            tilt_deg=float(tilt_deg),
+            roll_deg=float(roll_deg),
             fit_padding=float(fit_padding),
         )
         substrate = surface_mod._repeat_structure_inplane(substrate, repeat_a, repeat_b)
@@ -738,6 +756,8 @@ def place_molecule_on_site(
         surface_side=surface_side,
         height=height,
         rotation_deg=rotation_deg,
+        tilt_deg=tilt_deg,
+        roll_deg=roll_deg,
     )
     positions_direct_out, counts_out, species_out, flags_out, shift_direct, final_molecule_cartesian = (
         _combine_substrate_and_molecule(

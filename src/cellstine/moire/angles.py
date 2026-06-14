@@ -51,46 +51,184 @@ def find_commensurate_angles(
     angle_round_decimals: int = 4,
     merge_tolerance: float = 1e-3,
 ) -> List[AngleCandidate]:
+    if strain_tolerance is not None:
+        strain_tolerance = min(float(strain_tolerance), lat.MAX_PHYSICAL_MISMATCH)
     _, _, symmetry_lcm = lat.combined_symmetry_limit(lattice1, lattice2)
     bounded_min = max(0.0, float(min_angle))
     bounded_max = float(symmetry_lcm if max_angle is None else min(float(max_angle), symmetry_lcm))
     if bounded_max < bounded_min:
         return []
 
-    coeffs1, vectors1 = lat.enumerate_in_plane_vectors(lattice1, nindex)
-    coeffs2, vectors2 = lat.enumerate_in_plane_vectors(lattice2, nindex)
+    # Dynamically scale nindex based on cell size limits
+    basis1_2d = lattice1[:2, :2]
+    basis2_2d = lattice2[:2, :2]
+    basis1_lengths = np.linalg.norm(basis1_2d, axis=1)
+    basis2_lengths = np.linalg.norm(basis2_2d, axis=1)
+    
+    L1_max = nindex * np.max(basis1_lengths)
+    L2_max = nindex * np.max(basis2_lengths)
+    cutoff_tolerance = float(strain_tolerance) if strain_tolerance is not None else 0.05
+    L_cutoff = min(L1_max, L2_max) * (1.0 + cutoff_tolerance)
+    
+    min_basis1 = np.min(basis1_lengths)
+    min_basis2 = np.min(basis2_lengths)
+    
+    scaled_nindex1 = int(min(nindex, np.ceil(L_cutoff / max(min_basis1, 1e-12))))
+    scaled_nindex2 = int(min(nindex, np.ceil(L_cutoff / max(min_basis2, 1e-12))))
+
+    coeffs1, vectors1 = lat.enumerate_in_plane_vectors(lattice1, scaled_nindex1)
+    coeffs2, vectors2 = lat.enumerate_in_plane_vectors(lattice2, scaled_nindex2)
 
     norms1 = np.linalg.norm(vectors1, axis=1)
     norms2 = np.linalg.norm(vectors2, axis=1)
-    average_norm = np.maximum((norms1[:, None] + norms2[None, :]) * 0.5, 1e-12)
-    absolute_mismatch = np.abs(norms1[:, None] - norms2[None, :])
-    relative_mismatch = absolute_mismatch / average_norm
 
-    length_mask = np.isclose(norms1[:, None], norms2[None, :], atol=length_tolerance, rtol=0.0)
-    if strain_tolerance is not None:
-        length_mask |= relative_mismatch <= strain_tolerance
+    # Commensurate angles arise only from equal-length spans, so we restrict the
+    # search to near-equal-length lattice-vector pairs (length is rotation
+    # invariant).  The admissible length band has half-width proportional to the
+    # strain tolerance, so when a *physical* (few-percent) strain tolerance is
+    # requested the number of length-matched pairs grows as O(N^2) = O(nindex^4)
+    # -- tens of millions of pairs at nindex >= 100.  Materialising them all at
+    # once is what previously exhausted memory (and crashed) at large nindex.
+    #
+    # Instead we sweep the pair set one row-block at a time and immediately
+    # reduce each block to a single survivor per distinct (rounded) angle before
+    # accumulating.  Peak memory is therefore bounded by the per-block budget
+    # plus the (small) number of distinct angles, never by the full O(nindex^4)
+    # pair count.  The reduction keeps the smallest-mismatch member of every
+    # rounded-angle value, which is exactly what the final selection below would
+    # have kept had every pair been scanned at once, so the result is identical.
+    candidate_rel_tol = float(strain_tolerance) if strain_tolerance is not None else 0.0
 
-    dot_products = vectors1 @ vectors2.T
-    cross_products = vectors1[:, None, 0] * vectors2[None, :, 1] - vectors1[:, None, 1] * vectors2[None, :, 0]
-    angles = np.degrees(np.arctan2(np.abs(cross_products), dot_products))
-
-    valid_mask = (
-        length_mask
-        & (np.abs(cross_products) > 1e-10)
-        & (angles >= bounded_min)
-        & (angles <= bounded_max)
-    )
-
-    row_indices, col_indices = np.nonzero(valid_mask)
-    if row_indices.size == 0:
+    if norms1.shape[0] == 0 or norms2.shape[0] == 0:
         return []
 
-    selected_angles = np.round(angles[row_indices, col_indices], decimals=angle_round_decimals)
-    selected_mismatch = relative_mismatch[row_indices, col_indices]
-    selected_lengths1 = norms1[row_indices]
-    selected_lengths2 = norms2[col_indices]
-    selected_coeffs1 = coeffs1[row_indices]
-    selected_coeffs2 = coeffs2[col_indices]
+    order2 = np.argsort(norms2, kind="stable")
+    sorted2 = norms2[order2]
+    band = float(length_tolerance) + 2.0 * candidate_rel_tol * norms1
+    lower = np.searchsorted(sorted2, norms1 - band, side="left")
+    upper = np.searchsorted(sorted2, norms1 + band, side="right")
+    counts = (upper - lower).astype(np.int64)
+    n_rows = int(norms1.shape[0])
+
+    # Cap on the number of candidate pairs held in memory at once.  Each pair
+    # touches a handful of float64 temporaries, so ~1M pairs per block keeps the
+    # per-block working set at tens of MB regardless of nindex.
+    pair_budget = 1_000_000
+    # The accumulated survivors (one per distinct rounded angle per block) are
+    # periodically compacted to one entry per distinct rounded angle globally, so
+    # the running set can never exceed the (small) number of realisable angles.
+    compact_cap = 2_000_000
+
+    acc_angles: List[np.ndarray] = []
+    acc_mismatch: List[np.ndarray] = []
+    acc_coeffs1: List[np.ndarray] = []
+    acc_coeffs2: List[np.ndarray] = []
+    acc_lengths1: List[np.ndarray] = []
+    acc_lengths2: List[np.ndarray] = []
+    acc_size = 0
+
+    def _compact() -> None:
+        nonlocal acc_size
+        if not acc_angles:
+            return
+        ang = np.concatenate(acc_angles)
+        mis = np.concatenate(acc_mismatch)
+        c1 = np.concatenate(acc_coeffs1)
+        c2 = np.concatenate(acc_coeffs2)
+        l1 = np.concatenate(acc_lengths1)
+        l2 = np.concatenate(acc_lengths2)
+        comp_order = np.lexsort((mis, ang))
+        comp_sorted = ang[comp_order]
+        first = np.empty(comp_sorted.shape[0], dtype=bool)
+        first[0] = True
+        np.not_equal(comp_sorted[1:], comp_sorted[:-1], out=first[1:])
+        idx = comp_order[first]
+        acc_angles[:] = [ang[idx]]
+        acc_mismatch[:] = [mis[idx]]
+        acc_coeffs1[:] = [c1[idx]]
+        acc_coeffs2[:] = [c2[idx]]
+        acc_lengths1[:] = [l1[idx]]
+        acc_lengths2[:] = [l2[idx]]
+        acc_size = int(idx.shape[0])
+
+    block_start = 0
+    while block_start < n_rows:
+        block_end = block_start + 1
+        block_total = int(counts[block_start])
+        while block_end < n_rows and block_total + int(counts[block_end]) <= pair_budget:
+            block_total += int(counts[block_end])
+            block_end += 1
+        rows = np.arange(block_start, block_end, dtype=np.intp)
+        block_counts = counts[block_start:block_end]
+        block_start = block_end
+        total = int(block_counts.sum())
+        if total == 0:
+            continue
+
+        rep_rows = np.repeat(rows, block_counts)
+        seg_start = np.repeat(lower[rows], block_counts)
+        within = np.arange(total, dtype=np.intp) - np.repeat(
+            np.cumsum(block_counts) - block_counts, block_counts
+        )
+        cols = order2[seg_start + within]
+
+        v1_cand = vectors1[rep_rows]
+        v2_cand = vectors2[cols]
+        norms1_cand = norms1[rep_rows]
+        norms2_cand = norms2[cols]
+
+        average_norm = np.maximum((norms1_cand + norms2_cand) * 0.5, 1e-12)
+        relative_mismatch_cand = np.abs(norms1_cand - norms2_cand) / average_norm
+
+        length_mask = np.abs(norms1_cand - norms2_cand) <= length_tolerance
+        if strain_tolerance is not None:
+            length_mask |= relative_mismatch_cand <= strain_tolerance
+
+        dot_products = np.einsum("ij,ij->i", v1_cand, v2_cand)
+        cross_products = v1_cand[:, 0] * v2_cand[:, 1] - v1_cand[:, 1] * v2_cand[:, 0]
+        angles = np.degrees(np.arctan2(np.abs(cross_products), dot_products))
+
+        valid_mask = (
+            length_mask
+            & (np.abs(cross_products) > 1e-10)
+            & (angles >= bounded_min)
+            & (angles <= bounded_max)
+        )
+        keep = np.nonzero(valid_mask)[0]
+        if keep.size == 0:
+            continue
+
+        rounded = np.round(angles[keep], decimals=angle_round_decimals)
+        mismatch = relative_mismatch_cand[keep]
+        # Reduce this block to the smallest-mismatch member of every distinct
+        # rounded angle (the only member the final selection could retain).
+        block_order = np.lexsort((mismatch, rounded))
+        sorted_rounded = rounded[block_order]
+        first_of_angle = np.empty(sorted_rounded.shape[0], dtype=bool)
+        first_of_angle[0] = True
+        np.not_equal(sorted_rounded[1:], sorted_rounded[:-1], out=first_of_angle[1:])
+        survivors = block_order[first_of_angle]
+        kept = keep[survivors]
+
+        acc_angles.append(rounded[survivors])
+        acc_mismatch.append(mismatch[survivors])
+        acc_coeffs1.append(coeffs1[rep_rows[kept]])
+        acc_coeffs2.append(coeffs2[cols[kept]])
+        acc_lengths1.append(norms1_cand[kept])
+        acc_lengths2.append(norms2_cand[kept])
+        acc_size += int(survivors.shape[0])
+        if acc_size > compact_cap:
+            _compact()
+
+    if not acc_angles:
+        return []
+
+    selected_angles = np.concatenate(acc_angles)
+    selected_mismatch = np.concatenate(acc_mismatch)
+    selected_lengths1 = np.concatenate(acc_lengths1)
+    selected_lengths2 = np.concatenate(acc_lengths2)
+    selected_coeffs1 = np.concatenate(acc_coeffs1)
+    selected_coeffs2 = np.concatenate(acc_coeffs2)
 
     order = np.lexsort((selected_mismatch, selected_angles))
     sorted_angles = selected_angles[order]

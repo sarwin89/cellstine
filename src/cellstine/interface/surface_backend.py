@@ -92,27 +92,22 @@ def _expanded_species(structure: io_mod.PoscarData) -> list[str]:
     return expanded[: structure.natoms]
 
 
-def _periodic_direct_distance(a_values: np.ndarray, b_values: np.ndarray) -> np.ndarray:
-    delta = np.asarray(a_values, dtype=float) - np.asarray(b_values, dtype=float)
-    return delta - np.round(delta)
-
-
 def _translation_maps_structure(structure: io_mod.PoscarData, translation: Sequence[float], tolerance: float = 1e-5) -> bool:
     positions = np.mod(np.asarray(structure.positions_direct, dtype=float), 1.0)
+    if positions.shape[0] == 0:
+        return True
     species = _expanded_species(structure)
     translation_array = np.asarray(translation, dtype=float)
-    for atom_index, position in enumerate(positions):
-        shifted = np.mod(position + translation_array, 1.0)
-        matched = False
-        for candidate_index, candidate in enumerate(positions):
-            if species[candidate_index] != species[atom_index]:
-                continue
-            if np.all(np.abs(_periodic_direct_distance(shifted, candidate)) <= tolerance):
-                matched = True
-                break
-        if not matched:
-            return False
-    return True
+    shifted = np.mod(positions + translation_array, 1.0)
+    # Pairwise minimum-image fractional differences between every shifted atom
+    # and every original atom, all at once instead of an O(n^2) Python loop.
+    diff = shifted[:, None, :] - positions[None, :, :]
+    diff -= np.round(diff)
+    coincident = np.all(np.abs(diff) <= tolerance, axis=2)
+    codes = np.unique(np.asarray(species), return_inverse=True)[1]
+    same_species = codes[:, None] == codes[None, :]
+    matched = np.any(coincident & same_species, axis=1)
+    return bool(np.all(matched))
 
 
 def _centering_type(structure: io_mod.PoscarData) -> str:
@@ -200,19 +195,6 @@ def _reciprocal_normal(lattice: np.ndarray, miller: tuple[int, int, int]) -> np.
     return normal / norm
 
 
-def _enumerate_lattice_vectors(primitive_lattice: np.ndarray, search: int) -> list[tuple[tuple[int, int, int], np.ndarray]]:
-    vectors: list[tuple[tuple[int, int, int], np.ndarray]] = []
-    for i_value in range(-search, search + 1):
-        for j_value in range(-search, search + 1):
-            for k_value in range(-search, search + 1):
-                coeffs = (int(i_value), int(j_value), int(k_value))
-                if coeffs == (0, 0, 0):
-                    continue
-                vector = i_value * primitive_lattice[0] + j_value * primitive_lattice[1] + k_value * primitive_lattice[2]
-                vectors.append((coeffs, vector))
-    return vectors
-
-
 def _primitive_surface_vectors_from_lattice(
     primitive_lattice: np.ndarray,
     normal: np.ndarray,
@@ -220,39 +202,57 @@ def _primitive_surface_vectors_from_lattice(
     search: int = 4,
     tolerance: float = 1e-7,
 ) -> tuple[np.ndarray, np.ndarray]:
-    candidates = []
-    for _, vector in _enumerate_lattice_vectors(primitive_lattice, search):
-        if abs(float(np.dot(vector, normal))) > tolerance:
-            continue
-        length = float(np.linalg.norm(vector))
-        if length <= tolerance:
-            continue
-        candidates.append(vector)
-    if len(candidates) < 2:
+    primitive_lattice = np.asarray(primitive_lattice, dtype=float)
+    normal = np.asarray(normal, dtype=float)
+    # Vectorised enumeration of all integer combinations in the search box.
+    rng = np.arange(-int(search), int(search) + 1)
+    grid = np.stack(np.meshgrid(rng, rng, rng, indexing="ij"), axis=-1).reshape(-1, 3).astype(float)
+    # Reproduce ``i*a + j*b + k*c`` term-by-term so the floating point result is
+    # bit-identical to the original scalar accumulation.
+    vectors = (
+        grid[:, 0:1] * primitive_lattice[0]
+        + grid[:, 1:2] * primitive_lattice[1]
+        + grid[:, 2:3] * primitive_lattice[2]
+    )
+    lengths_all = np.linalg.norm(vectors, axis=1)
+    nonzero = ~np.all(grid == 0.0, axis=1)
+    in_plane = np.abs(vectors @ normal) <= tolerance
+    keep = nonzero & in_plane & (lengths_all > tolerance)
+    candidate_vectors = vectors[keep]
+    if candidate_vectors.shape[0] < 2:
         raise ValueError("could not find primitive in-plane surface vectors")
 
-    candidates.sort(key=lambda item: (float(np.linalg.norm(item)), tuple(round(float(value), 12) for value in item.tolist())))
-    best: tuple[float, float, float, np.ndarray, np.ndarray] | None = None
-    for first_index, first in enumerate(candidates):
-        for second in candidates[first_index + 1:]:
-            cross = np.cross(first, second)
-            oriented_area = float(np.dot(cross, normal))
-            area = abs(oriented_area)
-            if area <= tolerance:
-                continue
-            first_length = float(np.linalg.norm(first))
-            second_length = float(np.linalg.norm(second))
-            score = (max(first_length, second_length), first_length + second_length, area)
-            if best is None or score < best[:3]:
-                first_out = np.array(first, dtype=float, copy=True)
-                second_out = np.array(second, dtype=float, copy=True)
-                if oriented_area < 0.0:
-                    first_out, second_out = second_out, first_out
-                best = (score[0], score[1], score[2], first_out, second_out)
-    if best is None:
+    candidate_lengths = lengths_all[keep]
+    rounded = np.round(candidate_vectors, 12)
+    sort_order = np.lexsort((rounded[:, 2], rounded[:, 1], rounded[:, 0], candidate_lengths))
+    candidate_vectors = candidate_vectors[sort_order]
+    candidate_lengths = candidate_lengths[sort_order]
+
+    # Vectorised pairwise scan over all i < j pairs (row-major triangular order
+    # matching the original nested loop, so tie-breaking is identical).
+    idx_i, idx_j = np.triu_indices(candidate_vectors.shape[0], k=1)
+    first_vectors = candidate_vectors[idx_i]
+    second_vectors = candidate_vectors[idx_j]
+    cross = np.cross(first_vectors, second_vectors)
+    oriented_area = cross @ normal
+    area = np.abs(oriented_area)
+    valid = area > tolerance
+    if not np.any(valid):
         raise ValueError("could not find a non-singular primitive surface cell")
-    surface_a = best[3]
-    surface_b = best[4]
+    valid_positions = np.nonzero(valid)[0]
+    first_lengths = candidate_lengths[idx_i][valid]
+    second_lengths = candidate_lengths[idx_j][valid]
+    max_lengths = np.maximum(first_lengths, second_lengths)
+    sum_lengths = first_lengths + second_lengths
+    valid_area = area[valid]
+    # Stable lexicographic selection: primary max length, then sum length, then
+    # area; ties keep the earliest pair (stable sort over triangular order).
+    winner_local = np.lexsort((valid_area, sum_lengths, max_lengths))[0]
+    winner = int(valid_positions[winner_local])
+    surface_a = np.array(first_vectors[winner], dtype=float, copy=True)
+    surface_b = np.array(second_vectors[winner], dtype=float, copy=True)
+    if float(oriented_area[winner]) < 0.0:
+        surface_a, surface_b = surface_b, surface_a
     cosine = np.clip(
         float(np.dot(surface_a, surface_b) / max(float(np.linalg.norm(surface_a) * np.linalg.norm(surface_b)), 1e-12)),
         -1.0,
@@ -288,10 +288,24 @@ def _surface_coordinate_frame(surface_a: np.ndarray, surface_b: np.ndarray, norm
 
 
 def _deduplicate_scalar_levels(values: Sequence[float], tolerance: float) -> list[float]:
-    levels: list[float] = []
-    for value in sorted(float(item) for item in values):
-        if not levels or abs(value - levels[-1]) > tolerance:
-            levels.append(value)
+    arr = np.asarray(values, dtype=float).ravel()
+    if arr.size == 0:
+        return []
+    arr.sort()
+    tol = float(tolerance)
+    # Greedy clustering identical to scanning the sorted values and keeping a
+    # value whenever it is more than ``tolerance`` away from the last kept one.
+    # ``searchsorted`` jumps directly to the next kept value, so the loop runs
+    # once per surviving level instead of once per (highly degenerate) sample.
+    levels: list[float] = [float(arr[0])]
+    last = levels[0]
+    size = arr.size
+    while True:
+        nxt = int(np.searchsorted(arr, last + tol, side="right"))
+        if nxt >= size:
+            break
+        last = float(arr[nxt])
+        levels.append(last)
     return levels
 
 
@@ -411,8 +425,13 @@ def _build_native_primitive_surface_cell(
 
     atoms: list[tuple[str, np.ndarray, tuple[str, str, str] | None]] = []
     uv_tolerance = max(1e-4, float(np.linalg.norm(surface_a) + np.linalg.norm(surface_b)) * 1e-7)
+    surface_basis_2d = np.asarray(surface_lattice, dtype=float)[:2]
     for layer_index, level in enumerate(selected_levels):
         layer_unique: list[tuple[str, np.ndarray, tuple[str, str, str] | None]] = []
+        # Per-species accumulator of already-accepted uv points for this layer,
+        # so the duplicate test against existing points is a single vectorised
+        # min-image distance computation rather than a Python inner loop.
+        existing_by_species: dict[str, list[np.ndarray]] = {}
         for atom_index in range(structure.natoms):
             matching_shifts = np.abs(base_projections[atom_index] + shift_projections - float(level)) <= tolerance
             if not np.any(matching_shifts):
@@ -422,23 +441,30 @@ def _build_native_primitive_surface_cell(
             uv_values = np.mod(uv_values, 1.0)
             uv_values[np.isclose(uv_values, 1.0, atol=tolerance)] = 0.0
             uv_values[np.isclose(uv_values, 0.0, atol=tolerance)] = 0.0
+            symbol = str(species_expanded[atom_index])
+            accepted = existing_by_species.setdefault(symbol, [])
+            flags_value = None if flags_expanded[atom_index] is None else tuple(flags_expanded[atom_index])
+            # The periodic images of a single atom that land on this level all map
+            # to the same in-plane fractional point, so collapse exact (to ~1e-9)
+            # duplicates first (preserving first-occurrence order). This is far
+            # finer than ``uv_tolerance`` and cannot merge genuinely distinct
+            # sites, but removes the hundreds of identical images that otherwise
+            # drive the dedup loop.
+            if uv_values.shape[0] > 1:
+                _, first_occurrence = np.unique(np.round(uv_values, 9), axis=0, return_index=True)
+                uv_values = uv_values[np.sort(first_occurrence)]
             for uv in uv_values:
-                duplicate = False
-                for existing_species, existing_uv, _ in layer_unique:
-                    if existing_species != species_expanded[atom_index]:
+                if accepted:
+                    existing_array = np.asarray(accepted, dtype=float)
+                    delta = uv[None, :] - existing_array
+                    delta -= np.round(delta)
+                    cartesian = delta @ surface_basis_2d
+                    distances = np.sqrt(np.einsum("ij,ij->i", cartesian, cartesian))
+                    if np.any(distances <= uv_tolerance):
                         continue
-                    if _same_surface_uv(uv, existing_uv, surface_lattice, uv_tolerance):
-                        duplicate = True
-                        break
-                if duplicate:
-                    continue
-                layer_unique.append(
-                    (
-                        str(species_expanded[atom_index]),
-                        np.asarray(uv, dtype=float),
-                        None if flags_expanded[atom_index] is None else tuple(flags_expanded[atom_index]),
-                    )
-                )
+                uv_array = np.asarray(uv, dtype=float)
+                accepted.append(uv_array)
+                layer_unique.append((symbol, uv_array, flags_value))
         if not layer_unique:
             raise ValueError(f"surface layer {layer_index + 1} did not contain any atoms")
         w_value = (lower_vacuum + (float(level) - float(selected_levels[0]))) / c_length
@@ -475,34 +501,34 @@ def _structure_from_transform(structure: io_mod.PoscarData, transform: np.ndarra
     inverse_new = np.linalg.inv(lattice_new)
 
     search_pad = max(2, int(np.max(np.abs(transform))) + 1)
+    shifts_3d = _integer_shift_grid_3d(search_pad)
     collected_positions: List[np.ndarray] = []
+    collected_array = np.empty((0, 3), dtype=float)
     collected_flags: List[Tuple[str, str, str]] | None = [] if structure.selective_flags is not None else None
     expanded_flags = structure.selective_flags or []
 
     for atom_index, base_direct in enumerate(np.asarray(structure.positions_direct, dtype=float)):
-        for shift_a in range(-search_pad, search_pad + 1):
-            for shift_b in range(-search_pad, search_pad + 1):
-                for shift_c in range(-search_pad, search_pad + 1):
-                    image_direct = np.array(
-                        [base_direct[0] + shift_a, base_direct[1] + shift_b, base_direct[2] + shift_c],
-                        dtype=float,
-                    )
-                    image_cart = io_mod.direct_to_cartesian(image_direct.reshape(1, 3), lattice_old)[0]
-                    new_direct = image_cart @ inverse_new
-                    if not np.all((-tolerance <= new_direct) & (new_direct <= 1.0 + tolerance)):
-                        continue
-                    wrapped = np.mod(new_direct, 1.0)
-                    duplicate = False
-                    for previous in collected_positions:
-                        difference = wrapped - previous
-                        if np.all(np.abs(difference - np.round(difference)) <= tolerance):
-                            duplicate = True
-                            break
-                    if duplicate:
-                        continue
-                    collected_positions.append(wrapped)
-                    if collected_flags is not None:
-                        collected_flags.append(tuple(expanded_flags[atom_index]))
+        images = base_direct + shifts_3d
+        new_directs = io_mod.direct_to_cartesian(images, lattice_old) @ inverse_new
+        inside = np.all((-tolerance <= new_directs) & (new_directs <= 1.0 + tolerance), axis=1)
+        wrapped_all = np.mod(new_directs[inside], 1.0)
+        if wrapped_all.shape[0] == 0:
+            continue
+        # Collapse exact (to ~1e-9) duplicate images first, preserving order.
+        if wrapped_all.shape[0] > 1:
+            _, first_occurrence = np.unique(np.round(wrapped_all, 9), axis=0, return_index=True)
+            wrapped_all = wrapped_all[np.sort(first_occurrence)]
+        flag_value = tuple(expanded_flags[atom_index]) if collected_flags is not None else None
+        for wrapped in wrapped_all:
+            if collected_array.shape[0]:
+                difference = wrapped[None, :] - collected_array
+                difference -= np.round(difference)
+                if np.any(np.all(np.abs(difference) <= tolerance, axis=1)):
+                    continue
+            collected_positions.append(wrapped)
+            collected_array = np.vstack((collected_array, wrapped[None, :]))
+            if collected_flags is not None:
+                collected_flags.append(flag_value)
 
     if not collected_positions:
         raise ValueError("surface transform did not capture any atoms; try a simpler Miller index")
@@ -551,33 +577,43 @@ def _structure_from_inplane_transform(
     species_expanded = _expanded_species(structure)
     flags_expanded = structure.selective_flags or [None] * structure.natoms
     collected_atoms: list[tuple[str, np.ndarray, tuple[str, str, str] | None]] = []
+    # Per-species accumulator of accepted fractional positions so each new image
+    # is tested against the existing ones with a single vectorised min-image
+    # comparison rather than a Python scan over all collected atoms.
+    existing_by_species: dict[str, list[np.ndarray]] = {}
 
     for atom_index, base_direct in enumerate(np.asarray(structure.positions_direct, dtype=float)):
         shifted_2d = base_direct[:2] + shifts_2d
         new_2d = shifted_2d @ inverse_2d
         inside = np.all((-tolerance <= new_2d) & (new_2d <= 1.0 + tolerance), axis=1)
-        for candidate_2d in new_2d[inside]:
-            wrapped = np.array([candidate_2d[0], candidate_2d[1], base_direct[2]], dtype=float)
-            wrapped = np.mod(wrapped, 1.0)
-            wrapped[np.isclose(wrapped, 1.0, atol=tolerance)] = 0.0
-            wrapped[np.isclose(wrapped, 0.0, atol=tolerance)] = 0.0
-            duplicate = False
-            for existing_species, existing_direct, _ in collected_atoms:
-                if existing_species != species_expanded[atom_index]:
+        candidates_2d = new_2d[inside]
+        if candidates_2d.shape[0] == 0:
+            continue
+        wrapped_all = np.empty((candidates_2d.shape[0], 3), dtype=float)
+        wrapped_all[:, 0] = candidates_2d[:, 0]
+        wrapped_all[:, 1] = candidates_2d[:, 1]
+        wrapped_all[:, 2] = base_direct[2]
+        wrapped_all = np.mod(wrapped_all, 1.0)
+        wrapped_all[np.isclose(wrapped_all, 1.0, atol=tolerance)] = 0.0
+        wrapped_all[np.isclose(wrapped_all, 0.0, atol=tolerance)] = 0.0
+        # Collapse exact (to ~1e-9) duplicate images first, preserving first
+        # occurrence: far finer than ``tolerance`` so it cannot merge distinct
+        # sites, but removes the many identical images from the shift grid.
+        if wrapped_all.shape[0] > 1:
+            _, first_occurrence = np.unique(np.round(wrapped_all, 9), axis=0, return_index=True)
+            wrapped_all = wrapped_all[np.sort(first_occurrence)]
+        symbol = str(species_expanded[atom_index])
+        accepted = existing_by_species.setdefault(symbol, [])
+        flags_value = None if flags_expanded[atom_index] is None else tuple(flags_expanded[atom_index])
+        for wrapped in wrapped_all:
+            if accepted:
+                existing_array = np.asarray(accepted, dtype=float)
+                difference = wrapped[None, :] - existing_array
+                difference -= np.round(difference)
+                if np.any(np.all(np.abs(difference) <= tolerance, axis=1)):
                     continue
-                difference = wrapped - existing_direct
-                if np.all(np.abs(difference - np.round(difference)) <= tolerance):
-                    duplicate = True
-                    break
-            if duplicate:
-                continue
-            collected_atoms.append(
-                (
-                    str(species_expanded[atom_index]),
-                    wrapped,
-                    None if flags_expanded[atom_index] is None else tuple(flags_expanded[atom_index]),
-                )
-            )
+            accepted.append(wrapped)
+            collected_atoms.append((symbol, wrapped, flags_value))
 
     expected_atoms = determinant * structure.natoms
     if len(collected_atoms) != expected_atoms:
@@ -847,139 +883,178 @@ def _inplane_cartesian_from_uv(uv: Sequence[float], lattice: np.ndarray) -> np.n
     return float(uv[0]) * basis[0] + float(uv[1]) * basis[1]
 
 
-def _minimum_image_inplane_delta(uv_a: Sequence[float], uv_b: Sequence[float]) -> np.ndarray:
-    delta = np.array([float(uv_a[0]) - float(uv_b[0]), float(uv_a[1]) - float(uv_b[1])], dtype=float)
-    return delta - np.round(delta)
-
-
-def _minimum_image_inplane_distance(uv_a: Sequence[float], uv_b: Sequence[float], lattice: np.ndarray) -> float:
-    delta = _minimum_image_inplane_delta(uv_a, uv_b)
-    return float(np.linalg.norm(_inplane_cartesian_from_uv(delta, lattice)))
-
-
 def _deduplicate_uv_points(points_uv: Sequence[np.ndarray], lattice: np.ndarray, tolerance: float = 1e-4) -> list[np.ndarray]:
-    unique: list[np.ndarray] = []
-    for point in points_uv:
-        wrapped = np.mod(np.asarray(point, dtype=float), 1.0)
-        if any(_minimum_image_inplane_distance(wrapped, existing, lattice) <= tolerance for existing in unique):
-            continue
-        unique.append(wrapped)
-    return unique
+    points = [np.mod(np.asarray(point, dtype=float), 1.0) for point in points_uv]
+    if not points:
+        return []
+    basis_2d = np.asarray(lattice, dtype=float)[:2]
+    stacked = np.asarray(points, dtype=float)
+    # Collapse exact (to ~1e-9) duplicate points first, preserving first
+    # occurrence. This is far finer than ``tolerance`` so it cannot merge
+    # genuinely distinct sites, but the candidate lists are dominated by exact
+    # repeats (the same site found from many anchors), so it removes the bulk of
+    # the work before the greedy minimum-image pass.
+    if stacked.shape[0] > 1:
+        _, first_occurrence = np.unique(np.round(stacked, 9), axis=0, return_index=True)
+        order = np.sort(first_occurrence)
+        candidates = stacked[order]
+    else:
+        candidates = stacked
+    kept: list[np.ndarray] = []
+    kept_array = np.empty((0, 2), dtype=float)
+    for point in candidates:
+        if kept_array.shape[0]:
+            delta = point[None, :] - kept_array
+            delta -= np.round(delta)
+            cartesian = _uv_to_cartesian(delta, basis_2d)
+            distances = np.linalg.norm(cartesian, axis=1)
+            if np.any(distances <= tolerance):
+                continue
+        kept.append(point)
+        kept_array = np.vstack((kept_array, point[None, :]))
+    return kept
 
 
-def _expanded_periodic_points(points_uv: np.ndarray) -> list[tuple[int, int, int, np.ndarray]]:
-    expanded: list[tuple[int, int, int, np.ndarray]] = []
-    for base_index, uv in enumerate(np.asarray(points_uv, dtype=float)):
-        for shift_u in (-1, 0, 1):
-            for shift_v in (-1, 0, 1):
-                expanded.append((base_index, shift_u, shift_v, uv + np.array([shift_u, shift_v], dtype=float)))
-    return expanded
+_PERIODIC_SHIFTS_2D = np.array(
+    [[shift_u, shift_v] for shift_u in (-1, 0, 1) for shift_v in (-1, 0, 1)], dtype=float
+)
+
+
+def _expanded_periodic_arrays(points_uv: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Return ``(points, expanded)`` where ``expanded`` holds the nine periodic
+    images (shifts of -1/0/1 along each in-plane axis) of every point in
+    base-major / shift order.
+    """
+
+    points = np.asarray(points_uv, dtype=float)
+    expanded = (points[:, None, :] + _PERIODIC_SHIFTS_2D[None, :, :]).reshape(-1, 2)
+    return points, expanded
+
+
+def _uv_to_cartesian(uv_array: np.ndarray, basis_2d: np.ndarray) -> np.ndarray:
+    """Batched ``uv -> cartesian`` matching ``_inplane_cartesian_from_uv`` exactly
+    (``uv[0] * a + uv[1] * b`` with the same elementwise floating-point ops, so
+    threshold comparisons are bit-identical to the original scalar code).
+    """
+
+    uv_array = np.asarray(uv_array, dtype=float)
+    return uv_array[..., 0:1] * basis_2d[0] + uv_array[..., 1:2] * basis_2d[1]
+
+
+def _anchor_image_distance_matrix(points: np.ndarray, expanded: np.ndarray, lattice: np.ndarray) -> np.ndarray:
+    """``(n_points, 9 * n_points)`` Cartesian distances from each point to every
+    periodic image, matching ``norm(_inplane_cartesian_from_uv(image - point))``.
+    """
+
+    basis_2d = np.asarray(lattice, dtype=float)[:2]
+    displacement = expanded[None, :, :] - points[:, None, :]
+    cartesian = _uv_to_cartesian(displacement, basis_2d)
+    return np.linalg.norm(cartesian, axis=2)
 
 
 def _nearest_neighbor_distance(points_uv: np.ndarray, lattice: np.ndarray) -> float:
-    expanded = _expanded_periodic_points(points_uv)
-    best = math.inf
-    for anchor_index, anchor_uv in enumerate(np.asarray(points_uv, dtype=float)):
-        for base_index, shift_u, shift_v, shifted_uv in expanded:
-            if base_index == anchor_index and shift_u == 0 and shift_v == 0:
-                continue
-            distance = float(np.linalg.norm(_inplane_cartesian_from_uv(shifted_uv - anchor_uv, lattice)))
-            if distance <= 1e-8:
-                continue
-            best = min(best, distance)
-    if not math.isfinite(best):
+    points, expanded = _expanded_periodic_arrays(points_uv)
+    if points.shape[0] == 0:
         raise ValueError("could not determine an in-plane nearest-neighbour distance from the top surface atoms")
-    return best
+    distances = _anchor_image_distance_matrix(points, expanded, lattice)
+    valid = distances > 1e-8
+    if not np.any(valid):
+        raise ValueError("could not determine an in-plane nearest-neighbour distance from the top surface atoms")
+    return float(distances[valid].min())
 
 
 def _top_layer_coordination_counts(points_uv: np.ndarray, lattice: np.ndarray, neighbour_cutoff: float) -> list[int]:
-    expanded = _expanded_periodic_points(points_uv)
-    counts: list[int] = []
-    for anchor_index, anchor_uv in enumerate(np.asarray(points_uv, dtype=float)):
-        count = 0
-        for base_index, shift_u, shift_v, shifted_uv in expanded:
-            if base_index == anchor_index and shift_u == 0 and shift_v == 0:
-                continue
-            distance = float(np.linalg.norm(_inplane_cartesian_from_uv(shifted_uv - anchor_uv, lattice)))
-            if 1e-8 < distance <= neighbour_cutoff + 1e-12:
-                count += 1
-        counts.append(count)
-    return counts
+    points, expanded = _expanded_periodic_arrays(points_uv)
+    if points.shape[0] == 0:
+        return []
+    distances = _anchor_image_distance_matrix(points, expanded, lattice)
+    within = (distances > 1e-8) & (distances <= neighbour_cutoff + 1e-12)
+    return [int(value) for value in within.sum(axis=1)]
 
 
 def _find_bridge_sites(points_uv: np.ndarray, lattice: np.ndarray, neighbour_cutoff: float) -> list[np.ndarray]:
-    expanded = _expanded_periodic_points(points_uv)
-    bridge_points: list[np.ndarray] = []
-    for anchor_index, anchor_uv in enumerate(np.asarray(points_uv, dtype=float)):
-        for base_index, shift_u, shift_v, shifted_uv in expanded:
-            if base_index == anchor_index and shift_u == 0 and shift_v == 0:
-                continue
-            distance = float(np.linalg.norm(_inplane_cartesian_from_uv(shifted_uv - anchor_uv, lattice)))
-            if 1e-8 < distance <= neighbour_cutoff + 1e-12:
-                bridge_points.append(np.mod(0.5 * (anchor_uv + shifted_uv), 1.0))
-    return _deduplicate_uv_points(bridge_points, lattice)
+    points, expanded = _expanded_periodic_arrays(points_uv)
+    if points.shape[0] == 0:
+        return []
+    distances = _anchor_image_distance_matrix(points, expanded, lattice)
+    within = (distances > 1e-8) & (distances <= neighbour_cutoff + 1e-12)
+    anchor_idx, image_idx = np.nonzero(within)
+    if anchor_idx.size == 0:
+        return []
+    midpoints = np.mod(0.5 * (points[anchor_idx] + expanded[image_idx]), 1.0)
+    return _deduplicate_uv_points(list(midpoints), lattice)
 
 
 def _find_triangular_hollows(points_uv: np.ndarray, lattice: np.ndarray, neighbour_cutoff: float) -> list[np.ndarray]:
-    expanded = _expanded_periodic_points(points_uv)
+    points, expanded = _expanded_periodic_arrays(points_uv)
+    if points.shape[0] == 0:
+        return []
+    basis_2d = np.asarray(lattice, dtype=float)[:2]
+    distances = _anchor_image_distance_matrix(points, expanded, lattice)
+    within = (distances > 1e-8) & (distances <= neighbour_cutoff + 1e-12)
     hollows: list[np.ndarray] = []
-    for anchor_uv in np.asarray(points_uv, dtype=float):
-        neighbours = [
-            shifted_uv
-            for _, shift_u, shift_v, shifted_uv in expanded
-            if not (shift_u == 0 and shift_v == 0 and np.allclose(shifted_uv, anchor_uv))
-            and 1e-8 < float(np.linalg.norm(_inplane_cartesian_from_uv(shifted_uv - anchor_uv, lattice))) <= neighbour_cutoff + 1e-12
-        ]
-        for first_index in range(len(neighbours)):
-            for second_index in range(first_index + 1, len(neighbours)):
-                point_b = neighbours[first_index]
-                point_c = neighbours[second_index]
-                edge_bc = float(np.linalg.norm(_inplane_cartesian_from_uv(point_c - point_b, lattice)))
-                if edge_bc > neighbour_cutoff + 1e-12:
-                    continue
-                vector_ab = _inplane_cartesian_from_uv(point_b - anchor_uv, lattice)
-                vector_ac = _inplane_cartesian_from_uv(point_c - anchor_uv, lattice)
-                area = abs(float(np.cross(vector_ab, vector_ac)[2])) if vector_ab.shape[0] == 3 else abs(float(vector_ab[0] * vector_ac[1] - vector_ab[1] * vector_ac[0]))
-                if area <= 1e-8:
-                    continue
-                hollows.append(np.mod((anchor_uv + point_b + point_c) / 3.0, 1.0))
+    for anchor_index in range(points.shape[0]):
+        anchor_uv = points[anchor_index]
+        neighbours = expanded[within[anchor_index]]
+        count = neighbours.shape[0]
+        if count < 2:
+            continue
+        first_sel, second_sel = np.triu_indices(count, k=1)
+        point_b = neighbours[first_sel]
+        point_c = neighbours[second_sel]
+        edge_bc = np.linalg.norm(_uv_to_cartesian(point_c - point_b, basis_2d), axis=1)
+        vector_ab = _uv_to_cartesian(point_b - anchor_uv, basis_2d)
+        vector_ac = _uv_to_cartesian(point_c - anchor_uv, basis_2d)
+        area = np.abs(np.cross(vector_ab, vector_ac)[:, 2])
+        keep = (edge_bc <= neighbour_cutoff + 1e-12) & (area > 1e-8)
+        if not np.any(keep):
+            continue
+        centroids = np.mod((anchor_uv + point_b[keep] + point_c[keep]) / 3.0, 1.0)
+        hollows.extend(list(centroids))
     return _deduplicate_uv_points(hollows, lattice)
 
 
 def _find_fourfold_hollows(points_uv: np.ndarray, lattice: np.ndarray, neighbour_cutoff: float) -> list[np.ndarray]:
-    expanded = _expanded_periodic_points(points_uv)
-    hollows: list[np.ndarray] = []
+    points, expanded = _expanded_periodic_arrays(points_uv)
+    if points.shape[0] == 0:
+        return []
+    basis_2d = np.asarray(lattice, dtype=float)[:2]
+    distances = _anchor_image_distance_matrix(points, expanded, lattice)
+    within = (distances > 1e-8) & (distances <= neighbour_cutoff + 1e-12)
     angle_window = (70.0, 110.0)
-    for anchor_uv in np.asarray(points_uv, dtype=float):
-        neighbours: list[np.ndarray] = []
-        for _, shift_u, shift_v, shifted_uv in expanded:
-            if shift_u == 0 and shift_v == 0 and np.allclose(shifted_uv, anchor_uv):
-                continue
-            displacement = shifted_uv - anchor_uv
-            distance = float(np.linalg.norm(_inplane_cartesian_from_uv(displacement, lattice)))
-            if 1e-8 < distance <= neighbour_cutoff + 1e-12:
-                neighbours.append(displacement)
-
-        for first_index in range(len(neighbours)):
-            for second_index in range(first_index + 1, len(neighbours)):
-                disp_a = neighbours[first_index]
-                disp_b = neighbours[second_index]
-                vec_a = _inplane_cartesian_from_uv(disp_a, lattice)
-                vec_b = _inplane_cartesian_from_uv(disp_b, lattice)
-                denominator = max(float(np.linalg.norm(vec_a) * np.linalg.norm(vec_b)), 1e-12)
-                cosine = np.clip(float(np.dot(vec_a, vec_b) / denominator), -1.0, 1.0)
-                angle_deg = float(np.degrees(np.arccos(cosine)))
-                if not (angle_window[0] <= angle_deg <= angle_window[1]):
-                    continue
-
-                corner_uv = anchor_uv + disp_a + disp_b
-                has_fourth_corner = any(
-                    float(np.linalg.norm(_inplane_cartesian_from_uv(candidate_uv - corner_uv, lattice))) <= 1e-6
-                    for _, _, _, candidate_uv in expanded
-                )
-                if not has_fourth_corner:
-                    continue
-                hollows.append(np.mod(anchor_uv + 0.5 * (disp_a + disp_b), 1.0))
+    hollows: list[np.ndarray] = []
+    for anchor_index in range(points.shape[0]):
+        anchor_uv = points[anchor_index]
+        displacements = expanded[within[anchor_index]] - anchor_uv
+        count = displacements.shape[0]
+        if count < 2:
+            continue
+        first_sel, second_sel = np.triu_indices(count, k=1)
+        disp_a = displacements[first_sel]
+        disp_b = displacements[second_sel]
+        vec_a = _uv_to_cartesian(disp_a, basis_2d)
+        vec_b = _uv_to_cartesian(disp_b, basis_2d)
+        norm_a = np.linalg.norm(vec_a, axis=1)
+        norm_b = np.linalg.norm(vec_b, axis=1)
+        denominator = np.maximum(norm_a * norm_b, 1e-12)
+        cosine = np.clip(np.einsum("ij,ij->i", vec_a, vec_b) / denominator, -1.0, 1.0)
+        angle_deg = np.degrees(np.arccos(cosine))
+        angle_ok = (angle_deg >= angle_window[0]) & (angle_deg <= angle_window[1])
+        candidate_positions = np.nonzero(angle_ok)[0]
+        if candidate_positions.size == 0:
+            continue
+        corners = anchor_uv + disp_a[candidate_positions] + disp_b[candidate_positions]
+        corner_diff = expanded[None, :, :] - corners[:, None, :]
+        corner_cart = _uv_to_cartesian(corner_diff, basis_2d)
+        nearest_corner = np.linalg.norm(corner_cart, axis=2).min(axis=1)
+        has_fourth = nearest_corner <= 1e-6
+        kept_positions = candidate_positions[has_fourth]
+        if kept_positions.size == 0:
+            continue
+        hollow_points = np.mod(
+            anchor_uv + 0.5 * (disp_a[kept_positions] + disp_b[kept_positions]), 1.0
+        )
+        hollows.extend(list(hollow_points))
     return _deduplicate_uv_points(hollows, lattice)
 
 
@@ -1004,20 +1079,20 @@ def _match_subsurface_hollow(
     lower_layers: Sequence[tuple[float, np.ndarray]],
     match_tolerance: float,
 ) -> str:
+    basis_2d = np.asarray(lattice, dtype=float)[:2]
+
+    def _min_distance(layer_points: np.ndarray) -> float:
+        delta = np.asarray(hollow_uv, dtype=float)[None, :] - np.asarray(layer_points, dtype=float)
+        delta -= np.round(delta)
+        cartesian = _uv_to_cartesian(delta, basis_2d)
+        return float(np.linalg.norm(cartesian, axis=1).min())
+
     if len(lower_layers) >= 1 and lower_layers[0][1].size > 0:
-        distances_first = [
-            _minimum_image_inplane_distance(hollow_uv, candidate_uv, lattice)
-            for candidate_uv in lower_layers[0][1]
-        ]
-        if distances_first and min(distances_first) <= match_tolerance:
+        if _min_distance(lower_layers[0][1]) <= match_tolerance:
             return "hcp_hollow"
 
     if len(lower_layers) >= 2 and lower_layers[1][1].size > 0:
-        distances_second = [
-            _minimum_image_inplane_distance(hollow_uv, candidate_uv, lattice)
-            for candidate_uv in lower_layers[1][1]
-        ]
-        if distances_second and min(distances_second) <= match_tolerance:
+        if _min_distance(lower_layers[1][1]) <= match_tolerance:
             return "fcc_hollow"
 
     return "hollow"

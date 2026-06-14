@@ -33,6 +33,35 @@ def _print_result(result) -> None:
         print(f"{key}: {value}")
     for key, value in result.summary.items():
         print(f"{key}: {value}")
+    timings = getattr(result, "payload", {}).get("timings_s") if hasattr(result, "payload") else None
+    if timings:
+        print()
+        print("Timing:")
+        timing_order = [
+            "read_structures_s",
+            "angle_shortlist_s",
+            "supercell_search_s",
+            "write_results_s",
+            "manifest_write_s",
+            "workflow_total_s",
+        ]
+        for key in timing_order:
+            if key in timings:
+                label = key.removesuffix("_s").replace("_", " ")
+                print(f"  {label}: {float(timings[key]):.3f}s")
+    angle_search = getattr(result, "payload", {}).get("angle_search") if hasattr(result, "payload") else None
+    if angle_search:
+        print()
+        print("Angle search:")
+        print(f"  shortlisted angles: {angle_search.get('shortlisted_angle_count')}")
+        print(f"  searched angles: {angle_search.get('searched_angle_count')}")
+        if angle_search.get("angle_values_thinned"):
+            print(
+                "  thinning: "
+                f"{angle_search.get('angle_values_before_thinning')} -> "
+                f"{angle_search.get('searched_angle_count')} "
+                f"(cap {angle_search.get('max_search_angles')})"
+            )
     candidate_preview = getattr(result, "payload", {}).get("candidate_preview") if hasattr(result, "payload") else None
     if candidate_preview:
         print()
@@ -72,19 +101,29 @@ def execute_namespace(args):
                 max_angle=args.max_angle,
                 angle_step=args.angle_step,
                 explicit_angles=args.angles,
+                angle_length_tolerance=args.angle_length_tolerance,
+                angle_strain_tolerance=args.angle_strain_tolerance,
+                angle_merge_tolerance=args.angle_merge_tolerance,
                 vector_tolerance=args.vector_tolerance,
                 vector_strain_tolerance=args.vector_strain_tolerance,
                 candidate_tolerance=args.candidate_tolerance,
                 strain_tolerance=args.strain_tolerance,
+                max_atoms=args.max_atoms,
+                max_search_angles=args.max_search_angles,
                 matrix_values=args.matrix_values,
                 matrix_layer=args.matrix_layer,
                 matrix_match_mode=args.matrix_match_mode,
                 workers=args.workers,
+                fold_symmetry=args.fold_symmetry,
+                max_pair_matches=args.max_pair_matches,
+                cull_redundant=args.cull_redundant,
+                reduce_basis=args.reduce_basis,
                 top_c_repeat=args.top_c_repeat,
                 bottom_c_repeat=args.bottom_c_repeat,
                 prestrain_top=PrestrainConfig(args.prestrain_top_mode, args.prestrain_top_value, args.prestrain_top_axis),
                 prestrain_bottom=PrestrainConfig(args.prestrain_bottom_mode, args.prestrain_bottom_value, args.prestrain_bottom_axis),
                 preview_limit=args.preview_limit,
+                progress=args.progress,
             )
             return result
         if args.stage == "findn":
@@ -154,9 +193,18 @@ def execute_namespace(args):
                 site_index=args.site_index,
                 height=args.height,
                 rotation_deg=args.rotate,
+                tilt_deg=args.tilt,
+                roll_deg=args.roll,
             )
         if args.stage == "move":
-            return tool.move(poscar_path=args.poscar_path, target_cartesian=args.target_cart, target_direct=args.target_direct, rotation_deg=args.rotate)
+            return tool.move(
+                poscar_path=args.poscar_path,
+                target_cartesian=args.target_cart,
+                target_direct=args.target_direct,
+                rotation_deg=args.rotate,
+                tilt_deg=args.tilt,
+                roll_deg=args.roll,
+            )
         if args.stage == "assemble":
             return tool.assemble(
                 substrate_poscar=args.substrate_poscar,
@@ -224,6 +272,7 @@ def execute_namespace(args):
                 surface_side=args.surface_side,
                 layer_tolerance=args.layer_tolerance,
                 symprec=args.symprec,
+                divacancy_distance=args.divacancy_distance,
             )
         if args.stage == "generate":
             return tool.generate(
@@ -241,6 +290,7 @@ def execute_namespace(args):
                 layer_tolerance=args.layer_tolerance,
                 symprec=args.symprec,
                 height=args.height,
+                divacancy_distance=args.divacancy_distance,
             )
         if args.stage == "preview":
             return tool.preview(
@@ -251,6 +301,7 @@ def execute_namespace(args):
                 surface_side=args.surface_side,
                 layer_tolerance=args.layer_tolerance,
                 symprec=args.symprec,
+                divacancy_distance=args.divacancy_distance,
             )
 
     if args.group == "symmetry":

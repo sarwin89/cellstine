@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from pathlib import Path
 from typing import Sequence
 
@@ -19,6 +20,25 @@ def _safe_token(value: object) -> str:
     text = str(value).strip().replace("-", "m").replace(".", "p")
     safe = [char if char.isalnum() or char in {"_", "m", "p"} else "_" for char in text]
     return "".join(safe).strip("_") or "x"
+
+
+def _format_timing(value: float | int | None) -> str:
+    if value is None:
+        return "n/a"
+    return f"{float(value):.3f}s"
+
+
+def _progress_printer(total_steps: int = 5):
+    state = {"step": 0}
+
+    def _print(stage: str, message: str) -> None:
+        if message.startswith(("resolved", "found", "wrote")):
+            state["step"] = min(total_steps, state["step"] + 1)
+        filled = min(total_steps, max(0, int(state["step"])))
+        bar = "#" * filled + "-" * (total_steps - filled)
+        print(f"[{bar}] {stage}: {message}", flush=True)
+
+    return _print
 
 
 class Moire(Base):
@@ -43,7 +63,7 @@ class Moire(Base):
         angle_length_tolerance: float = 1e-5,
         angle_strain_tolerance: float | None = 2e-3,
         angle_merge_tolerance: float = 1e-3,
-        vector_tolerance: float = 2e-3,
+        vector_tolerance: float | None = 2e-3,
         vector_strain_tolerance: float | None = 2e-3,
         candidate_tolerance: float | None = None,
         strain_tolerance: float | None = None,
@@ -59,17 +79,38 @@ class Moire(Base):
         top_c_repeat: int = 1,
         bottom_c_repeat: int = 1,
         workers: int = 1,
+        fold_symmetry: bool = False,
+        max_search_angles: int | None = None,
+        max_pair_matches: int | None = None,
+        cull_redundant: bool = True,
+        reduce_basis: bool = True,
         prestrain_top: PrestrainConfig | None = None,
         prestrain_bottom: PrestrainConfig | None = None,
         preview_limit: int = 10,
+        progress: bool = False,
     ) -> CommandResult:
+        total_start = time.perf_counter()
+        progress_callback = _progress_printer() if progress else None
         backend = self.choose_backend(feature="moire.find")
+        if progress_callback:
+            progress_callback("read", "reading input structures")
+        read_start = time.perf_counter()
         top = self.converter.read(top_poscar)
         bottom = self.converter.read(bottom_poscar)
+        read_time = time.perf_counter() - read_start
+        if progress_callback:
+            progress_callback("read", f"read structures in {_format_timing(read_time)}")
         top_prestrain = prestrain_top or PrestrainConfig()
         bottom_prestrain = prestrain_bottom or PrestrainConfig()
         top_lattice = apply_inplane_prestrain(top.lattice, mode=top_prestrain.mode, magnitude=top_prestrain.magnitude, axis=top_prestrain.axis)
         bottom_lattice = apply_inplane_prestrain(bottom.lattice, mode=bottom_prestrain.mode, magnitude=bottom_prestrain.magnitude, axis=bottom_prestrain.axis)
+        resolved_vector_tolerance = 2e-3 if vector_tolerance is None else float(vector_tolerance)
+        resolved_vector_strain_tolerance = 2e-3 if vector_strain_tolerance is None else float(vector_strain_tolerance)
+        if angle_strain_tolerance is not None:
+            if vector_tolerance is None:
+                resolved_vector_tolerance = min(resolved_vector_tolerance, float(angle_strain_tolerance))
+            if vector_strain_tolerance is None:
+                resolved_vector_strain_tolerance = min(resolved_vector_strain_tolerance, float(angle_strain_tolerance))
 
         label = f"{Path(bottom_poscar).stem}_{Path(top_poscar).stem}"
         run_id, run_dir = self.create_run_dir("find", label)
@@ -88,8 +129,8 @@ class Moire(Base):
             angle_length_tolerance=float(angle_length_tolerance),
             angle_strain_tolerance=angle_strain_tolerance,
             angle_merge_tolerance=float(angle_merge_tolerance),
-            vector_tolerance=float(vector_tolerance),
-            vector_strain_tolerance=vector_strain_tolerance,
+            vector_tolerance=resolved_vector_tolerance,
+            vector_strain_tolerance=resolved_vector_strain_tolerance,
             candidate_tolerance=candidate_tolerance,
             strain_tolerance=strain_tolerance,
             strain_layer=str(strain_layer),
@@ -105,7 +146,16 @@ class Moire(Base):
             top_c_repeat=int(top_c_repeat),
             bottom_c_repeat=int(bottom_c_repeat),
             workers=int(workers),
+            fold_symmetry=bool(fold_symmetry),
+            max_search_angles=max_search_angles,
+            max_pair_matches=max_pair_matches,
+            cull_redundant=bool(cull_redundant),
+            reduce_basis=bool(reduce_basis),
+            progress_callback=progress_callback,
         )
+        manifest_start = time.perf_counter()
+        timings = dict(run.timings)
+        timings["read_structures_s"] = float(read_time)
         manifest_path = self.write_manifest(
             stage="find",
             run_id=run_id,
@@ -119,6 +169,13 @@ class Moire(Base):
                 "angle_step": float(angle_step),
                 "explicit_angles": list(explicit_angles or []),
                 "workers": int(workers),
+                "vector_tolerance": resolved_vector_tolerance,
+                "vector_strain_tolerance": resolved_vector_strain_tolerance,
+                "fold_symmetry": bool(fold_symmetry),
+                "max_search_angles": max_search_angles,
+                "max_pair_matches": max_pair_matches,
+                "cull_redundant": bool(cull_redundant),
+                "reduce_basis": bool(reduce_basis),
                 "matrix_values": list(matrix_values or []),
                 "matrix_layer": str(matrix_layer),
                 "matrix_match_mode": str(matrix_match_mode),
@@ -130,19 +187,36 @@ class Moire(Base):
                 "candidate_count": len(run.candidates),
                 "shortlisted_angle_count": len(run.shortlisted_angles),
                 "symmetry_lcm_deg": run.symmetry_lcm,
+                "timings_s": timings,
             },
         )
+        timings["manifest_write_s"] = time.perf_counter() - manifest_start
+        timings["workflow_total_s"] = time.perf_counter() - total_start
+        if progress_callback:
+            progress_callback("manifest", f"wrote manifest in {_format_timing(timings['manifest_write_s'])}")
         preview = format_bilayer_candidates(run.candidates, limit=int(preview_limit)) if int(preview_limit) > 0 else ""
         return self.result(
             manifest_path=manifest_path,
             run_dir=run_dir,
             artifacts={"results_dat": run.dat_path},
-            summary={"candidate_count": len(run.candidates), "symmetry_lcm_deg": run.symmetry_lcm},
+            summary={
+                "candidate_count": len(run.candidates),
+                "symmetry_lcm_deg": run.symmetry_lcm,
+                "workflow_total_s": round(timings["workflow_total_s"], 6),
+            },
             payload={
                 "run_id": run.run_id,
                 "search_min_angle": run.search_min_angle,
                 "search_max_angle": run.search_max_angle,
                 "candidate_preview": preview,
+                "timings_s": timings,
+                "angle_search": {
+                    "shortlisted_angle_count": len(run.shortlisted_angles),
+                    "searched_angle_count": len(run.angle_values),
+                    "angle_values_thinned": bool(run.parameters.get("angle_values_thinned", False)),
+                    "angle_values_before_thinning": run.parameters.get("angle_values_before_thinning", ""),
+                    "max_search_angles": run.parameters.get("max_search_angles", max_search_angles),
+                },
             },
         )
 

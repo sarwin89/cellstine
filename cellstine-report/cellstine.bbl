@@ -1,0 +1,540 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{ynt/global//global/global/global}
+    \entry{zur1984systematic}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=85258a13fddcdf7be927c164869f33a2}{%
+           family={Zur},
+           familyi={Z\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+        {{hash=3027f65829666ac75a01436364de7313}{%
+           family={McGill},
+           familyi={M\bibinitperiod},
+           given={T.\bibnamedelimi C.},
+           giveni={T\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {AIP Publishing}%
+      }
+      \strng{namehash}{75b04d9251249a9c2f3c2c332ead6b83}
+      \strng{fullhash}{75b04d9251249a9c2f3c2c332ead6b83}
+      \strng{fullhashraw}{75b04d9251249a9c2f3c2c332ead6b83}
+      \strng{bibnamehash}{75b04d9251249a9c2f3c2c332ead6b83}
+      \strng{authorbibnamehash}{75b04d9251249a9c2f3c2c332ead6b83}
+      \strng{authornamehash}{75b04d9251249a9c2f3c2c332ead6b83}
+      \strng{authorfullhash}{75b04d9251249a9c2f3c2c332ead6b83}
+      \strng{authorfullhashraw}{75b04d9251249a9c2f3c2c332ead6b83}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Applied Physics}
+      \field{number}{2}
+      \field{title}{Systematic method for calculating lattice matches for semiconductor heterostructures}
+      \field{volume}{55}
+      \field{year}{1984}
+      \field{pages}{378\bibrangedash 386}
+      \range{pages}{9}
+    \endentry
+    \entry{hammer2000theoretical}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=0c21f4363eeff12c3b35a7ec42dc1088}{%
+           family={Hammer},
+           familyi={H\bibinitperiod},
+           given={Bj{ø}rk},
+           giveni={B\bibinitperiod}}}%
+        {{hash=e4a8a4fb0403a8f9e7458d555e09d784}{%
+           family={N{ø}rskov},
+           familyi={N\bibinitperiod},
+           given={Jens\bibnamedelima Kehlet},
+           giveni={J\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Academic Press}%
+      }
+      \strng{namehash}{4f2a26bf55d0e9d56c5120458ca4533b}
+      \strng{fullhash}{4f2a26bf55d0e9d56c5120458ca4533b}
+      \strng{fullhashraw}{4f2a26bf55d0e9d56c5120458ca4533b}
+      \strng{bibnamehash}{4f2a26bf55d0e9d56c5120458ca4533b}
+      \strng{authorbibnamehash}{4f2a26bf55d0e9d56c5120458ca4533b}
+      \strng{authornamehash}{4f2a26bf55d0e9d56c5120458ca4533b}
+      \strng{authorfullhash}{4f2a26bf55d0e9d56c5120458ca4533b}
+      \strng{authorfullhashraw}{4f2a26bf55d0e9d56c5120458ca4533b}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Advances in Catalysis}
+      \field{title}{Theoretical surface science and catalysis---calculations and concepts}
+      \field{volume}{45}
+      \field{year}{2000}
+      \field{pages}{71\bibrangedash 129}
+      \range{pages}{59}
+    \endentry
+    \entry{bistritzer2011moire}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=0490200aa53c431af05fa620dc605ffe}{%
+           family={Bistritzer},
+           familyi={B\bibinitperiod},
+           given={Rafi},
+           giveni={R\bibinitperiod}}}%
+        {{hash=e61177dc966d10b2f2ff169265427bb3}{%
+           family={MacDonald},
+           familyi={M\bibinitperiod},
+           given={Allan\bibnamedelima H},
+           giveni={A\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {National Acad Sciences}%
+      }
+      \strng{namehash}{a5350df5ec3b29036758921027c3698a}
+      \strng{fullhash}{a5350df5ec3b29036758921027c3698a}
+      \strng{fullhashraw}{a5350df5ec3b29036758921027c3698a}
+      \strng{bibnamehash}{a5350df5ec3b29036758921027c3698a}
+      \strng{authorbibnamehash}{a5350df5ec3b29036758921027c3698a}
+      \strng{authornamehash}{a5350df5ec3b29036758921027c3698a}
+      \strng{authorfullhash}{a5350df5ec3b29036758921027c3698a}
+      \strng{authorfullhashraw}{a5350df5ec3b29036758921027c3698a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Proceedings of the National Academy of Sciences}
+      \field{number}{30}
+      \field{title}{Moiré bands in twisted double-layer graphene}
+      \field{volume}{108}
+      \field{year}{2011}
+      \field{pages}{12233\bibrangedash 12237}
+      \range{pages}{5}
+    \endentry
+    \entry{pymatgen}{article}{}{}
+      \name{author}{5}{}{%
+        {{hash=ec35ac10384a057f3608216b62bde711}{%
+           family={Ong},
+           familyi={O\bibinitperiod},
+           given={Shyue\bibnamedelima Ping},
+           giveni={S\bibinitperiod\bibinitdelim P\bibinitperiod}}}%
+        {{hash=7a4053b9fa91834fbc95a799bd91dfd4}{%
+           family={Richards},
+           familyi={R\bibinitperiod},
+           given={William\bibnamedelima Davidson},
+           giveni={W\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+        {{hash=f93104c1513ed7b556f13321e99c3bf9}{%
+           family={Gunter},
+           familyi={G\bibinitperiod},
+           given={Anubhav},
+           giveni={A\bibinitperiod}}}%
+        {{hash=9492618befda84af2f30c9f7d944783a}{%
+           family={Hautier},
+           familyi={H\bibinitperiod},
+           given={Geoffroy},
+           giveni={G\bibinitperiod}}}%
+        {{hash=1119594242bcd7037a1f252b0626e411}{%
+           family={Ceder},
+           familyi={C\bibinitperiod},
+           given={Gerbrand},
+           giveni={G\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{f66dc6868f60190249744e7f893e363d}
+      \strng{fullhash}{be93ce963b46533a17ecd64d27d75e49}
+      \strng{fullhashraw}{be93ce963b46533a17ecd64d27d75e49}
+      \strng{bibnamehash}{be93ce963b46533a17ecd64d27d75e49}
+      \strng{authorbibnamehash}{be93ce963b46533a17ecd64d27d75e49}
+      \strng{authornamehash}{f66dc6868f60190249744e7f893e363d}
+      \strng{authorfullhash}{be93ce963b46533a17ecd64d27d75e49}
+      \strng{authorfullhashraw}{be93ce963b46533a17ecd64d27d75e49}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Computational Materials Science}
+      \field{title}{Python Materials Genomics (pymatgen): A robust, open-source library for materials analysis}
+      \field{volume}{68}
+      \field{year}{2013}
+      \field{pages}{314\bibrangedash 319}
+      \range{pages}{6}
+    \endentry
+    \entry{cellmatch}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=7a7803cb58dddb70b5244056b3a3cc3b}{%
+           family={Lazić},
+           familyi={L\bibinitperiod},
+           given={Predrag},
+           giveni={P\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{7a7803cb58dddb70b5244056b3a3cc3b}
+      \strng{fullhash}{7a7803cb58dddb70b5244056b3a3cc3b}
+      \strng{fullhashraw}{7a7803cb58dddb70b5244056b3a3cc3b}
+      \strng{bibnamehash}{7a7803cb58dddb70b5244056b3a3cc3b}
+      \strng{authorbibnamehash}{7a7803cb58dddb70b5244056b3a3cc3b}
+      \strng{authornamehash}{7a7803cb58dddb70b5244056b3a3cc3b}
+      \strng{authorfullhash}{7a7803cb58dddb70b5244056b3a3cc3b}
+      \strng{authorfullhashraw}{7a7803cb58dddb70b5244056b3a3cc3b}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Computer Physics Communications}
+      \field{title}{CellMatch: Combining two unit cells into a common supercell with minimal strain}
+      \field{volume}{197}
+      \field{year}{2015}
+      \field{pages}{324\bibrangedash 330}
+      \range{pages}{7}
+    \endentry
+    \entry{larsen2017ase}{article}{}{}
+      \true{moreauthor}
+      \true{morelabelname}
+      \name{author}{10}{}{%
+        {{hash=d6d1f0ecb6be8e676e06e168df2a3bcc}{%
+           family={Larsen},
+           familyi={L\bibinitperiod},
+           given={Ask\bibnamedelima Hjorth},
+           giveni={A\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+        {{hash=bc21c9e9c8cb3413fcaffd0e1ff25f28}{%
+           family={Mortensen},
+           familyi={M\bibinitperiod},
+           given={Jens\bibnamedelima J{ø}rgen},
+           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+        {{hash=f3b1fdbd768b1279183e42e2d76d489e}{%
+           family={Blomqvist},
+           familyi={B\bibinitperiod},
+           given={Jakob},
+           giveni={J\bibinitperiod}}}%
+        {{hash=bba65549c9db1e84e7209b26cfd73069}{%
+           family={Castelli},
+           familyi={C\bibinitperiod},
+           given={Ivano\bibnamedelima E},
+           giveni={I\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
+        {{hash=abb7516d717601cddd6073b76f6c6499}{%
+           family={Christensen},
+           familyi={C\bibinitperiod},
+           given={Rune},
+           giveni={R\bibinitperiod}}}%
+        {{hash=47fc0f06b2d0f8f4821a0aa5c5aae5ef}{%
+           family={Du{ł}ak},
+           familyi={D\bibinitperiod},
+           given={Marcin},
+           giveni={M\bibinitperiod}}}%
+        {{hash=442647fd527deaadb04465c6c2d6f11a}{%
+           family={Friis},
+           familyi={F\bibinitperiod},
+           given={Jesper},
+           giveni={J\bibinitperiod}}}%
+        {{hash=b39d44d4d644121f2880b67b86b839f8}{%
+           family={Groves},
+           familyi={G\bibinitperiod},
+           given={Michael\bibnamedelima R},
+           giveni={M\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+        {{hash=0c21f4363eeff12c3b35a7ec42dc1088}{%
+           family={Hammer},
+           familyi={H\bibinitperiod},
+           given={Bj{ø}rk},
+           giveni={B\bibinitperiod}}}%
+        {{hash=cef26f9e6a2c1b6fbdf65802acef89d8}{%
+           family={Hargus},
+           familyi={H\bibinitperiod},
+           given={Cory},
+           giveni={C\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {IOP Publishing}%
+      }
+      \strng{namehash}{837cec237c177695c19a32c5cff47e50}
+      \strng{fullhash}{72f459e0a40639c63790b57de6c3bb20}
+      \strng{fullhashraw}{72f459e0a40639c63790b57de6c3bb20}
+      \strng{bibnamehash}{837cec237c177695c19a32c5cff47e50}
+      \strng{authorbibnamehash}{837cec237c177695c19a32c5cff47e50}
+      \strng{authornamehash}{837cec237c177695c19a32c5cff47e50}
+      \strng{authorfullhash}{72f459e0a40639c63790b57de6c3bb20}
+      \strng{authorfullhashraw}{72f459e0a40639c63790b57de6c3bb20}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Physics: Condensed Matter}
+      \field{number}{27}
+      \field{title}{The atomic simulation environment---a {Python} library for working with atoms}
+      \field{volume}{29}
+      \field{year}{2017}
+      \field{pages}{273002}
+      \range{pages}{1}
+    \endentry
+    \entry{cao2018unconventional}{article}{}{}
+      \true{moreauthor}
+      \true{morelabelname}
+      \name{author}{10}{}{%
+        {{hash=2923de2da7f9b32b957552e414b6bc16}{%
+           family={Cao},
+           familyi={C\bibinitperiod},
+           given={Yuan},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=0b67b79ffddf861a67ef1ac3b977151c}{%
+           family={Fatemi},
+           familyi={F\bibinitperiod},
+           given={Valla},
+           giveni={V\bibinitperiod}}}%
+        {{hash=cd2c9a258ed22a49ff0c6a05b88180bc}{%
+           family={Demir},
+           familyi={D\bibinitperiod},
+           given={Ahmet},
+           giveni={A\bibinitperiod}}}%
+        {{hash=409225084688edae00b313fd7da87835}{%
+           family={Fang},
+           familyi={F\bibinitperiod},
+           given={Shiang},
+           giveni={S\bibinitperiod}}}%
+        {{hash=b215596edf3f0d05f7a2d0d8d14a14f6}{%
+           family={Tomarken},
+           familyi={T\bibinitperiod},
+           given={Spencer\bibnamedelima L},
+           giveni={S\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=08eca91a4fbdbdaef45671a2c431d50a}{%
+           family={Luo},
+           familyi={L\bibinitperiod},
+           given={Jason\bibnamedelima Y},
+           giveni={J\bibinitperiod\bibinitdelim Y\bibinitperiod}}}%
+        {{hash=4fb07561699f300abc7e83bd07ecccf5}{%
+           family={Sanchez-Yamagishi},
+           familyi={S\bibinithyphendelim Y\bibinitperiod},
+           given={Javier\bibnamedelima D},
+           giveni={J\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+        {{hash=ec13cda2cbfddcda8775a94455efdce0}{%
+           family={Watanabe},
+           familyi={W\bibinitperiod},
+           given={Kenji},
+           giveni={K\bibinitperiod}}}%
+        {{hash=5a856342313a0ed8d5c7c0315c53a88f}{%
+           family={Taniguchi},
+           familyi={T\bibinitperiod},
+           given={Takashi},
+           giveni={T\bibinitperiod}}}%
+        {{hash=a54e5ea13c0cb48a4212aee979629c7e}{%
+           family={Kaxiras},
+           familyi={K\bibinitperiod},
+           given={Efthimios},
+           giveni={E\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Nature Publishing Group}%
+      }
+      \strng{namehash}{cab467ac8ef40058d16c2e962776b32a}
+      \strng{fullhash}{0f8b68cbececedefc7f6168789d70348}
+      \strng{fullhashraw}{0f8b68cbececedefc7f6168789d70348}
+      \strng{bibnamehash}{cab467ac8ef40058d16c2e962776b32a}
+      \strng{authorbibnamehash}{cab467ac8ef40058d16c2e962776b32a}
+      \strng{authornamehash}{cab467ac8ef40058d16c2e962776b32a}
+      \strng{authorfullhash}{0f8b68cbececedefc7f6168789d70348}
+      \strng{authorfullhashraw}{0f8b68cbececedefc7f6168789d70348}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Nature}
+      \field{number}{7699}
+      \field{title}{Unconventional superconductivity in magic-angle graphene superlattices}
+      \field{volume}{556}
+      \field{year}{2018}
+      \field{pages}{43\bibrangedash 50}
+      \range{pages}{8}
+    \endentry
+    \entry{latticegen}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=42e775faf9baca0fd36b6fd62976bf36}{%
+           family={Jong},
+           familyi={J\bibinitperiod},
+           given={Tobias\bibnamedelima A.},
+           giveni={T\bibinitperiod\bibinitdelim A\bibinitperiod},
+           prefix={de},
+           prefixi={d\bibinitperiod}}}%
+      }
+      \strng{namehash}{42e775faf9baca0fd36b6fd62976bf36}
+      \strng{fullhash}{42e775faf9baca0fd36b6fd62976bf36}
+      \strng{fullhashraw}{42e775faf9baca0fd36b6fd62976bf36}
+      \strng{bibnamehash}{42e775faf9baca0fd36b6fd62976bf36}
+      \strng{authorbibnamehash}{42e775faf9baca0fd36b6fd62976bf36}
+      \strng{authornamehash}{42e775faf9baca0fd36b6fd62976bf36}
+      \strng{authorfullhash}{42e775faf9baca0fd36b6fd62976bf36}
+      \strng{authorfullhashraw}{42e775faf9baca0fd36b6fd62976bf36}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://github.com/TAdeJong/moire-lattice-generator}}
+      \field{note}{GitHub Repository}
+      \field{title}{moire-lattice-generator: {A} {Python} package for moiré lattice simulation}
+      \field{year}{2020}
+    \endentry
+    \entry{bicrystal}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=0406bef9188e7f7dbdf09e4efd086275}{%
+           family={Watanabe},
+           familyi={W\bibinitperiod},
+           given={H.},
+           giveni={H\bibinitperiod}}}%
+      }
+      \strng{namehash}{0406bef9188e7f7dbdf09e4efd086275}
+      \strng{fullhash}{0406bef9188e7f7dbdf09e4efd086275}
+      \strng{fullhashraw}{0406bef9188e7f7dbdf09e4efd086275}
+      \strng{bibnamehash}{0406bef9188e7f7dbdf09e4efd086275}
+      \strng{authorbibnamehash}{0406bef9188e7f7dbdf09e4efd086275}
+      \strng{authornamehash}{0406bef9188e7f7dbdf09e4efd086275}
+      \strng{authorfullhash}{0406bef9188e7f7dbdf09e4efd086275}
+      \strng{authorfullhashraw}{0406bef9188e7f7dbdf09e4efd086275}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://github.com/h-k-w/BiCrystal}}
+      \field{note}{GitHub Repository}
+      \field{title}{{BiCrystal}: {A} {Python} program for unit cell construction of bilayer materials}
+      \field{year}{2021}
+    \endentry
+    \entry{twister}{article}{}{}
+      \name{author}{4}{}{%
+        {{hash=c41f889caa00c6697e2257a6efb2ab3e}{%
+           family={Naik},
+           familyi={N\bibinitperiod},
+           given={Saismit\bibnamedelima H.},
+           giveni={S\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+        {{hash=0fef604c9264e79e90566c967e6c2354}{%
+           family={Naik},
+           familyi={N\bibinitperiod},
+           given={Mit\bibnamedelima H.},
+           giveni={M\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+        {{hash=b7aea8112a8016e00df1c03e4d4a05a9}{%
+           family={Maity},
+           familyi={M\bibinitperiod},
+           given={Indrajit},
+           giveni={I\bibinitperiod}}}%
+        {{hash=4926decc31a4cbfd2ead0527fff3c8d1}{%
+           family={Jain},
+           familyi={J\bibinitperiod},
+           given={Manish},
+           giveni={M\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{1e4ff817b736eed3f3d32562b088af58}
+      \strng{fullhash}{36f0f62ad78ba44898c75243df2d5289}
+      \strng{fullhashraw}{36f0f62ad78ba44898c75243df2d5289}
+      \strng{bibnamehash}{36f0f62ad78ba44898c75243df2d5289}
+      \strng{authorbibnamehash}{36f0f62ad78ba44898c75243df2d5289}
+      \strng{authornamehash}{1e4ff817b736eed3f3d32562b088af58}
+      \strng{authorfullhash}{36f0f62ad78ba44898c75243df2d5289}
+      \strng{authorfullhashraw}{36f0f62ad78ba44898c75243df2d5289}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Computer Physics Communications}
+      \field{title}{Twister: Construction and structural relaxation of commensurate moiré superlattices}
+      \field{volume}{273}
+      \field{year}{2022}
+      \field{pages}{108261}
+      \range{pages}{1}
+    \endentry
+    \entry{quantumatk}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=f02d2fd18e61198dd6c2fbf4509422f8}{%
+           family={Synopsys},
+           familyi={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{f02d2fd18e61198dd6c2fbf4509422f8}
+      \strng{fullhash}{f02d2fd18e61198dd6c2fbf4509422f8}
+      \strng{fullhashraw}{f02d2fd18e61198dd6c2fbf4509422f8}
+      \strng{bibnamehash}{f02d2fd18e61198dd6c2fbf4509422f8}
+      \strng{authorbibnamehash}{f02d2fd18e61198dd6c2fbf4509422f8}
+      \strng{authornamehash}{f02d2fd18e61198dd6c2fbf4509422f8}
+      \strng{authorfullhash}{f02d2fd18e61198dd6c2fbf4509422f8}
+      \strng{authorfullhashraw}{f02d2fd18e61198dd6c2fbf4509422f8}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://www.synopsys.com/silicon/quantumatk.html}}
+      \field{title}{Quantum{ATK}: {A}tomistic simulation software for materials and devices}
+      \field{year}{2025}
+    \endentry
+    \entry{mlm}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=ff2b33ae24d3b6a25f5f12b67ad699dc}{%
+           family={Aditya},
+           familyi={A\bibinitperiod},
+           given={Anikeya},
+           giveni={A\bibinitperiod}}}%
+        {{hash=a29fa4535008543dbec7540732fa5df1}{%
+           family={Mohanty},
+           familyi={M\bibinitperiod},
+           given={Sampad},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{6ce05abee02771a412da6245537005eb}
+      \strng{fullhash}{6ce05abee02771a412da6245537005eb}
+      \strng{fullhashraw}{6ce05abee02771a412da6245537005eb}
+      \strng{bibnamehash}{6ce05abee02771a412da6245537005eb}
+      \strng{authorbibnamehash}{6ce05abee02771a412da6245537005eb}
+      \strng{authornamehash}{6ce05abee02771a412da6245537005eb}
+      \strng{authorfullhash}{6ce05abee02771a412da6245537005eb}
+      \strng{authorfullhashraw}{6ce05abee02771a412da6245537005eb}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:2605.05393}
+      \field{title}{MLM: Multi-Layer Moiré --- A Python Package for Generating Commensurate Supercells of Twisted Multilayer Two-Dimensional Materials}
+      \field{year}{2026}
+    \endentry
+    \entry{cellstineRepo}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=6b9d1b6aa7732b18596b31520e6a1ca8}{%
+           family={Chandran},
+           familyi={C\bibinitperiod},
+           given={Sarwin},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{6b9d1b6aa7732b18596b31520e6a1ca8}
+      \strng{fullhash}{6b9d1b6aa7732b18596b31520e6a1ca8}
+      \strng{fullhashraw}{6b9d1b6aa7732b18596b31520e6a1ca8}
+      \strng{bibnamehash}{6b9d1b6aa7732b18596b31520e6a1ca8}
+      \strng{authorbibnamehash}{6b9d1b6aa7732b18596b31520e6a1ca8}
+      \strng{authornamehash}{6b9d1b6aa7732b18596b31520e6a1ca8}
+      \strng{authorfullhash}{6b9d1b6aa7732b18596b31520e6a1ca8}
+      \strng{authorfullhashraw}{6b9d1b6aa7732b18596b31520e6a1ca8}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{GitHub Repository; https://github.com/sarwin89/cellstine}
+      \field{title}{CELLSTINE: CELL Superlattice Transformation Interface and Engine}
+      \field{year}{2026}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

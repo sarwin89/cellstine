@@ -114,18 +114,29 @@ def build_parser() -> argparse.ArgumentParser:
     moire_find.add_argument("--nindex", type=int, default=12, help="maximum supercell index search size")
     moire_find.add_argument("--min-angle", type=float, default=0.0, help="minimum twist angle in degrees")
     moire_find.add_argument("--max-angle", type=float, default=None, help="maximum twist angle in degrees")
-    moire_find.add_argument("--angle-step", type=float, default=0.1, help="fallback angle scan spacing in degrees")
+    moire_find.add_argument("--angle-step", type=float, default=0.1, help=argparse.SUPPRESS)
     moire_find.add_argument("--angles", type=parse_optional_float_list, default=None, help="comma-separated explicit twist angles in degrees")
-    moire_find.add_argument("--vector-tolerance", type=float, default=2e-3, help="vector mismatch tolerance as a fraction")
-    moire_find.add_argument("--vector-strain-tolerance", type=float, default=2e-3, help="vector strain tolerance as a fraction")
+    moire_find.add_argument("--angle-length-tolerance", type=float, default=1e-5, help=argparse.SUPPRESS)
+    moire_find.add_argument("--angle-strain-tolerance", type=float, default=2e-3, help="relative span-length tolerance for angle shortlisting as a fraction")
+    moire_find.add_argument("--angle-merge-tolerance", type=float, default=1e-3, help=argparse.SUPPRESS)
+    moire_find.add_argument("--vector-tolerance", type=float, default=None, help=argparse.SUPPRESS)
+    moire_find.add_argument("--vector-strain-tolerance", type=float, default=None, help=argparse.SUPPRESS)
     moire_find.add_argument("--candidate-tolerance", type=float, default=None, help="candidate merge tolerance as a fraction")
     moire_find.add_argument("--strain-tolerance", type=float, default=None, help="strain tolerance as a fraction")
+    moire_find.add_argument("--max-atoms", type=int, default=2000, help="maximum atoms allowed in a candidate supercell")
+    moire_find.add_argument("--max-search-angles", type=int, default=None, help=argparse.SUPPRESS)
     moire_find.add_argument("--matrix-values", type=parse_int_matrix, default=None, help="comma-separated 2x2 matrix entries in any order")
     moire_find.add_argument("--matrix-layer", choices=["1", "2", "either"], default="either")
     moire_find.add_argument("--matrix-match-mode", choices=["absolute", "exact"], default="absolute")
-    moire_find.add_argument("--workers", type=int, default=1, help="process workers for angle-parallel search")
+    moire_find.add_argument("--workers", type=int, default=1, help="process workers for parallel commensuration search")
+    moire_find.add_argument("--fold-symmetry", action="store_true", help="fold mirror-equivalent twist angles when both lattices support it")
+    moire_find.add_argument("--max-pair-matches", type=int, default=None, help="per-angle pair cap for crowded angles; <=0 means exhaustive")
+    moire_find.add_argument("--no-cull", dest="cull_redundant", action="store_false", help="disable Pareto culling and keep dominated same-angle candidates")
+    moire_find.add_argument("--no-reduce", dest="reduce_basis", action="store_false", help="report raw integer bases instead of reduced compact bases")
+    moire_find.set_defaults(cull_redundant=True, reduce_basis=True)
     moire_find.add_argument("--top-c-repeat", type=int, default=1)
     moire_find.add_argument("--bottom-c-repeat", type=int, default=1)
+    moire_find.add_argument("--progress", action="store_true", help="show live stage progress and elapsed timings while the search runs")
     moire_find.add_argument("--prestrain-top-mode", choices=["none", "biaxial", "uniaxial"], default="none")
     moire_find.add_argument("--prestrain-top-value", type=float, default=0.0)
     moire_find.add_argument("--prestrain-top-axis", default=None)
@@ -218,12 +229,16 @@ def build_parser() -> argparse.ArgumentParser:
     ads_place.add_argument("--site-index", type=int, default=1)
     ads_place.add_argument("--height", type=float, default=2.5, help="height above the top layer in angstrom")
     ads_place.add_argument("--rotate", type=float, default=0.0, help="rotation about the c axis in degrees")
+    ads_place.add_argument("--tilt", type=float, default=0.0, help="tilt/pitch angle in degrees")
+    ads_place.add_argument("--roll", type=float, default=0.0, help="roll angle in degrees")
 
     ads_move = adsorbate_sub.add_parser("move", formatter_class=HelpFormatter, help="move a top-side molecule in a stacked structure")
     ads_move.add_argument("poscar_path")
     ads_move.add_argument("--target-cart", type=parse_float_vector, default=None)
     ads_move.add_argument("--target-direct", type=parse_float_vector, default=None)
     ads_move.add_argument("--rotate", type=float, default=0.0)
+    ads_move.add_argument("--tilt", type=float, default=0.0)
+    ads_move.add_argument("--roll", type=float, default=0.0)
 
     ads_assemble = adsorbate_sub.add_parser(
         "assemble",
@@ -382,6 +397,7 @@ def build_parser() -> argparse.ArgumentParser:
     defect_analyse.add_argument("--surface-side", choices=["top", "bottom"], default="top")
     defect_analyse.add_argument("--layer-tolerance", type=float, default=0.35, help="layer grouping tolerance in angstrom")
     defect_analyse.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for spglib symmetry finding")
+    defect_analyse.add_argument("--divacancy-distance", type=float, default=3.5, help="maximum cut-off distance for divacancy pairing in angstrom")
 
     defect_generate = defect_sub.add_parser(
         "generate",
@@ -393,7 +409,7 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     defect_generate.add_argument("analysis_or_structure")
-    defect_generate.add_argument("--defect-type", required=True, choices=["vacancy", "substitution", "interstitial", "adatom", "antisite"])
+    defect_generate.add_argument("--defect-type", required=True, choices=["vacancy", "substitution", "interstitial", "adatom", "antisite", "divacancy", "paired-vacancy"])
     defect_generate.add_argument("--site-ids", type=parse_string_list, default=None, help="comma-separated site IDs to generate; defaults to all valid inequivalent sites")
     defect_generate.add_argument("--species", default=None, help="inserted species for interstitial/adatom, or replacement fallback for substitution")
     defect_generate.add_argument("--substitution-species", default=None, help="replacement species for substitution or antisite defects")
@@ -406,6 +422,7 @@ def build_parser() -> argparse.ArgumentParser:
     defect_generate.add_argument("--surface-side", choices=["top", "bottom"], default="top")
     defect_generate.add_argument("--layer-tolerance", type=float, default=0.35, help="layer grouping tolerance in angstrom")
     defect_generate.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for spglib symmetry finding")
+    defect_generate.add_argument("--divacancy-distance", type=float, default=3.5, help="maximum cut-off distance for divacancy pairing in angstrom")
 
     defect_preview = defect_sub.add_parser(
         "preview",
@@ -419,5 +436,6 @@ def build_parser() -> argparse.ArgumentParser:
     defect_preview.add_argument("--surface-side", choices=["top", "bottom"], default="top")
     defect_preview.add_argument("--layer-tolerance", type=float, default=0.35, help="layer grouping tolerance in angstrom")
     defect_preview.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for spglib symmetry finding")
+    defect_preview.add_argument("--divacancy-distance", type=float, default=3.5, help="maximum cut-off distance for divacancy pairing in angstrom")
 
     return parser

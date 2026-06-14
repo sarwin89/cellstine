@@ -35,6 +35,7 @@ class DefectSite:
     backend: str = "native"
     representative_index: int | None = None
     site_family: str | None = None
+    pair_indices: list[int] = field(default_factory=list)
 
 
 @dataclass
@@ -159,6 +160,64 @@ def _detect_structure_kind(record: StructureRecord, requested: str, *, layer_tol
 def _minimum_image_delta(frac_a: np.ndarray, frac_b: np.ndarray) -> np.ndarray:
     delta = np.asarray(frac_a, dtype=float) - np.asarray(frac_b, dtype=float)
     return delta - np.round(delta)
+
+
+def _pairwise_minimum_image_distances(direct: np.ndarray, lattice: np.ndarray) -> np.ndarray:
+    """Full ``(n, n)`` matrix of minimum-image Cartesian distances.
+
+    Vectorised replacement for repeated per-pair ``_minimum_image_delta`` calls.
+    """
+
+    direct = np.asarray(direct, dtype=float)
+    lattice = np.asarray(lattice, dtype=float)
+    if direct.shape[0] == 0:
+        return np.zeros((0, 0), dtype=float)
+    diff = direct[:, None, :] - direct[None, :, :]
+    diff -= np.round(diff)
+    cart = diff @ lattice
+    return np.sqrt(np.einsum("ijk,ijk->ij", cart, cart))
+
+
+def _all_distance_fingerprints(
+    record: StructureRecord,
+    species_by_atom: Sequence[str],
+    *,
+    neighbours: int = 12,
+    distance_matrix: np.ndarray | None = None,
+) -> list[tuple[tuple[str, float], ...]]:
+    """Batched, vectorised equivalent of :func:`_distance_fingerprint` for every atom.
+
+    Produces the same per-atom fingerprint tuples (sorted by rounded distance then
+    species) as calling ``_distance_fingerprint`` for each atom, but computes the
+    whole ``(n, n)`` distance matrix once instead of an ``O(n^2)`` Python loop.
+    """
+
+    direct = np.asarray(record.positions_direct, dtype=float)
+    lattice = np.asarray(record.lattice, dtype=float)
+    n = len(species_by_atom)
+    if n == 0:
+        return []
+    if distance_matrix is None:
+        distance_matrix = _pairwise_minimum_image_distances(direct, lattice)
+    dround = np.round(distance_matrix, 3)
+    species_strings = [str(symbol) for symbol in species_by_atom]
+    unique_sorted = sorted(set(species_strings))
+    code_of = {symbol: index for index, symbol in enumerate(unique_sorted)}
+    species_codes = np.fromiter((code_of[symbol] for symbol in species_strings), dtype=np.int64, count=n)
+    keep = max(1, int(neighbours))
+    indices = np.arange(n)
+    fingerprints: list[tuple[tuple[str, float], ...]] = []
+    for atom_index in range(n):
+        mask = indices != atom_index
+        others = indices[mask]
+        d_row = dround[atom_index, mask]
+        c_row = species_codes[mask]
+        order = np.lexsort((c_row, d_row))[:keep]
+        chosen = others[order]
+        fingerprints.append(
+            tuple((species_strings[int(j)], float(d_row[int(pos)])) for pos, j in zip(order, chosen))
+        )
+    return fingerprints
 
 
 def _distance_fingerprint(
@@ -307,10 +366,11 @@ class Defect(Base):
         direct = np.asarray(record.positions_direct, dtype=float)
         cartesian = np.asarray(record.positions_cartesian, dtype=float)
         layer_lookup = _layer_lookup(layers)
+        fingerprints = _all_distance_fingerprints(record, species_by_atom)
         grouped: dict[tuple[Any, ...], list[int]] = {}
         for atom_index, symbol in enumerate(species_by_atom):
             layer_id = layer_lookup.get(atom_index + 1)
-            fingerprint = _distance_fingerprint(record, species_by_atom, atom_index)
+            fingerprint = fingerprints[atom_index]
             if structure_kind == "bulk":
                 key = (symbol, fingerprint)
             else:
@@ -446,6 +506,126 @@ class Defect(Base):
             )
         return sites, type_counts, None
 
+    def _divacancy_sites(
+        self,
+        record: StructureRecord,
+        *,
+        backend: str,
+        symprec: float,
+        divacancy_distance: float,
+    ) -> list[DefectSite]:
+        species_by_atom = _expanded_species(record)
+        natoms = len(species_by_atom)
+        if natoms < 2:
+            return []
+
+        lattice = np.asarray(record.lattice, dtype=float)
+        direct = np.asarray(record.positions_direct, dtype=float)
+
+        distance_matrix = _pairwise_minimum_image_distances(direct, lattice)
+        row_idx, col_idx = np.triu_indices(natoms, k=1)
+        pair_distances = distance_matrix[row_idx, col_idx]
+        within = pair_distances <= float(divacancy_distance)
+        pairs = [
+            (int(i), int(j), float(d))
+            for i, j, d in zip(row_idx[within], col_idx[within], pair_distances[within])
+        ]
+
+        if not pairs:
+            return []
+
+        symmetry_ops = []
+        if backend == "spglib":
+            try:
+                sym_tool = Symmetry(dependency_manager=self.dependency_manager)
+                sym_analysis = sym_tool.analyse_record(record, backend="spglib", symprec=symprec)
+                symmetry_ops = sym_analysis.operations
+            except Exception:
+                pass
+
+        grouped_pairs: list[list[tuple[int, int]]] = []
+
+        if symmetry_ops:
+            atom_maps = []
+            for op in symmetry_ops:
+                rot = np.asarray(op.rotation, dtype=float)
+                trans = np.asarray(op.translation, dtype=float)
+                rot_coords_wrapped = np.mod(direct @ rot.T + trans, 1.0)
+                # Vectorised nearest-image matching of every rotated coordinate
+                # to the original sites in one shot.
+                diff = rot_coords_wrapped[:, None, :] - direct[None, :, :]
+                diff -= np.round(diff)
+                cart = diff @ lattice
+                dists = np.sqrt(np.einsum("ijk,ijk->ij", cart, cart))
+                matched = np.argmin(dists, axis=1)
+                best = dists[np.arange(dists.shape[0]), matched]
+                op_map = {
+                    idx: (int(matched[idx]) if best[idx] < 1e-3 else idx)
+                    for idx in range(dists.shape[0])
+                }
+                atom_maps.append(op_map)
+
+            visited_pairs = set()
+            for i, j, dist in pairs:
+                pair_key = tuple(sorted((i, j)))
+                if pair_key in visited_pairs:
+                    continue
+                orbit = set()
+                for op_map in atom_maps:
+                    i_rot = op_map.get(i, i)
+                    j_rot = op_map.get(j, j)
+                    orbit.add(tuple(sorted((i_rot, j_rot))))
+                orbit_list = sorted(list(orbit))
+                grouped_pairs.append([(int(x[0]), int(x[1])) for x in orbit_list])
+                for p_entry in orbit_list:
+                    visited_pairs.add(p_entry)
+        else:
+            native_groups: dict[tuple[tuple[str, str], float], list[tuple[int, int]]] = {}
+            for i, j, dist in pairs:
+                spec_i = species_by_atom[i]
+                spec_j = species_by_atom[j]
+                key_spec = tuple(sorted((spec_i, spec_j)))
+                key_dist = round(dist, 2)
+                key = (key_spec, key_dist)
+                native_groups.setdefault(key, []).append((i, j))
+            for g_list in native_groups.values():
+                grouped_pairs.append(g_list)
+
+        sites = []
+        for site_index, pair_group in enumerate(grouped_pairs, start=1):
+            representative = pair_group[0]
+            i, j = representative
+            pos_i = direct[i]
+            pos_j = direct[j]
+            delta = pos_j - pos_i
+            delta = delta - np.round(delta)
+            mid_direct = np.mod(pos_i + 0.5 * delta, 1.0)
+            mid_cartesian = mid_direct @ lattice
+
+            spec_i = species_by_atom[i]
+            spec_j = species_by_atom[j]
+            sorted_specs = sorted((spec_i, spec_j))
+            species_token = f"{sorted_specs[0]}-{sorted_specs[1]}"
+            multiplicity = len(pair_group)
+
+            sites.append(
+                DefectSite(
+                    site_id=f"divacancy_{site_index:03d}",
+                    species=species_token,
+                    layer_id=None,
+                    direct=tuple(float(value) for value in mid_direct),
+                    cartesian=tuple(float(value) for value in mid_cartesian),
+                    equivalent_indices=[],
+                    multiplicity=multiplicity,
+                    site_kind="divacancy",
+                    backend=backend,
+                    representative_index=i + 1,
+                    site_family=species_token,
+                    pair_indices=[i + 1, j + 1]
+                )
+            )
+        return sites
+
     def _analyse_record(
         self,
         structure_path: str,
@@ -455,6 +635,7 @@ class Defect(Base):
         surface_side: str,
         layer_tolerance: float,
         symprec: float,
+        divacancy_distance: float = 3.5,
     ) -> DefectAnalysis:
         record = self.converter.read(structure_path, canonicalize=False)
         resolved_kind = _detect_structure_kind(record, structure_kind, layer_tolerance=layer_tolerance)
@@ -487,6 +668,16 @@ class Defect(Base):
             elif adatom_counts:
                 notes.append(f"Detected adatom site families: {adatom_counts}")
 
+        divacancies = self._divacancy_sites(
+            record,
+            backend=resolved_backend,
+            symprec=symprec,
+            divacancy_distance=divacancy_distance,
+        )
+        sites.extend(divacancies)
+        if divacancies:
+            notes.append(f"Detected unique divacancy pairs: {len(divacancies)} (cutoff: {divacancy_distance} A)")
+
         return DefectAnalysis(
             structure_path=str(Path(structure_path).resolve()),
             structure_kind=resolved_kind,
@@ -508,6 +699,7 @@ class Defect(Base):
         surface_side: str = "top",
         layer_tolerance: float = 0.35,
         symprec: float = 0.01,
+        divacancy_distance: float = 3.5,
     ) -> CommandResult:
         """Analyse inequivalent atom and insertion sites for a structure."""
 
@@ -519,6 +711,7 @@ class Defect(Base):
             surface_side=surface_side,
             layer_tolerance=layer_tolerance,
             symprec=symprec,
+            divacancy_distance=divacancy_distance,
         )
         run_id, run_dir = self.create_run_dir("analyse", label=Path(source).stem)
         analysis_json = _write_analysis_file(run_dir / "defect_analysis.json", analysis)
@@ -528,6 +721,7 @@ class Defect(Base):
             "atom_sites": sum(1 for site in analysis.sites if site.site_kind == "atom"),
             "interstitial_sites": sum(1 for site in analysis.sites if site.site_kind == "interstitial"),
             "adatom_sites": sum(1 for site in analysis.sites if site.site_kind == "adatom"),
+            "divacancy_sites": sum(1 for site in analysis.sites if site.site_kind == "divacancy"),
             "layers": len(analysis.layers),
         }
         artifacts = {"analysis_json": str(analysis_json)}
@@ -542,6 +736,7 @@ class Defect(Base):
                 "surface_side": surface_side,
                 "layer_tolerance": float(layer_tolerance),
                 "symprec": float(symprec),
+                "divacancy_distance": float(divacancy_distance),
             },
             artifacts=artifacts,
             summary=summary,
@@ -563,6 +758,7 @@ class Defect(Base):
         surface_side: str,
         layer_tolerance: float,
         symprec: float,
+        divacancy_distance: float = 3.5,
     ) -> DefectAnalysis:
         source = Path(path_or_manifest).resolve()
         if source.name == "manifest.json":
@@ -577,6 +773,7 @@ class Defect(Base):
                     surface_side=surface_side,
                     layer_tolerance=layer_tolerance,
                     symprec=symprec,
+                    divacancy_distance=divacancy_distance,
                 )
         if source.suffix.lower() == ".json":
             with source.open("r", encoding="utf-8") as handle:
@@ -590,6 +787,7 @@ class Defect(Base):
             surface_side=surface_side,
             layer_tolerance=layer_tolerance,
             symprec=symprec,
+            divacancy_distance=divacancy_distance,
         )
 
     def _sites_for_generation(
@@ -602,12 +800,74 @@ class Defect(Base):
     ) -> list[DefectSite]:
         selected_ids = _normalise_site_ids(site_ids)
         defect = str(defect_type).lower()
+
+        # Smart detection for manual divacancy site selection via two atom IDs/indices
+        if defect in {"divacancy", "paired-vacancy"} and selected_ids is not None and len(selected_ids) == 2:
+            record = self.converter.read(analysis.structure_path, canonicalize=False)
+            physical_indices = []
+            for s in selected_ids:
+                s_str = str(s).strip()
+                if s_str.isdigit():
+                    physical_indices.append(int(s_str))
+                elif s_str.lower().startswith("atom_") and s_str[5:].isdigit():
+                    physical_indices.append(int(s_str[5:]))
+                else:
+                    found = False
+                    for site in analysis.sites:
+                        if site.site_kind == "atom" and site.site_id == s_str:
+                            physical_indices.append(site.representative_index)
+                            found = True
+                            break
+                    if not found:
+                        import re
+                        match = re.search(r'\d+$', s_str)
+                        if match:
+                            physical_indices.append(int(match.group()))
+
+            if len(physical_indices) == 2:
+                i = physical_indices[0] - 1
+                j = physical_indices[1] - 1
+                if 0 <= i < record.natoms and 0 <= j < record.natoms and i != j:
+                    lattice = np.asarray(record.lattice, dtype=float)
+                    direct = np.asarray(record.positions_direct, dtype=float)
+                    pos_i = direct[i]
+                    pos_j = direct[j]
+                    delta = pos_j - pos_i
+                    delta = delta - np.round(delta)
+                    mid_direct = np.mod(pos_i + 0.5 * delta, 1.0)
+                    mid_cartesian = mid_direct @ lattice
+
+                    species_by_atom = _expanded_species(record)
+                    spec_i = species_by_atom[i]
+                    spec_j = species_by_atom[j]
+                    sorted_specs = sorted((spec_i, spec_j))
+                    species_token = f"{sorted_specs[0]}-{sorted_specs[1]}"
+
+                    return [
+                        DefectSite(
+                            site_id=f"divacancy_{physical_indices[0]:03d}_{physical_indices[1]:03d}",
+                            species=species_token,
+                            layer_id=None,
+                            direct=tuple(float(value) for value in mid_direct),
+                            cartesian=tuple(float(value) for value in mid_cartesian),
+                            equivalent_indices=[],
+                            multiplicity=1,
+                            site_kind="divacancy",
+                            backend=analysis.backend,
+                            representative_index=i + 1,
+                            site_family=species_token,
+                            pair_indices=[i + 1, j + 1]
+                        )
+                    ]
+
         if defect in {"vacancy", "substitution", "antisite"}:
             kind = "atom"
         elif defect == "interstitial":
             kind = "interstitial"
         elif defect == "adatom":
             kind = "adatom"
+        elif defect in {"divacancy", "paired-vacancy"}:
+            kind = "divacancy"
         else:
             raise ValueError(f"unsupported defect type '{defect_type}'")
 
@@ -631,6 +891,7 @@ class Defect(Base):
         species: str | None,
         substitution_species: str | None,
         height: float,
+        surface_side: str = "top",
     ) -> tuple[StructureRecord, str]:
         atom_species = _expanded_species(record)
         direct = np.array(record.positions_direct, dtype=float, copy=True)
@@ -649,6 +910,23 @@ class Defect(Base):
                     direct[np.asarray(keep, dtype=int)],
                     None if flags is None else [flags[index] for index in keep],
                     comment=f"{record.comment} vacancy {site.site_id}",
+                ),
+                _safe_species_token(site.species),
+            )
+
+        if defect in {"divacancy", "paired-vacancy"}:
+            if not site.pair_indices or len(site.pair_indices) < 2:
+                raise ValueError(f"{site.site_id} does not have pair indices for divacancy generation")
+            remove_1 = int(site.pair_indices[0]) - 1
+            remove_2 = int(site.pair_indices[1]) - 1
+            keep = [index for index in range(len(atom_species)) if index != remove_1 and index != remove_2]
+            return (
+                _record_from_atoms(
+                    record,
+                    [atom_species[index] for index in keep],
+                    direct[np.asarray(keep, dtype=int)],
+                    None if flags is None else [flags[index] for index in keep],
+                    comment=f"{record.comment} divacancy {site.site_id}",
                 ),
                 _safe_species_token(site.species),
             )
@@ -679,10 +957,20 @@ class Defect(Base):
             insert_direct = np.asarray(site.direct, dtype=float)
             if defect == "adatom":
                 normal = _normal_from_lattice(record.lattice)
-                cartesian = np.asarray(site.cartesian, dtype=float) + normal * float(height)
+                direction = 1.0 if str(surface_side).lower() == "top" else -1.0
+                cartesian = np.asarray(site.cartesian, dtype=float) + direction * normal * float(height)
+                z_coords = record.positions_cartesian[:, 2]
+                if z_coords.size > 0:
+                    z_min = float(np.min(z_coords))
+                    z_max = float(np.max(z_coords))
+                    c_length = float(np.linalg.norm(record.lattice[2]))
+                    if str(surface_side).lower() == "top":
+                        if cartesian[2] > z_min + c_length + 1e-6:
+                            raise ValueError("adatom height lies outside the current cell; increase vacuum or lower --height")
+                    else:
+                        if cartesian[2] < z_max - c_length - 1e-6:
+                            raise ValueError("adatom height lies outside the current cell; increase vacuum or lower --height")
                 insert_direct = cartesian @ np.linalg.inv(np.asarray(record.lattice, dtype=float))
-                if float(insert_direct[2]) > 1.0 + 1e-6:
-                    raise ValueError("adatom height lies outside the current cell; increase vacuum or lower --height")
             return (
                 _record_from_atoms(
                     record,
@@ -712,6 +1000,7 @@ class Defect(Base):
         layer_tolerance: float = 0.35,
         symprec: float = 0.01,
         height: float = 2.5,
+        divacancy_distance: float = 3.5,
     ) -> CommandResult:
         """Generate one defect POSCAR per selected inequivalent site."""
 
@@ -724,6 +1013,7 @@ class Defect(Base):
             surface_side=surface_side,
             layer_tolerance=layer_tolerance,
             symprec=symprec,
+            divacancy_distance=divacancy_distance,
         )
         record = self.converter.read(analysis.structure_path, canonicalize=False)
         selected_sites = self._sites_for_generation(
@@ -741,26 +1031,39 @@ class Defect(Base):
         generated_records: list[dict[str, Any]] = []
 
         for site in selected_sites:
-            new_record, species_token = self._generate_one(
-                record,
-                site,
-                defect_type=defect_type,
-                species=species,
-                substitution_species=substitution_species,
-                height=height,
-            )
-            filename = f"defect_{defect_type}_{site.site_id}_{species_token}_{suffix}.vasp"
-            output_path = self.vasp_io.write(new_record, str(destination / filename), positions_are_cartesian=False, wrap_positions=False)
-            written.append(str(output_path))
-            generated_records.append(
-                {
-                    "site_id": site.site_id,
-                    "site_kind": site.site_kind,
-                    "equivalent_indices": list(site.equivalent_indices),
-                    "output_path": str(output_path),
-                    "atom_count": int(new_record.natoms),
-                }
-            )
+            target_substitutions = [substitution_species or species]
+            if defect_type == "antisite" and not (substitution_species or species):
+                unique_host_species = list(dict.fromkeys(_expanded_species(record)))
+                if len(unique_host_species) < 2:
+                    raise ValueError(
+                        f"antisite defects are only supported for multi-element hosts; "
+                        f"found host species: {unique_host_species}. Specify --substitution-species explicitly."
+                    )
+                site_species = site.species
+                target_substitutions = [s for s in unique_host_species if s != site_species]
+
+            for replacement_species in target_substitutions:
+                new_record, species_token = self._generate_one(
+                    record,
+                    site,
+                    defect_type=defect_type,
+                    species=replacement_species,
+                    substitution_species=replacement_species,
+                    height=height,
+                    surface_side=surface_side,
+                )
+                filename = f"defect_{defect_type}_{site.site_id}_{species_token}_{suffix}.vasp"
+                output_path = self.vasp_io.write(new_record, str(destination / filename), positions_are_cartesian=False, wrap_positions=False)
+                written.append(str(output_path))
+                generated_records.append(
+                    {
+                        "site_id": site.site_id,
+                        "site_kind": site.site_kind,
+                        "equivalent_indices": list(site.equivalent_indices),
+                        "output_path": str(output_path),
+                        "atom_count": int(new_record.natoms),
+                    }
+                )
 
         artifacts = {"analysis_json": str(analysis_json), "structures": written}
         summary = {
@@ -786,6 +1089,7 @@ class Defect(Base):
                 "surface_side": surface_side,
                 "layer_tolerance": float(layer_tolerance),
                 "symprec": float(symprec),
+                "divacancy_distance": float(divacancy_distance),
             },
             artifacts=artifacts,
             summary=summary,
@@ -808,6 +1112,7 @@ class Defect(Base):
         surface_side: str = "top",
         layer_tolerance: float = 0.35,
         symprec: float = 0.01,
+        divacancy_distance: float = 3.5,
     ) -> CommandResult:
         """Preview defect sites without writing generated structures."""
 
@@ -818,6 +1123,7 @@ class Defect(Base):
             surface_side=surface_side,
             layer_tolerance=layer_tolerance,
             symprec=symprec,
+            divacancy_distance=divacancy_distance,
         )
         run_id, run_dir = self.create_run_dir("preview", label=Path(analysis.structure_path).stem)
         analysis_json = _write_analysis_file(run_dir / "defect_analysis.json", analysis)
@@ -835,7 +1141,13 @@ class Defect(Base):
             run_dir=run_dir,
             backend=analysis.backend,
             inputs={"analysis_or_structure": str(Path(analysis_or_structure).resolve()), "structure_path": analysis.structure_path},
-            parameters={"limit": int(limit), "surface_side": surface_side, "layer_tolerance": float(layer_tolerance), "symprec": float(symprec)},
+            parameters={
+                "limit": int(limit),
+                "surface_side": surface_side,
+                "layer_tolerance": float(layer_tolerance),
+                "symprec": float(symprec),
+                "divacancy_distance": float(divacancy_distance),
+            },
             artifacts=artifacts,
             summary=summary,
         )

@@ -1,0 +1,8 @@
+% Mock fixtounicode package to bypass missing system package and mock tounicode mappings
+\ProvidesPackage{fixtounicode}[2026/06/10 Bypassing obsolete package]
+\RequirePackage{expl3}
+\ExplSyntaxOn
+\cs_new_protected:Npn \fixtounicode_tounicode:nNN #1 #2 #3 {}
+\cs_new_protected:Npn \fixtounicode_tounicode:nnNN #1 #2 #3 #4 {}
+\ExplSyntaxOff
+\endinput

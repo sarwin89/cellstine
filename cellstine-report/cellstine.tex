@@ -1,0 +1,401 @@
+\documentclass[9pt,a4paper,twoside]{tau-class/tau}
+\usepackage[english]{babel}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\hbadness=10000
+\usepackage[
+  backend=biber,
+  style=ieee,
+  sorting=ynt
+]{biblatex}
+\addbibresource{references/cellstine_repository_report.bib}
+
+%----------------------------------------------------------
+% Journal and Title
+%----------------------------------------------------------
+\journalname{CELLSTINE Software Paper}
+\title{CELLSTINE: A Python Suite for Commensurate Moir\'e Supercells, Surface-Interface Engineering, and Defect Structure Generation}
+
+%----------------------------------------------------------
+% Authors and Affiliations
+%----------------------------------------------------------
+\author[a,1]{Sarwin Chandran}
+\affil[a]{Theoretical Sciences Unit, Jawaharlal Nehru Centre for Advanced Scientific Research, Jakkur, Bangalore 560064, India}
+
+%----------------------------------------------------------
+% Footer Information
+%----------------------------------------------------------
+\institution{Jawaharlal Nehru Centre for Advanced Scientific Research}
+\footinfo{CELLSTINE Software Paper}
+\theday{June 11, 2026}
+\leadauthor{Chandran}
+\course{Software Report}
+
+%----------------------------------------------------------
+% Keywords and Abstract
+%----------------------------------------------------------
+\begin{abstract}
+We present \textbf{CELLSTINE} (\textbf{CELL Superlattice Transformation INterface and Engine}), an open-source Python suite designed to automate and streamline the construction of atomistic structures for quantum-mechanical materials workflows. Materials simulations, particularly density functional theory (DFT) calculations of twisted 2D heterostructures, interfaces, and adsorption processes, require periodic boundary conditions that are often challenging to construct manually due to lattice mismatch and strain constraints. CELLSTINE addresses these challenges by providing an integrated pipeline for commensurate bilayer and $N$-layer moir\'e superlattice searches, bulk-to-surface slab generation, adsorption-site detection, adsorbate placement with auto-repeating substrate patches, heterointerface matching, equivalent defect site classification, and symmetry analysis. We describe the mathematical and algorithmic framework underpinning the package, contrast its capabilities with existing tools like CellMatch, Twister, and MLM, and present illustrative application cases demonstrating its utility in simulating real materials systems.
+\end{abstract}
+\keywords{CELLSTINE, Commensurate Superlattice, Moir\'e, DFT, VASP, Symmetry Analysis, Defect Generation, Twistronics}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{firststyle}
+\tauabstract
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+%----------------------------------------------------------
+\section{Introduction}
+\taustart{T}he discovery of flat bands and unconventional superconductivity in magic-angle twisted bilayer graphene \cite{cao2018unconventional, bistritzer2011moire} has ignited the field of twistronics, where the properties of two-dimensional (2D) materials are tuned by adjusting the twist angle between adjacent layers \cite{cellstineRepo}. Simulating such moir\'e superlattices, as well as general metal-semiconductor heterointerfaces, requires constructing a common periodic supercell. Because the constituent layers often have different lattice parameters, achieving exact commensuration requires applying a small in-plane strain to one or both layers. In addition to moir\'e search, practical materials simulations often require complex post-processing steps: slicing bulk crystals to expose surface slabs \cite{larsen2017ase}, identifying adsorption sites, placing molecular adsorbates at specified heights \cite{hammer2000theoretical}, generating inequivalent defect structures (such as vacancies, substitutions, interstitials, and adatoms), and analyzing structural symmetries.
+
+Traditionally, researchers have relied on disconnected scripts or single-purpose tools for these tasks. In this work, we present \textbf{CELLSTINE} (\textbf{CELL Superlattice Transformation INterface and Engine}), a Python package and guided command-line interface (CLI) that unifies commensurate supercell generation with general surface and defect engineering workflows. Written in a modular and extensible architecture, CELLSTINE provides:
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Moir\'e Workflow}: Commensurate bilayer and $N$-layer search, exact structure generation, rigid layer translations, and visualizations.
+    \item \textbf{Adsorbate Workflow}: Native site detection, rigid molecular rotation/translation, and auto-repeat substrate patch expansion.
+    \item \textbf{Interface Workflow}: Bulk-to-surface slab slicing, adsorption site classification (top, bridge, hollows), and heterointerface matching.
+    \item \textbf{Symmetry Workflow}: Direct \texttt{spglib} integration for space-group detection, cell reduction (primitive, conventional, refined), and lattice reduction (Niggli, Delaunay).
+    \item \textbf{Defect Workflow}: Equivalence-grouping of defect sites and generation of vacancy, substitution, interstitial, and adatom structures.
+\end{enumerate}
+
+The paper is structured as follows. Section~\ref{sec:summary} provides the Program Summary. Section~\ref{sec:comparison} compares CELLSTINE with existing tools. Section~\ref{sec:methodology} describes the mathematical and algorithmic formulations and complexity analysis. Section~\ref{sec:architecture} explains the software design and API usage. Section~\ref{sec:applications} presents illustrative case studies, and Section~\ref{sec:conclusion} concludes the paper.
+
+%----------------------------------------------------------
+\section{Program Summary}
+\label{sec:summary}
+
+The metadata and design parameters of CELLSTINE are summarized in Table~\ref{tab:program_summary}.
+
+\begin{table}[H]
+\small
+\caption{Program summary for CELLSTINE.}
+\label{tab:program_summary}
+\begin{tabularx}{\linewidth}{@{}p{0.35\linewidth}X@{}}
+\toprule
+\textbf{Program Title} & CELLSTINE \\
+\textbf{Licensing} & MIT License \\
+\textbf{Programming Lang.} & Python (v3.9 or higher) \\
+\textbf{Symmetry Backend} & Spglib \\
+\textbf{Structure Parser} & Pymatgen / Native VASP IO \\
+\textbf{Nature of Problem} & Atomistic structure generation for periodic boundary condition simulations (DFT, MD) involving lattice-mismatched interfaces, twisted 2D heterostructures, surface slabs, defects, and molecular adsorption. \\
+\textbf{Solution Method} & Grid search optimization of Green-Lagrangian strain over integer supercell transforms, bottom-referenced multilayer matrix intersection, and layer-aware coordinate clustering for slab symmetry. \\
+\textbf{External Libraries} & \texttt{numpy}, \texttt{spglib}, \texttt{pymatgen}, \texttt{matplotlib}, \texttt{plotly} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%----------------------------------------------------------
+\section{Comparison with Existing Software}
+\label{sec:comparison}
+
+To contextualize CELLSTINE's capabilities, we contrast it with other specialized tools in the literature. Because some tools focus exclusively on moir\'e search while others are general interface and surface science suites, we divide the comparison into two specialized categories to ensure a fair evaluation:
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Moir\'e and Commensuration Solvers}: Table~\ref{tab:moire_matrix} compares CELLSTINE against CellMatch \cite{cellmatch}, Twister \cite{twister}, Multi-Layer Moir\'e (MLM) \cite{mlm}, BiCrystal \cite{bicrystal}, and latticegen \cite{latticegen}.
+    \item \textbf{Surface and Interface suites}: Table~\ref{tab:interface_matrix} compares CELLSTINE against standard interface builders like the coherent interface module in pymatgen \cite{pymatgen} (implementing the Zur-McGill algorithm \cite{zur1984systematic}) and QuantumATK \cite{quantumatk}.
+\end{enumerate}
+
+\begin{table*}[!t]
+    \centering
+    \caption{Feature comparison of CELLSTINE against specialized moir\'e commensuration tools.}
+    \label{tab:moire_matrix}
+    \small
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc@{}}
+        \toprule
+        \textbf{Feature / Capability} & \textbf{CellMatch} \cite{cellmatch} & \textbf{Twister} \cite{twister} & \textbf{MLM} \cite{mlm} & \textbf{BiCrystal} \cite{bicrystal} & \textbf{latticegen} \cite{latticegen} & \textbf{CELLSTINE} \\
+        \midrule
+        Bilayer Commensuration & Yes & Yes & Yes & Yes & Yes & Yes \\
+        $N$-layer Commensuration & No & No & Yes & No & No & Yes \\
+        Lattice Constraints & Arbitrary 2D & Square/Hex & Arbitrary 2D & Arbitrary 2D & Square/Hex & Arbitrary 2D \\
+        Solver Space & Discrete Integer & Analytical/CSL & Continuous/Round & Discrete Integer & Analytical & Discrete Integer \\
+        Strain Formulation & Linear/Matrix & Green-Lagrangian & Linear/Matrix & Linear/Matrix & Linear/Matrix & Green-Lagrangian \\
+        Language / Platform & C (Compiled) & Python & Python & Python & Python & Python \\
+        \bottomrule
+    \end{tabular*}
+\end{table*}
+
+\begin{table*}[!t]
+    \centering
+    \caption{Feature comparison of CELLSTINE against general materials interface and surface engineering suites.}
+    \label{tab:interface_matrix}
+    \small
+    \begin{tabularx}{\textwidth}{@{}lXXX@{}}
+        \toprule
+        \textbf{Workflow Capability} & \textbf{pymatgen} (coherent interface) \cite{pymatgen,zur1984systematic} & \textbf{QuantumATK} \cite{quantumatk} & \textbf{CELLSTINE} (This Work) \\
+        \midrule
+        Commensurate Moir\'e Search & No & No & Yes \\
+        Bulk-to-Slab Miller Slicing & Yes & Yes & Yes \\
+        Adsorption Site Detection & Yes & Yes (via GUI/Tool) & Yes (Native top/bridge/hollow) \\
+        Auto-Repeat Substrate Patching & No & No & Yes \\
+        Slab Defect Equivalence Clustering & No (3D group only) & No (Manual selection) & Yes (Native height-aware 2D clustering) \\
+        Workflow Automation & No (Scripting API only) & Interactive/GUI-focused & Yes (JSON-manifest driven) \\
+        \bottomrule
+    \end{tabularx}
+\end{table*}
+
+\subsection{Comparison of Moir\'e Commensuration Solvers}
+A key differentiator in Table~\ref{tab:moire_matrix} is the search space and lattice constraints. CellMatch \cite{cellmatch} is a compiled C-based utility that searches for coincident vectors under linear transformations, but it is restricted to bilayers and lacks modern workflow automation. Twister \cite{twister} and latticegen \cite{latticegen} are designed specifically for 2D hexagonal and square layers, relying on analytical formulations and coincidence site lattice (CSL) searches. While Twister is ideal for classical reconstructions of massive bilayers ($>10,000$ atoms), it cannot handle arbitrary low-symmetry 2D lattices or stacks. BiCrystal \cite{bicrystal} performs integer-based bilayer searches using linear strain, but does not support multilayer stacking or post-processing workflows.
+
+Multi-Layer Moir\'e (MLM) \cite{mlm} targets multilayer heterostructures using a continuous ``solve-and-round'' algorithm. While MLM is efficient for small twist angles ($< 1^\circ$) where the unit cells are massive, its solver uses a round-off mapping. This continuous-to-discrete rounding is an approximation that can introduce uncontrolled strain and lattice mismatch, particularly for lower-symmetry systems (e.g., monoclinic or triclinic lattices) or at larger twist angles ($> 5^\circ$). 
+
+In contrast, CELLSTINE's moir\'e solver (\texttt{find}) searches directly over the discrete integer space of the transformation matrices. By avoiding continuous approximations, CELLSTINE guarantees that it identifies the mathematically exact global minimum strain configuration for arbitrary 2D lattices and twist angles.
+
+\subsection{Pipeline Unification and Post-Processing}
+As summarized in Table~\ref{tab:interface_matrix}, commercial suites like QuantumATK \cite{quantumatk} and Python libraries like pymatgen \cite{pymatgen} offer robust bulk-to-slab slicing and heterointerface matching (using the Zur-McGill algorithm \cite{zur1984systematic}). However, they lack integrated moir\'e solvers, automated adsorbate patching, or layer-aware defect classifiers. 
+
+CELLSTINE unifies these tasks under a single environment. For example, standard 3D space-group tools (like \texttt{spglib} used in pymatgen) fail to correctly classify equivalent defect sites in slab geometries because out-of-plane translation symmetry is broken. CELLSTINE solves this by implementing a native layer-aware height clustering algorithm. Furthermore, its auto-repeat substrate patching prevents molecular adsorbates from interacting with their periodic images by automatically replicating the substrate slab in-plane.
+
+
+%----------------------------------------------------------
+\section{Mathematical and Algorithmic Framework}
+\label{sec:methodology}
+
+\subsection{Bilayer Commensuration and Green-Lagrangian Strain}
+Let $\mathbf{a}_1, \mathbf{a}_2$ and $\mathbf{b}_1, \mathbf{b}_2$ be the in-plane lattice vectors of Layer 1 and Layer 2, respectively. When Layer 1 is twisted by an angle $\theta$ relative to Layer 2, its vectors transform to:
+\begin{equation}
+    \mathbf{a}_i' = \mathbf{R}(\theta) \mathbf{a}_i, \quad i \in \{1, 2\}
+\end{equation}
+where $\mathbf{R}(\theta)$ is the 2D rotation matrix. A commensurate supercell is established by finding integer coefficients $m_{ij}$ and $n_{ij}$ such that:
+\begin{align}
+    \mathbf{v}_1 &= m_{11} \mathbf{a}_1' + m_{12} \mathbf{a}_2' \approx n_{11} \mathbf{b}_1 + n_{12} \mathbf{b}_2 = \mathbf{w}_1 \\
+    \mathbf{v}_2 &= m_{21} \mathbf{a}_1' + m_{22} \mathbf{a}_2' \approx n_{21} \mathbf{b}_1 + n_{22} \mathbf{b}_2 = \mathbf{w}_2
+\end{align}
+where $\mathbf{V} = [\mathbf{v}_1, \mathbf{v}_2]^T$ and $\mathbf{W} = [\mathbf{w}_1, \mathbf{w}_2]^T$ represent the supercell bases of Layer 1 and Layer 2. The deformation gradient tensor transforming Layer 1's supercell to Layer 2's supercell is:
+\begin{equation}
+    \mathbf{F} = \mathbf{W}\mathbf{V}^{-1}
+\end{equation}
+The Green-Lagrangian strain tensor $\mathbf{E}$ is computed to measure the mismatch:
+\begin{equation}
+    \mathbf{E} = \frac{1}{2} \left( \mathbf{F}^T \mathbf{F} - \mathbf{I} \right)
+\end{equation}
+The average strain metric $\eta$ is defined using the Frobenius norm of $\mathbf{E}$:
+\begin{equation}
+    \eta = \frac{1}{3} \sqrt{\sum_{i,j} E_{ij}^2}
+\end{equation}
+In CELLSTINE, candidate configurations are enumerated up to a maximum integer index $N_{\text{index}}$ and filtered based on a user-defined strain tolerance $\eta_{\text{max}}$. Near-equivalent candidates are deduplicated by checking for close match in twist angle, strain, and supercell area ratio.
+
+\subsection{N-Layer Commensuration (Shared-Base Intersection)}
+For multilayer stacks ($L > 2$), CELLSTINE implements a reference-layer algorithm (\texttt{findn}). Layer 2 (the bottom layer) is designated as the reference substrate. For each upper layer $k \in \{1, \dots, L-1\}$, an independent pairwise search is performed against Layer 2, generating candidate sets $\mathcal{C}_k$. 
+
+To build a coherent stacked supercell, all layers must share the same in-plane lattice. This requires that the transformation matrix acting on the reference bottom layer, $\mathbf{M}_{\text{bottom}}^{(k)} = \begin{pmatrix} n_{11}^{(k)} & n_{12}^{(k)} \\ n_{21}^{(k)} & n_{22}^{(k)} \end{pmatrix}$, must be identical across all layers. CELLSTINE performs a set intersection over the bottom matrix keys:
+\begin{equation}
+    \mathcal{K}_{\text{common}} = \bigcap_{k=1}^{L-1} \left\{ \mathbf{M}_{\text{bottom}}^{(k)} \;\middle|\; c \in \mathcal{C}_k \right\}
+\end{equation}
+For each common key in $\mathcal{K}_{\text{common}}$, the Cartesian product of corresponding upper-layer candidates is constructed. The configurations are evaluated based on the maximum and mean strain across all layers, and filtered by the total atom count in the resulting stack.
+
+\subsection{Algorithmic Complexity and Speed Analysis}
+The computational complexity of commensurate lattice searching is a critical design factor. Let $M_1 \approx 4 N_{\text{index}}^2$ and $M_2 \approx 4 N_{\text{index}}^2$ be the sizes of the 2D vector sets generated within the integer search limit $N_{\text{index}}$ for Layer 1 and Layer 2, respectively.
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Bilayer Search Complexity and Precomputational Speedup}: The naive commensurate search evaluates the relative vector distance for all $M_1 M_2$ pairs at each twist angle $\theta$:
+    \begin{equation}
+        e(i, j) = \frac{||\mathbf{R}(\theta)\mathbf{v}_i - \mathbf{w}_j||_2}{\frac{1}{2}(||\mathbf{v}_i||_2 + ||\mathbf{w}_j||_2)} \le \epsilon
+    \end{equation}
+    which requires $C_0 \cdot N_{\text{index}}^4$ operations per angle, where $C_0$ represents the cost of 2D vector rotation, subtraction, and norm calculation. For a scan over $N_{\theta}$ angles, this scales as:
+    \begin{equation}
+        T_{\text{naive}} = N_{\theta} \cdot C_0 \cdot N_{\text{index}}^4
+    \end{equation}
+    
+    CELLSTINE optimizes this by exploiting the rotation invariance of vector lengths: $||\mathbf{R}(\theta)\mathbf{v}_i||_2 = ||\mathbf{v}_i||_2$. A necessary condition for two vectors to match is that their lengths must be close:
+    \begin{equation}
+        \delta(i, j) = \frac{| ||\mathbf{v}_i||_2 - ||\mathbf{w}_j||_2 |}{\frac{1}{2}(||\mathbf{v}_i||_2 + ||\mathbf{w}_j||_2)} \le 2\epsilon
+    \end{equation}
+    Because this length-matching condition is independent of the twist angle $\theta$, it is computed \textbf{only once} as a global precomputation step. We construct the pairwise mismatch matrix and extract the indices of the candidate matching pairs $\mathcal{P} = \{ (i, j) \mid \delta(i, j) \le 2\epsilon \}$. Inside the twist angle loop, the algorithm only computes the 2D relative error $e(i, j)$ for the candidate pairs in $\mathcal{P}$. The total search time for a scan over $N_{\theta}$ angles is:
+    \begin{equation}
+        T_{\text{CELLSTINE}} = C_{\text{scalar}} \cdot N_{\text{index}}^4 + N_{\theta} \cdot \left[ C_{\text{rot}} \cdot N_{\text{index}}^2 + C_0 \cdot N_{\text{cand}} \right]
+    \end{equation}
+    where $C_{\text{scalar}} \ll C_0$ represents the 1D division/subtraction cost, and $C_{\text{rot}}$ represents the rotated vector generation cost. Because $\epsilon$ is very small (typically $\epsilon \approx 0.002$), the candidate set represents a tiny fraction of the search space ($N_{\text{cand}} \ll M_1 M_2$).
+    
+    To illustrate the practical speedup, consider a typical search with $N_{\text{index}} = 12$ and $N_{\theta} = 300$ angles. The size of the grid vector sets is $M_1 \approx M_2 \approx 1100$. A naive search evaluates $300 \times (1100)^2 \approx 3.6 \times 10^8$ vector pairs. In CELLSTINE, the precomputation performs $(1100)^2 \approx 1.2 \times 10^6$ scalar length mismatch checks. With a relative strain threshold $\epsilon = 0.002$, the candidate pair set contains only $N_{\text{cand}} \approx 1200$ pairs. Inside the twist angle loop, only these 1200 pairs are rotated and checked, requiring $300 \times 1200 \approx 3.6 \times 10^5$ evaluations. The total operations are reduced by a factor of over $150\times$, converting multi-minute searches into near-instantaneous runs.
+    
+    Compared to CellMatch \cite{cellmatch}, which is written in compiled C but relies on the naive all-pairs search, CELLSTINE's precomputation filter allows its Python implementation to run faster or at comparable speed. Compared to MLM \cite{mlm}, which uses a continuous solve-and-round method to bypass the grid search, CELLSTINE provides comparable speed for typical systems while guaranteeing the exact global minimum strain configuration, avoiding MLM's continuous rounding approximations that can fail for low-symmetry cells.
+    
+    \item \textbf{Multilayer Search Complexity}: For a stack of $L$ layers, a global joint optimization search that varies the transformation matrices for all layers simultaneously has a search space that scales exponentially:
+    \begin{equation}
+        T_{\text{global}} = \mathcal{O}(N_{\text{index}}^{2(L-1)})
+    \end{equation}
+    which is computationally intractable for $L \ge 3$.
+    
+    CELLSTINE's bottom-referenced intersection algorithm (\texttt{findn}) bypasses this by conducting $L-1$ independent pairwise searches against the reference substrate layer. The total search phase complexity is reduced to:
+    \begin{equation}
+        T_{\text{multilayer}} = \mathcal{O}\left( (L - 1) \cdot T_{\text{bilayer\_search}} \right)
+    \end{equation}
+    which scales linearly with the number of layers $L$. The set intersection over the bottom-layer transformation matrices is completed in $\mathcal{O}(\sum_k |\mathcal{C}_k| \log |\mathcal{C}_k|)$ time. This linear scaling enables high-throughput multi-layer searches that would be impossible with brute-force optimization.
+\end{enumerate}
+
+\subsection{Vectorized NumPy Implementations and Batch Computation}
+To prevent standard Python loops from introducing interpreter overhead, CELLSTINE is implemented using vectorized NumPy operations. All critical steps of the search and construction are executed via batch matrix calculations that run in compiled C:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Broadcasting for Length Matching}: The global length precomputation calculates the relative mismatch for all $M_1 \times M_2$ vector combinations. Instead of a nested loop, this is computed using array broadcasting:
+    \begin{verbatim}
+    length_mismatch = (np.abs(norms1[:, None] - norms2[None, :]) 
+                       / np.maximum((norms1[:, None] 
+                       + norms2[None, :]) * 0.5, 1e-12))
+    \end{verbatim}
+    By matching a column vector of shape $(M_1, 1)$ with a row vector of shape $(1, M_2)$, NumPy performs the subtraction and division at the C-level, leveraging SIMD compiler optimizations.
+    
+    \item \textbf{Vectorized Angle Shortlisting}: Dot products and cross products for all vector pairs are evaluated simultaneously via matrix multiplication:
+    \begin{verbatim}
+    dot_products = vectors1 @ vectors2.T
+    cross_products = (vectors1[:, None, 0] * vectors2[None, :, 1] 
+                      - vectors1[:, None, 1] * vectors2[None, :, 0])
+    angles = np.degrees(np.arctan2(np.abs(cross_products), 
+                                   dot_products))
+    \end{verbatim}
+    This returns the complete twist angle matrix in a single step.
+    
+    \item \textbf{Batch Strain Tensor Evaluation}: Evaluating the Green-Lagrangian strain tensor is the most expensive step during candidate generation. Rather than looping over candidates, CELLSTINE stacks the lattice vectors of all $P$ candidates into 3D arrays of shape $(P, 2, 2)$ and evaluates them in a batch:
+    \begin{verbatim}
+    inv_basis1 = np.linalg.inv(basis1)
+    e_tensor = basis2 @ inv_basis1 - identity
+    strain_tensor = 0.5 * (e_tensor + np.swapaxes(e_tensor, 1, 2) 
+                           + e_tensor @ np.swapaxes(e_tensor, 1, 2))
+    eigenvalues = np.linalg.eigvals(strain_tensor)
+    \end{verbatim}
+    This batch matrix inversion and eigenvalue solver delegates the calculations to vendor-optimized BLAS and LAPACK backends (e.g., OpenBLAS or MKL), which evaluates thousands of candidates in parallel.
+\end{itemize}
+
+\subsection{Surface Slab Slicing and Adsorption Site Classification}
+The slab generation algorithm slices a 3D bulk conventional lattice along a user-specified Miller plane $(hkl)$. The exposed surface lattice vectors are identified, and the slab is padded with a user-defined vacuum height $L_{\text{vac}}$ along the $z$-direction.
+
+Once the surface slab is generated, CELLSTINE identifies adsorption sites by analyzing the coordinates of the surface atoms. The algorithm groups atoms by their $z$-coordinates to identify the topmost layer. It then computes coordinate midpoints and centroids to classify:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Top sites}: Located directly above top-layer surface atoms.
+    \item \textbf{Bridge sites}: Centered between two adjacent top-layer atoms.
+    \item \textbf{Hollow sites}: Located at the centroids of three or four top-layer atoms. On close-packed (111) surfaces, the classifier distinguishes between \textbf{hcp} and \textbf{fcc} hollows by checking for the presence of subsurface atoms in the second and third layers directly beneath the centroid.
+\end{itemize}
+
+\subsection{Adsorbate Placement and Auto-Repeat Patching}
+When placing an adsorbate molecule on a substrate, the user selects a site family (e.g., fcc hollow) and index. The molecule is rotated rigidly about its Center of Mass (COM), defined using mass-aware atomic weights:
+\begin{equation}
+    \mathbf{r}_{\text{COM}} = \frac{\sum_i m_i \mathbf{r}_i}{\sum_i m_i}
+\end{equation}
+The lowest atom of the molecule is aligned to the selected adsorption site, and the entire molecule is translated such that the lowest atom sits at a height $z_{\text{ads}}$ above the surface plane.
+
+A critical feature of CELLSTINE is \textbf{auto-repeat substrate patching}. If the in-plane dimensions of the molecular adsorbate exceed the boundaries of a single substrate unit cell, placing the molecule would cause unphysical overlaps with its periodic images. CELLSTINE checks the molecular bounding box against the substrate lattice:
+\begin{equation}
+    D_{i} > L_{i}, \quad i \in \{a, b\}
+\end{equation}
+If true, it automatically replicates the substrate slab in-plane (e.g., to a $2\times2$ or $3\times3$ supercell) to provide a sufficiently large surface patch, preventing periodic self-interaction.
+
+\subsection{Defect-Site Symmetry Equivalence and Generation}
+Defect studies require identifying all symmetry-inequivalent sites. CELLSTINE combines direct space-group symmetry analysis (via \texttt{spglib}) for bulk materials with a native, layer-aware height-and-species clustering algorithm for slabs. Slab calculations break 3D translation symmetry; thus, standard 3D space groups are inappropriate. The native classifier groups atoms based on their chemical species and $z$-coordinate heights, mapping them to equivalent sub-layers.
+
+Once equivalent sites are identified, the user can generate:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Vacancies}: Deleting the representative atom from the site.
+    \item \textbf{Substitutions}: Replacing the representative atom with another species.
+    \item \textbf{Interstitials}: Inserting a new atom into the voids of the structure.
+    \item \textbf{Adatoms}: Placing an atom at a detected surface adsorption site at a specified height.
+\end{itemize}
+
+%----------------------------------------------------------
+\section{Software Architecture and Pipeline Workflows}
+\label{sec:architecture}
+
+CELLSTINE is organized under a modular package structure in the \texttt{src/cellstine/} directory, using a workflow-centric layout:
+\begin{itemize}[leftmargin=*]
+    \item \texttt{core/}: Base classes, dataclasses (\texttt{PoscarData}, \texttt{SupercellCandidate}), dependencies handler, and manifest tracking.
+    \item \texttt{moire/}: Commensuration algorithms (\texttt{lattice.py}, \texttt{angles.py}), bilayer search/generation (\texttt{find.py}, \texttt{finder.py}, \texttt{generator.py}, \texttt{make.py}), and multi-layer search/generation (\texttt{findn.py}, \texttt{maken.py}).
+    \item \texttt{adsorbate/}: Molecular placement, translations/rotations, and substrate auto-patching.
+    \item \texttt{interface/}: Slab cutting, site classification, and heterointerface matching.
+    \item \texttt{defect/}: Equivalence analysis and defect structure output.
+    \item \texttt{symmetry/}: \texttt{spglib} integration for cell reduction and Niggli/Delaunay reductions.
+    \item \texttt{visualize/}: Plotting helpers (Matplotlib 2D and Plotly 3D HTML viewers).
+\end{itemize}
+
+Rather than exposing a single monolithic script, CELLSTINE exposes a Python API and a guided command-line interface (CLI). To promote scientific reproducibility, all runs are tracked via JSON manifest files. 
+
+For example, a typical twisted bilayer moir\'e workflow begins by executing a command-line query specifying the input structures and the integer search bound $N_{\text{index}}$. The search engine outputs a list of candidate supercells, writing their geometric parameters and transformation matrices to a standard \texttt{.dat} file and a structured JSON manifest. The user can then select a candidate from this manifest and call the generator module to build the corresponding multi-layer atomic coordinates. This manifest-driven design allows subsequent surface-science or defect workflows to automatically load parent cell properties, ensuring that the structural history and lineage of generated supercells are permanently recorded.
+
+%----------------------------------------------------------
+\section{Illustrative Case Studies}
+\label{sec:applications}
+
+\subsection{Case 1: Moir\'e Supercell in Twisted Bilayer MoS\textsubscript{2}}
+To demonstrate bilayer moir\'e generation, we search for commensurate supercells of monolayer $\text{MoS}_2$ (lattice constant $a = \SI{3.16}{\angstrom}$). We run:
+\begin{verbatim}
+cellstine moire find input/mos2.vasp input/mos2.vasp 
+  --nindex 12 --max-angle 30
+\end{verbatim}
+The engine discovers the classical commensurate twist angle families. For instance, at a twist angle of $\theta = 13.17^\circ$, it outputs a candidate with a strain of $\eta = 0\%$ and a supercell ratio of 19 (comprising 57 atoms per layer, 114 atoms total). 
+
+The resulting commensurate supercell configuration is shown in Figure~\ref{fig:moire_mos2}. This figure displays the superimposed top layer (where Mo and S atoms are colored green and yellow, respectively) and bottom layer (where Mo and S are colored dark green and orange). The periodic alignment of molybdenum and sulfur atoms at specific regions creates the distinct moir\'e pattern. The solid black box outlines the boundaries of the commensurate supercell. The clean alignment at the boundaries confirms that the cell possesses exact periodic boundary conditions with zero mismatch strain, validating the correctness of the integer transformation matrices found by the grid search.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Example.pdf}
+    \caption{Commensurate moir\'e supercell of twisted bilayer $\text{MoS}_2$ generated at a twist angle of $\theta = 13.17^\circ$ with $0\%$ strain.}
+    \label{fig:moire_mos2}
+\end{figure}
+
+\subsection{Case 2: Adsorption of Benzene on Au(111)}
+Exposing a surface and placing a molecule is performed in a chained workflow. First, we cut a 4-layer $\text{Au}(111)$ conventional slab with $\SI{15}{\angstrom}$ vacuum:
+\begin{verbatim}
+cellstine interface surface input/Au_Bulk.vasp 
+  --miller 111 --layers 4 --vacuum 15 --analyse-sites
+\end{verbatim}
+The site analysis identifies top, bridge, hcp, and fcc hollow sites on the surface. We then place a benzene molecule ($\text{C}_6\text{H}_6$) at the fcc hollow site. Because the benzene molecule's diameter ($\approx \SI{5.0}{\angstrom}$) exceeds the in-plane lattice constant of the primitive $\text{Au}(111)$ surface ($\approx \SI{2.88}{\angstrom}$), we enable auto-patching:
+\begin{verbatim}
+cellstine adsorbate place output/Au_111.vasp 
+  input/benzene.vasp --site-type fcc --height 2.5 
+  --auto-repeat-substrate
+\end{verbatim}
+CELLSTINE automatically replicates the substrate to a $3\times3$ supercell (comprising 36 Au atoms) and places the benzene molecule at a COM height of $\SI{2.5}{\angstrom}$ above the surface, preventing periodic overlap with self-images.
+
+The resulting adsorption model is illustrated in Figure~\ref{fig:benzene_au}. This figure shows the benzene molecule positioned at the fcc hollow site on the topmost layer of the expanded $3\times3$ Au(111) substrate. The gold atoms of the substrate are shown as golden spheres, and the carbon and hydrogen atoms of benzene are shown in grey and white. CELLSTINE's auto-patching routine automatically scaled the substrate conventional cell dimensions in-plane because the benzene molecular bounding box ($D_a, D_b$) exceeded the primitive substrate cell vectors ($L_a, L_b$). This expansion ensures that the molecule is separated from its periodic images by at least the width of the cell, preventing artificial self-interactions during periodic DFT calculations.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Example2.pdf}
+    \caption{Surface slab slicing and adsorption site classification for a benzene molecule placed at an fcc hollow site on a $3\times3$ reconstructed $\text{Au}(111)$ surface slab.}
+    \label{fig:benzene_au}
+\end{figure}
+
+\subsection{Case 3: Inequivalent Defect Structures in Pt-doped Au(111)}
+Using the $\text{Au}(111)$ surface slab generated above, we analyze inequivalent defect sites to perform Pt doping:
+\begin{verbatim}
+cellstine defect analyse output/Au_111_slab.vasp 
+  --structure-kind surface
+\end{verbatim}
+The native layer-aware classifier identifies four inequivalent atom sites corresponding to the four layers of the slab. We then substitute Au with Pt at the topmost surface layer (site \texttt{atom\_001}):
+\begin{verbatim}
+cellstine defect generate runs/defect/<run-id>/manifest.json 
+  --defect-type substitution --site-ids atom_001 
+  --substitution-species Pt
+\end{verbatim}
+This outputs the doped slab structure, ready for DFT-based catalytic activity calculations.
+
+The generated defect configurations and symmetry equivalent site groupings are shown in Figure~\ref{fig:defect_au}. The figure displays the gold slab layers color-coded to visualize the layer-aware symmetry classification: the topmost layer atoms are colored gold, the second layer atoms silver, the third layer copper, and the bottom layer dark grey. This height-based clustering correctly groups equivalent atoms in slab geometries where standard 3D space-group tools fail due to vacuum-broken periodicity. A single gold atom on the topmost surface layer is substituted by a platinum atom (colored blue/grey), illustrating how users can generate single-atom dopants for surface catalysis simulations.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Example3.pdf}
+    \caption{Defect site analysis and vacancy/substitution structure generation showing equivalent atom groupings in an $\text{Au}(111)$ surface slab.}
+    \label{fig:defect_au}
+\end{figure}
+
+%----------------------------------------------------------
+\section{Conclusion and Future Outlook}
+\label{sec:conclusion}
+We have presented CELLSTINE, a comprehensive Python suite and guided command-line engine for commensurate moir\'e supercells, surface-slab construction, adsorbate placement, and defect structure generation. By integrating these disparate workflows under a single manifest-driven package, CELLSTINE ensures scientific reproducibility and simplifies the preparation of inputs for electronic structure calculations. 
+
+Future extensions will include interfacing directly with classical force-field relaxation engines (similar to Twister's LAMMPS interface) and expanding the N-layer moir\'e finder with accelerated linear algebra algorithms (such as MLM's solve-and-round technique) to handle very large multilayer stacks with twist angles below $1^\circ$.
+
+%----------------------------------------------------------
+\section*{Conflict of Interest}
+The author declares no conflict of interest.
+
+%----------------------------------------------------------
+\section*{Acknowledgments}
+SC acknowledges the Theoretical Sciences Unit at JNCASR for computational facilities and support.
+
+\addcontentsline{toc}{section}{References}
+\printbibliography
+
+\end{document}

@@ -10,6 +10,7 @@ from typing import Dict, List, Mapping, Sequence
 import numpy as np
 
 from . import lattice as lat
+from . import commensurate as com
 
 
 def _build_angle_list(
@@ -31,39 +32,6 @@ def _build_angle_list(
 def _limit_worker_threads() -> None:
     for variable in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
         os.environ.setdefault(variable, "1")
-
-
-def _find_candidates_for_angle(
-    task: tuple[np.ndarray, np.ndarray, float, int, float, float | None, float, int, int]
-) -> List[lat.SupercellCandidate]:
-    (
-        lattice1,
-        lattice2,
-        angle_deg,
-        nindex,
-        tolerance,
-        vector_strain_tol,
-        candidate_tolerance,
-        atom_count1,
-        atom_count2,
-    ) = task
-    rotated_lattice1 = lat.rotate_lattice(lattice1, angle_deg)
-    matches = lat.find_coincident_vector_pairs(
-        rotated_lattice1,
-        lattice2,
-        nindex,
-        tolerance,
-        strain_tolerance=vector_strain_tol,
-    )
-    return lat.build_supercell_candidates(
-        matches,
-        rotated_lattice1,
-        lattice2,
-        atom_count1,
-        atom_count2,
-        candidate_tolerance,
-        angle_deg,
-    )
 
 
 def _matrix_signature(values: Sequence[int], match_mode: str) -> tuple[int, int, int, int]:
@@ -117,6 +85,68 @@ def candidate_matches_matrix_values(
     raise ValueError("matrix_layer must be '1', '2', 'either', or 'both'")
 
 
+def _search_angle_chunk(
+    task: tuple,
+) -> List[lat.SupercellCandidate]:
+    """Search a chunk of twist angles in one process.
+
+    Each chunk rebuilds the (small) precomputed pair set once and then handles
+    every angle in the chunk by slicing the angle-sorted pairs -- this avoids
+    pickling the large precomputed arrays once per angle, which is what made the
+    old per-angle process pool prohibitive for large angle lists.
+    """
+    (
+        lattice1,
+        lattice2,
+        nindex1,
+        nindex2,
+        match_tol,
+        vector_strain_tol,
+        candidate_tol,
+        atom_count1,
+        atom_count2,
+        max_pair_matches,
+        min_atoms,
+        max_atoms,
+        canonicalize,
+        frontier_only,
+        unique_strain_tol,
+        unique_ratio_tol,
+        window,
+        angle_chunk,
+    ) = task
+    pre = com.precompute_pairs(lattice1, lattice2, nindex1, nindex2, match_tol, vector_strain_tol)
+    results: List[lat.SupercellCandidate] = []
+    for angle_deg in angle_chunk:
+        matches = com.matches_at_angle(pre, float(angle_deg), match_tol, window, max_pair_matches)
+        if len(matches) < 2:
+            continue
+        rotated = lat.rotate_lattice(lattice1, float(angle_deg))
+        results.extend(
+            lat.build_supercell_candidates(
+                matches,
+                rotated,
+                lattice2,
+                atom_count1,
+                atom_count2,
+                candidate_tol,
+                float(angle_deg),
+                # ``matches_at_angle`` has already bounded the match count (with
+                # exact coincidences prioritised); do not let the builder re-cap
+                # purely by length, which would drop the long exact vectors that
+                # form low-strain primitive cells.
+                max_pair_matches=None,
+                min_atoms=min_atoms,
+                max_atoms=max_atoms,
+                canonicalize=canonicalize,
+                frontier_only=frontier_only,
+                unique_strain_tol=unique_strain_tol,
+                unique_ratio_tol=unique_ratio_tol,
+            )
+        )
+    return results
+
+
 def find_supercells(
     lattice1: np.ndarray,
     lattice2: np.ndarray,
@@ -141,39 +171,128 @@ def find_supercells(
     matrix_layer: str = "either",
     matrix_match_mode: str = "absolute",
     workers: int = 1,
+    max_pair_matches: int | None = None,
+    fold_symmetry: bool = False,
+    cull_redundant: bool = True,
+    reduce_basis: bool = True,
+    frontier_cull: bool | None = None,
 ) -> List[lat.SupercellCandidate]:
+    # Enforce the physical strain ceiling: never accept a length mismatch beyond
+    # MAX_PHYSICAL_MISMATCH (5%), regardless of what the caller requested.
+    if strain_tol is not None:
+        strain_tol = min(float(strain_tol), lat.MAX_PHYSICAL_MISMATCH)
+    if vector_strain_tol is not None:
+        vector_strain_tol = min(float(vector_strain_tol), lat.MAX_PHYSICAL_MISMATCH)
+    else:
+        vector_strain_tol = lat.MAX_PHYSICAL_MISMATCH
     candidate_tolerance = lin_tol if lin_tol is not None else tol
     angle_values = _build_angle_list(angle_lower, angle_upper, angle_step, angles)
     lattice1_array = np.asarray(lattice1, dtype=float)
     lattice2_array = np.asarray(lattice2, dtype=float)
 
-    all_candidates: List[lat.SupercellCandidate] = []
-    resolved_workers = max(1, int(workers))
-    task_inputs = [
-        (
+    # Optional crystal-symmetry fold: when both lattices share a mirror line, the
+    # twist angle theta and (sym - theta) give mirror-equivalent supercells, so we
+    # only search the irreducible wedge [0, sym/2] and reflect the index matrices
+    # to recover the rest (the "search to 30 deg then use signs" trick).  This
+    # roughly halves the per-angle work for symmetric systems such as MoS2/MoS2.
+    fold_operation: tuple[np.ndarray, int] | None = None
+    if fold_symmetry:
+        fold_operation = lat.fold_symmetry_operation(lattice1_array, lattice2_array)
+        if fold_operation is not None:
+            _, fold_sym = fold_operation
+            wedge_max = fold_sym / 2.0
+            angle_values = [angle for angle in angle_values if angle <= wedge_max + 1e-9]
+
+    # Dynamically scale nindex based on cell-size limits.  A layer-1 vector longer
+    # than the longest reachable layer-2 vector can never match, so the per-layer
+    # integer range can be capped without dropping any admissible pair.
+    basis1_2d = lattice1_array[:2, :2]
+    basis2_2d = lattice2_array[:2, :2]
+    basis1_lengths = np.linalg.norm(basis1_2d, axis=1)
+    basis2_lengths = np.linalg.norm(basis2_2d, axis=1)
+
+    L1_max = nindex * np.max(basis1_lengths)
+    L2_max = nindex * np.max(basis2_lengths)
+    L_cutoff = min(L1_max, L2_max) * (1.0 + float(tol))
+
+    min_basis1 = np.min(basis1_lengths)
+    min_basis2 = np.min(basis2_lengths)
+
+    scaled_nindex1 = int(min(nindex, np.ceil(L_cutoff / max(min_basis1, 1e-12))))
+    scaled_nindex2 = int(min(nindex, np.ceil(L_cutoff / max(min_basis2, 1e-12))))
+
+    # Twist angle is an analytic function of each equal-length integer vector
+    # pair, so the search no longer sweeps angles: it tags every pair with its
+    # angle once and, for each requested angle, slices the narrow angular window
+    # around it.  ``match_tol`` is the widest relative error any consumer needs,
+    # and ``window`` is the matching angular half-width.
+    match_tol = max(float(tol), float(candidate_tolerance))
+    window = com.angle_window_deg(match_tol, 1e-3)
+    canonicalize = bool(dedupe and matrix_values is None)
+    # When the per-angle redundancy cull is on (and we are not matrix-filtering,
+    # which needs the full candidate set), collapse each angle to its
+    # (atoms, strain) Pareto frontier inside the builder -- in numpy, before any
+    # Python candidate objects are created.  This is the dominating speed-up at
+    # large nindex: it removes the canonical-sublattice grouping and the
+    # O(candidates^2) global deduplication, both of which exploded at degenerate
+    # angles, while producing exactly the cells the final cull would keep.
+    if frontier_cull is None:
+        frontier_only = bool(cull_redundant and matrix_values is None)
+    else:
+        frontier_only = bool(frontier_cull and matrix_values is None)
+
+    def _task(chunk: Sequence[float]) -> tuple:
+        return (
             lattice1_array,
             lattice2_array,
-            float(angle_deg),
-            int(nindex),
-            float(tol),
+            scaled_nindex1,
+            scaled_nindex2,
+            match_tol,
             vector_strain_tol,
             float(candidate_tolerance),
             int(atom_count1),
             int(atom_count2),
+            max_pair_matches,
+            min_atoms,
+            max_atoms,
+            canonicalize,
+            frontier_only,
+            float(unique_strain_tol),
+            float(unique_ratio_tol),
+            window,
+            list(chunk),
         )
-        for angle_deg in angle_values
-    ]
-    if resolved_workers <= 1 or len(task_inputs) <= 1:
-        for task in task_inputs:
-            all_candidates.extend(_find_candidates_for_angle(task))
+
+    all_candidates: List[lat.SupercellCandidate] = []
+    resolved_workers = max(1, int(workers))
+    if resolved_workers <= 1 or len(angle_values) <= 1:
+        all_candidates.extend(_search_angle_chunk(_task(angle_values)))
     else:
+        chunks = [angle_values[index::resolved_workers] for index in range(resolved_workers)]
+        chunks = [chunk for chunk in chunks if chunk]
         try:
             with ProcessPoolExecutor(max_workers=resolved_workers, initializer=_limit_worker_threads) as executor:
-                for candidates in executor.map(_find_candidates_for_angle, task_inputs):
-                    all_candidates.extend(candidates)
+                for chunk_result in executor.map(_search_angle_chunk, [_task(chunk) for chunk in chunks]):
+                    all_candidates.extend(chunk_result)
         except (OSError, PermissionError):
-            for task in task_inputs:
-                all_candidates.extend(_find_candidates_for_angle(task))
+            all_candidates.extend(_search_angle_chunk(_task(angle_values)))
+
+    # Reconstruct the mirror partners of the wedge candidates to cover the full
+    # angle range.  Boundary angles (0 and sym/2) are self-mapped, so only the
+    # strict interior of the wedge is reflected; deduplication later removes any
+    # incidental overlaps.
+    if fold_operation is not None:
+        fold_op, fold_sym = fold_operation
+        wedge_max = fold_sym / 2.0
+        mirrored_candidates: List[lat.SupercellCandidate] = []
+        for candidate in all_candidates:
+            if 1e-9 < candidate.angle_deg < wedge_max - 1e-9:
+                mirror = lat.mirror_supercell_candidate(
+                    candidate, fold_op, fold_sym, lattice1_array, lattice2_array
+                )
+                if mirror is not None:
+                    mirrored_candidates.append(mirror)
+        all_candidates.extend(mirrored_candidates)
 
     resolved_strain_layer = str(strain_layer).lower()
     if resolved_strain_layer not in {"avg", "1", "2"}:
@@ -208,8 +327,21 @@ def find_supercells(
             ratio_tolerance=unique_ratio_tol,
         )
 
+    # Cull the per-angle redundancy: at any twist angle keep only the cells on
+    # the (atom count, strain) Pareto frontier, dropping every cell that another
+    # at the same angle beats on both size and strain.
+    if cull_redundant:
+        filtered = com.pareto_cull(filtered)
+
+    # Report each cell in its shortest / most orthogonal integer basis.  Only the
+    # handful of surviving (culled) candidates are reduced here, so the cost is
+    # negligible; the strain was already measured on a well-conditioned basis.
+    if reduce_basis and matrix_values is None:
+        filtered = [com.reduce_candidate(candidate, lattice1_array, candidate.angle_deg) for candidate in filtered]
+
     filtered.sort(key=lambda item: (item.strain_avg, item.total_atoms, item.angle_deg, item.vector_product))
     return filtered
+
 
 
 def candidate_to_dict(candidate: lat.SupercellCandidate, index: int | None = None) -> Dict[str, object]:

@@ -236,6 +236,8 @@ def run_findn(
     bottom_c_repeat: int = 1,
     upper_c_repeats: Sequence[int] | None = None,
     workers: int = 1,
+    fold_symmetry: bool = False,
+    max_search_angles: int | None = None,
 ) -> FindNRun:
     if len(upper_poscars) != len(upper_lattices) or len(upper_poscars) != len(upper_atoms):
         raise ValueError("upper layer paths, lattices, and atom counts must have the same length")
@@ -255,7 +257,16 @@ def run_findn(
         zip(upper_lattices, min_angles, max_angles, explicit_angles_by_layer),
         start=1,
     ):
-        shortlist, angle_values, symmetry_upper, symmetry_bottom, symmetry_lcm, search_min, search_max = find_stage._resolve_angles(
+        (
+            shortlist,
+            angle_values,
+            symmetry_upper,
+            symmetry_bottom,
+            symmetry_lcm,
+            search_min,
+            search_max,
+            angle_metadata,
+        ) = find_stage._resolve_angles(
             upper_lattice,
             bottom_lattice,
             nindex,
@@ -266,6 +277,7 @@ def run_findn(
             angle_length_tolerance=angle_length_tolerance,
             angle_strain_tolerance=angle_strain_tolerance,
             angle_merge_tolerance=angle_merge_tolerance,
+            max_search_angles=max_search_angles,
         )
         candidates = finder_backend.find_supercells(
             upper_lattice,
@@ -287,6 +299,13 @@ def run_findn(
             unique_ratio_tol=unique_ratio_tolerance,
             vector_strain_tol=vector_strain_tolerance,
             workers=workers,
+            fold_symmetry=fold_symmetry,
+            # Keep the full pairwise candidate set (in raw integer bases) so the
+            # cross-layer intersection below has every cell to work with; only
+            # bound the per-angle pairing so highly symmetric angles stay fast.
+            max_pair_matches=200,
+            cull_redundant=False,
+            reduce_basis=False,
         )
 
         shortlisted_angles_by_layer.append(list(shortlist))
@@ -301,6 +320,9 @@ def run_findn(
                 "min_angle_deg": float(search_min),
                 "max_angle_deg": float(search_max),
                 "angle_count": len(angle_values),
+                "angle_values_thinned": bool(angle_metadata.get("angle_values_thinned", False)),
+                "angle_values_before_thinning": angle_metadata.get("angle_values_before_thinning", ""),
+                "max_search_angles": angle_metadata.get("max_search_angles", max_search_angles),
                 "explicit_angles_deg": [] if explicit_angles is None else [float(value) for value in explicit_angles],
                 "shortlisted_angles_deg": [float(candidate.angle_deg) for candidate in shortlist],
             }

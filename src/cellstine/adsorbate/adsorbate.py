@@ -83,6 +83,8 @@ class Adsorbate(Base):
         site_index: int = 1,
         height: float = 2.5,
         rotation_deg: float = 0.0,
+        tilt_deg: float = 0.0,
+        roll_deg: float = 0.0,
         surface_side: str = "top",
         output_path: str | None = None,
     ) -> CommandResult:
@@ -111,7 +113,7 @@ class Adsorbate(Base):
             self.output_root
             / (
                 f"adsorbate_{_safe_token(site_type)}{int(site_index):02d}_h{_safe_token(f'{float(height):.2f}')}"
-                f"_rot{_safe_token(f'{float(rotation_deg):.2f}')}_{output_suffix}.vasp"
+                f"_rot{_safe_token(f'{float(rotation_deg):.2f}')}_tilt{_safe_token(f'{float(tilt_deg):.2f}')}_roll{_safe_token(f'{float(roll_deg):.2f}')}_{output_suffix}.vasp"
             )
         )
         run = place_molecule_on_site(
@@ -121,6 +123,8 @@ class Adsorbate(Base):
             site_index=int(site_index),
             height=float(height),
             rotation_deg=float(rotation_deg),
+            tilt_deg=float(tilt_deg),
+            roll_deg=float(roll_deg),
             surface_side=str(surface_side),
             auto_repeat_substrate=bool(auto_repeat_substrate),
             fit_padding=float(fit_padding),
@@ -142,6 +146,8 @@ class Adsorbate(Base):
                 "site_index": int(site_index),
                 "height": float(height),
                 "rotation_deg": float(rotation_deg),
+                "tilt_deg": float(tilt_deg),
+                "roll_deg": float(roll_deg),
                 "surface_side": str(surface_side),
                 "substrate_repeat_a": int(substrate_repeat_a),
                 "substrate_repeat_b": int(substrate_repeat_b),
@@ -172,6 +178,8 @@ class Adsorbate(Base):
         target_cartesian: Sequence[float] | None = None,
         target_direct: Sequence[float] | None = None,
         rotation_deg: float = 0.0,
+        tilt_deg: float = 0.0,
+        roll_deg: float = 0.0,
         z_cutoff: float | None = None,
         min_gap: float = 1.0,
         reframe_axes: str | Sequence[str] | None = "xy",
@@ -188,7 +196,7 @@ class Adsorbate(Base):
         resolved_output_path = output_path or str(
             self.output_root
             / (
-                f"move_{target_token}_rot{_safe_token(f'{float(rotation_deg):.2f}')}_{output_suffix}.vasp"
+                f"move_{target_token}_rot{_safe_token(f'{float(rotation_deg):.2f}')}_tilt{_safe_token(f'{float(tilt_deg):.2f}')}_roll{_safe_token(f'{float(roll_deg):.2f}')}_{output_suffix}.vasp"
             )
         )
         run = transform_top_molecule(
@@ -197,6 +205,8 @@ class Adsorbate(Base):
             target_cartesian=target_cartesian,
             target_direct=target_direct,
             rotation_deg=float(rotation_deg),
+            tilt_deg=float(tilt_deg),
+            roll_deg=float(roll_deg),
             z_cutoff=z_cutoff,
             min_gap=float(min_gap),
             reframe_axes=reframe_axes,
@@ -207,7 +217,7 @@ class Adsorbate(Base):
             run_dir=run_dir,
             backend=backend,
             inputs={"poscar_path": str(Path(poscar_path).resolve())},
-            parameters={"target_cartesian": list(target_cartesian or []), "target_direct": list(target_direct or []), "rotation_deg": float(rotation_deg)},
+            parameters={"target_cartesian": list(target_cartesian or []), "target_direct": list(target_direct or []), "rotation_deg": float(rotation_deg), "tilt_deg": float(tilt_deg), "roll_deg": float(roll_deg)},
             artifacts={"output_poscar": run.output_path},
             summary={"molecule_atom_count": run.molecule_atom_count, "substrate_atom_count": run.substrate_atom_count},
         )
