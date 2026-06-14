@@ -19,6 +19,23 @@ def in_plane_lengths_and_angle(lattice: np.ndarray) -> tuple[float, float, float
     return length_a, length_b, gamma_deg
 
 
+def infer_rotational_symmetry_angle(lattice: np.ndarray, tolerance: float = 1e-2) -> int:
+    length_a, length_b, gamma_deg = in_plane_lengths_and_angle(lattice)
+    relative_length_delta = abs(length_a - length_b) / max((length_a + length_b) * 0.5, 1e-12)
+    equal_lengths = relative_length_delta <= tolerance
+    if equal_lengths and (abs(gamma_deg - 60.0) <= 3.0 or abs(gamma_deg - 120.0) <= 3.0):
+        return 60
+    if equal_lengths and abs(gamma_deg - 90.0) <= 3.0:
+        return 90
+    return 180
+
+
+def combined_symmetry_limit(lattice1: np.ndarray, lattice2: np.ndarray) -> tuple[int, int, int]:
+    symmetry_1 = infer_rotational_symmetry_angle(lattice1)
+    symmetry_2 = infer_rotational_symmetry_angle(lattice2)
+    return symmetry_1, symmetry_2, int(math.lcm(symmetry_1, symmetry_2))
+
+
 def build_target_lattice(a_length: float, b_length: float, angle_deg: float, c_length: float = 30.0) -> np.ndarray:
     angle_rad = math.radians(float(angle_deg))
     return np.array(

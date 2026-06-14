@@ -9,10 +9,10 @@ from typing import List, Sequence
 
 import numpy as np
 
+from ..core.transforms import yaw_pitch_roll_matrix
+from ..core.species import expand_species as _expand_species_shared
 from ..interface import surface_backend as surface_mod
 from ..io import native as io_mod
-from . import lattice as lattice_mod
-from .structure_helpers import expand_species as _expand_species_shared
 
 
 _ATOMIC_MASS_ROWS = """
@@ -413,7 +413,7 @@ def _transform_molecule_cartesian(
 
     translated = positions_array + (pivot - com_before)
     if abs(float(rotation_deg)) > 0.0 or abs(float(tilt_deg)) > 0.0 or abs(float(roll_deg)) > 0.0:
-        rotation = lattice_mod.yaw_pitch_roll_matrix(float(rotation_deg), float(tilt_deg), float(roll_deg))
+        rotation = yaw_pitch_roll_matrix(float(rotation_deg), float(tilt_deg), float(roll_deg))
         translated = (translated - pivot) @ rotation.T + pivot
 
     return translated, com_before
@@ -460,7 +460,7 @@ def _estimate_inplane_repeats_for_molecule(
     com = center_of_mass_cartesian(positions, molecule_species)
     centered = positions - com
     if abs(float(rotation_deg)) > 0.0 or abs(float(tilt_deg)) > 0.0 or abs(float(roll_deg)) > 0.0:
-        rotation = lattice_mod.yaw_pitch_roll_matrix(float(rotation_deg), float(tilt_deg), float(roll_deg))
+        rotation = yaw_pitch_roll_matrix(float(rotation_deg), float(tilt_deg), float(roll_deg))
         centered = centered @ rotation.T
     direct_delta = io_mod.cartesian_to_direct(centered, substrate.lattice)
     spans = np.ptp(direct_delta[:, :2], axis=0) if direct_delta.size else np.zeros(2, dtype=float)

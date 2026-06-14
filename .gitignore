@@ -29,14 +29,24 @@ env/
 moire_test_*/
 tmp*/
 *.tmp
+scratch/
+cellstine-report/
+cellstine.log
+*.log
 
 # Generated scientific outputs
 results.dat
 *.dat
 *.html
 *.vasp
+input/*
+!input/.gitkeep
+!input/examples/
+!input/examples/**
 output/*
 !output/.gitkeep
+!output/examples/
+!output/examples/**
 runs/*
 !runs/.gitkeep
 

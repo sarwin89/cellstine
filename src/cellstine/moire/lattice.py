@@ -8,6 +8,9 @@ from typing import List, Sequence, Tuple
 
 import numpy as np
 
+from ..core.lattice import combined_symmetry_limit, infer_rotational_symmetry_angle, in_plane_lengths_and_angle
+from ..core.transforms import rotation_matrix_x, rotation_matrix_y, rotation_matrix_z, yaw_pitch_roll_matrix
+
 
 # Hard physical ceiling on the relative length / strain mismatch a commensurate
 # cell may carry.  Real crystals do not sustain more than a few percent strain in
@@ -60,35 +63,6 @@ class SupercellCandidate:
     area2: float
 
 
-def in_plane_lengths_and_angle(lattice: np.ndarray) -> Tuple[float, float, float]:
-    basis = np.asarray(lattice, dtype=float)[:2, :2]
-    vector_a = basis[0]
-    vector_b = basis[1]
-    length_a = float(np.linalg.norm(vector_a))
-    length_b = float(np.linalg.norm(vector_b))
-    denominator = max(length_a * length_b, 1e-12)
-    cosine = np.clip(float(np.dot(vector_a, vector_b) / denominator), -1.0, 1.0)
-    gamma_deg = float(np.degrees(np.arccos(cosine)))
-    return length_a, length_b, gamma_deg
-
-
-def infer_rotational_symmetry_angle(lattice: np.ndarray, tolerance: float = 1e-2) -> int:
-    length_a, length_b, gamma_deg = in_plane_lengths_and_angle(lattice)
-    relative_length_delta = abs(length_a - length_b) / max((length_a + length_b) * 0.5, 1e-12)
-    equal_lengths = relative_length_delta <= tolerance
-    if equal_lengths and (abs(gamma_deg - 60.0) <= 3.0 or abs(gamma_deg - 120.0) <= 3.0):
-        return 60
-    if equal_lengths and abs(gamma_deg - 90.0) <= 3.0:
-        return 90
-    return 180
-
-
-def combined_symmetry_limit(lattice1: np.ndarray, lattice2: np.ndarray) -> Tuple[int, int, int]:
-    symmetry_1 = infer_rotational_symmetry_angle(lattice1)
-    symmetry_2 = infer_rotational_symmetry_angle(lattice2)
-    return symmetry_1, symmetry_2, int(math.lcm(symmetry_1, symmetry_2))
-
-
 def rotate_vector(vector: Sequence[float], theta_rad: float) -> np.ndarray:
     cos_theta = math.cos(theta_rad)
     sin_theta = math.sin(theta_rad)
@@ -100,55 +74,6 @@ def rotate_vector(vector: Sequence[float], theta_rad: float) -> np.ndarray:
         ],
         dtype=float,
     )
-
-
-def rotation_matrix_z(angle_deg: float) -> np.ndarray:
-    theta = math.radians(angle_deg)
-    cos_theta = math.cos(theta)
-    sin_theta = math.sin(theta)
-    return np.array(
-        [
-            [cos_theta, -sin_theta, 0.0],
-            [sin_theta, cos_theta, 0.0],
-            [0.0, 0.0, 1.0],
-        ],
-        dtype=float,
-    )
-
-
-def rotation_matrix_x(angle_deg: float) -> np.ndarray:
-    theta = math.radians(angle_deg)
-    cos_theta = math.cos(theta)
-    sin_theta = math.sin(theta)
-    return np.array(
-        [
-            [1.0, 0.0, 0.0],
-            [0.0, cos_theta, -sin_theta],
-            [0.0, sin_theta, cos_theta],
-        ],
-        dtype=float,
-    )
-
-
-def rotation_matrix_y(angle_deg: float) -> np.ndarray:
-    theta = math.radians(angle_deg)
-    cos_theta = math.cos(theta)
-    sin_theta = math.sin(theta)
-    return np.array(
-        [
-            [cos_theta, 0.0, sin_theta],
-            [0.0, 1.0, 0.0],
-            [-sin_theta, 0.0, cos_theta],
-        ],
-        dtype=float,
-    )
-
-
-def yaw_pitch_roll_matrix(yaw_deg: float, pitch_deg: float, roll_deg: float) -> np.ndarray:
-    r_z = rotation_matrix_z(yaw_deg)
-    r_y = rotation_matrix_y(pitch_deg)
-    r_x = rotation_matrix_x(roll_deg)
-    return r_x @ r_y @ r_z
 
 
 def rotate_lattice(lattice: np.ndarray, angle_deg: float) -> np.ndarray:

@@ -1,24 +1,7 @@
-"""Shared structure helper utilities for moire and molecule workflows."""
+"""Structure helper utilities for moire workflows."""
 
 from __future__ import annotations
 
-from typing import List, Sequence
+from ..core.species import expand_species
 
-
-def expand_species(species: Sequence[str], counts: Sequence[int], fallback: str | None = None) -> List[str]:
-    """Expand species labels to one symbol per atom.
-
-    When species labels are missing, `fallback` is repeated once per count entry.
-    """
-
-    if species:
-        labels = [str(symbol) for symbol in species]
-    elif fallback is not None:
-        labels = [str(fallback)] * len(counts)
-    else:
-        raise ValueError("POSCAR species labels are required")
-
-    expanded: List[str] = []
-    for symbol, count in zip(labels, counts):
-        expanded.extend([symbol] * int(count))
-    return expanded
+__all__ = ["expand_species"]

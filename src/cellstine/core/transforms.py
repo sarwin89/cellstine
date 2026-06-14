@@ -32,6 +32,54 @@ def rotation_matrix_about_axis(axis: Sequence[float], angle_deg: float) -> np.nd
     )
 
 
+def rotation_matrix_z(angle_deg: float) -> np.ndarray:
+    theta = np.deg2rad(float(angle_deg))
+    cos_theta = float(np.cos(theta))
+    sin_theta = float(np.sin(theta))
+    return np.array(
+        [
+            [cos_theta, -sin_theta, 0.0],
+            [sin_theta, cos_theta, 0.0],
+            [0.0, 0.0, 1.0],
+        ],
+        dtype=float,
+    )
+
+
+def rotation_matrix_x(angle_deg: float) -> np.ndarray:
+    theta = np.deg2rad(float(angle_deg))
+    cos_theta = float(np.cos(theta))
+    sin_theta = float(np.sin(theta))
+    return np.array(
+        [
+            [1.0, 0.0, 0.0],
+            [0.0, cos_theta, -sin_theta],
+            [0.0, sin_theta, cos_theta],
+        ],
+        dtype=float,
+    )
+
+
+def rotation_matrix_y(angle_deg: float) -> np.ndarray:
+    theta = np.deg2rad(float(angle_deg))
+    cos_theta = float(np.cos(theta))
+    sin_theta = float(np.sin(theta))
+    return np.array(
+        [
+            [cos_theta, 0.0, sin_theta],
+            [0.0, 1.0, 0.0],
+            [-sin_theta, 0.0, cos_theta],
+        ],
+        dtype=float,
+    )
+
+
+def yaw_pitch_roll_matrix(yaw_deg: float, pitch_deg: float, roll_deg: float) -> np.ndarray:
+    """Return a yaw-z, pitch-y, roll-x rotation matrix."""
+
+    return rotation_matrix_x(roll_deg) @ rotation_matrix_y(pitch_deg) @ rotation_matrix_z(yaw_deg)
+
+
 def right_handed_lattice(lattice: np.ndarray, positions_direct: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     lattice_array = np.array(lattice, dtype=float, copy=True)
     positions = np.array(positions_direct, dtype=float, copy=True)

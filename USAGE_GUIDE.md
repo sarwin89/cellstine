@@ -1,6 +1,7 @@
 # CELLSTINE Usage Guide
 
 This guide covers the current grouped CELLSTINE package and CLI in more detail than the README.
+For a shorter public documentation map, see [docs/README.md](docs/README.md).
 
 The package is organized around five top-level workflows:
 
@@ -10,7 +11,7 @@ The package is organized around five top-level workflows:
 - `symmetry`
 - `defect`
 
-Examples below use the installed command `cellstine`. Inside the repository, `python moire_cli.py ...` is also available as a repository-local convenience entrypoint that forwards into the same package CLI.
+Examples below use the installed command `cellstine`. Public example files live in `input/examples/` and `output/examples/`; normal local inputs, generated outputs, and run manifests stay in `input/`, `output/`, and `runs/`. Inside the repository, `python moire_cli.py ...` is also available as a repository-local convenience entrypoint that forwards into the same package CLI.
 
 Import workflow classes and helpers from `cellstine...` modules.
 

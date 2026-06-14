@@ -10,10 +10,10 @@ from ..core.base import Base, run_output_suffix
 from ..core.lattice import apply_inplane_prestrain
 from ..core.models import CommandResult, PrestrainConfig
 from ..core.previews import format_bilayer_candidates
+from ..core.layers import shift_top_layer
 from ..io.converters import StructureConverter
 from .find import run_find
 from .make import generate_many_from_results
-from .molecule import shift_top_layer
 
 
 def _safe_token(value: object) -> str:

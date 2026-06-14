@@ -20,7 +20,8 @@ from cellstine.defect.defect import Defect as DefectWorkflow
 from cellstine.io import native as io
 from cellstine.moire import finder as cell_finder
 from cellstine.moire import generator as cell_generator
-from cellstine.moire import angles, find, finder, findn, generator, lattice, make, maken, molecule
+from cellstine.moire import angles, find, finder, findn, generator, lattice, make, maken
+from cellstine.adsorbate import molecule
 from cellstine.adsorbate.molecule import Molecule as MoleculeWorkflow
 from cellstine.interface import surface_backend as surface
 from cellstine.interface.surface import Surface as InterfaceSurface, _stacking_sequence

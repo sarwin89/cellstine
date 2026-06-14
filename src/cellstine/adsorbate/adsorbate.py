@@ -13,7 +13,7 @@ from ..interface.surface import Surface
 from ..io.converters import StructureConverter
 from ..io.vasp import VaspIO
 from ..moire.find import run_find
-from ..moire.molecule import place_molecule_on_site, transform_top_molecule
+from .operations import place_molecule_on_site, transform_top_molecule
 
 
 def _safe_token(value: object) -> str:

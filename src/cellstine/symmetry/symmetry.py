@@ -14,7 +14,7 @@ from ..core.models import CommandResult
 from ..io.converters import StructureConverter
 from ..io.models import StructureRecord
 from ..io.vasp import VaspIO
-from ..moire.lattice import infer_rotational_symmetry_angle, in_plane_lengths_and_angle
+from ..core.lattice import infer_rotational_symmetry_angle, in_plane_lengths_and_angle
 
 
 @dataclass
