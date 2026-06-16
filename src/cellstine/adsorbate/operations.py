@@ -327,7 +327,7 @@ def identify_top_molecule(
     z_cutoff: float | None = None,
     min_gap: float = 1.0,
 ) -> MoleculeSelection:
-    """Backward-compatible alias for top-side molecule selection."""
+    """Alias for top-side molecule selection."""
 
     return identify_top_group(structure, z_cutoff=z_cutoff, min_gap=min_gap)
 

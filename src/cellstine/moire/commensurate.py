@@ -165,13 +165,25 @@ def matches_at_angle(
     sel = _alpha_slice(alpha, float(theta), float(window), sym)
     if sel.size < 2:
         return []
+    # signed angular distance to theta, folded into (-sym/2, sym/2]
+    d = (alpha[sel] - float(theta) + sym * 0.5) % sym - sym * 0.5
+    # If the caller has already requested a finite pair budget, avoid spending
+    # vectorized trig and allocation work on every pair in a very dense angular
+    # slice.  The closest-alpha pairs are the only ones that can survive with low
+    # geometric error, and the later exact/short-vector cap still chooses the
+    # final representatives.  Passing max_pair_matches<=0 disables this path via
+    # the caller converting it to None.
+    if max_pair_matches is not None:
+        pre_cap = max(2048, int(max_pair_matches) * 16)
+        if sel.size > pre_cap:
+            nearest = np.argpartition(np.abs(d), pre_cap - 1)[:pre_cap]
+            sel = sel[nearest]
+            d = d[nearest]
     rows = pre["rows"][sel]
     cols = pre["cols"][sel]
     lm = pre["lm"][sel]
     L1 = pre["norms1"][rows]
     L2 = pre["norms2"][cols]
-    # signed angular distance to theta, folded into (-sym/2, sym/2]
-    d = (alpha[sel] - float(theta) + sym * 0.5) % sym - sym * 0.5
     err = np.sqrt(np.maximum(L1 * L1 + L2 * L2 - 2.0 * L1 * L2 * np.cos(np.radians(d)), 0.0))
     rel = err / np.maximum(L1 + L2, 1e-12)
     good = rel <= float(tolerance)
@@ -257,7 +269,21 @@ def _gauss_reduce_indices(
             break
         m1[1] -= mu * m1[0]
         m2[1] -= mu * m2[0]
-    # Canonical sign: make the first cell vector point into the upper half plane.
+    # Canonical row signs: a row and its negative span the same lattice vector
+    # line.  Flip each paired row so the first nonzero integer in the reported
+    # layer-1/layer-2 coefficients is positive; this avoids equivalent all-
+    # negative matrices without changing the supercell.
+    for row_index in range(2):
+        combined = (
+            int(m1[row_index, 0]),
+            int(m1[row_index, 1]),
+            int(m2[row_index, 0]),
+            int(m2[row_index, 1]),
+        )
+        first_nonzero = next((value for value in combined if value != 0), 0)
+        if first_nonzero < 0:
+            m1[row_index] *= -1
+            m2[row_index] *= -1
     return m1, m2
 
 
@@ -278,6 +304,49 @@ def reduce_candidate(candidate: lat.SupercellCandidate, lattice1: np.ndarray, an
         layer2_vector1=(int(r2[0, 0]), int(r2[0, 1])),
         layer2_vector2=(int(r2[1, 0]), int(r2[1, 1])),
     )
+
+
+def reduce_candidate_checked(
+    candidate: lat.SupercellCandidate,
+    lattice1: np.ndarray,
+    lattice2: np.ndarray,
+    angle_deg: float,
+    tolerance: float,
+) -> lat.SupercellCandidate | None:
+    """Reduce a candidate basis while preserving the represented supercell.
+
+    Earlier versions tried to validate the reduced basis row-by-row and flipped
+    bottom rows independently when that looked closer.  That is too strict for
+    legitimate symmetry-folded moire cells and can also manufacture impossible
+    reported cells by changing the handedness of only one row.  The safe check is
+    instead basis-level: after shared unimodular reduction, recompute the compact
+    cell strain and keep the candidate only if the reduced basis still describes
+    the same low-strain two-dimensional cell.
+    """
+
+    reduced = reduce_candidate(candidate, lattice1, angle_deg)
+    rotated_basis1 = lat.rotate_lattice(lattice1, float(angle_deg))[:2, :2]
+    basis2 = np.asarray(lattice2, dtype=float)[:2, :2]
+    m1 = np.array([reduced.layer1_vector1, reduced.layer1_vector2], dtype=np.int64)
+    m2 = np.array([reduced.layer2_vector1, reduced.layer2_vector2], dtype=np.int64)
+    det1 = int(m1[0, 0] * m1[1, 1] - m1[0, 1] * m1[1, 0])
+    det2 = int(m2[0, 0] * m2[1, 1] - m2[0, 1] * m2[1, 0])
+    if det1 * det2 <= 0:
+        return None
+    v1 = m1 @ rotated_basis1
+    v2 = m2 @ basis2
+
+    reduced_strain = float(
+        lat.calculate_strain_batch(
+            np.stack((v1,), axis=0),
+            np.stack((v2,), axis=0),
+        )[0]
+    )
+    if not math.isfinite(reduced_strain):
+        return None
+    if reduced_strain > float(candidate.strain_avg) + max(float(tolerance), 1e-12):
+        return None
+    return reduced
 
 
 def pareto_cull(

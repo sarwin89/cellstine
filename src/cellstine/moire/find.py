@@ -167,6 +167,9 @@ def run_find(
     max_pair_matches: int | None = None,
     cull_redundant: bool = True,
     reduce_basis: bool = True,
+    max_cell_aspect_ratio: float | None = 12.0,
+    min_cell_angle_deg: float | None = 25.0,
+    max_cell_angle_deg: float | None = 155.0,
     progress_callback: Callable[[str, str], None] | None = None,
 ) -> FindRun:
     total_start = time.perf_counter()
@@ -214,6 +217,11 @@ def run_find(
         effective_max_pair_matches = None
     else:
         effective_max_pair_matches = int(max_pair_matches)
+    effective_strain_tolerance = (
+        lat.MAX_PHYSICAL_MISMATCH
+        if strain_tolerance is None
+        else min(float(strain_tolerance), lat.MAX_PHYSICAL_MISMATCH)
+    )
 
     _notify(progress_callback, "search", f"searching supercells across {len(angle_values)} angle(s)")
     stage_start = time.perf_counter()
@@ -226,7 +234,7 @@ def run_find(
         nindex=nindex,
         tol=vector_tolerance,
         lin_tol=candidate_tolerance,
-        strain_tol=strain_tolerance,
+        strain_tol=effective_strain_tolerance,
         strain_layer=strain_layer,
         min_atoms=min_atoms,
         max_atoms=max_atoms,
@@ -245,6 +253,9 @@ def run_find(
         max_pair_matches=effective_max_pair_matches,
         cull_redundant=cull_redundant,
         reduce_basis=reduce_basis,
+        max_cell_aspect_ratio=max_cell_aspect_ratio,
+        min_cell_angle_deg=min_cell_angle_deg,
+        max_cell_angle_deg=max_cell_angle_deg,
     )
     timings["supercell_search_s"] = time.perf_counter() - stage_start
     _notify(
@@ -267,6 +278,9 @@ def run_find(
         "max_pair_matches": "" if effective_max_pair_matches is None else int(effective_max_pair_matches),
         "cull_redundant": bool(cull_redundant),
         "reduce_basis": bool(reduce_basis),
+        "max_cell_aspect_ratio": "" if max_cell_aspect_ratio is None else float(max_cell_aspect_ratio),
+        "min_cell_angle_deg": "" if min_cell_angle_deg is None else float(min_cell_angle_deg),
+        "max_cell_angle_deg": "" if max_cell_angle_deg is None else float(max_cell_angle_deg),
         "nindex": int(nindex),
         "symmetry_top_deg": int(symmetry_top),
         "symmetry_bottom_deg": int(symmetry_bottom),
@@ -282,13 +296,16 @@ def run_find(
         "vector_tolerance": float(vector_tolerance),
         "vector_strain_tolerance": "" if vector_strain_tolerance is None else float(vector_strain_tolerance),
         "candidate_tolerance": float(candidate_tolerance if candidate_tolerance is not None else vector_tolerance),
-        "strain_tolerance": "" if strain_tolerance is None else float(strain_tolerance),
+        "strain_tolerance": float(effective_strain_tolerance),
+        "strain_tolerance_defaulted": strain_tolerance is None,
         "strain_layer": strain_layer,
         "min_atoms": "" if min_atoms is None else int(min_atoms),
         "max_atoms": "" if max_atoms is None else int(max_atoms),
         "dedupe": bool(dedupe),
         "unique_strain_tolerance": float(unique_strain_tolerance),
         "unique_ratio_tolerance": float(unique_ratio_tolerance),
+        "output_angle_tolerance_deg": float(finder_backend.ANGLE_OUTPUT_TOLERANCE_DEG),
+        "output_strain_tolerance": float(finder_backend.STRAIN_OUTPUT_TOLERANCE),
         "matrix_values": "" if matrix_values is None else ",".join(str(int(value)) for value in matrix_values),
         "matrix_layer": matrix_layer,
         "matrix_match_mode": matrix_match_mode,

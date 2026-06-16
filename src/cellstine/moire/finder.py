@@ -12,6 +12,9 @@ import numpy as np
 from . import lattice as lat
 from . import commensurate as com
 
+ANGLE_OUTPUT_TOLERANCE_DEG = 5e-4
+STRAIN_OUTPUT_TOLERANCE = 1e-4
+
 
 def _build_angle_list(
     angle_lower: float | None,
@@ -85,6 +88,117 @@ def candidate_matches_matrix_values(
     raise ValueError("matrix_layer must be '1', '2', 'either', or 'both'")
 
 
+def _coefficient_signature(candidate: lat.SupercellCandidate) -> tuple[int, int, int, int, int, int, int, int]:
+    return (
+        int(candidate.layer1_vector1[0]),
+        int(candidate.layer1_vector1[1]),
+        int(candidate.layer1_vector2[0]),
+        int(candidate.layer1_vector2[1]),
+        int(candidate.layer2_vector1[0]),
+        int(candidate.layer2_vector1[1]),
+        int(candidate.layer2_vector2[0]),
+        int(candidate.layer2_vector2[1]),
+    )
+
+
+def _coefficient_choice_key(candidate: lat.SupercellCandidate) -> tuple[float, int, float, float, float]:
+    return (
+        float(candidate.strain_avg),
+        int(candidate.total_atoms),
+        abs(float(candidate.eps1)) + abs(float(candidate.eps2)),
+        float(candidate.vector_product),
+        float(candidate.angle_deg),
+    )
+
+
+def _output_sort_key(candidate: lat.SupercellCandidate) -> tuple[float, float, int, float, tuple[int, int, int, int, int, int, int, int]]:
+    return (
+        float(candidate.angle_deg),
+        float(candidate.strain_avg),
+        int(candidate.total_atoms),
+        float(candidate.vector_product),
+        _coefficient_signature(candidate),
+    )
+
+
+def _quantized_value(value: float, tolerance: float) -> int:
+    return int(round(float(value) / max(float(tolerance), 1e-300)))
+
+
+def _physical_precision_signature(
+    candidate: lat.SupercellCandidate,
+    *,
+    angle_tolerance: float,
+    strain_tolerance: float,
+) -> tuple[int, int, int]:
+    return (
+        _quantized_value(float(candidate.angle_deg), angle_tolerance),
+        _quantized_value(float(candidate.strain_layer1), strain_tolerance),
+        _quantized_value(float(candidate.strain_layer2), strain_tolerance),
+    )
+
+
+def _physical_precision_choice_key(candidate: lat.SupercellCandidate) -> tuple[int, float, float, float, float]:
+    return (
+        int(candidate.total_atoms),
+        float(candidate.strain_avg),
+        abs(float(candidate.eps1)) + abs(float(candidate.eps2)),
+        float(candidate.vector_product),
+        float(candidate.angle_deg),
+    )
+
+
+def finalize_candidates(
+    candidates: Sequence[lat.SupercellCandidate],
+    *,
+    dedupe_exact_coefficients: bool = True,
+    angle_tolerance: float = ANGLE_OUTPUT_TOLERANCE_DEG,
+    strain_tolerance: float = STRAIN_OUTPUT_TOLERANCE,
+) -> List[lat.SupercellCandidate]:
+    """Return final output candidates with duplicate-looking rows collapsed.
+
+    Expensive search stages dedupe before optional basis reduction. Reduction can
+    make two survivors share the exact same final integer matrices while keeping
+    different raw angle labels. Very dense searches can also produce rows that
+    differ only below useful angle/strain precision. This final pass is cheap:
+    it scans already-surviving Python candidates, keeps the most compact
+    representative per final output signature, and sorts rows by increasing
+    angle.
+    """
+
+    rows = list(candidates)
+    if dedupe_exact_coefficients:
+        best_by_signature: dict[
+            tuple[int, int, int, int, int, int, int, int],
+            tuple[tuple[float, int, float, float, float], lat.SupercellCandidate],
+        ] = {}
+        for candidate in rows:
+            signature = _coefficient_signature(candidate)
+            candidate_key = _coefficient_choice_key(candidate)
+            current = best_by_signature.get(signature)
+            if current is None or candidate_key < current[0]:
+                best_by_signature[signature] = (candidate_key, candidate)
+        rows = [candidate for _, candidate in best_by_signature.values()]
+    if rows:
+        best_by_physical_signature: dict[
+            tuple[int, int, int],
+            tuple[tuple[int, float, float, float, float], lat.SupercellCandidate],
+        ] = {}
+        for candidate in rows:
+            signature = _physical_precision_signature(
+                candidate,
+                angle_tolerance=angle_tolerance,
+                strain_tolerance=strain_tolerance,
+            )
+            candidate_key = _physical_precision_choice_key(candidate)
+            current = best_by_physical_signature.get(signature)
+            if current is None or candidate_key < current[0]:
+                best_by_physical_signature[signature] = (candidate_key, candidate)
+        rows = [candidate for _, candidate in best_by_physical_signature.values()]
+    rows.sort(key=_output_sort_key)
+    return rows
+
+
 def _search_angle_chunk(
     task: tuple,
 ) -> List[lat.SupercellCandidate]:
@@ -112,6 +226,9 @@ def _search_angle_chunk(
         frontier_only,
         unique_strain_tol,
         unique_ratio_tol,
+        max_cell_aspect_ratio,
+        min_cell_angle_deg,
+        max_cell_angle_deg,
         window,
         angle_chunk,
     ) = task
@@ -142,6 +259,9 @@ def _search_angle_chunk(
                 frontier_only=frontier_only,
                 unique_strain_tol=unique_strain_tol,
                 unique_ratio_tol=unique_ratio_tol,
+                max_cell_aspect_ratio=max_cell_aspect_ratio,
+                min_cell_angle_deg=min_cell_angle_deg,
+                max_cell_angle_deg=max_cell_angle_deg,
             )
         )
     return results
@@ -176,10 +296,15 @@ def find_supercells(
     cull_redundant: bool = True,
     reduce_basis: bool = True,
     frontier_cull: bool | None = None,
+    max_cell_aspect_ratio: float | None = 12.0,
+    min_cell_angle_deg: float | None = 25.0,
+    max_cell_angle_deg: float | None = 155.0,
 ) -> List[lat.SupercellCandidate]:
     # Enforce the physical strain ceiling: never accept a length mismatch beyond
     # MAX_PHYSICAL_MISMATCH (5%), regardless of what the caller requested.
-    if strain_tol is not None:
+    if strain_tol is None:
+        strain_tol = lat.MAX_PHYSICAL_MISMATCH
+    else:
         strain_tol = min(float(strain_tol), lat.MAX_PHYSICAL_MISMATCH)
     if vector_strain_tol is not None:
         vector_strain_tol = min(float(vector_strain_tol), lat.MAX_PHYSICAL_MISMATCH)
@@ -259,6 +384,9 @@ def find_supercells(
             frontier_only,
             float(unique_strain_tol),
             float(unique_ratio_tol),
+            max_cell_aspect_ratio,
+            min_cell_angle_deg,
+            max_cell_angle_deg,
             window,
             list(chunk),
         )
@@ -337,10 +465,20 @@ def find_supercells(
     # handful of surviving (culled) candidates are reduced here, so the cost is
     # negligible; the strain was already measured on a well-conditioned basis.
     if reduce_basis and matrix_values is None:
-        filtered = [com.reduce_candidate(candidate, lattice1_array, candidate.angle_deg) for candidate in filtered]
+        reduced_filtered: List[lat.SupercellCandidate] = []
+        for candidate in filtered:
+            reduced = com.reduce_candidate_checked(
+                candidate,
+                lattice1_array,
+                lattice2_array,
+                candidate.angle_deg,
+                max(float(candidate_tolerance), float(tol)),
+            )
+            if reduced is not None:
+                reduced_filtered.append(reduced)
+        filtered = reduced_filtered
 
-    filtered.sort(key=lambda item: (item.strain_avg, item.total_atoms, item.angle_deg, item.vector_product))
-    return filtered
+    return finalize_candidates(filtered, dedupe_exact_coefficients=bool(dedupe))
 
 
 
@@ -362,6 +500,8 @@ def candidate_to_dict(candidate: lat.SupercellCandidate, index: int | None = Non
         "vector_product": float(candidate.vector_product),
         "area1": float(candidate.area1),
         "area2": float(candidate.area2),
+        "cell_aspect_ratio": float(candidate.cell_aspect_ratio),
+        "cell_angle_deg": float(candidate.cell_angle_deg),
     }
     if index is not None:
         payload["index"] = int(index)
@@ -375,7 +515,7 @@ def format_results_table(candidates: Sequence[lat.SupercellCandidate], limit: in
 
     header = (
         " idx  angle(deg)   strain_avg    strain_1      strain_2    atoms   ratio"
-        "      i1          i2          j1          j2          eps1        eps2"
+        "      i1          i2          j1          j2       aspect   minang      eps1        eps2"
     )
     separator = "-" * len(header)
     lines = [header, separator]
@@ -383,7 +523,7 @@ def format_results_table(candidates: Sequence[lat.SupercellCandidate], limit: in
         lines.append(
             "{idx:4d}  {angle:10.4f}  {strain_avg:11.6f}  {strain1:11.6f}  {strain2:11.6f}  {atoms:7d}  "
             "{ratio1:3d}/{ratio2:<3d}  ({i11:3d},{i12:3d})  ({i21:3d},{i22:3d})  "
-            "({j11:3d},{j12:3d})  ({j21:3d},{j22:3d})  {eps1:10.2e}  {eps2:10.2e}".format(
+            "({j11:3d},{j12:3d})  ({j21:3d},{j22:3d})  {aspect:7.2f}  {minang:7.2f}  {eps1:10.2e}  {eps2:10.2e}".format(
                 idx=index,
                 angle=candidate.angle_deg,
                 strain_avg=candidate.strain_avg,
@@ -400,6 +540,8 @@ def format_results_table(candidates: Sequence[lat.SupercellCandidate], limit: in
                 j12=candidate.layer2_vector1[1],
                 j21=candidate.layer2_vector2[0],
                 j22=candidate.layer2_vector2[1],
+                aspect=candidate.cell_aspect_ratio,
+                minang=candidate.cell_angle_deg,
                 eps1=candidate.eps1,
                 eps2=candidate.eps2,
             )
@@ -424,16 +566,16 @@ def write_results_dat(
         handle.write("# units = angles in degrees; strain and mismatch values are fractions (0.01 = 1%)\n")
         handle.write("# note = strain_avg is the symmetric strain measure; strain1 and strain2 are the one-sided layer strain measures\n")
         handle.write(
-            "| idx | angle (deg) | strain_avg | strain1 | strain2 | atoms | ratio | i11 i12 | i21 i22 | j11 j12 | j21 j22 | eps1 | eps2 |\n"
+            "| idx | angle (deg) | strain_avg | strain1 | strain2 | atoms | ratio | i11 i12 | i21 i22 | j11 j12 | j21 j22 | aspect | min_angle | eps1 | eps2 |\n"
         )
-        handle.write("-" * 125 + "\n")
+        handle.write("-" * 148 + "\n")
         for index, candidate in enumerate(candidates, start=1):
             i11, i12 = candidate.layer1_vector1
             i21, i22 = candidate.layer1_vector2
             j11, j12 = candidate.layer2_vector1
             j21, j22 = candidate.layer2_vector2
             handle.write(
-                "|{idx:4d} | {angle:10.4f} | {strain_avg:10.6f} | {strain1:7.6f} | {strain2:7.6f} | {atoms:5d} | {ratio1:3d}/{ratio2:<3d} | {i11:4d} {i12:4d} | {i21:4d} {i22:4d} | {j11:4d} {j12:4d} | {j21:4d} {j22:4d} | {eps1:8.2e} | {eps2:8.2e} |\n".format(
+                "|{idx:4d} | {angle:10.4f} | {strain_avg:10.6f} | {strain1:7.6f} | {strain2:7.6f} | {atoms:5d} | {ratio1:3d}/{ratio2:<3d} | {i11:4d} {i12:4d} | {i21:4d} {i22:4d} | {j11:4d} {j12:4d} | {j21:4d} {j22:4d} | {aspect:6.2f} | {minang:9.3f} | {eps1:8.2e} | {eps2:8.2e} |\n".format(
                     idx=index,
                     angle=candidate.angle_deg,
                     strain_avg=candidate.strain_avg,
@@ -450,6 +592,8 @@ def write_results_dat(
                     j12=j12,
                     j21=j21,
                     j22=j22,
+                    aspect=candidate.cell_aspect_ratio,
+                    minang=candidate.cell_angle_deg,
                     eps1=candidate.eps1,
                     eps2=candidate.eps2,
                 )

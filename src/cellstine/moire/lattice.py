@@ -61,6 +61,8 @@ class SupercellCandidate:
     vector_product: float
     area1: float
     area2: float
+    cell_aspect_ratio: float = 1.0
+    cell_angle_deg: float = 90.0
 
 
 def rotate_vector(vector: Sequence[float], theta_rad: float) -> np.ndarray:
@@ -136,6 +138,18 @@ def calculate_strain_batch(layer1_vectors: np.ndarray, layer2_vectors: np.ndarra
     # squared Frobenius norm.  This replaces the per-cell complex eigensolve with
     # a single reduction over the last two axes (~2x faster, more accurate).
     return np.sqrt(np.sum(strain_tensor * strain_tensor, axis=(1, 2))) / 3.0
+
+
+def basis_shape_metrics(vector1: np.ndarray, vector2: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Return aspect ratio and actual included angle for 2D basis-vector arrays."""
+    vec1 = np.asarray(vector1, dtype=float)
+    vec2 = np.asarray(vector2, dtype=float)
+    norm1 = np.linalg.norm(vec1, axis=1)
+    norm2 = np.linalg.norm(vec2, axis=1)
+    aspect = np.maximum(norm1, norm2) / np.maximum(np.minimum(norm1, norm2), 1e-12)
+    cosine = np.sum(vec1 * vec2, axis=1) / np.maximum(norm1 * norm2, 1e-12)
+    angle = np.degrees(np.arccos(np.clip(cosine, -1.0, 1.0)))
+    return aspect, angle
 
 
 def enumerate_integer_coefficients(nindex: int) -> np.ndarray:
@@ -662,6 +676,9 @@ def build_supercell_candidates(
     frontier_only: bool = False,
     unique_strain_tol: float = 1e-4,
     unique_ratio_tol: float = 1e-5,
+    max_cell_aspect_ratio: float | None = 12.0,
+    min_cell_angle_deg: float | None = 25.0,
+    max_cell_angle_deg: float | None = 155.0,
 ) -> List[SupercellCandidate]:
     base_area1 = unit_area(rotated_lattice1[0, :2], rotated_lattice1[1, :2])
     base_area2 = unit_area(lattice2[0, :2], lattice2[1, :2])
@@ -741,6 +758,29 @@ def build_supercell_candidates(
     norm_g1 = np.linalg.norm(g1, axis=1)
     norm_g2 = np.linalg.norm(g2, axis=1)
 
+    aspect1 = np.maximum(norm_v1, norm_v2) / np.maximum(np.minimum(norm_v1, norm_v2), 1e-12)
+    aspect2 = np.maximum(norm_g1, norm_g2) / np.maximum(np.minimum(norm_g1, norm_g2), 1e-12)
+    cell_aspect_ratio = np.maximum(aspect1, aspect2)
+    angle1 = np.degrees(
+        np.arccos(
+            np.clip(
+                np.sum(v1 * v2, axis=1) / np.maximum(norm_v1 * norm_v2, 1e-12),
+                -1.0,
+                1.0,
+            )
+        )
+    )
+    angle2 = np.degrees(
+        np.arccos(
+            np.clip(
+                np.sum(g1 * g2, axis=1) / np.maximum(norm_g1 * norm_g2, 1e-12),
+                -1.0,
+                1.0,
+            )
+        )
+    )
+    cell_angle_deg = np.minimum.reduce((angle1, 180.0 - angle1, angle2, 180.0 - angle2))
+
     strain1 = np.zeros_like(norm_v1)
     nonzero_layer1 = (norm_v1 > 0.0) & (norm_v2 > 0.0)
     strain1[nonzero_layer1] = np.sqrt(
@@ -764,10 +804,13 @@ def build_supercell_candidates(
     vector_product = norm_v1 * norm_v2
 
     def _apply_keep(keep: np.ndarray) -> None:
+        nonlocal first_indices, second_indices
         nonlocal c1v1, c1v2, c2v1, c2v2
         nonlocal ratio1, ratio2, strain1, strain2
         nonlocal strain_avg, total_atoms, vector_product, eps1, eps2
         nonlocal area1_signed, area2_signed
+        nonlocal cell_aspect_ratio, cell_angle_deg, angle1, angle2
+        first_indices = first_indices[keep]; second_indices = second_indices[keep]
         c1v1 = c1v1[keep]; c1v2 = c1v2[keep]
         c2v1 = c2v1[keep]; c2v2 = c2v2[keep]
         ratio1 = ratio1[keep]; ratio2 = ratio2[keep]
@@ -776,6 +819,31 @@ def build_supercell_candidates(
         vector_product = vector_product[keep]
         eps1 = eps1[keep]; eps2 = eps2[keep]
         area1_signed = area1_signed[keep]; area2_signed = area2_signed[keep]
+        cell_aspect_ratio = cell_aspect_ratio[keep]; cell_angle_deg = cell_angle_deg[keep]
+        angle1 = angle1[keep]; angle2 = angle2[keep]
+
+    # A twist is a proper rotation, not a mirror operation.  Opposite signed
+    # areas are long-vector alias/reflection artifacts; with abs(area) they can
+    # masquerade as impossible primitive cells at nonzero twist.
+    orientation_preserving = area1_signed * area2_signed > 0.0
+    if not np.all(orientation_preserving):
+        _apply_keep(np.nonzero(orientation_preserving)[0])
+        if c1v1.shape[0] == 0:
+            return []
+
+    shape_keep = np.ones(c1v1.shape[0], dtype=bool)
+    if max_cell_aspect_ratio is not None and float(max_cell_aspect_ratio) > 0.0:
+        shape_keep &= cell_aspect_ratio <= float(max_cell_aspect_ratio)
+    if min_cell_angle_deg is not None and float(min_cell_angle_deg) > 0.0:
+        min_angle = float(min_cell_angle_deg)
+        shape_keep &= (angle1 >= min_angle) & (angle2 >= min_angle)
+    if max_cell_angle_deg is not None and float(max_cell_angle_deg) > 0.0:
+        max_angle = float(max_cell_angle_deg)
+        shape_keep &= (angle1 <= max_angle) & (angle2 <= max_angle)
+    if not np.all(shape_keep):
+        _apply_keep(np.nonzero(shape_keep)[0])
+        if c1v1.shape[0] == 0:
+            return []
 
     if frontier_only and c1v1.shape[0] >= 1:
         # Drop unphysical garbage-strain cells (ill-conditioned sliver bases) so
@@ -834,6 +902,8 @@ def build_supercell_candidates(
             vector_product=float(vector_product[index]),
             area1=float(abs(area1_signed[index])),
             area2=float(abs(area2_signed[index])),
+            cell_aspect_ratio=float(cell_aspect_ratio[index]),
+            cell_angle_deg=float(cell_angle_deg[index]),
         )
         for index in range(c1v1.shape[0])
     ]

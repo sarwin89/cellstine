@@ -166,7 +166,7 @@ def repeat_structure_along_c(structure: PoscarData, repeats: int) -> PoscarData:
 
 
 def parse_poscar(path: str) -> Tuple[np.ndarray, np.ndarray, List[int], List[str]]:
-    """Backward-compatible POSCAR parser used by older tests and scripts."""
+    """Read a POSCAR-style structure into the native data model."""
 
     data = read_poscar(path)
     return data.lattice, data.positions_cartesian, data.counts, data.species

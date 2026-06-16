@@ -1,6 +1,7 @@
 import shutil
 import sys
 import unittest
+from dataclasses import replace
 from importlib.util import find_spec
 from io import StringIO
 from pathlib import Path
@@ -467,6 +468,177 @@ class MoireToolkitTests(unittest.TestCase):
         )
         self.assertEqual(impossible, [])
 
+    def test_final_candidates_are_angle_sorted_and_exact_coefficients_are_unique(self):
+        base = lattice.SupercellCandidate(
+            angle_deg=21.0,
+            strain_avg=0.002,
+            strain_layer1=0.002,
+            strain_layer2=0.002,
+            ratio1=1,
+            ratio2=1,
+            total_atoms=24,
+            layer1_vector1=(1, 0),
+            layer1_vector2=(0, 1),
+            layer2_vector1=(1, 0),
+            layer2_vector2=(0, 1),
+            eps1=2e-3,
+            eps2=2e-3,
+            vector_product=1.0,
+            area1=1.0,
+            area2=1.0,
+        )
+        duplicate_worse_angle = replace(base, angle_deg=24.0, strain_avg=0.003, eps1=3e-3, eps2=3e-3)
+        earlier_distinct = replace(
+            base,
+            angle_deg=6.0,
+            layer1_vector1=(2, 0),
+            layer1_vector2=(0, 2),
+            layer2_vector1=(2, 0),
+            layer2_vector2=(0, 2),
+            total_atoms=96,
+        )
+
+        final = finder.finalize_candidates([base, duplicate_worse_angle, earlier_distinct])
+        self.assertEqual([candidate.angle_deg for candidate in final], [6.0, 21.0])
+        self.assertEqual(
+            {
+                (
+                    candidate.layer1_vector1,
+                    candidate.layer1_vector2,
+                    candidate.layer2_vector1,
+                    candidate.layer2_vector2,
+                )
+                for candidate in final
+            },
+            {
+                ((1, 0), (0, 1), (1, 0), (0, 1)),
+                ((2, 0), (0, 2), (2, 0), (0, 2)),
+            },
+        )
+
+    def test_final_candidates_collapse_precision_equivalent_rows(self):
+        large = lattice.SupercellCandidate(
+            angle_deg=3.14972,
+            strain_avg=0.0008,
+            strain_layer1=0.001662,
+            strain_layer2=0.001665,
+            ratio1=301,
+            ratio2=300,
+            total_atoms=1803,
+            layer1_vector1=(11, 20),
+            layer1_vector2=(20, 9),
+            layer2_vector1=(20, 10),
+            layer2_vector2=(10, -10),
+            eps1=1e-4,
+            eps2=1e-4,
+            vector_product=200.0,
+            area1=301.0,
+            area2=300.0,
+        )
+        compact = replace(
+            large,
+            angle_deg=3.14974,
+            strain_avg=0.0009,
+            ratio1=290,
+            ratio2=290,
+            total_atoms=1740,
+            layer1_vector1=(9, -10),
+            layer1_vector2=(20, 10),
+            layer2_vector1=(-10, 9),
+            layer2_vector2=(-20, -11),
+            vector_product=180.0,
+        )
+
+        final = finder.finalize_candidates([large, compact])
+        self.assertEqual(len(final), 1)
+        self.assertEqual(final[0].total_atoms, 1740)
+
+    def test_finder_does_not_reduce_sliver_artifacts_to_fake_primitive_cells(self):
+        suspicious_candidates = finder.find_supercells(
+            self.mos2.lattice,
+            self.mos2.lattice,
+            None,
+            None,
+            angles=[2.2811, 2.5429],
+            nindex=15,
+            tol=2e-3,
+            lin_tol=2e-3,
+            vector_strain_tol=2e-3,
+            atom_count1=self.mos2.natoms,
+            atom_count2=self.mos2.natoms,
+            max_atoms=2000,
+        )
+        for candidate in suspicious_candidates:
+            self.assertFalse(
+                candidate.ratio1 == 1
+                and candidate.ratio2 == 1
+                and abs(candidate.angle_deg) > 1e-6
+                and candidate.strain_avg < 1e-6
+            )
+
+        valid_candidates = finder.find_supercells(
+            self.mos2.lattice,
+            self.mos2.lattice,
+            None,
+            None,
+            angles=[7.3410],
+            nindex=10,
+            tol=2e-3,
+            lin_tol=2e-3,
+            vector_strain_tol=2e-3,
+            atom_count1=self.mos2.natoms,
+            atom_count2=self.mos2.natoms,
+            max_atoms=2000,
+        )
+        self.assertTrue(valid_candidates)
+        for candidate in valid_candidates:
+            bottom_det = (
+                candidate.layer2_vector1[0] * candidate.layer2_vector2[1]
+                - candidate.layer2_vector1[1] * candidate.layer2_vector2[0]
+            )
+            top_det = (
+                candidate.layer1_vector1[0] * candidate.layer1_vector2[1]
+                - candidate.layer1_vector1[1] * candidate.layer1_vector2[0]
+            )
+            self.assertGreater(bottom_det * top_det, 0)
+
+    def test_finder_filters_near_collinear_sliver_cells_by_default(self):
+        filtered = finder.find_supercells(
+            self.mos2.lattice,
+            self.mos2.lattice,
+            None,
+            None,
+            angles=[1.6963],
+            nindex=20,
+            tol=2e-3,
+            lin_tol=2e-3,
+            vector_strain_tol=2e-3,
+            atom_count1=self.mos2.natoms,
+            atom_count2=self.mos2.natoms,
+            max_atoms=2000,
+        )
+        self.assertEqual(filtered, [])
+
+        exhaustive = finder.find_supercells(
+            self.mos2.lattice,
+            self.mos2.lattice,
+            None,
+            None,
+            angles=[1.6963],
+            nindex=20,
+            tol=2e-3,
+            lin_tol=2e-3,
+            vector_strain_tol=2e-3,
+            atom_count1=self.mos2.natoms,
+            atom_count2=self.mos2.natoms,
+            max_atoms=2000,
+            max_cell_aspect_ratio=None,
+            min_cell_angle_deg=None,
+            max_cell_angle_deg=None,
+        )
+        self.assertTrue(exhaustive)
+        self.assertLess(min(candidate.cell_angle_deg for candidate in exhaustive), 25.0)
+
     def test_canonicalized_degenerate_search_matches_full_dedup(self):
         full_candidates = finder.find_supercells(
             self.mos2.lattice,
@@ -544,6 +716,85 @@ class MoireToolkitTests(unittest.TestCase):
             self.assertEqual(generated.natoms, 171)
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
+
+    def test_findn_final_candidates_are_angle_sorted_and_unique_by_matrices(self):
+        layer_a = findn.UpperLayerCandidate(
+            layer_index=1,
+            angle_deg=20.0,
+            strain=0.002,
+            ratio_upper=1,
+            vector1=(1, 0),
+            vector2=(0, 1),
+        )
+        layer_a_worse_angle = replace(layer_a, angle_deg=24.0, strain=0.003)
+        layer_b = findn.UpperLayerCandidate(
+            layer_index=1,
+            angle_deg=5.0,
+            strain=0.001,
+            ratio_upper=2,
+            vector1=(2, 0),
+            vector2=(0, 2),
+        )
+        base = findn.NLayerCandidate(
+            strain_max=0.002,
+            strain_mean=0.002,
+            ratio_bottom=1,
+            total_atoms=20,
+            bottom_vector1=(1, 0),
+            bottom_vector2=(0, 1),
+            upper_layers=(layer_a,),
+        )
+        duplicate = replace(base, strain_max=0.003, strain_mean=0.003, upper_layers=(layer_a_worse_angle,))
+        earlier = findn.NLayerCandidate(
+            strain_max=0.001,
+            strain_mean=0.001,
+            ratio_bottom=1,
+            total_atoms=40,
+            bottom_vector1=(1, 0),
+            bottom_vector2=(0, 1),
+            upper_layers=(layer_b,),
+        )
+
+        final = findn.finalize_nlayer_candidates([base, duplicate, earlier])
+        self.assertEqual([[layer.angle_deg for layer in candidate.upper_layers] for candidate in final], [[5.0], [20.0]])
+
+    def test_findn_final_candidates_collapse_precision_equivalent_rows(self):
+        large_layer = findn.UpperLayerCandidate(
+            layer_index=1,
+            angle_deg=3.14972,
+            strain=0.001662,
+            ratio_upper=301,
+            vector1=(11, 20),
+            vector2=(20, 9),
+        )
+        compact_layer = replace(
+            large_layer,
+            angle_deg=3.14974,
+            ratio_upper=290,
+            vector1=(9, -10),
+            vector2=(20, 10),
+        )
+        large = findn.NLayerCandidate(
+            strain_max=0.001662,
+            strain_mean=0.001662,
+            ratio_bottom=300,
+            total_atoms=1803,
+            bottom_vector1=(20, 10),
+            bottom_vector2=(10, -10),
+            upper_layers=(large_layer,),
+        )
+        compact = replace(
+            large,
+            ratio_bottom=290,
+            total_atoms=1740,
+            bottom_vector1=(-10, 9),
+            bottom_vector2=(-20, -11),
+            upper_layers=(compact_layer,),
+        )
+
+        final = findn.finalize_nlayer_candidates([large, compact])
+        self.assertEqual(len(final), 1)
+        self.assertEqual(final[0].total_atoms, 1740)
 
     def test_supermoire_wrapper_supports_base_independent_and_pairwise_modes(self):
         temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
@@ -785,15 +1036,15 @@ class MoireToolkitTests(unittest.TestCase):
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 
-    def test_candidate_preview_sorts_by_lowest_strain_and_uses_percent_units(self):
+    def test_candidate_preview_sorts_by_angle_and_uses_percent_units(self):
         preview = format_bilayer_candidates(
             [
                 {
                     "idx": 7,
                     "angle": 12.0,
-                    "strain_avg": 0.02,
-                    "strain1": 0.02,
-                    "strain2": 0.02,
+                    "strain_avg": 0.001,
+                    "strain1": 0.001,
+                    "strain2": 0.001,
                     "atoms": 80,
                     "ratio1": 1,
                     "ratio2": 1,
@@ -809,9 +1060,9 @@ class MoireToolkitTests(unittest.TestCase):
                 {
                     "idx": 3,
                     "angle": 6.0,
-                    "strain_avg": 0.001,
-                    "strain1": 0.001,
-                    "strain2": 0.001,
+                    "strain_avg": 0.02,
+                    "strain1": 0.02,
+                    "strain2": 0.02,
                     "atoms": 40,
                     "ratio1": 1,
                     "ratio2": 1,

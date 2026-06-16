@@ -16,6 +16,9 @@ from . import find as find_stage
 from . import finder as finder_backend
 from . import lattice as lat
 
+ANGLE_OUTPUT_TOLERANCE_DEG = 5e-4
+STRAIN_OUTPUT_TOLERANCE = 1e-4
+
 
 @dataclass(frozen=True)
 class UpperLayerCandidate:
@@ -76,11 +79,127 @@ def _bottom_matrix_key(candidate: lat.SupercellCandidate) -> tuple[int, int, int
     )
 
 
+def _upper_matrix_key(candidate: lat.SupercellCandidate) -> tuple[int, int, int, int]:
+    return (
+        int(candidate.layer1_vector1[0]),
+        int(candidate.layer1_vector1[1]),
+        int(candidate.layer1_vector2[0]),
+        int(candidate.layer1_vector2[1]),
+    )
+
+
+def _pair_choice_key(candidate: lat.SupercellCandidate) -> tuple[float, int, float, float, float]:
+    return (
+        float(candidate.strain_avg),
+        int(candidate.total_atoms),
+        abs(float(candidate.eps1)) + abs(float(candidate.eps2)),
+        float(candidate.vector_product),
+        float(candidate.angle_deg),
+    )
+
+
 def _group_by_bottom_matrix(candidates: Sequence[lat.SupercellCandidate]) -> dict[tuple[int, int, int, int], list[lat.SupercellCandidate]]:
-    grouped: dict[tuple[int, int, int, int], list[lat.SupercellCandidate]] = {}
+    grouped_best: dict[tuple[int, int, int, int], dict[tuple[int, int, int, int], tuple[tuple[float, int, float, float, float], lat.SupercellCandidate]]] = {}
     for candidate in candidates:
-        grouped.setdefault(_bottom_matrix_key(candidate), []).append(candidate)
-    return grouped
+        bottom_key = _bottom_matrix_key(candidate)
+        upper_key = _upper_matrix_key(candidate)
+        candidate_key = _pair_choice_key(candidate)
+        current = grouped_best.setdefault(bottom_key, {}).get(upper_key)
+        if current is None or candidate_key < current[0]:
+            grouped_best[bottom_key][upper_key] = (candidate_key, candidate)
+    return {
+        bottom_key: sorted(
+            (candidate for _, candidate in best_by_upper.values()),
+            key=lambda item: (float(item.angle_deg), float(item.strain_avg), int(item.total_atoms), _upper_matrix_key(item)),
+        )
+        for bottom_key, best_by_upper in grouped_best.items()
+    }
+
+
+def _nlayer_signature(candidate: NLayerCandidate) -> tuple[
+    tuple[int, int, int, int],
+    tuple[tuple[int, int, int, int], ...],
+]:
+    return (
+        (
+            int(candidate.bottom_vector1[0]),
+            int(candidate.bottom_vector1[1]),
+            int(candidate.bottom_vector2[0]),
+            int(candidate.bottom_vector2[1]),
+        ),
+        tuple(
+            (
+                int(layer.vector1[0]),
+                int(layer.vector1[1]),
+                int(layer.vector2[0]),
+                int(layer.vector2[1]),
+            )
+            for layer in candidate.upper_layers
+        ),
+    )
+
+
+def _nlayer_angle_key(candidate: NLayerCandidate) -> tuple[float, ...]:
+    return tuple(float(layer.angle_deg) for layer in candidate.upper_layers)
+
+
+def _quantized_value(value: float, tolerance: float) -> int:
+    return int(round(float(value) / max(float(tolerance), 1e-300)))
+
+
+def _nlayer_precision_signature(candidate: NLayerCandidate) -> tuple[tuple[int, int], ...]:
+    return tuple(
+        (
+            _quantized_value(float(layer.angle_deg), ANGLE_OUTPUT_TOLERANCE_DEG),
+            _quantized_value(float(layer.strain), STRAIN_OUTPUT_TOLERANCE),
+        )
+        for layer in candidate.upper_layers
+    )
+
+
+def finalize_nlayer_candidates(candidates: Sequence[NLayerCandidate]) -> List[NLayerCandidate]:
+    best_by_signature: dict[
+        tuple[tuple[int, int, int, int], tuple[tuple[int, int, int, int], ...]],
+        tuple[tuple[float, float, int, tuple[float, ...]], NLayerCandidate],
+    ] = {}
+    for candidate in candidates:
+        signature = _nlayer_signature(candidate)
+        candidate_key = (
+            float(candidate.strain_max),
+            float(candidate.strain_mean),
+            int(candidate.total_atoms),
+            _nlayer_angle_key(candidate),
+        )
+        current = best_by_signature.get(signature)
+        if current is None or candidate_key < current[0]:
+            best_by_signature[signature] = (candidate_key, candidate)
+    rows = [candidate for _, candidate in best_by_signature.values()]
+    best_by_precision: dict[
+        tuple[tuple[int, int], ...],
+        tuple[tuple[int, float, float, tuple[float, ...]], NLayerCandidate],
+    ] = {}
+    for candidate in rows:
+        signature = _nlayer_precision_signature(candidate)
+        candidate_key = (
+            int(candidate.total_atoms),
+            float(candidate.strain_max),
+            float(candidate.strain_mean),
+            _nlayer_angle_key(candidate),
+        )
+        current = best_by_precision.get(signature)
+        if current is None or candidate_key < current[0]:
+            best_by_precision[signature] = (candidate_key, candidate)
+    rows = [candidate for _, candidate in best_by_precision.values()]
+    rows.sort(
+        key=lambda item: (
+            _nlayer_angle_key(item),
+            float(item.strain_max),
+            float(item.strain_mean),
+            int(item.total_atoms),
+            _nlayer_signature(item),
+        )
+    )
+    return rows
 
 
 def _join_pair_candidate_sets(
@@ -155,8 +274,7 @@ def _join_pair_candidate_sets(
                     upper_layers=upper_layers,
                 )
             )
-    joined.sort(key=lambda item: (item.strain_max, item.strain_mean, item.total_atoms, tuple(layer.angle_deg for layer in item.upper_layers)))
-    return joined
+    return finalize_nlayer_candidates(joined)
 
 
 def candidate_to_dict(candidate: NLayerCandidate, index: int | None = None) -> Dict[str, object]:
@@ -238,6 +356,9 @@ def run_findn(
     workers: int = 1,
     fold_symmetry: bool = False,
     max_search_angles: int | None = None,
+    max_cell_aspect_ratio: float | None = 12.0,
+    min_cell_angle_deg: float | None = 25.0,
+    max_cell_angle_deg: float | None = 155.0,
 ) -> FindNRun:
     if len(upper_poscars) != len(upper_lattices) or len(upper_poscars) != len(upper_atoms):
         raise ValueError("upper layer paths, lattices, and atom counts must have the same length")
@@ -306,6 +427,9 @@ def run_findn(
             max_pair_matches=200,
             cull_redundant=False,
             reduce_basis=False,
+            max_cell_aspect_ratio=max_cell_aspect_ratio,
+            min_cell_angle_deg=min_cell_angle_deg,
+            max_cell_angle_deg=max_cell_angle_deg,
         )
 
         shortlisted_angles_by_layer.append(list(shortlist))
@@ -358,9 +482,14 @@ def run_findn(
         "candidate_tolerance": float(candidate_tolerance if candidate_tolerance is not None else vector_tolerance),
         "pair_strain_tolerance": "" if pair_strain_tolerance is None else float(pair_strain_tolerance),
         "max_atoms": "" if max_atoms is None else int(max_atoms),
+        "max_cell_aspect_ratio": "" if max_cell_aspect_ratio is None else float(max_cell_aspect_ratio),
+        "min_cell_angle_deg": "" if min_cell_angle_deg is None else float(min_cell_angle_deg),
+        "max_cell_angle_deg": "" if max_cell_angle_deg is None else float(max_cell_angle_deg),
         "dedupe": bool(dedupe),
         "unique_strain_tolerance": float(unique_strain_tolerance),
         "unique_ratio_tolerance": float(unique_ratio_tolerance),
+        "output_angle_tolerance_deg": float(ANGLE_OUTPUT_TOLERANCE_DEG),
+        "output_strain_tolerance": float(STRAIN_OUTPUT_TOLERANCE),
         "layers": search_windows,
     }
 

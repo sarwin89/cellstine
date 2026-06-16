@@ -368,9 +368,11 @@ def _build_moire_find() -> list[str]:
         argv.extend(["--max-angle", str(_prompt_float("Maximum angle in degrees", 30.0))])
     if _prompt_yes_no("Do you want to search with more than one worker?", False):
         argv.extend(["--workers", str(_prompt_int("Worker count", 4))])
+    if _prompt_yes_no("Keep very thin/sliver mathematical cells in the results?", False):
+        argv.append("--allow-slivers")
     argv.extend(_prompt_prestrain("top", "prestrain-top"))
     argv.extend(_prompt_prestrain("bottom", "prestrain-bottom"))
-    preview_limit = _prompt_int_range("How many lowest-strain candidates should be shown after the search? (0 hides the preview)", 10, 0, 50)
+    preview_limit = _prompt_int_range("How many angle-sorted candidates should be shown after the search? (0 hides the preview)", 10, 0, 50)
     argv.extend(["--preview-limit", str(preview_limit)])
     return argv
 
@@ -417,6 +419,8 @@ def _build_moire_findn() -> list[str]:
         argv.extend(["--min-angles", ",".join(min_values), "--max-angles", ",".join(max_values)])
     if _prompt_yes_no("Do you want to search with more than one worker?", False):
         argv.extend(["--workers", str(_prompt_int("Worker count", 4))])
+    if _prompt_yes_no("Keep very thin/sliver mathematical cells in the results?", False):
+        argv.append("--allow-slivers")
     if _prompt_yes_no("Do you want to repeat any structures along c before matching?", False):
         argv.extend(["--bottom-c-repeat", str(_prompt_int("Bottom c repeat", 1))])
         repeats = []
@@ -456,7 +460,7 @@ def _build_moire_findn() -> list[str]:
                 else:
                     axes.append("a")
         argv.extend(["--prestrain-modes", ",".join(modes), "--prestrain-values", ",".join(values), "--prestrain-axes", ",".join(axes)])
-    preview_limit = _prompt_int_range("How many lowest-strain candidates should be shown after the search? (0 hides the preview)", 10, 0, 50)
+    preview_limit = _prompt_int_range("How many angle-sorted candidates should be shown after the search? (0 hides the preview)", 10, 0, 50)
     argv.extend(["--preview-limit", str(preview_limit)])
     return argv
 

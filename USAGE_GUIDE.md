@@ -170,6 +170,8 @@ cellstine moire find input/top.vasp input/bottom.vasp --nindex 18 --workers 4
 - `0.01 = 1%`
 - `0.05 = 5%`
 - `--top-c-repeat` and `--bottom-c-repeat` are integer repeat counts
+- by default, `moire find` filters very thin/sliver cells using `--max-cell-aspect-ratio 12`, `--min-cell-angle 25`, and `--max-cell-angle 155`
+- use `--allow-slivers` for exhaustive mathematical output, including near-collinear cells that are usually poor choices for DFT
 
 ### 5.3 Matrix-Value Finder Mode
 

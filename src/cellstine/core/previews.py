@@ -37,10 +37,16 @@ def _percent(value: Any) -> float:
 
 
 def format_bilayer_candidates(candidates: Sequence[Any], *, limit: int = 10, title: str | None = None) -> str:
-    """Return a compact table of the lowest-strain bilayer candidates."""
+    """Return a compact table of bilayer candidates in increasing angle order."""
 
     rows = list(candidates)
-    rows.sort(key=lambda item: (float(_get(item, "strain_avg", default=0.0)), int(_get(item, "total_atoms", "atoms", default=0))))
+    rows.sort(
+        key=lambda item: (
+            float(_get(item, "angle_deg", "angle", default=0.0)),
+            float(_get(item, "strain_avg", default=0.0)),
+            int(_get(item, "total_atoms", "atoms", default=0)),
+        )
+    )
     shown = rows[: max(0, int(limit))]
     if not shown:
         return "No bilayer candidates found."
@@ -50,8 +56,8 @@ def format_bilayer_candidates(candidates: Sequence[Any], *, limit: int = 10, tit
         lines.append(str(title))
     lines.extend(
         [
-            " idx  angle(deg)  strain_avg(%)  strain_1(%)  strain_2(%)   atoms  ratio   bottom matrix      top matrix",
-            "-" * 104,
+            " idx  angle(deg)  strain_avg(%)  strain_1(%)  strain_2(%)   atoms  ratio   aspect  minang  bottom matrix      top matrix",
+            "-" * 122,
         ]
     )
     for fallback_index, candidate in enumerate(shown, start=1):
@@ -60,11 +66,14 @@ def format_bilayer_candidates(candidates: Sequence[Any], *, limit: int = 10, tit
         ratio1 = int(_get(candidate, "ratio1", default=0))
         ratio2 = int(_get(candidate, "ratio2", default=0))
         atoms = int(_get(candidate, "total_atoms", "atoms", default=0))
+        aspect = float(_get(candidate, "cell_aspect_ratio", "aspect", default=0.0) or 0.0)
+        min_angle = float(_get(candidate, "cell_angle_deg", "min_angle", default=0.0) or 0.0)
         lines.append(
             f"{idx:4d}  {angle:10.4f}  {_percent(_get(candidate, 'strain_avg')):13.4f}  "
             f"{_percent(_get(candidate, 'strain_layer1', 'strain1')):11.4f}  "
             f"{_percent(_get(candidate, 'strain_layer2', 'strain2')):11.4f}  "
-            f"{atoms:6d}  {ratio1:3d}/{ratio2:<3d}  {_matrix(candidate, 'i'):<17s}  {_matrix(candidate, 'j')}"
+            f"{atoms:6d}  {ratio1:3d}/{ratio2:<3d}  {aspect:7.2f}  {min_angle:6.1f}  "
+            f"{_matrix(candidate, 'i'):<17s}  {_matrix(candidate, 'j')}"
         )
     if len(rows) > len(shown):
         lines.append(f"... {len(rows) - len(shown)} more candidate(s) not shown.")
@@ -72,11 +81,12 @@ def format_bilayer_candidates(candidates: Sequence[Any], *, limit: int = 10, tit
 
 
 def format_nlayer_candidates(candidates: Sequence[Any], *, limit: int = 10, title: str | None = None) -> str:
-    """Return a compact table of the lowest-strain N-layer candidates."""
+    """Return a compact table of N-layer candidates in increasing angle order."""
 
     rows = list(candidates)
     rows.sort(
         key=lambda item: (
+            tuple(float(_get(layer, "angle_deg", default=0.0)) for layer in list(_get(item, "upper_layers", default=[]))),
             float(_get(item, "strain_max", default=0.0)),
             float(_get(item, "strain_mean", default=0.0)),
             int(_get(item, "total_atoms", default=0)),
@@ -148,6 +158,8 @@ def _parse_dat_candidates(path: Path) -> list[dict[str, Any]]:
                     "j12": j12,
                     "j21": j21,
                     "j22": j22,
+                    "aspect": float(parts[11]) if len(parts) > 13 else 0.0,
+                    "min_angle": float(parts[12]) if len(parts) > 13 else 0.0,
                 }
             )
     return rows
