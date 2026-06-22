@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .molecule import Molecule
+from ..molecule import Molecule
 
 
 def move(**kwargs):

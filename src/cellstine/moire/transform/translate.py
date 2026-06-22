@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .moire import Moire
+from ..moire import Moire
 
 
 def translate(**kwargs):

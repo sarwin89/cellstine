@@ -9,11 +9,11 @@ from ..core.base import Base, run_output_suffix
 from ..core.lattice import build_target_lattice
 from ..core.models import CommandResult
 from ..core.previews import format_bilayer_candidates
-from ..interface.surface import Surface
+from ..interface.surface.surface import Surface
 from ..io.converters import StructureConverter
 from ..io.vasp import VaspIO
-from ..moire.find import run_find
-from .operations import place_molecule_on_site, transform_top_molecule
+from ..moire.search.find import run_find
+from .placement.operations import place_molecule_on_site, transform_top_molecule
 
 
 def _safe_token(value: object) -> str:

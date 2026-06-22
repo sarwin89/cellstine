@@ -281,7 +281,7 @@ def parse_args() -> argparse.Namespace:
             "  length_tolerance is in angstrom\n"
             "  strain_tolerance is a fraction (0.01 = 1 percent)\n\n"
             "Example:\n"
-            "  python -m moire.angles input/a.vasp input/b.vasp 12 --strain_tolerance 0.002\n"
+            "  python -m cellstine.moire.search.angles input/a.vasp input/b.vasp 12 --strain_tolerance 0.002\n"
         ),
         formatter_class=_HelpFormatter,
     )
@@ -299,7 +299,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    from ..io import native as io_mod
+    from ...io import native as io_mod
 
     structure1 = io_mod.read_poscar(args.pos1)
     structure2 = io_mod.read_poscar(args.pos2)

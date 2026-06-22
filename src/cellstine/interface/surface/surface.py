@@ -7,12 +7,12 @@ from typing import Sequence
 
 import numpy as np
 
-from ..core.base import run_output_suffix
-from ..core.models import CommandResult
-from ..core.previews import format_site_report
-from ..io.converters import StructureConverter
-from .interface import Interface, parse_miller_notation
-from . import surface_backend
+from ...core.base import run_output_suffix
+from ...core.models import CommandResult
+from ...core.previews import format_site_report
+from ...io.converters import StructureConverter
+from ..workflow.interface import Interface, parse_miller_notation
+from . import backend as surface_backend
 
 
 def _safe_token(value: object) -> str:

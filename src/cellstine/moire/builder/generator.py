@@ -8,9 +8,9 @@ from typing import Dict, List, Sequence, Tuple
 
 import numpy as np
 
-from . import lattice as lat
-from ..io import native as io_mod
-from .structure_helpers import expand_species
+from ...io import native as io_mod
+from ..search import lattice as lat
+from ..structure_helpers import expand_species
 
 
 def record_from_candidate_dict(candidate: Dict[str, object], index: int | None = None) -> Dict[str, object]:

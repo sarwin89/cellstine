@@ -9,7 +9,7 @@ from typing import Sequence
 
 import numpy as np
 
-from ..io.models import StructureRecord
+from ...io.models import StructureRecord
 
 
 @dataclass(frozen=True)

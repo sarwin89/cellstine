@@ -14,21 +14,23 @@ sys.path.insert(0, str((Path(__file__).resolve().parents[1] / "src")))
 
 import cellstine
 import moire_cli
-from cellstine.cli import interactive as interactive_cli
 from cellstine.cli import main as cli_main
+from cellstine.cli.interactive import runner as interactive_cli
 from cellstine.core.previews import format_adsorption_sites, format_bilayer_candidates
-from cellstine.defect.defect import Defect as DefectWorkflow
+from cellstine.defect.workflow import Defect as DefectWorkflow
 from cellstine.io import native as io
-from cellstine.moire import finder as cell_finder
-from cellstine.moire import generator as cell_generator
-from cellstine.moire import angles, find, finder, findn, generator, lattice, make, maken
 from cellstine.adsorbate import molecule
 from cellstine.adsorbate.molecule import Molecule as MoleculeWorkflow
-from cellstine.interface import surface_backend as surface
-from cellstine.interface.surface import Surface as InterfaceSurface, _stacking_sequence
-from cellstine.interface.interface import Interface as InterfaceWorkflow, parse_miller_notation
-from cellstine.visualize.matplotlib_backend import _marker_size
-from cellstine.visualize import results_plotly as visualize
+from cellstine.interface.surface import backend as surface
+from cellstine.interface.surface.surface import Surface as InterfaceSurface, _stacking_sequence
+from cellstine.interface.workflow.interface import Interface as InterfaceWorkflow, parse_miller_notation
+from cellstine.moire.builder import generator
+from cellstine.moire.builder import generator as cell_generator
+from cellstine.moire.builder import make, maken
+from cellstine.moire.search import angles, find, finder, findn, lattice
+from cellstine.moire.search import finder as cell_finder
+from cellstine.visualize.backends.matplotlib import _marker_size
+from cellstine.visualize.results import plotly as visualize
 from cellstine.moire.moire import Moire as MoireWorkflow
 from cellstine.symmetry.symmetry import Symmetry as SymmetryWorkflow
 
@@ -927,6 +929,15 @@ class MoireToolkitTests(unittest.TestCase):
         self.assertTrue(hasattr(cellstine, "Defect"))
         self.assertTrue(hasattr(cellstine, "Symmetry"))
 
+    def test_documented_public_api_imports_load_from_canonical_modules(self):
+        from cellstine import Defect, Interface, Moire, Surface, Visualize
+
+        self.assertEqual(Moire.__module__, "cellstine.moire.moire")
+        self.assertEqual(Surface.__module__, "cellstine.interface.surface.surface")
+        self.assertEqual(Interface.__module__, "cellstine.interface.workflow.interface")
+        self.assertEqual(Defect.__module__, "cellstine.defect.workflow")
+        self.assertEqual(Visualize.__module__, "cellstine.visualize.visualize")
+
     def test_docs_reference_current_entrypoints_and_imports(self):
         readme_text = (BASE_DIR / "README.md").read_text(encoding="utf-8")
         guide_text = (BASE_DIR / "USAGE_GUIDE.md").read_text(encoding="utf-8")
@@ -943,6 +954,63 @@ class MoireToolkitTests(unittest.TestCase):
         self.assertIn('cellstine = "cellstine.cli.main:main"', pyproject_text)
         self.assertIn('where = ["src"]', pyproject_text)
         self.assertIn('include = ["cellstine*"]', pyproject_text)
+
+    def test_cellstine_source_tree_has_domain_hierarchy(self):
+        package_root = BASE_DIR / "src" / "cellstine"
+        expected_directories = [
+            package_root / "moire" / "search",
+            package_root / "moire" / "builder",
+            package_root / "moire" / "transform",
+            package_root / "adsorbate" / "placement",
+            package_root / "adsorbate" / "transform",
+            package_root / "interface" / "surface",
+            package_root / "interface" / "workflow",
+            package_root / "visualize" / "backends",
+            package_root / "visualize" / "results",
+            package_root / "cli" / "interactive",
+        ]
+
+        missing = [str(path.relative_to(package_root)) for path in expected_directories if not path.is_dir()]
+
+        self.assertEqual(missing, [])
+
+    def test_old_flat_domain_modules_are_not_left_behind(self):
+        package_root = BASE_DIR / "src" / "cellstine"
+        old_flat_modules = [
+            package_root / "interface" / "surface_backend.py",
+            package_root / "interface" / "surface.py",
+            package_root / "interface" / "interface.py",
+            package_root / "moire" / "finder.py",
+            package_root / "moire" / "generator.py",
+            package_root / "moire" / "lattice.py",
+            package_root / "adsorbate" / "operations.py",
+            package_root / "visualize" / "results_plotly.py",
+            package_root / "visualize" / "matplotlib_backend.py",
+            package_root / "visualize" / "plotly_backend.py",
+            package_root / "cli" / "interactive.py",
+        ]
+
+        leftovers = [str(path.relative_to(package_root)) for path in old_flat_modules if path.exists()]
+
+        self.assertEqual(leftovers, [])
+
+    def test_subpackage_inits_are_not_reexport_barrels(self):
+        package_root = BASE_DIR / "src" / "cellstine"
+        barrel_inits = []
+        for init_path in package_root.rglob("__init__.py"):
+            if init_path == package_root / "__init__.py":
+                continue
+            text = init_path.read_text(encoding="utf-8")
+            executable_lines = [
+                line.strip()
+                for line in text.splitlines()
+                if line.strip() and not line.strip().startswith("#") and not line.strip().startswith('"""')
+            ]
+            import_lines = [line for line in executable_lines if line.startswith(("from .", "from .."))]
+            if import_lines:
+                barrel_inits.append(str(init_path.relative_to(package_root)))
+
+        self.assertEqual(barrel_inits, [])
 
     def test_removed_top_level_moire_package_is_not_present(self):
         self.assertFalse((BASE_DIR / "moire").exists())
@@ -962,7 +1030,7 @@ class MoireToolkitTests(unittest.TestCase):
 
     def test_dispatch_namespace_enters_group_guided_mode_when_stage_is_missing(self):
         namespace = type("Namespace", (), {"version": False, "group": "moire", "stage": None})()
-        with mock.patch("cellstine.cli.interactive.run_interactive", return_value=0) as patched:
+        with mock.patch("cellstine.cli.interactive.runner.run_interactive", return_value=0) as patched:
             result = cli_main.dispatch_namespace(namespace)
         self.assertEqual(result, 0)
         patched.assert_called_once_with(group="moire")
@@ -1546,7 +1614,7 @@ class MoireToolkitTests(unittest.TestCase):
             shutil.rmtree(temp_root, ignore_errors=True)
 
     def test_moire_prefiltered_matching_equivalence(self):
-        from cellstine.moire import lattice as lat
+        from cellstine.moire.search import lattice as lat
         lat1 = np.array([[2.46, 0.0, 0.0], [-1.23, 2.13, 0.0], [0.0, 0.0, 10.0]])
         lat2 = np.array([[3.15, 0.0, 0.0], [-1.575, 2.728, 0.0], [0.0, 0.0, 10.0]])
 

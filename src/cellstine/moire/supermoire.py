@@ -10,9 +10,9 @@ from ..core.base import run_output_suffix
 from ..core.lattice import apply_inplane_prestrain
 from ..core.models import CommandResult, PrestrainConfig
 from ..core.previews import format_bilayer_candidates, format_nlayer_candidates
-from .find import run_find
-from .findn import run_findn
-from .maken import generate_many_from_results
+from .builder.maken import generate_many_from_results
+from .search.find import run_find
+from .search.findn import run_findn
 from .moire import Moire
 
 

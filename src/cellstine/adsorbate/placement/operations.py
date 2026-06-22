@@ -9,10 +9,10 @@ from typing import List, Sequence
 
 import numpy as np
 
-from ..core.transforms import yaw_pitch_roll_matrix
-from ..core.species import expand_species as _expand_species_shared
-from ..interface import surface_backend as surface_mod
-from ..io import native as io_mod
+from ...core.species import expand_species as _expand_species_shared
+from ...core.transforms import yaw_pitch_roll_matrix
+from ...interface.surface import backend as surface_mod
+from ...io import native as io_mod
 
 
 _ATOMIC_MASS_ROWS = """

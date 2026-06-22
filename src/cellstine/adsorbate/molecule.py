@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from .adsorbate import Adsorbate
-from .operations import (
+from .placement.operations import (
     ATOMIC_MASSES,
     AdsorbRun,
     LayerShiftRun,

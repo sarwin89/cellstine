@@ -8,9 +8,9 @@ from typing import Sequence
 from ..core.base import Base, run_output_suffix
 from ..core.models import CommandResult
 from ..io.converters import StructureConverter
-from .matplotlib_backend import plot_moire_summary, plot_structure_multiview
-from .plotly_backend import write_structure_html
-from .results_plotly import build_visualization
+from .backends.matplotlib import plot_moire_summary, plot_structure_multiview
+from .backends.plotly import write_structure_html
+from .results.plotly import build_visualization
 
 
 class Visualize(Base):
