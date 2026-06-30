@@ -8,14 +8,14 @@ from typing import Iterable, Sequence
 
 import numpy as np
 
-from ..core.base import Base, run_output_suffix
-from ..core.lattice import lattice_mismatch_fraction
-from ..core.models import CommandResult
-from ..core.transforms import strained_copy
-from ..io.converters import StructureConverter
-from ..io import native as io_mod
-from ..io.orientation import OrientationNormalizer
-from ..io.vasp import VaspIO
+from ...core.base import Base, run_output_suffix
+from ...core.lattice import lattice_mismatch_fraction
+from ...core.models import CommandResult
+from ...core.transforms import strained_copy
+from ...io import native as io_mod
+from ...io.converters import StructureConverter
+from ...io.orientation import OrientationNormalizer
+from ...io.vasp import VaspIO
 
 
 def parse_miller_notation(miller: str | Sequence[int]) -> tuple[int, int, int]:
@@ -166,7 +166,7 @@ class Interface(Base):
         resolved_kind = str(kind).lower()
         candidate = Path(path_or_manifest).resolve()
         if candidate.name == "manifest.json":
-            from ..core.manifests import RunManifest
+            from ...core.manifests import RunManifest
 
             manifest = RunManifest.load(candidate)
             if "slab_poscar" in manifest.artifacts:
@@ -176,7 +176,7 @@ class Interface(Base):
             return str(candidate), {"kind": resolved_kind}
         if resolved_kind != "bulk":
             raise ValueError("kind must be one of: bulk, slab, surface")
-        from .surface import Surface
+        from ..surface.surface import Surface
 
         slab_result = Surface(
             backend=self.backend,
@@ -286,7 +286,7 @@ class Interface(Base):
         top_layer_values = [int(value) for value in (top_layers_list or [4])]
 
         matches = []
-        from .surface import Surface
+        from ..surface.surface import Surface
 
         surface_tool = Surface(
             backend=self.backend,

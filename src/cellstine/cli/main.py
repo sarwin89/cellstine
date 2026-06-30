@@ -9,9 +9,9 @@ from .. import __version__
 from ..adsorbate.molecule import Molecule
 from ..core.dependencies import DependencyManager
 from ..core.models import PrestrainConfig
-from ..defect.defect import Defect
-from ..interface.interface import Interface
-from ..interface.surface import Surface
+from ..defect.workflow import Defect
+from ..interface.surface.surface import Surface
+from ..interface.workflow.interface import Interface
 from ..moire.moire import Moire
 from ..moire.supermoire import Supermoire
 from ..symmetry.symmetry import Symmetry
@@ -345,11 +345,11 @@ def dispatch_namespace(args) -> int:
         _print_versions()
         return 0
     if not getattr(args, "group", None):
-        from .interactive import run_interactive
+        from .interactive.runner import run_interactive
 
         return run_interactive()
     if not getattr(args, "stage", None):
-        from .interactive import run_interactive
+        from .interactive.runner import run_interactive
 
         return run_interactive(group=str(args.group))
 

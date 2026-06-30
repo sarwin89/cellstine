@@ -10,10 +10,10 @@ from typing import Dict, List, Sequence
 
 import numpy as np
 
-from ..io import native as io_mod
-from ..moire import findn as findn_backend
-from ..moire import generator as generator_backend
-from ..moire import lattice as lattice_backend
+from ...io import native as io_mod
+from ...moire.builder import generator as generator_backend
+from ...moire.search import findn as findn_backend
+from ...moire.search import lattice as lattice_backend
 
 DEFAULT_OUTPUT_DIR = Path("output")
 PLOTLY_CDN = "https://cdn.plot.ly/plotly-2.35.2.min.js"

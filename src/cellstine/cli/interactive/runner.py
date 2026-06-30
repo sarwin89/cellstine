@@ -5,13 +5,13 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Sequence
 
-from ..core.manifests import RunManifest
-from ..core.previews import format_adsorption_sites, preview_moire_results_file
-from ..defect.defect import Defect
-from ..interface import surface_backend
-from ..interface.interface import parse_miller_notation
-from .main import _print_result, execute_namespace
-from .parsers import build_parser
+from ...core.manifests import RunManifest
+from ...core.previews import format_adsorption_sites, preview_moire_results_file
+from ...defect.workflow import Defect
+from ...interface.surface import backend as surface_backend
+from ...interface.workflow.interface import parse_miller_notation
+from ..main import _print_result, execute_namespace
+from ..parsers import build_parser
 
 INPUT_DIR = Path("input")
 RUNS_DIR = Path("runs")

@@ -12,8 +12,8 @@ from ..core.models import CommandResult, PrestrainConfig
 from ..core.previews import format_bilayer_candidates
 from ..core.layers import shift_top_layer
 from ..io.converters import StructureConverter
-from .find import run_find
-from .make import generate_many_from_results
+from .builder.make import generate_many_from_results
+from .search.find import run_find
 
 
 def _safe_token(value: object) -> str:

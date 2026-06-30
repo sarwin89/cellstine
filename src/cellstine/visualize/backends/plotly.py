@@ -8,8 +8,8 @@ from pathlib import Path
 
 import numpy as np
 
-from ..io.models import StructureRecord
-from .matplotlib_backend import _atomic_radius
+from ...io.models import StructureRecord
+from .matplotlib import _atomic_radius
 
 PLOTLY_CDN = "https://cdn.plot.ly/plotly-2.35.2.min.js"
 

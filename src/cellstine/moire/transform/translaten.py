@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .supermoire import Supermoire
+from ..supermoire import Supermoire
 
 
 def translaten(**kwargs):

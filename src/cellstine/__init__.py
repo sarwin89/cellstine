@@ -1,19 +1,28 @@
 """Public package API for CELLSTINE."""
 
-from .adsorbate.adsorbate import Adsorbate
-from .adsorbate.molecule import Molecule
-from .core.dependencies import DependencyManager
-from .core.manifests import RunManifest
-from .defect.defect import Defect, DefectAnalysis, DefectSite
-from .interface.interface import Interface
-from .interface.surface import Surface
-from .io.converters import StructureConverter
-from .io.vasp import VaspIO
-from .moire.moire import Moire
-from .moire.supermoire import Supermoire
-from .symmetry.symmetry import EquivalentAtomGroup, Symmetry, SymmetryAnalysis, SymmetryOperation
-from .visualize.results_plotly import VisualizationRun
-from .visualize.visualize import Visualize
+from importlib import import_module
+
+_PUBLIC_EXPORTS = {
+    "Adsorbate": ("cellstine.adsorbate.adsorbate", "Adsorbate"),
+    "Defect": ("cellstine.defect.workflow", "Defect"),
+    "DefectAnalysis": ("cellstine.defect.records", "DefectAnalysis"),
+    "DefectSite": ("cellstine.defect.records", "DefectSite"),
+    "DependencyManager": ("cellstine.core.dependencies", "DependencyManager"),
+    "EquivalentAtomGroup": ("cellstine.symmetry.symmetry", "EquivalentAtomGroup"),
+    "Interface": ("cellstine.interface.workflow.interface", "Interface"),
+    "Molecule": ("cellstine.adsorbate.molecule", "Molecule"),
+    "Moire": ("cellstine.moire.moire", "Moire"),
+    "RunManifest": ("cellstine.core.manifests", "RunManifest"),
+    "StructureConverter": ("cellstine.io.converters", "StructureConverter"),
+    "Supermoire": ("cellstine.moire.supermoire", "Supermoire"),
+    "Surface": ("cellstine.interface.surface.surface", "Surface"),
+    "Symmetry": ("cellstine.symmetry.symmetry", "Symmetry"),
+    "SymmetryAnalysis": ("cellstine.symmetry.symmetry", "SymmetryAnalysis"),
+    "SymmetryOperation": ("cellstine.symmetry.symmetry", "SymmetryOperation"),
+    "VaspIO": ("cellstine.io.vasp", "VaspIO"),
+    "Visualize": ("cellstine.visualize.visualize", "Visualize"),
+    "VisualizationRun": ("cellstine.visualize.results.plotly", "VisualizationRun"),
+}
 
 __all__ = [
     "Adsorbate",
@@ -38,3 +47,13 @@ __all__ = [
 ]
 
 __version__ = "4.0.0"
+
+
+def __getattr__(name: str):
+    """Load public workflow classes only when they are requested."""
+    if name not in _PUBLIC_EXPORTS:
+        raise AttributeError(f"module 'cellstine' has no attribute {name!r}")
+    module_name, attr_name = _PUBLIC_EXPORTS[name]
+    value = getattr(import_module(module_name), attr_name)
+    globals()[name] = value
+    return value
