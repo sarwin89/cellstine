@@ -1,7 +1,6 @@
 import shutil
 import sys
 import unittest
-from dataclasses import replace
 from importlib.util import find_spec
 from io import StringIO
 from pathlib import Path
@@ -16,7 +15,7 @@ import cellstine
 import moire_cli
 from cellstine.cli import main as cli_main
 from cellstine.cli.interactive import runner as interactive_cli
-from cellstine.core.previews import format_adsorption_sites, format_bilayer_candidates
+from cellstine.core.previews import format_adsorption_sites
 from cellstine.defect.workflow import Defect as DefectWorkflow
 from cellstine.io import native as io
 from cellstine.adsorbate import molecule
@@ -25,12 +24,9 @@ from cellstine.interface.surface import backend as surface
 from cellstine.interface.surface.surface import Surface as InterfaceSurface, _stacking_sequence
 from cellstine.interface.workflow.interface import Interface as InterfaceWorkflow, parse_miller_notation
 from cellstine.moire.builder import generator
-from cellstine.moire.builder import generator as cell_generator
-from cellstine.moire.builder import make, maken
-from cellstine.moire.search import angles, find, finder, findn, lattice
-from cellstine.moire.search import finder as cell_finder
+from cellstine.moire.builder import make
+from cellstine.moire.search import find, lattice
 from cellstine.visualize.backends.matplotlib import _marker_size
-from cellstine.visualize.results import plotly as visualize
 from cellstine.moire.moire import Moire as MoireWorkflow
 from cellstine.symmetry.symmetry import Symmetry as SymmetryWorkflow
 
@@ -48,799 +44,45 @@ def _sample_path(filename: str) -> str:
 
 
 MOS2_PATH = _sample_path('mos2.vasp')
-GRAPHENE_PATH = _sample_path('graph.vasp')
 CU110_PATH = _sample_path('Cu110_truncated_bulk.vasp')
 RELAXED_OVERLAYER_PATH = _sample_path('relaxed_overlayer_monoclinic.vasp')
-REFERENCE_FILES = {
-    13.15: str(BASE_DIR / 'Results' / 'spc_POSCAR_13-B.vasp'),
-    21.787: str(BASE_DIR / 'Results' / 'spc_POSCAR_21-B.vasp'),
-    27.9: str(BASE_DIR / 'Results' / 'spc_POSCAR_27-B.vasp'),
-}
-
 
 class MoireToolkitTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mos2 = io.read_poscar(MOS2_PATH)
-        cls.graphene = io.read_poscar(GRAPHENE_PATH)
         cls.cu110 = io.read_poscar(CU110_PATH)
         cls.relaxed_overlayer = io.read_poscar(RELAXED_OVERLAYER_PATH)
 
-    def test_symmetry_lcm(self):
-        sym_mos2, sym_graphene, sym_lcm = lattice.combined_symmetry_limit(self.mos2.lattice, self.graphene.lattice)
-        self.assertEqual(sym_mos2, 60)
-        self.assertEqual(sym_graphene, 60)
-        self.assertEqual(sym_lcm, 60)
-
-    def test_angle_shortlist_contains_reference_family(self):
-        shortlist = angles.find_commensurate_angles(
-            self.mos2.lattice,
-            self.mos2.lattice,
-            nindex=12,
-            strain_tolerance=2e-3,
-            min_angle=0.0,
-            max_angle=30.0,
-        )
-        found_angles = np.array([item.angle_deg for item in shortlist])
-        self.assertTrue(np.any(np.isclose(found_angles, 13.1735, atol=0.03)))
-        self.assertTrue(np.any(np.isclose(found_angles, 21.7868, atol=0.03)))
-        self.assertTrue(np.any(np.isclose(found_angles, 27.7958, atol=0.03)))
-
-    def test_graphene_angle_shortlist_reaches_symmetry_limit(self):
-        symmetry_top, symmetry_bottom, symmetry_lcm = lattice.combined_symmetry_limit(
-            self.graphene.lattice,
-            self.graphene.lattice,
-        )
-        shortlist = angles.find_commensurate_angles(
-            self.graphene.lattice,
-            self.graphene.lattice,
-            nindex=8,
-            strain_tolerance=2e-3,
-            min_angle=0.0,
-            max_angle=symmetry_lcm,
-        )
-        found_angles = np.array([item.angle_deg for item in shortlist])
-        self.assertEqual((symmetry_top, symmetry_bottom, symmetry_lcm), (60, 60, 60))
-        self.assertTrue(np.any(np.isclose(found_angles, 60.0, atol=1e-6)))
-        self.assertLessEqual(float(found_angles.max()), 60.0)
-
-    def test_graphene_mos2_search_window_uses_lcm_limit(self):
-        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
-        find_run = find.run_find(
-            top_poscar=GRAPHENE_PATH,
-            bottom_poscar=MOS2_PATH,
-            top_lattice=self.graphene.lattice,
-            bottom_lattice=self.mos2.lattice,
-            top_atoms=self.graphene.natoms,
-            bottom_atoms=self.mos2.natoms,
-            nindex=8,
-            vector_tolerance=2e-3,
-            vector_strain_tolerance=2e-3,
-            candidate_tolerance=2e-3,
-            max_atoms=400,
-            output_root=str(temp_root),
-        )
-        try:
-            self.assertEqual(find_run.symmetry_lcm, 60)
-            self.assertAlmostEqual(find_run.search_min_angle, 0.0, places=8)
-            self.assertAlmostEqual(find_run.search_max_angle, 60.0, places=8)
-            self.assertIn(0.0, find_run.angle_values)
-            self.assertIn(60.0, find_run.angle_values)
-            self.assertTrue(find_run.dat_path.exists())
-        finally:
-            shutil.rmtree(temp_root, ignore_errors=True)
-
-    def test_reference_angles_atom_counts(self):
-        expected_atoms = {13.15: 114, 21.787: 42, 27.9: 78}
-        for angle, atom_count in expected_atoms.items():
-            with self.subTest(angle=angle):
-                results = finder.find_supercells(
-                    self.mos2.lattice,
-                    self.mos2.lattice,
-                    None,
-                    None,
-                    angles=[angle],
-                    nindex=12,
-                    tol=2e-3,
-                    lin_tol=2e-3,
-                    atom_count1=self.mos2.natoms,
-                    atom_count2=self.mos2.natoms,
-                    max_atoms=200,
-                    vector_strain_tol=2e-3,
-                )
-                self.assertTrue(results)
-                self.assertEqual(results[0].total_atoms, atom_count)
-
-    def test_two_stage_find_and_make(self):
+    def test_native_gram_find_to_json_make(self):
         temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
         temp_root.mkdir(parents=True, exist_ok=False)
         try:
-            find_run = find.run_find(
+            run = find.run_find(
                 top_poscar=MOS2_PATH,
                 bottom_poscar=MOS2_PATH,
-                top_lattice=self.mos2.lattice,
-                bottom_lattice=self.mos2.lattice,
-                top_atoms=self.mos2.natoms,
-                bottom_atoms=self.mos2.natoms,
-                nindex=8,
-                explicit_angles=[13.15, 21.787, 27.9],
-                vector_tolerance=2e-3,
-                vector_strain_tolerance=2e-3,
-                candidate_tolerance=2e-3,
-                max_atoms=300,
-                output_root=str(temp_root),
+                max_length=4.0,
+                top_strain=0.01,
+                bottom_strain=0.01,
+                max_atoms=200,
+                fold_symmetry=False,
+                output_root=str(temp_root / "search"),
             )
-            self.assertTrue(find_run.dat_path.exists())
-            self.assertGreater(len(find_run.candidates), 0)
+            self.assertEqual(run.result_path.suffix, ".json")
+            self.assertIn('"schema": "cellstine.moire.gram"', run.result_path.read_text(encoding="utf-8"))
 
-            make_run = make.generate_from_results(
-                str(find_run.dat_path),
+            built = make.generate_from_results(
+                str(run.result_path),
                 index=1,
                 interlayer_distance=3.35,
-                output_dir=str(temp_root),
+                output_path=str(temp_root / "stack.vasp"),
             )
-            self.assertTrue(make_run.output_path.exists())
-            self.assertGreater(make_run.total_atoms, 0)
-
-            batch_runs = make.generate_many_from_results(
-                str(find_run.dat_path),
-                indexes=[1, 2],
-                interlayer_distance=3.35,
-                output_dir=str(temp_root),
-            )
-            self.assertEqual(len(batch_runs), 2)
-            self.assertTrue(all(run.output_path.exists() for run in batch_runs))
+            structure = io.read_poscar(str(built.output_path))
+            self.assertEqual(structure.natoms, int(run.candidates[0]["atom_count"]))
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 
-    def test_repeat_structure_along_c_scales_cell_and_atom_counts(self):
-        repeated = io.repeat_structure_along_c(self.mos2, 3)
-
-        self.assertEqual(repeated.natoms, 3 * self.mos2.natoms)
-        self.assertEqual(repeated.counts, [3 * count for count in self.mos2.counts])
-        self.assertAlmostEqual(
-            float(np.linalg.norm(repeated.lattice[2])),
-            3.0 * float(np.linalg.norm(self.mos2.lattice[2])),
-            places=8,
-        )
-        self.assertTrue(np.all(repeated.positions_direct[:, 2] >= -1e-10))
-        self.assertTrue(np.all(repeated.positions_direct[:, 2] <= 1.0 + 1e-10))
-
-    def test_parallel_finder_matches_serial_results_for_explicit_angles(self):
-        serial = finder.find_supercells(
-            self.mos2.lattice,
-            self.mos2.lattice,
-            None,
-            None,
-            angles=[13.15, 21.787],
-            nindex=12,
-            tol=2e-3,
-            lin_tol=2e-3,
-            atom_count1=self.mos2.natoms,
-            atom_count2=self.mos2.natoms,
-            max_atoms=200,
-            vector_strain_tol=2e-3,
-            workers=1,
-        )
-        parallel = finder.find_supercells(
-            self.mos2.lattice,
-            self.mos2.lattice,
-            None,
-            None,
-            angles=[13.15, 21.787],
-            nindex=12,
-            tol=2e-3,
-            lin_tol=2e-3,
-            atom_count1=self.mos2.natoms,
-            atom_count2=self.mos2.natoms,
-            max_atoms=200,
-            vector_strain_tol=2e-3,
-            workers=2,
-        )
-
-        self.assertEqual(len(serial), len(parallel))
-        self.assertEqual(
-            [finder.candidate_to_dict(item) for item in serial[:5]],
-            [finder.candidate_to_dict(item) for item in parallel[:5]],
-        )
-
-    def test_src_finder_matches_reference_finder_for_explicit_angles(self):
-        reference = finder.find_supercells(
-            self.mos2.lattice,
-            self.mos2.lattice,
-            None,
-            None,
-            angles=[13.15, 21.787],
-            nindex=12,
-            tol=2e-3,
-            lin_tol=2e-3,
-            atom_count1=self.mos2.natoms,
-            atom_count2=self.mos2.natoms,
-            max_atoms=200,
-            vector_strain_tol=2e-3,
-            workers=1,
-        )
-        package_native = cell_finder.find_supercells(
-            self.mos2.lattice,
-            self.mos2.lattice,
-            None,
-            None,
-            angles=[13.15, 21.787],
-            nindex=12,
-            tol=2e-3,
-            lin_tol=2e-3,
-            atom_count1=self.mos2.natoms,
-            atom_count2=self.mos2.natoms,
-            max_atoms=200,
-            vector_strain_tol=2e-3,
-            workers=1,
-        )
-        self.assertEqual(
-            [finder.candidate_to_dict(item) for item in reference[:5]],
-            [cell_finder.candidate_to_dict(item) for item in package_native[:5]],
-        )
-
-    def test_make_matches_reference_counts(self):
-        if not all(Path(path).exists() for path in REFERENCE_FILES.values()):
-            self.skipTest("reference POSCAR files are not present in Results/")
-        for angle, reference_path in REFERENCE_FILES.items():
-            with self.subTest(angle=angle):
-                results = finder.find_supercells(
-                    self.mos2.lattice,
-                    self.mos2.lattice,
-                    None,
-                    None,
-                    angles=[angle],
-                    nindex=12,
-                    tol=2e-3,
-                    lin_tol=2e-3,
-                    atom_count1=self.mos2.natoms,
-                    atom_count2=self.mos2.natoms,
-                    max_atoms=200,
-                    vector_strain_tol=2e-3,
-                )
-                best = results[0]
-                temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
-                temp_root.mkdir(parents=True, exist_ok=False)
-                try:
-                    dat_path = temp_root / "find_results.dat"
-                    finder.write_results_dat(
-                        str(dat_path),
-                        MOS2_PATH,
-                        MOS2_PATH,
-                        [best],
-                        run_id="test_reference",
-                        parameters={"test_case": angle},
-                    )
-                    run = make.generate_from_results(
-                        str(dat_path),
-                        index=1,
-                        interlayer_distance=0.0,
-                        output_dir=str(temp_root),
-                    )
-                    generated = io.read_poscar(str(run.output_path))
-                    reference = io.read_poscar(reference_path)
-                    self.assertEqual(generated.counts, reference.counts)
-                finally:
-                    shutil.rmtree(temp_root, ignore_errors=True)
-
-    def test_src_generator_matches_reference_supercell_build(self):
-        results = finder.find_supercells(
-            self.mos2.lattice,
-            self.mos2.lattice,
-            None,
-            None,
-            angles=[13.15],
-            nindex=12,
-            tol=2e-3,
-            lin_tol=2e-3,
-            atom_count1=self.mos2.natoms,
-            atom_count2=self.mos2.natoms,
-            max_atoms=200,
-            vector_strain_tol=2e-3,
-        )
-        best = results[0]
-        candidate_dict = finder.candidate_to_dict(best, 1)
-        record = cell_generator.record_from_candidate_dict(candidate_dict, 1)
-
-        reference_output = generator.build_supercell(
-            MOS2_PATH,
-            MOS2_PATH,
-            record,
-            interlayer_distance=3.35,
-            preserve_layer="2",
-            tolerance=1,
-            tolerance_float=1e-4,
-        )
-        package_native_output = cell_generator.build_supercell(
-            MOS2_PATH,
-            MOS2_PATH,
-            record,
-            interlayer_distance=3.35,
-            preserve_layer="2",
-            tolerance=1,
-            tolerance_float=1e-4,
-        )
-
-        self.assertTrue(np.allclose(reference_output[0], package_native_output[0]))
-        self.assertTrue(np.allclose(reference_output[1], package_native_output[1]))
-        self.assertEqual(reference_output[2], package_native_output[2])
-        self.assertEqual(reference_output[3], package_native_output[3])
-
-    def test_matrix_value_helper_matches_any_order(self):
-        candidate = lattice.SupercellCandidate(
-            angle_deg=43.3139,
-            strain_avg=0.0,
-            strain_layer1=0.0,
-            strain_layer2=0.0,
-            ratio1=1,
-            ratio2=11,
-            total_atoms=100,
-            layer1_vector1=(-1, 0),
-            layer1_vector2=(0, -1),
-            layer2_vector1=(-3, -2),
-            layer2_vector2=(4, -1),
-            eps1=0.0,
-            eps2=0.0,
-            vector_product=1.0,
-            area1=1.0,
-            area2=11.0,
-        )
-
-        self.assertTrue(
-            finder.candidate_matches_matrix_values(
-                candidate,
-                [1, 0, 1, 0],
-                matrix_layer="1",
-                matrix_match_mode="absolute",
-            )
-        )
-        self.assertTrue(
-            finder.candidate_matches_matrix_values(
-                candidate,
-                [-1, 0, 0, -1],
-                matrix_layer="1",
-                matrix_match_mode="exact",
-            )
-        )
-        self.assertFalse(
-            finder.candidate_matches_matrix_values(
-                candidate,
-                [1, 0, 1, 0],
-                matrix_layer="1",
-                matrix_match_mode="exact",
-            )
-        )
-        self.assertTrue(
-            finder.candidate_matches_matrix_values(
-                candidate,
-                [2, 1, 3, 4],
-                matrix_layer="2",
-                matrix_match_mode="absolute",
-            )
-        )
-
-    def test_matrix_value_filter_can_keep_or_remove_candidates(self):
-        filtered = finder.find_supercells(
-            self.mos2.lattice,
-            self.mos2.lattice,
-            None,
-            None,
-            angles=[0.0],
-            nindex=2,
-            tol=2e-3,
-            lin_tol=2e-3,
-            atom_count1=self.mos2.natoms,
-            atom_count2=self.mos2.natoms,
-            max_atoms=100,
-            vector_strain_tol=2e-3,
-            matrix_values=[0, 0, 1, 1],
-            matrix_layer="either",
-            matrix_match_mode="absolute",
-        )
-        self.assertTrue(filtered)
-        self.assertTrue(
-            all(
-                finder.candidate_matches_matrix_values(
-                    candidate,
-                    [0, 0, 1, 1],
-                    matrix_layer="either",
-                    matrix_match_mode="absolute",
-                )
-                for candidate in filtered
-            )
-        )
-
-        impossible = finder.find_supercells(
-            self.mos2.lattice,
-            self.mos2.lattice,
-            None,
-            None,
-            angles=[0.0],
-            nindex=2,
-            tol=2e-3,
-            lin_tol=2e-3,
-            atom_count1=self.mos2.natoms,
-            atom_count2=self.mos2.natoms,
-            max_atoms=100,
-            vector_strain_tol=2e-3,
-            matrix_values=[9, 9, 9, 9],
-            matrix_layer="either",
-            matrix_match_mode="absolute",
-        )
-        self.assertEqual(impossible, [])
-
-    def test_final_candidates_are_angle_sorted_and_exact_coefficients_are_unique(self):
-        base = lattice.SupercellCandidate(
-            angle_deg=21.0,
-            strain_avg=0.002,
-            strain_layer1=0.002,
-            strain_layer2=0.002,
-            ratio1=1,
-            ratio2=1,
-            total_atoms=24,
-            layer1_vector1=(1, 0),
-            layer1_vector2=(0, 1),
-            layer2_vector1=(1, 0),
-            layer2_vector2=(0, 1),
-            eps1=2e-3,
-            eps2=2e-3,
-            vector_product=1.0,
-            area1=1.0,
-            area2=1.0,
-        )
-        duplicate_worse_angle = replace(base, angle_deg=24.0, strain_avg=0.003, eps1=3e-3, eps2=3e-3)
-        earlier_distinct = replace(
-            base,
-            angle_deg=6.0,
-            layer1_vector1=(2, 0),
-            layer1_vector2=(0, 2),
-            layer2_vector1=(2, 0),
-            layer2_vector2=(0, 2),
-            total_atoms=96,
-        )
-
-        final = finder.finalize_candidates([base, duplicate_worse_angle, earlier_distinct])
-        self.assertEqual([candidate.angle_deg for candidate in final], [6.0, 21.0])
-        self.assertEqual(
-            {
-                (
-                    candidate.layer1_vector1,
-                    candidate.layer1_vector2,
-                    candidate.layer2_vector1,
-                    candidate.layer2_vector2,
-                )
-                for candidate in final
-            },
-            {
-                ((1, 0), (0, 1), (1, 0), (0, 1)),
-                ((2, 0), (0, 2), (2, 0), (0, 2)),
-            },
-        )
-
-    def test_final_candidates_collapse_precision_equivalent_rows(self):
-        large = lattice.SupercellCandidate(
-            angle_deg=3.14972,
-            strain_avg=0.0008,
-            strain_layer1=0.001662,
-            strain_layer2=0.001665,
-            ratio1=301,
-            ratio2=300,
-            total_atoms=1803,
-            layer1_vector1=(11, 20),
-            layer1_vector2=(20, 9),
-            layer2_vector1=(20, 10),
-            layer2_vector2=(10, -10),
-            eps1=1e-4,
-            eps2=1e-4,
-            vector_product=200.0,
-            area1=301.0,
-            area2=300.0,
-        )
-        compact = replace(
-            large,
-            angle_deg=3.14974,
-            strain_avg=0.0009,
-            ratio1=290,
-            ratio2=290,
-            total_atoms=1740,
-            layer1_vector1=(9, -10),
-            layer1_vector2=(20, 10),
-            layer2_vector1=(-10, 9),
-            layer2_vector2=(-20, -11),
-            vector_product=180.0,
-        )
-
-        final = finder.finalize_candidates([large, compact])
-        self.assertEqual(len(final), 1)
-        self.assertEqual(final[0].total_atoms, 1740)
-
-    def test_finder_does_not_reduce_sliver_artifacts_to_fake_primitive_cells(self):
-        suspicious_candidates = finder.find_supercells(
-            self.mos2.lattice,
-            self.mos2.lattice,
-            None,
-            None,
-            angles=[2.2811, 2.5429],
-            nindex=15,
-            tol=2e-3,
-            lin_tol=2e-3,
-            vector_strain_tol=2e-3,
-            atom_count1=self.mos2.natoms,
-            atom_count2=self.mos2.natoms,
-            max_atoms=2000,
-        )
-        for candidate in suspicious_candidates:
-            self.assertFalse(
-                candidate.ratio1 == 1
-                and candidate.ratio2 == 1
-                and abs(candidate.angle_deg) > 1e-6
-                and candidate.strain_avg < 1e-6
-            )
-
-        valid_candidates = finder.find_supercells(
-            self.mos2.lattice,
-            self.mos2.lattice,
-            None,
-            None,
-            angles=[7.3410],
-            nindex=10,
-            tol=2e-3,
-            lin_tol=2e-3,
-            vector_strain_tol=2e-3,
-            atom_count1=self.mos2.natoms,
-            atom_count2=self.mos2.natoms,
-            max_atoms=2000,
-        )
-        self.assertTrue(valid_candidates)
-        for candidate in valid_candidates:
-            bottom_det = (
-                candidate.layer2_vector1[0] * candidate.layer2_vector2[1]
-                - candidate.layer2_vector1[1] * candidate.layer2_vector2[0]
-            )
-            top_det = (
-                candidate.layer1_vector1[0] * candidate.layer1_vector2[1]
-                - candidate.layer1_vector1[1] * candidate.layer1_vector2[0]
-            )
-            self.assertGreater(bottom_det * top_det, 0)
-
-    def test_finder_filters_near_collinear_sliver_cells_by_default(self):
-        filtered = finder.find_supercells(
-            self.mos2.lattice,
-            self.mos2.lattice,
-            None,
-            None,
-            angles=[1.6963],
-            nindex=20,
-            tol=2e-3,
-            lin_tol=2e-3,
-            vector_strain_tol=2e-3,
-            atom_count1=self.mos2.natoms,
-            atom_count2=self.mos2.natoms,
-            max_atoms=2000,
-        )
-        self.assertEqual(filtered, [])
-
-        exhaustive = finder.find_supercells(
-            self.mos2.lattice,
-            self.mos2.lattice,
-            None,
-            None,
-            angles=[1.6963],
-            nindex=20,
-            tol=2e-3,
-            lin_tol=2e-3,
-            vector_strain_tol=2e-3,
-            atom_count1=self.mos2.natoms,
-            atom_count2=self.mos2.natoms,
-            max_atoms=2000,
-            max_cell_aspect_ratio=None,
-            min_cell_angle_deg=None,
-            max_cell_angle_deg=None,
-        )
-        self.assertTrue(exhaustive)
-        self.assertLess(min(candidate.cell_angle_deg for candidate in exhaustive), 25.0)
-
-    def test_canonicalized_degenerate_search_matches_full_dedup(self):
-        full_candidates = finder.find_supercells(
-            self.mos2.lattice,
-            self.mos2.lattice,
-            None,
-            None,
-            angles=[0.0],
-            nindex=4,
-            tol=2e-3,
-            lin_tol=2e-3,
-            atom_count1=self.mos2.natoms,
-            atom_count2=self.mos2.natoms,
-            max_atoms=200,
-            vector_strain_tol=2e-3,
-            dedupe=False,
-        )
-        reference = lattice.deduplicate_candidates(full_candidates)
-        reference.sort(key=lambda item: (item.strain_avg, item.total_atoms, item.angle_deg, item.vector_product))
-
-        optimized = finder.find_supercells(
-            self.mos2.lattice,
-            self.mos2.lattice,
-            None,
-            None,
-            angles=[0.0],
-            nindex=4,
-            tol=2e-3,
-            lin_tol=2e-3,
-            atom_count1=self.mos2.natoms,
-            atom_count2=self.mos2.natoms,
-            max_atoms=200,
-            vector_strain_tol=2e-3,
-            dedupe=True,
-        )
-
-        self.assertEqual(
-            [finder.candidate_to_dict(candidate) for candidate in reference],
-            [finder.candidate_to_dict(candidate) for candidate in optimized],
-        )
-
-    def test_findn_and_maken_can_generate_an_n_layer_stack(self):
-        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
-        temp_root.mkdir(parents=True, exist_ok=False)
-        try:
-            nlayer_run = findn.run_findn(
-                bottom_poscar=MOS2_PATH,
-                bottom_lattice=self.mos2.lattice,
-                upper_poscars=[MOS2_PATH, MOS2_PATH],
-                upper_lattices=[self.mos2.lattice, self.mos2.lattice],
-                bottom_atoms=self.mos2.natoms,
-                upper_atoms=[self.mos2.natoms, self.mos2.natoms],
-                nindex=12,
-                min_angles=[0.0, 0.0],
-                max_angles=[60.0, 60.0],
-                explicit_angles_by_layer=[[13.15], [13.15]],
-                vector_tolerance=2e-3,
-                vector_strain_tolerance=2e-3,
-                candidate_tolerance=2e-3,
-                max_atoms=400,
-                output_root=str(temp_root),
-            )
-            self.assertTrue(nlayer_run.result_path.exists())
-            self.assertGreaterEqual(len(nlayer_run.candidates), 1)
-
-            make_run = maken.generate_from_results(
-                str(nlayer_run.result_path),
-                index=1,
-                interlayers=[3.35, 3.35],
-                output_dir=str(temp_root),
-            )
-            self.assertTrue(make_run.output_path.exists())
-            self.assertEqual(make_run.total_atoms, 171)
-
-            generated = io.read_poscar(str(make_run.output_path))
-            self.assertEqual(generated.natoms, 171)
-        finally:
-            shutil.rmtree(temp_root, ignore_errors=True)
-
-    def test_findn_final_candidates_are_angle_sorted_and_unique_by_matrices(self):
-        layer_a = findn.UpperLayerCandidate(
-            layer_index=1,
-            angle_deg=20.0,
-            strain=0.002,
-            ratio_upper=1,
-            vector1=(1, 0),
-            vector2=(0, 1),
-        )
-        layer_a_worse_angle = replace(layer_a, angle_deg=24.0, strain=0.003)
-        layer_b = findn.UpperLayerCandidate(
-            layer_index=1,
-            angle_deg=5.0,
-            strain=0.001,
-            ratio_upper=2,
-            vector1=(2, 0),
-            vector2=(0, 2),
-        )
-        base = findn.NLayerCandidate(
-            strain_max=0.002,
-            strain_mean=0.002,
-            ratio_bottom=1,
-            total_atoms=20,
-            bottom_vector1=(1, 0),
-            bottom_vector2=(0, 1),
-            upper_layers=(layer_a,),
-        )
-        duplicate = replace(base, strain_max=0.003, strain_mean=0.003, upper_layers=(layer_a_worse_angle,))
-        earlier = findn.NLayerCandidate(
-            strain_max=0.001,
-            strain_mean=0.001,
-            ratio_bottom=1,
-            total_atoms=40,
-            bottom_vector1=(1, 0),
-            bottom_vector2=(0, 1),
-            upper_layers=(layer_b,),
-        )
-
-        final = findn.finalize_nlayer_candidates([base, duplicate, earlier])
-        self.assertEqual([[layer.angle_deg for layer in candidate.upper_layers] for candidate in final], [[5.0], [20.0]])
-
-    def test_findn_final_candidates_collapse_precision_equivalent_rows(self):
-        large_layer = findn.UpperLayerCandidate(
-            layer_index=1,
-            angle_deg=3.14972,
-            strain=0.001662,
-            ratio_upper=301,
-            vector1=(11, 20),
-            vector2=(20, 9),
-        )
-        compact_layer = replace(
-            large_layer,
-            angle_deg=3.14974,
-            ratio_upper=290,
-            vector1=(9, -10),
-            vector2=(20, 10),
-        )
-        large = findn.NLayerCandidate(
-            strain_max=0.001662,
-            strain_mean=0.001662,
-            ratio_bottom=300,
-            total_atoms=1803,
-            bottom_vector1=(20, 10),
-            bottom_vector2=(10, -10),
-            upper_layers=(large_layer,),
-        )
-        compact = replace(
-            large,
-            ratio_bottom=290,
-            total_atoms=1740,
-            bottom_vector1=(-10, 9),
-            bottom_vector2=(-20, -11),
-            upper_layers=(compact_layer,),
-        )
-
-        final = findn.finalize_nlayer_candidates([large, compact])
-        self.assertEqual(len(final), 1)
-        self.assertEqual(final[0].total_atoms, 1740)
-
-    def test_supermoire_wrapper_supports_base_independent_and_pairwise_modes(self):
-        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
-        temp_root.mkdir(parents=True, exist_ok=False)
-        try:
-            tool = cellstine.Supermoire(runs_root=str(temp_root / "runs"), output_root=str(temp_root / "output"))
-            independent = tool.findn(
-                bottom_poscar=MOS2_PATH,
-                upper_poscars=[MOS2_PATH],
-                nindex=8,
-                match_mode="base_independent",
-                min_angles=[0.0],
-                max_angles=[60.0],
-                explicit_angles_by_layer=[[13.15]],
-                vector_tolerance=2e-3,
-                vector_strain_tolerance=2e-3,
-                candidate_tolerance=2e-3,
-                max_atoms=300,
-                workers=1,
-            )
-            self.assertIn("results_dat_upper_1", independent.artifacts)
-            self.assertTrue(Path(independent.artifacts["results_dat_upper_1"]).exists())
-
-            pairwise = tool.findn(
-                bottom_poscar=MOS2_PATH,
-                upper_poscars=[MOS2_PATH],
-                nindex=8,
-                match_mode="pairwise",
-                min_angles=[0.0],
-                max_angles=[60.0],
-                explicit_angles_by_layer=[[13.15]],
-                vector_tolerance=2e-3,
-                vector_strain_tolerance=2e-3,
-                candidate_tolerance=2e-3,
-                max_atoms=300,
-                workers=1,
-            )
-            self.assertEqual(pairwise.summary["pair_count"], 1)
-            self.assertIn("results_dat_pair_1", pairwise.artifacts)
-            self.assertTrue(Path(pairwise.artifacts["results_dat_pair_1"]).exists())
-        finally:
-            shutil.rmtree(temp_root, ignore_errors=True)
-
-    def test_moire_translate_and_translaten_shift_only_the_top_group(self):
+    def test_moire_translate_shifts_only_the_top_group(self):
         temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
         temp_root.mkdir(parents=True, exist_ok=False)
         try:
@@ -863,28 +105,40 @@ class MoireToolkitTests(unittest.TestCase):
                 positions_are_cartesian=False,
             )
 
-            moire_tool = MoireWorkflow(runs_root=str(temp_root / "runs"), output_root=str(temp_root / "output"))
-            shifted = moire_tool.translate(poscar_path=str(stacked_path), shift_direct=[0.25, 0.0, 0.0])
+            moire_tool = MoireWorkflow(
+                runs_root=str(temp_root / "runs"),
+                output_root=str(temp_root / "output"),
+            )
+            shifted = moire_tool.translate(
+                poscar_path=str(stacked_path),
+                shift_direct=[0.25, 0.0, 0.0],
+            )
             shifted_record = io.read_poscar(str(shifted.artifacts["output_poscar"]))
-            self.assertTrue(np.allclose(shifted_record.positions_direct[:2], np.array([[0.1, 0.1, 0.10], [0.6, 0.6, 0.18]])))
-            self.assertTrue(np.allclose(shifted_record.positions_direct[2:, 0], np.array([0.45, 0.95])))
-
-            super_tool = cellstine.Supermoire(runs_root=str(temp_root / "runs2"), output_root=str(temp_root / "output2"))
-            shifted_n = super_tool.translaten(poscar_path=str(stacked_path), shift_direct=[0.0, 0.25, 0.0])
-            shifted_n_record = io.read_poscar(str(shifted_n.artifacts["output_poscar"]))
-            self.assertTrue(np.allclose(shifted_n_record.positions_direct[:2], np.array([[0.1, 0.1, 0.10], [0.6, 0.6, 0.18]])))
-            self.assertTrue(np.allclose(shifted_n_record.positions_direct[2:, 1], np.array([0.45, 0.95])))
+            self.assertTrue(
+                np.allclose(
+                    shifted_record.positions_direct[:2],
+                    np.array([[0.1, 0.1, 0.10], [0.6, 0.6, 0.18]]),
+                )
+            )
+            self.assertTrue(
+                np.allclose(
+                    shifted_record.positions_direct[2:, 0],
+                    np.array([0.45, 0.95]),
+                )
+            )
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 
-    def test_cli_help_text_mentions_matrix_filter(self):
+    def test_cli_help_text_mentions_native_gram_controls(self):
         parser = moire_cli.build_parser()
         moire_group = parser._subparsers._group_actions[0].choices["moire"]
         help_text = moire_group._subparsers._group_actions[0].choices["find"].format_help()
-        self.assertIn("matrix-values", help_text)
-        self.assertIn("bilayer commensurate candidates", help_text)
-        self.assertIn("workers", help_text)
-        self.assertIn("progress", help_text)
+        self.assertIn("--max-length", help_text)
+        self.assertIn("--top-strain", help_text)
+        self.assertIn("--bottom-strain", help_text)
+        self.assertIn("principal logarithmic strain", help_text)
+        self.assertNotIn("--nindex", help_text)
+        self.assertNotIn("--angles", help_text)
 
     def test_cli_help_text_mentions_grouped_workflows_and_subcommands(self):
         parser = moire_cli.build_parser()
@@ -897,9 +151,11 @@ class MoireToolkitTests(unittest.TestCase):
 
         moire_group = choices["moire"]
         moire_choices = moire_group._subparsers._group_actions[0].choices
-        self.assertIn("findn", moire_choices)
-        self.assertIn("maken", moire_choices)
+        self.assertIn("find", moire_choices)
+        self.assertIn("make", moire_choices)
         self.assertIn("visualize", moire_choices)
+        self.assertNotIn("findn", moire_choices)
+        self.assertNotIn("maken", moire_choices)
 
         adsorbate_choices = choices["adsorbate"]._subparsers._group_actions[0].choices
         self.assertIn("place", adsorbate_choices)
@@ -1104,52 +360,6 @@ class MoireToolkitTests(unittest.TestCase):
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 
-    def test_candidate_preview_sorts_by_angle_and_uses_percent_units(self):
-        preview = format_bilayer_candidates(
-            [
-                {
-                    "idx": 7,
-                    "angle": 12.0,
-                    "strain_avg": 0.001,
-                    "strain1": 0.001,
-                    "strain2": 0.001,
-                    "atoms": 80,
-                    "ratio1": 1,
-                    "ratio2": 1,
-                    "i11": 1,
-                    "i12": 0,
-                    "i21": 0,
-                    "i22": 1,
-                    "j11": 1,
-                    "j12": 0,
-                    "j21": 0,
-                    "j22": 1,
-                },
-                {
-                    "idx": 3,
-                    "angle": 6.0,
-                    "strain_avg": 0.02,
-                    "strain1": 0.02,
-                    "strain2": 0.02,
-                    "atoms": 40,
-                    "ratio1": 1,
-                    "ratio2": 1,
-                    "i11": 1,
-                    "i12": 0,
-                    "i21": 0,
-                    "i22": 1,
-                    "j11": 1,
-                    "j12": 0,
-                    "j21": 0,
-                    "j22": 1,
-                },
-            ],
-            limit=1,
-        )
-        self.assertIn("strain_avg(%)", preview)
-        self.assertIn("   3", preview)
-        self.assertNotIn("   7", preview)
-
     def test_adsorption_site_preview_shows_direct_and_cartesian_coordinates(self):
         sites = [
             surface.AdsorptionSite("top", (0.25, 0.5, 0.75), (1.0, 2.0, 3.0)),
@@ -1158,27 +368,6 @@ class MoireToolkitTests(unittest.TestCase):
         self.assertIn("direct (u, v, w)", preview)
         self.assertIn("cartesian (x, y, z) Ang", preview)
         self.assertIn("top", preview)
-
-    def test_moire_workflow_wrapper_writes_manifest(self):
-        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
-        temp_root.mkdir(parents=True, exist_ok=False)
-        try:
-            tool = MoireWorkflow(runs_root=str(temp_root / "runs"), output_root=str(temp_root / "output"))
-            result = tool.find(
-                top_poscar=MOS2_PATH,
-                bottom_poscar=MOS2_PATH,
-                nindex=4,
-                explicit_angles=[13.15],
-                max_atoms=200,
-                workers=1,
-            )
-            self.assertTrue(Path(result.manifest_path).exists())
-            self.assertIn("results_dat", result.artifacts)
-            self.assertIn("timings_s", result.payload)
-            self.assertIn("angle_shortlist_s", result.payload["timings_s"])
-            self.assertIn("supercell_search_s", result.payload["timings_s"])
-        finally:
-            shutil.rmtree(temp_root, ignore_errors=True)
 
     def test_defect_native_analysis_groups_fcc_bulk_sites(self):
         temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
@@ -1612,43 +801,6 @@ class MoireToolkitTests(unittest.TestCase):
             self.assertEqual(list(struct2.counts), [2])
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
-
-    def test_moire_prefiltered_matching_equivalence(self):
-        from cellstine.moire.search import lattice as lat
-        lat1 = np.array([[2.46, 0.0, 0.0], [-1.23, 2.13, 0.0], [0.0, 0.0, 10.0]])
-        lat2 = np.array([[3.15, 0.0, 0.0], [-1.575, 2.728, 0.0], [0.0, 0.0, 10.0]])
-
-        # Test original brute force vs precomputed candidates in find_coincident_vector_pairs
-        nindex = 10
-        tol = 0.05
-        strain_tol = 0.05
-
-        # Brute force
-        res_brute = lat.find_coincident_vector_pairs(
-            lat1, lat2, nindex, tol, strain_tolerance=strain_tol, precomputed_candidates=None
-        )
-
-        # Precomputed candidates
-        # 1. Precompute norms and mismatch
-        coeffs1, vectors1 = lat.enumerate_in_plane_vectors(lat1, nindex)
-        coeffs2, vectors2 = lat.enumerate_in_plane_vectors(lat2, nindex)
-        norms1 = np.linalg.norm(vectors1, axis=1)
-        norms2 = np.linalg.norm(vectors2, axis=1)
-        length_mismatch = np.abs(norms1[:, None] - norms2[None, :]) / np.maximum((norms1[:, None] + norms2[None, :]) * 0.5, 1e-12)
-        limit = 2.0 * tol
-        candidate_mask = length_mismatch <= limit
-        match_rows, match_cols = np.nonzero(candidate_mask)
-        precomputed = (match_rows, match_cols, norms1, norms2, length_mismatch)
-
-        res_opt = lat.find_coincident_vector_pairs(
-            lat1, lat2, nindex, tol, strain_tolerance=strain_tol, precomputed_candidates=precomputed
-        )
-
-        # Assert they yield the exact same matches
-        self.assertEqual(len(res_brute), len(res_opt))
-        set_brute = {(m.layer1_coeffs, m.layer2_coeffs) for m in res_brute}
-        set_opt = {(m.layer1_coeffs, m.layer2_coeffs) for m in res_opt}
-        self.assertEqual(set_brute, set_opt)
 
     def test_interface_surface_and_build_wrappers_create_artifacts(self):
         temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
@@ -2634,64 +1786,6 @@ class MoireToolkitTests(unittest.TestCase):
         self.assertGreater(_marker_size("Au", projection="2d"), _marker_size("C", projection="2d"))
         self.assertGreater(_marker_size("C", projection="2d"), _marker_size("H", projection="2d"))
         self.assertGreater(_marker_size("Au", projection="3d"), _marker_size("C", projection="3d"))
-
-    def test_visualize_writes_html_for_bilayer_and_nlayer_results(self):
-        temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
-        temp_root.mkdir(parents=True, exist_ok=False)
-        try:
-            bilayer_run = find.run_find(
-                top_poscar=MOS2_PATH,
-                bottom_poscar=MOS2_PATH,
-                top_lattice=self.mos2.lattice,
-                bottom_lattice=self.mos2.lattice,
-                top_atoms=self.mos2.natoms,
-                bottom_atoms=self.mos2.natoms,
-                nindex=12,
-                explicit_angles=[13.15],
-                vector_tolerance=2e-3,
-                vector_strain_tolerance=2e-3,
-                candidate_tolerance=2e-3,
-                max_atoms=200,
-                output_root=str(temp_root),
-            )
-            bilayer_html = temp_root / "bilayer_viewer.html"
-            bilayer_view = visualize.build_visualization(
-                str(bilayer_run.dat_path),
-                indices=[1],
-                output_path=str(bilayer_html),
-            )
-            self.assertEqual(bilayer_view.results_type, "bilayer")
-            self.assertTrue(bilayer_html.exists())
-            self.assertIn("CELLSTINE Visualizer", bilayer_html.read_text(encoding="utf-8"))
-
-            nlayer_run = findn.run_findn(
-                bottom_poscar=MOS2_PATH,
-                bottom_lattice=self.mos2.lattice,
-                upper_poscars=[MOS2_PATH, MOS2_PATH],
-                upper_lattices=[self.mos2.lattice, self.mos2.lattice],
-                bottom_atoms=self.mos2.natoms,
-                upper_atoms=[self.mos2.natoms, self.mos2.natoms],
-                nindex=12,
-                min_angles=[0.0, 0.0],
-                max_angles=[60.0, 60.0],
-                explicit_angles_by_layer=[[13.15], [13.15]],
-                vector_tolerance=2e-3,
-                vector_strain_tolerance=2e-3,
-                candidate_tolerance=2e-3,
-                max_atoms=400,
-                output_root=str(temp_root),
-            )
-            nlayer_html = temp_root / "nlayer_viewer.html"
-            nlayer_view = visualize.build_visualization(
-                str(nlayer_run.result_path),
-                indices=[1],
-                output_path=str(nlayer_html),
-            )
-            self.assertEqual(nlayer_view.results_type, "nlayer")
-            self.assertTrue(nlayer_html.exists())
-            self.assertIn("3-layer commensurate twist sequence", nlayer_html.read_text(encoding="utf-8"))
-        finally:
-            shutil.rmtree(temp_root, ignore_errors=True)
 
 
 if __name__ == '__main__':
