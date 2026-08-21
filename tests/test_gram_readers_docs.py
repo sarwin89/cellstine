@@ -165,7 +165,8 @@ def test_public_moire_docs_describe_only_the_native_json_workflow():
         ROOT / "src" / "cellstine" / "moire" / "MOIRE_SEARCH.md",
     ]
     documents = {
-        str(path.relative_to(ROOT)): path.read_text(encoding="utf-8") for path in paths
+        path.relative_to(ROOT).as_posix(): path.read_text(encoding="utf-8")
+        for path in paths
     }
 
     for name, text in documents.items():
@@ -193,7 +194,7 @@ def test_public_moire_docs_describe_only_the_native_json_workflow():
             "results.dat",
         ):
             assert retired not in text, f"{name} still recommends {retired}"
-        normalized_doc = re.sub(r"[`*_]", "", text).lower()
+        normalized_doc = " ".join(re.sub(r"[`*_]", "", text).lower().split())
         assert "n-layer moire workflows are not supported" in normalized_doc
         assert "symmetric" in normalized_doc
         assert "falls back to the general search" in normalized_doc

@@ -1,20 +1,37 @@
-# Moire Search Performance
+# Moire search performance
 
-CELLSTINE's optimized moire search treats the twist angle as an output of vector matching rather than sweeping every angle on a fixed grid.
+The native Gram-form search enumerates reduced bilayer cell shapes up to the
+physical length bound and joins compatible top and bottom forms. Search cost
+therefore depends on `--max-length`, the lattice geometry, the sum of
+`--top-strain` and `--bottom-strain`, and optional cell-shape or atom-count
+bounds.
 
-## Practical Guidance
-
-- `nindex` controls the integer search range. Larger values can grow very quickly.
-- Strain tolerances are fractions. For example, `0.001` is 0.1 percent and `0.02` is 2 percent.
-- Wide strain bands at large `nindex` can create near-continuous angle families and many vector-pair candidates.
-- Use `--workers` for larger searches when multiprocessing overhead is worth it.
-- Use `--progress` when running expensive searches so timing stages are visible.
-
-## Useful Commands
+Here **strain** is principal logarithmic strain, `h = log(lambda)`. The accepted
+relative principal strain is bounded by the sum of the two layer budgets and
+shared optimally between the layers. A representative native workflow is:
 
 ```bash
-cellstine moire find input/examples/graph.vasp input/examples/graph.vasp --nindex 40 --angle-strain-tolerance 0.001 --workers 4 --progress
-cellstine moire find input/examples/mos2.vasp input/examples/mos2.vasp --nindex 20 --max-pair-matches 2000000 --progress
+cellstine moire find input/examples/mos2.vasp input/examples/mos2.vasp --max-length 20 --top-strain 0.01 --bottom-strain 0.01 --progress
+cellstine moire make runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
 ```
 
-The detailed implementation note also lives near the source in `src/cellstine/moire/MOIRE_SEARCH.md`.
+The finder writes schema-versioned `results.json`. `--symmetric` requests a
+restricted square/hexagonal family and falls back to the general search when it
+is inapplicable. N-layer moire workflows are not supported in this release.
+
+## Reproducible benchmark
+
+Run from the repository root:
+
+```bash
+python benchmarks/benchmark_gram_search.py
+```
+
+The benchmark compares independent canonical candidate classes from a direct
+reference enumeration with the native Gram search at three increasing length
+bounds. It stops on mismatch. Reported timings and scaling ratios are measured
+wall-clock values, so compare candidate-class equality first and treat speed as
+host-dependent evidence rather than a fixed performance promise.
+
+For the algorithm and JSON fields, see the
+[native Gram-form search note](../src/cellstine/moire/MOIRE_SEARCH.md).

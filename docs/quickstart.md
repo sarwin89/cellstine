@@ -14,7 +14,7 @@ Install optional scientific and visualization backends when needed:
 python -m pip install -e ".[all]"
 ```
 
-## Check The CLI
+## Check the CLI
 
 ```bash
 cellstine --help
@@ -23,13 +23,23 @@ cellstine --version
 
 Running `cellstine` without arguments starts the guided interface.
 
-## First Commands
+## First commands
 
-Find commensurate MoS2/MoS2 cells:
+Find native Gram-form MoS2/MoS2 bilayer candidates, then build candidate 1
+from the schema-versioned JSON:
 
 ```bash
-cellstine moire find input/examples/mos2.vasp input/examples/mos2.vasp --nindex 8
+cellstine moire find input/examples/mos2.vasp input/examples/mos2.vasp --max-length 20 --top-strain 0.01 --bottom-strain 0.01
+cellstine moire make runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
 ```
+
+Here moire **strain** is principal logarithmic strain, `h = log(lambda)`, for
+principal stretch `lambda`. The accepted relative strain is bounded by the sum
+of the two layer budgets and shared optimally between the layers. `--symmetric`
+requests the restricted square/hexagonal family and falls back to the general
+search when it is inapplicable. N-layer moire workflows are not supported in
+this release. See the [moire workflow](workflows/moire.md) for details and the
+[performance note](moire-performance.md) for the reproducible benchmark.
 
 Generate an Au(111) slab:
 
@@ -49,7 +59,7 @@ Analyse symmetry:
 cellstine symmetry analyse input/examples/Au_Bulk.vasp
 ```
 
-## Folder Layout
+## Folder layout
 
 ```text
 input/examples/    Public sample inputs
