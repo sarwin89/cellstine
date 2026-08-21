@@ -159,9 +159,14 @@ def test_public_moire_docs_describe_only_the_native_json_workflow():
     paths = [
         ROOT / "README.md",
         ROOT / "USAGE_GUIDE.md",
+        ROOT / "docs" / "quickstart.md",
+        ROOT / "docs" / "workflows" / "moire.md",
+        ROOT / "docs" / "moire-performance.md",
         ROOT / "src" / "cellstine" / "moire" / "MOIRE_SEARCH.md",
     ]
-    documents = {path.name: path.read_text(encoding="utf-8") for path in paths}
+    documents = {
+        str(path.relative_to(ROOT)): path.read_text(encoding="utf-8") for path in paths
+    }
 
     for name, text in documents.items():
         for required in (
@@ -174,6 +179,24 @@ def test_public_moire_docs_describe_only_the_native_json_workflow():
             assert required in text, f"{name} is missing {required}"
         for retired in ("--nindex", "--angles", "moire findn", "moire maken"):
             assert retired not in text, f"{name} still recommends {retired}"
+
+    readme_linked = {
+        name: text
+        for name, text in documents.items()
+        if name.startswith("docs/")
+    }
+    for name, text in readme_linked.items():
+        for retired in (
+            "--angle-strain-tolerance",
+            "--workers",
+            "--max-pair-matches",
+            "results.dat",
+        ):
+            assert retired not in text, f"{name} still recommends {retired}"
+        normalized_doc = re.sub(r"[`*_]", "", text).lower()
+        assert "n-layer moire workflows are not supported" in normalized_doc
+        assert "symmetric" in normalized_doc
+        assert "falls back to the general search" in normalized_doc
 
     combined = "\n".join(documents.values())
     normalized = re.sub(r"[`*_]", "", combined).lower()

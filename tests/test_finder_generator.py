@@ -462,9 +462,15 @@ class MoireToolkitTests(unittest.TestCase):
                 positions_are_cartesian=False,
             )
             namespace = moire_cli.build_parser().parse_args(["symmetry", "analyse", str(structure_path), "--backend", "native"])
-            result = cli_main.execute_namespace(namespace)
+            tool = SymmetryWorkflow(
+                runs_root=str(temp_root / "runs"),
+                output_root=str(temp_root / "output"),
+            )
+            with mock.patch.object(cli_main, "Symmetry", return_value=tool):
+                result = cli_main.execute_namespace(namespace)
             self.assertIn("symmetry_preview", result.payload)
             self.assertEqual(result.summary["backend"], "native")
+            self.assertTrue(Path(result.manifest_path).is_relative_to(temp_root))
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 
@@ -524,9 +530,15 @@ class MoireToolkitTests(unittest.TestCase):
             namespace = moire_cli.build_parser().parse_args(
                 ["symmetry", "reduce", str(structure_path), "--cell", "conventional", "--backend", "spglib"]
             )
-            result = cli_main.execute_namespace(namespace)
+            tool = SymmetryWorkflow(
+                runs_root=str(temp_root / "runs"),
+                output_root=str(temp_root / "output"),
+            )
+            with mock.patch.object(cli_main, "Symmetry", return_value=tool):
+                result = cli_main.execute_namespace(namespace)
             self.assertTrue(Path(result.artifacts["output_poscar"]).exists())
             self.assertEqual(result.summary["cell"], "conventional")
+            self.assertTrue(Path(result.artifacts["output_poscar"]).is_relative_to(temp_root))
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 
@@ -627,9 +639,15 @@ class MoireToolkitTests(unittest.TestCase):
             namespace = moire_cli.build_parser().parse_args(
                 ["defect", "preview", str(structure_path), "--structure-kind", "bulk", "--backend", "native"]
             )
-            result = cli_main.execute_namespace(namespace)
+            tool = DefectWorkflow(
+                runs_root=str(temp_root / "runs"),
+                output_root=str(temp_root / "output"),
+            )
+            with mock.patch.object(cli_main, "Defect", return_value=tool):
+                result = cli_main.execute_namespace(namespace)
             self.assertIn("defect_preview", result.payload)
             self.assertIn("atom_001", result.payload["defect_preview"])
+            self.assertTrue(Path(result.manifest_path).is_relative_to(temp_root))
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 
