@@ -8,6 +8,7 @@ from typing import Sequence
 from ..core.base import Base, run_output_suffix
 from ..core.models import CommandResult
 from ..io.converters import StructureConverter
+from ..moire.search.results import read_results
 from .backends.matplotlib import plot_moire_summary, plot_structure_multiview
 from .backends.plotly import write_structure_html
 from .results.plotly import build_visualization
@@ -36,7 +37,10 @@ class Visualize(Base):
     ) -> CommandResult:
         run_id, run_dir = self.create_run_dir("moire", Path(results_file).stem)
         output_suffix = run_output_suffix(run_id)
-        resolved_results = self.resolve_results_file(results_file, artifact_keys=("results_dat", "results_json"))
+        resolved_results = self.resolve_results_file(
+            results_file, artifact_keys=("results_json", "results_dat")
+        )
+        read_results(resolved_results)
         if plotly:
             output = output_path or str(self.output_root / f"moire_viewer_{output_suffix}.html")
             run = build_visualization(

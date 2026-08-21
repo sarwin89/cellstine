@@ -10,7 +10,7 @@ CELLSTINE is a Python package and guided CLI for building VASP-style atomistic s
 
 ## What It Does
 
-- Finds and builds commensurate bilayer and N-layer moire structures.
+- Finds and builds commensurate bilayer moire structures with the native Gram-form engine.
 - Places, moves, rotates, and reframes molecules on substrate slabs.
 - Generates slabs from bulk cells and detects adsorption sites.
 - Builds slab-on-slab interfaces and screens bulk surface matches.
@@ -52,7 +52,8 @@ cellstine
 Or run a workflow directly:
 
 ```bash
-cellstine moire find input/examples/mos2.vasp input/examples/mos2.vasp --nindex 8
+cellstine moire find input/examples/mos2.vasp input/examples/mos2.vasp --max-length 20 --top-strain 0.01 --bottom-strain 0.01
+cellstine moire make runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
 cellstine interface surface input/examples/Au_Bulk.vasp --miller 111 --layers 4 --vacuum 15
 cellstine interface sites output/examples/Au_Bulk_111_surface.vasp
 cellstine symmetry analyse input/examples/Au_Bulk.vasp
@@ -77,6 +78,18 @@ runs/     Manifests and intermediate workflow artifacts
 
 Generated files outside the `examples/` folders are ignored by Git.
 
+The native moire search writes schema-versioned `results.json`; previews,
+builders, and visualizers consume that file rather than positional tables.
+Here **strain** means principal logarithmic strain, `h = log(lambda)`, for a
+principal stretch `lambda`. The accepted relative principal strain is bounded
+by the sum of the top and bottom strain budgets and is shared optimally between
+the layers for each candidate. This name is deliberate: it is scientifically
+precise while keeping the CLI readable. `--symmetric` requests a restricted
+square/hexagonal symmetry-preserving family and falls back to the general search
+when inapplicable. N-layer moire workflows are not supported in this release.
+See the [moire search note](src/cellstine/moire/MOIRE_SEARCH.md) for the algorithm,
+JSON fields, external Aristotle/Lean reference, and reproducibility details.
+
 ## Documentation
 
 - [Documentation index](docs/README.md)
@@ -97,8 +110,17 @@ Generated files outside the `examples/` folders are ignored by Git.
 Run the test suite:
 
 ```bash
-python -m unittest discover -s tests -q
+python -m pytest -q tests
 ```
+
+Reproduce the three-bound canonical-class comparison and host-dependent timings:
+
+```bash
+python benchmarks/benchmark_gram_search.py
+```
+
+The benchmark compares independent canonical candidate classes, stops on
+mismatch, and reports actual timings at three increasing length bounds.
 
 The package uses a `src/` layout, with workflow code under `src/cellstine/` and regression tests under `tests/`.
 

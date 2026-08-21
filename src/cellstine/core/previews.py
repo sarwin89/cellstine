@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from typing import Any, Iterable, Sequence
 
+from ..moire.search.results import read_results
 from .manifests import RunManifest
 
 
@@ -36,10 +37,81 @@ def _percent(value: Any) -> float:
     return 100.0 * float(value or 0.0)
 
 
+def _format_matrix(value: Any, *, precision: int | None = None) -> str:
+    rows = list(value)
+    if precision is None:
+        return "[" + ", ".join(
+            "[" + ", ".join(str(int(item)) for item in row) + "]" for row in rows
+        ) + "]"
+    return "[" + ", ".join(
+        "[" + ", ".join(f"{float(item):.{precision}f}" for item in row) + "]"
+        for row in rows
+    ) + "]"
+
+
+def _format_gram_candidates(
+    candidates: Sequence[Any], *, limit: int, title: str | None
+) -> str:
+    rows = sorted(
+        list(candidates),
+        key=lambda item: (
+            float(_get(item, "angle_deg", default=0.0)),
+            int(_get(item, "rank", default=0)),
+            int(_get(item, "atom_count", default=0)),
+        ),
+    )
+    shown = rows[: max(0, int(limit))]
+    if not shown:
+        return "No bilayer candidates found."
+
+    lines = []
+    if title:
+        lines.append(str(title))
+    lines.extend(
+        [
+            " idx  angle (deg)  relative principal strain (%)  top strain (%)  bottom strain (%)  top/bottom/total atoms  rank  Pareto  certification",
+            "-" * 142,
+        ]
+    )
+    for candidate in shown:
+        strains = list(_get(candidate, "strain", default=(0.0, 0.0)))
+        certification = (
+            "borderline"
+            if bool(_get(candidate, "loewner_borderline", default=False))
+            else "certified"
+            if bool(_get(candidate, "loewner_certified", default=False))
+            else "uncertified"
+        )
+        lines.append(
+            f"{int(_get(candidate, 'index')):4d}  "
+            f"{float(_get(candidate, 'angle_deg')):11.4f}  "
+            f"({100.0 * float(strains[0]):+9.4f}, {100.0 * float(strains[1]):+9.4f})  "
+            f"{_percent(_get(candidate, 'top_strain')):14.4f}  "
+            f"{_percent(_get(candidate, 'bottom_strain')):17.4f}  "
+            f"{int(_get(candidate, 'top_atom_count')):4d}/"
+            f"{int(_get(candidate, 'bottom_atom_count')):6d}/"
+            f"{int(_get(candidate, 'atom_count')):5d}  "
+            f"{int(_get(candidate, 'rank')):4d}  "
+            f"{'yes' if bool(_get(candidate, 'pareto_optimal')) else 'no':>6s}  "
+            f"{certification}"
+        )
+        lines.append(
+            "      "
+            f"top matrix={_format_matrix(_get(candidate, 'top_matrix'))}; "
+            f"bottom matrix={_format_matrix(_get(candidate, 'bottom_matrix'))}; "
+            f"shared lattice={_format_matrix(_get(candidate, 'shared_lattice'), precision=6)}"
+        )
+    if len(rows) > len(shown):
+        lines.append(f"... {len(rows) - len(shown)} more candidate(s) not shown.")
+    return "\n".join(lines)
+
+
 def format_bilayer_candidates(candidates: Sequence[Any], *, limit: int = 10, title: str | None = None) -> str:
     """Return a compact table of bilayer candidates in increasing angle order."""
 
     rows = list(candidates)
+    if rows and _get(rows[0], "top_matrix", default=None) is not None:
+        return _format_gram_candidates(rows, limit=limit, title=title)
     rows.sort(
         key=lambda item: (
             float(_get(item, "angle_deg", "angle", default=0.0)),
@@ -123,51 +195,9 @@ def format_nlayer_candidates(candidates: Sequence[Any], *, limit: int = 10, titl
     return "\n".join(lines)
 
 
-def _parse_dat_candidates(path: Path) -> list[dict[str, Any]]:
-    rows: list[dict[str, Any]] = []
-    with path.open("r", encoding="utf-8") as handle:
-        for raw_line in handle:
-            stripped = raw_line.strip()
-            if not stripped.startswith("|"):
-                continue
-            parts = [part.strip() for part in stripped.split("|") if part.strip()]
-            if not parts or parts[0].lower() == "idx":
-                continue
-            if len(parts) < 13:
-                continue
-            ratio1, ratio2 = [int(value) for value in parts[6].split("/")]
-            i11, i12 = [int(value) for value in parts[7].split()]
-            i21, i22 = [int(value) for value in parts[8].split()]
-            j11, j12 = [int(value) for value in parts[9].split()]
-            j21, j22 = [int(value) for value in parts[10].split()]
-            rows.append(
-                {
-                    "idx": int(parts[0]),
-                    "angle": float(parts[1]),
-                    "strain_avg": float(parts[2]),
-                    "strain1": float(parts[3]),
-                    "strain2": float(parts[4]),
-                    "atoms": int(parts[5]),
-                    "ratio1": ratio1,
-                    "ratio2": ratio2,
-                    "i11": i11,
-                    "i12": i12,
-                    "i21": i21,
-                    "i22": i22,
-                    "j11": j11,
-                    "j12": j12,
-                    "j21": j21,
-                    "j22": j22,
-                    "aspect": float(parts[11]) if len(parts) > 13 else 0.0,
-                    "min_angle": float(parts[12]) if len(parts) > 13 else 0.0,
-                }
-            )
-    return rows
-
-
 def _iter_manifest_result_paths(path: Path) -> Iterable[Path]:
     manifest = RunManifest.load(path)
-    priority = ["results_dat", "results_json"]
+    priority = ["results_json", "results_dat"]
     for key in priority:
         value = manifest.artifacts.get(key)
         if value is not None:
@@ -180,23 +210,30 @@ def _iter_manifest_result_paths(path: Path) -> Iterable[Path]:
 
 
 def preview_moire_results_file(path: str | Path, *, limit: int = 15) -> str:
-    """Preview saved bilayer or N-layer moire result files."""
+    """Preview validated native Gram JSON, rejecting positional DAT results."""
 
     source = Path(path).resolve()
     result_paths = list(_iter_manifest_result_paths(source)) if source.name == "manifest.json" else [source]
     sections = []
     for result_path in result_paths:
-        if result_path.suffix.lower() == ".dat":
-            sections.append(format_bilayer_candidates(_parse_dat_candidates(result_path), limit=limit, title=f"Saved candidates: {result_path.name}"))
-            continue
-        if result_path.suffix.lower() == ".json":
-            with result_path.open("r", encoding="utf-8") as handle:
-                payload = json.load(handle)
-            candidates = list(payload.get("candidates", []))
-            if candidates and "upper_layers" in candidates[0]:
-                sections.append(format_nlayer_candidates(candidates, limit=limit, title=f"Saved N-layer candidates: {result_path.name}"))
-            else:
-                sections.append(format_bilayer_candidates(candidates, limit=limit, title=f"Saved candidates: {result_path.name}"))
+        payload = read_results(result_path)
+        search = payload["search"]
+        metadata = payload["metadata"]
+        fallback = metadata["symmetric_fallback"] or "none"
+        title = (
+            f"Saved Gram candidates: {result_path.name}\n"
+            f"schema={payload['schema']} v{payload['version']}; "
+            f"engine={metadata['engine']}; max length={float(search['max_length']):g} Angstrom; "
+            f"top strain={float(search['top_strain']):g}; "
+            f"bottom strain={float(search['bottom_strain']):g}; "
+            f"symmetric requested={metadata['symmetric_requested']}; "
+            f"symmetric used={metadata['symmetric_used']}; "
+            f"symmetric fallback={fallback}; "
+            f"stage stats={json.dumps(metadata['stage_stats'], sort_keys=True)}"
+        )
+        sections.append(
+            format_bilayer_candidates(payload["candidates"], limit=limit, title=title)
+        )
     return "\n\n".join(section for section in sections if section) or "No saved candidates could be previewed."
 
 

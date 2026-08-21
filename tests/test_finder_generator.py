@@ -23,7 +23,6 @@ from cellstine.adsorbate.molecule import Molecule as MoleculeWorkflow
 from cellstine.interface.surface import backend as surface
 from cellstine.interface.surface.surface import Surface as InterfaceSurface, _stacking_sequence
 from cellstine.interface.workflow.interface import Interface as InterfaceWorkflow, parse_miller_notation
-from cellstine.moire.builder import generator
 from cellstine.moire.builder import make
 from cellstine.moire.search import find, lattice
 from cellstine.visualize.backends.matplotlib import _marker_size
@@ -44,15 +43,32 @@ def _sample_path(filename: str) -> str:
 
 
 MOS2_PATH = _sample_path('mos2.vasp')
-CU110_PATH = _sample_path('Cu110_truncated_bulk.vasp')
-RELAXED_OVERLAYER_PATH = _sample_path('relaxed_overlayer_monoclinic.vasp')
+
+
+def _simple_adsorbate_stack():
+    lattice_out = np.diag([8.0, 8.0, 20.0])
+    positions_cartesian = np.array(
+        [
+            [1.0, 1.0, 1.0],
+            [4.0, 4.0, 1.5],
+            [2.5, 3.0, 4.85],
+            [3.5, 3.0, 6.0],
+        ],
+        dtype=float,
+    )
+    return (
+        lattice_out,
+        io.cartesian_to_direct(positions_cartesian, lattice_out),
+        [2, 1, 1],
+        ["Cu", "C", "O"],
+        None,
+    )
+
 
 class MoireToolkitTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mos2 = io.read_poscar(MOS2_PATH)
-        cls.cu110 = io.read_poscar(CU110_PATH)
-        cls.relaxed_overlayer = io.read_poscar(RELAXED_OVERLAYER_PATH)
 
     def test_native_gram_find_to_json_make(self):
         temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
@@ -897,51 +913,6 @@ class MoireToolkitTests(unittest.TestCase):
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 
-    def test_substrate_stack_uses_sufficient_c_axis_and_requested_gap(self):
-        coef = {
-            "angle": 43.3139,
-            "ratio1": 1,
-            "ratio2": 11,
-            "i11": -1,
-            "i12": 0,
-            "i21": 0,
-            "i22": -1,
-            "j11": -3,
-            "j12": -2,
-            "j21": 4,
-            "j22": -1,
-        }
-
-        lattice_out, positions_direct, counts, species, _ = generator.build_supercell(
-            RELAXED_OVERLAYER_PATH,
-            CU110_PATH,
-            coef,
-            interlayer_distance=3.35,
-            preserve_layer="2",
-        )
-
-        expanded_species = []
-        for symbol, count in zip(species, counts):
-            expanded_species.extend([symbol] * int(count))
-
-        cartesian = io.direct_to_cartesian(positions_direct, lattice_out)
-        species_array = np.array(expanded_species)
-        top_mask = species_array != "Cu"
-        bottom_mask = species_array == "Cu"
-
-        self.assertTrue(np.any(top_mask))
-        self.assertTrue(np.any(bottom_mask))
-
-        gap = float(cartesian[top_mask, 2].min() - cartesian[bottom_mask, 2].max())
-        self.assertAlmostEqual(gap, 3.35, places=6)
-
-        output_c = float(np.linalg.norm(lattice_out[2]))
-        reference_c = max(
-            float(np.linalg.norm(self.relaxed_overlayer.lattice[2])),
-            float(np.linalg.norm(self.cu110.lattice[2])),
-        )
-        self.assertGreaterEqual(output_c + 1e-9, reference_c)
-
     def test_surface_builder_creates_a_slab_from_a_simple_cubic_bulk(self):
         temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
         temp_root.mkdir(parents=True, exist_ok=False)
@@ -1549,27 +1520,7 @@ class MoireToolkitTests(unittest.TestCase):
             shutil.rmtree(temp_root, ignore_errors=True)
 
     def test_molecule_stage_isolates_and_rigidly_rotates_adsorbate(self):
-        coef = {
-            "angle": 43.3139,
-            "ratio1": 1,
-            "ratio2": 11,
-            "i11": -1,
-            "i12": 0,
-            "i21": 0,
-            "i22": -1,
-            "j11": -3,
-            "j12": -2,
-            "j21": 4,
-            "j22": -1,
-        }
-
-        lattice_out, positions_direct, counts, species, flags = generator.build_supercell(
-            RELAXED_OVERLAYER_PATH,
-            CU110_PATH,
-            coef,
-            interlayer_distance=3.35,
-            preserve_layer="2",
-        )
+        lattice_out, positions_direct, counts, species, flags = _simple_adsorbate_stack()
 
         temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
         temp_root.mkdir(parents=True, exist_ok=False)
@@ -1588,8 +1539,8 @@ class MoireToolkitTests(unittest.TestCase):
 
             stacked = io.read_poscar(str(stack_path))
             selection = molecule.identify_top_group(stacked)
-            self.assertEqual(selection.molecule_atom_count, self.relaxed_overlayer.natoms)
-            self.assertEqual(selection.substrate_atom_count, 11 * self.cu110.natoms)
+            self.assertEqual(selection.molecule_atom_count, 2)
+            self.assertEqual(selection.substrate_atom_count, 2)
 
             reference_index = selection.molecule_indices[0]
             before_vector = stacked.positions_cartesian[reference_index] - selection.center_of_mass_cartesian
@@ -1614,27 +1565,7 @@ class MoireToolkitTests(unittest.TestCase):
             shutil.rmtree(temp_root, ignore_errors=True)
 
     def test_identify_top_group_respects_manual_cutoff_and_reports_matching_metadata(self):
-        coef = {
-            "angle": 43.3139,
-            "ratio1": 1,
-            "ratio2": 11,
-            "i11": -1,
-            "i12": 0,
-            "i21": 0,
-            "i22": -1,
-            "j11": -3,
-            "j12": -2,
-            "j21": 4,
-            "j22": -1,
-        }
-
-        lattice_out, positions_direct, counts, species, flags = generator.build_supercell(
-            RELAXED_OVERLAYER_PATH,
-            CU110_PATH,
-            coef,
-            interlayer_distance=3.35,
-            preserve_layer="2",
-        )
+        lattice_out, positions_direct, counts, species, flags = _simple_adsorbate_stack()
 
         temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
         temp_root.mkdir(parents=True, exist_ok=False)
@@ -1658,7 +1589,7 @@ class MoireToolkitTests(unittest.TestCase):
             self.assertEqual(int(np.count_nonzero(z_values > selection.z_cutoff)), selection.molecule_atom_count)
             self.assertAlmostEqual(selection.gap_size, 3.35, places=6)
 
-            manual_cutoff = float(selection.z_cutoff + 10.0)
+            manual_cutoff = float(np.min(z_values[list(selection.molecule_indices)]) + 0.1)
             manual_selection = molecule.identify_top_group(stacked, z_cutoff=manual_cutoff)
             expected_manual_count = int(np.count_nonzero(z_values > manual_cutoff))
 
@@ -1668,27 +1599,7 @@ class MoireToolkitTests(unittest.TestCase):
             shutil.rmtree(temp_root, ignore_errors=True)
 
     def test_molecule_reframe_handles_boundary_crossing_adsorbate(self):
-        coef = {
-            "angle": 43.3139,
-            "ratio1": 1,
-            "ratio2": 11,
-            "i11": -1,
-            "i12": 0,
-            "i21": 0,
-            "i22": -1,
-            "j11": -3,
-            "j12": -2,
-            "j21": 4,
-            "j22": -1,
-        }
-
-        lattice_out, positions_direct, counts, species, flags = generator.build_supercell(
-            RELAXED_OVERLAYER_PATH,
-            CU110_PATH,
-            coef,
-            interlayer_distance=3.35,
-            preserve_layer="2",
-        )
+        lattice_out, positions_direct, counts, species, flags = _simple_adsorbate_stack()
 
         temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
         temp_root.mkdir(parents=True, exist_ok=False)
@@ -1718,7 +1629,7 @@ class MoireToolkitTests(unittest.TestCase):
             selection = molecule.identify_top_group(reframed, z_cutoff=run.z_cutoff)
             molecule_direct = reframed.positions_direct[np.array(selection.molecule_indices, dtype=int)]
 
-            self.assertEqual(selection.molecule_atom_count, self.relaxed_overlayer.natoms)
+            self.assertEqual(selection.molecule_atom_count, 2)
             self.assertTrue(np.allclose(selection.center_of_mass_cartesian, run.center_of_mass_after, atol=1e-6))
             self.assertTrue(np.allclose(selection.center_of_mass_cartesian, run.target_cartesian, atol=1e-6))
             self.assertLessEqual(float(np.max(molecule_direct[:, 0]) - np.min(molecule_direct[:, 0])), 1.0 + 1e-8)
@@ -1727,27 +1638,7 @@ class MoireToolkitTests(unittest.TestCase):
             shutil.rmtree(temp_root, ignore_errors=True)
 
     def test_layer_stage_shifts_only_the_upper_group(self):
-        coef = {
-            "angle": 43.3139,
-            "ratio1": 1,
-            "ratio2": 11,
-            "i11": -1,
-            "i12": 0,
-            "i21": 0,
-            "i22": -1,
-            "j11": -3,
-            "j12": -2,
-            "j21": 4,
-            "j22": -1,
-        }
-
-        lattice_out, positions_direct, counts, species, flags = generator.build_supercell(
-            RELAXED_OVERLAYER_PATH,
-            CU110_PATH,
-            coef,
-            interlayer_distance=3.35,
-            preserve_layer="2",
-        )
+        lattice_out, positions_direct, counts, species, flags = _simple_adsorbate_stack()
 
         temp_root = BASE_DIR / f"moire_test_{uuid4().hex}"
         temp_root.mkdir(parents=True, exist_ok=False)

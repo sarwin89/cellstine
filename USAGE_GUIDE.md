@@ -101,9 +101,7 @@ It is meant to be a guided launcher over the same backend classes used by the CL
 cellstine --help
 cellstine moire --help
 cellstine moire find --help
-cellstine moire findn --help
 cellstine moire make --help
-cellstine moire maken --help
 cellstine moire translate --help
 cellstine moire visualize --help
 cellstine adsorbate --help
@@ -128,147 +126,99 @@ cellstine defect preview --help
 
 ## 5. `moire` Workflow
 
-### 5.1 Bilayer Search With `moire find`
+### 5.1 Native Bilayer Search
 
-Basic search:
-
-```bash
-cellstine moire find input/mos2.vasp input/mos2.vasp --nindex 12 --max-angle 30
-```
-
-Search explicit angles only:
+Run `moire find` with physical length and layer strain budgets:
 
 ```bash
-cellstine moire find input/mos2.vasp input/mos2.vasp --angles 13.15,21.787,27.9 --nindex 12
+cellstine moire find input/top.vasp input/bottom.vasp --max-length 20 --top-strain 0.01 --bottom-strain 0.01
 ```
 
-Search with thicker slabs along `c`:
+Useful optional controls include `--min-length`, `--max-atoms`,
+`--max-cell-aspect-ratio`, `--min-cell-angle`, `--max-cell-angle`,
+`--symmetric`, `--progress`, and `--preview-limit`. Twist angles are
+reported in degrees; they are search results rather than input angles. Lengths
+are in angstrom and strain budgets are fractions, so `0.01` means a
+logarithmic-strain budget of 0.01.
+
+Here **strain** means the principal logarithmic strain
+`h = log(lambda)` of the relative deformation's principal stretch `lambda`.
+The accepted relative principal strain is bounded by the sum of the top and
+bottom strain budgets, and the engine shares it optimally between the layers for
+each candidate. This naming is deliberate: it is scientifically precise while
+keeping the CLI readable; it does not mean engineering strain.
+
+`--symmetric` requests a restricted square/hexagonal symmetry-preserving
+family. When that family is inapplicable, CELLSTINE records why and falls back
+to the general search.
+
+### 5.2 JSON Results And `moire make`
+
+Every successful search writes schema-versioned
+`cellstine.moire.gram` JSON v1:
+
+```text
+runs/moire/<run-id>/results.json
+runs/moire/<run-id>/manifest.json
+```
+
+The JSON carries the candidate matrices, angle in degrees, relative principal
+strain, top and bottom strain budgets, atom counts, rank/Pareto status, Löwner
+certification, shared lattice, affine maps, and search metadata. It is the
+single handoff format for previews, visualization, and construction. Legacy
+positional `.dat` files are rejected; rerun native `moire find` to create
+`results.json`.
+
+Build one or several selected candidates:
 
 ```bash
-cellstine moire find input/graph.vasp input/mos2.vasp --nindex 12 --top-c-repeat 2 --bottom-c-repeat 4
+cellstine moire make runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
+cellstine moire make runs/moire/<run-id>/results.json --indexes 1,2,5-7 --interlayer-distance 3.35 --workers 4
 ```
 
-Use optional prestrain before the commensuration search:
+A manifest containing the `results_json` artifact can be passed instead of
+the raw JSON path.
 
-```bash
-cellstine moire find input/graph.vasp input/mos2.vasp --nindex 12 --prestrain-top-mode biaxial --prestrain-top-value 0.01
-cellstine moire find input/graph.vasp input/mos2.vasp --nindex 12 --prestrain-top-mode uniaxial --prestrain-top-value 0.01 --prestrain-top-axis a
-```
+### 5.3 Translation, Preview, And Visualization
 
-Use multiple workers for angle-parallel search:
-
-```bash
-cellstine moire find input/top.vasp input/bottom.vasp --nindex 18 --workers 4
-```
-
-### 5.2 Bilayer Finder Units And Tolerances
-
-- twist angles are in **degrees**
-- length tolerances are in **angstrom**
-- strain and mismatch tolerances are **fractions**
-- `0.002 = 0.2%`
-- `0.01 = 1%`
-- `0.05 = 5%`
-- `--top-c-repeat` and `--bottom-c-repeat` are integer repeat counts
-- by default, `moire find` filters very thin/sliver cells using `--max-cell-aspect-ratio 12`, `--min-cell-angle 25`, and `--max-cell-angle 155`
-- use `--allow-slivers` for exhaustive mathematical output, including near-collinear cells that are usually poor choices for DFT
-
-### 5.3 Matrix-Value Finder Mode
-
-Use this when you know the four entries of a `2x2` supercell matrix but not their order.
-
-```bash
-cellstine moire find input/mos2.vasp input/mos2.vasp --matrix-values 1,2,3,4 --matrix-layer either --matrix-match-mode absolute
-```
-
-### 5.4 N-Layer Search With `moire findn`
-
-`findn` is a bottom-reference multi-layer workflow. It supports three modes:
-
-- `base_shared`
-  This is the default and recommended mode. All upper layers must share the same base-layer supercell before they can be built together.
-- `base_independent`
-  Each upper layer is matched against the same bottom layer and reported independently.
-- `pairwise`
-  All layer pairs are searched. This is available, but not recommended for routine use.
-
-Basic search:
-
-```bash
-cellstine moire findn input/mos2.vasp input/graph.vasp input/mos2x.vasp --match-mode base_shared --nindex 12
-```
-
-Explicit per-layer angles:
-
-```bash
-cellstine moire findn input/mos2.vasp input/graph.vasp input/mos2x.vasp --angles-by-layer "13.2;21.8"
-```
-
-Per-layer angle windows:
-
-```bash
-cellstine moire findn input/mos2.vasp input/graph.vasp input/mos2x.vasp --min-angles 0,5 --max-angles 30,20
-```
-
-Per-layer prestrain:
-
-```bash
-cellstine moire findn input/mos2.vasp input/graph.vasp input/mos2x.vasp --prestrain-modes none,biaxial,uniaxial --prestrain-values 0,0.01,0.005 --prestrain-axes a,a,b
-```
-
-Thicker bottom and upper slabs:
-
-```bash
-cellstine moire findn input/mos2.vasp input/graph.vasp input/mos2x.vasp --bottom-c-repeat 4 --upper-c-repeats 2,3
-```
-
-### 5.5 Generation With `moire make` And `moire maken`
-
-Generate one bilayer candidate from a manifest:
-
-```bash
-cellstine moire make runs/moire/<run-id>/manifest.json --indexes 1 --interlayer-distance 3.35
-```
-
-Generate several bilayer candidates:
-
-```bash
-cellstine moire make runs/moire/<run-id>/manifest.json --indexes 1,2,5-7 --interlayer-distance 3.35 --workers 4
-```
-
-Generate one `N`-layer candidate:
-
-```bash
-cellstine moire maken runs/moire/<run-id>/manifest.json --indexes 1 --interlayers 3.0,3.2
-```
-
-Notes:
-
-- `make` uses `--interlayer-distance`
-- `maken` uses `--interlayers`
-- `maken` is only meaningful for shared-base candidates
-- manifests are often easier to use than hunting for the raw `.dat` or `.json` file yourself
-
-### 5.6 Translation And Visualization
-
-Shift the upper layer in a stacked structure:
+Shift the upper layer of an existing bilayer:
 
 ```bash
 cellstine moire translate output/stacked.vasp --shift-direct 0.333,0.667
-cellstine moire translaten output/stacked.vasp --shift-cart 1.2,0.5
 ```
 
-Create a commensurate-results Matplotlib summary plot:
+Create a labelled static summary or the optional interactive Plotly viewer:
 
 ```bash
-cellstine moire visualize runs/moire/<run-id>/manifest.json --indices 1,2,3
+cellstine moire visualize runs/moire/<run-id>/results.json --indices 1,2,3
+cellstine moire visualize runs/moire/<run-id>/results.json --indices 1,2,3 --plotly
 ```
 
-The default plot includes labelled strain-vs-angle, atom-count, ranking, and twist-angle distribution panels. Use the optional Plotly path only when you want the interactive 3D frame viewer:
+Both paths use the validated JSON reader. They label top strain, bottom strain,
+and relative principal strain explicitly and expose candidate provenance rather
+than interpreting positional columns. The guided interface is a simple launcher
+over these same commands and data.
+
+N-layer moire workflows are not supported in this release. This release
+supports the bilayer `moire find` and JSON `moire make` sequence only.
+
+### 5.4 Mathematical Reference And Benchmark
+
+The native implementation was informed by external mathematical reference work
+with [Harmonic's Aristotle](https://aristotle.harmonic.fun/) and
+[Lean 4](https://lean-lang.org/lean4/doc/). Those tools are not runtime
+dependencies, and no Lean source files are copied into this repository.
+
+Reproduce the comparison from the repository root:
 
 ```bash
-cellstine moire visualize runs/moire/<run-id>/manifest.json --indices 1,2,3 --plotly
+python benchmarks/benchmark_gram_search.py
 ```
+
+The benchmark compares independent canonical candidate classes, stops on
+mismatch, reports actual timings for three increasing length bounds, and notes
+that speed numbers are host-dependent.
+
 
 ## 6. `adsorbate` Workflow
 
@@ -610,10 +560,12 @@ from cellstine import Moire
 result = Moire().find(
     top_poscar="input/mos2.vasp",
     bottom_poscar="input/mos2.vasp",
-    nindex=12,
-    explicit_angles=[13.15],
+    max_length=20.0,
+    top_strain=0.01,
+    bottom_strain=0.01,
 )
 print(result.manifest_path)
+print(result.artifacts["results_json"])
 ```
 
 Adsorbate placement:
@@ -706,17 +658,17 @@ cellstine --version
 Run the current test suite with:
 
 ```bash
-python -m unittest discover -s tests -q
+python -m pytest -q tests
 ```
 
 ## 13. Troubleshooting
 
 If a moire search returns too many candidates:
 
-- tighten the strain cutoff
-- narrow the angle window
+- lower the top or bottom strain budget
+- lower `--max-length`
 - lower `--max-atoms`
-- use explicit angle lists where possible
+- tighten the cell-shape limits
 
 If slab generation fails:
 

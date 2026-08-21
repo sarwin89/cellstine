@@ -1,112 +1,84 @@
-# Moiré commensuration search — algorithm & options
+# Native Gram-form moire search
 
-This note documents the reworked `cellstine moire find` search engine
-(`moire/commensurate.py`, driven by `moire/finder.py` and `moire/find.py`).
+CELLSTINE 4 searches commensurate **bilayer** supercells directly in Gram form.
+The twist angle is an output of each accepted pair of integer supercell
+matrices, not an angle swept by the user.
 
-## The idea: the twist angle is an output, not a swept input
+## Native workflow
 
-Two layers (top rotated by `θ`, bottom fixed) are commensurate when a lattice
-vector of the rotated top layer coincides with a lattice vector of the bottom
-layer. Write a top vector as `u = m a₁ + n a₂` and a bottom vector as
-`w = p b₁ + q b₂`. Length is rotation invariant, so a coincidence requires
-`|u| ≈ |w|`. **Given** such an equal-length pair, the twist that makes them
-parallel is fixed analytically:
+Run a bounded search and then build candidates from its JSON:
 
-```
-θ = angle(w) − angle(u) = atan2(u × w, u · w)
+```bash
+cellstine moire find TOP.vasp BOTTOM.vasp --max-length 20 --top-strain 0.01 --bottom-strain 0.01
+cellstine moire make runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
 ```
 
-So every integer vector pair *determines* a candidate twist angle — there is
-nothing to sweep. Two non-collinear coincidences sharing the same `θ` span a
-commensurate supercell.
+The result is schema `cellstine.moire.gram`, version 1, in `results.json`.
+Previews, the builder, and both visualization paths use the same validated
+central reader. Legacy positional `.dat` input is rejected with an instruction
+to rerun native `moire find`.
 
-### Pipeline
+The JSON records the top and bottom integer matrices, their Gram triples, angle
+in degrees, relative principal strain pair, strain budgets and sharing fraction,
+layer and total atom counts, rank and Pareto flag, Löwner certification,
+recorded affine maps, shared lattice, and search metadata. No reader depends on
+legacy positional columns.
 
-1. Enumerate the in-plane integer vectors of both layers once.
-2. Keep only equal-length pairs. This is a rotation-invariant prune done by
-   sorting the norms and binary-searching the admissible length band — the dense
-   `N₁ × N₂` mismatch matrix is never formed.
-3. Tag every surviving pair with its analytic twist `θ` and sort by it.
-4. For each candidate angle, gather the pairs in a narrow angular window around
-   it with a binary search (a contiguous slice) and build the supercells.
+## What strain means
 
-This replaces the old "shortlist a few angles, then re-rotate and re-scan *all*
-length-matched pairs at every angle" loop, whose cost was `O(angles × pairs)`.
+In the moire CLI, **strain** is the principal logarithmic strain
 
-### Why this fixes the "only some results" problem
+```text
+h = log(lambda)
+```
 
-The previous code thinned the searched-angle list as `nindex` grew (down to
-~10 angles at `nindex = 100`) and silently capped pair matches. The new engine
-searches **every** commensurate angle by default; thinning is now strictly
-opt-in via `--max-search-angles`.
+of the relative deformation's principal stretch `lambda`. A budget `e`
+allows stretches from `exp(-e)` through `exp(e)`; it is not engineering
+strain. Total accepted relative principal strain is bounded by the sum of the
+top and bottom strain budgets. The engine shares that strain optimally between
+the layers for each candidate. This naming is deliberate: it is scientifically
+precise while keeping the CLI readable.
 
-## Redundancy culling (on by default)
+## Search outline
 
-At one twist angle the raw search returns many supercells that beat one another:
-a larger cell that *also* carries more strain is never useful. The cull keeps,
-per angle, only the `(atom count, strain)` Pareto frontier and drops every
-dominated cell. The "same angle, again and again, with almost identical strain"
-duplicates disappear, while genuinely different trade-offs (a small slightly
-strained cell vs a larger strain-free cell) are both kept.
+1. Enumerate reduced positive-definite Gram forms whose basis lengths satisfy
+   `--max-length` and the optional cell-shape and atom-count bounds.
+2. Join top and bottom forms using the Löwner inequalities implied by the sum of
+   `--top-strain` and `--bottom-strain`.
+3. Recover candidate matrices, principal stretches, relative logarithmic
+   strains, optimal sharing, twist angle, and a common lattice.
+4. Fold proper point-group equivalents when enabled, rank independent canonical
+   candidate classes, and mark the Pareto frontier.
 
-### Where the cull happens (the main speed-up)
+`--symmetric` is a restricted square/hexagonal symmetry-preserving family. If
+the inputs or requested bounds make that family inapplicable, CELLSTINE records
+the reason and falls back to the general search.
 
-The per-angle cull now runs **inside the builder, in NumPy, before any Python
-candidate objects are created** (`build_supercell_candidates`, gated by the
-`frontier_only` flag the finder sets whenever culling is on). For each angle it,
-in order:
+N-layer moire workflows are not supported in this release. Use the bilayer
+`moire find` and JSON `moire make` workflow.
 
-1. drops unphysical cells whose `strain_avg` exceeds `MAX_PHYSICAL_STRAIN`
-   (a numerical artifact of the strain metric inverting an ill-conditioned
-   near-collinear "sliver" basis — never a real cell);
-2. removes `(strain, ratio)` duplicates, keeping the most compact (smallest
-   vector-product) representative — this is what suppresses the spurious slivers,
-   since a sliver and the genuine compact supercell of the same superlattice
-   share strain and ratio and the genuine one has the shorter vectors;
-3. keeps only the `(atoms, strain)` Pareto frontier.
+## Mathematical provenance
 
-Doing this per angle, vectorised, eliminates the old global `O(candidates²)`
-de-duplication pass (which dominated the run time at large `nindex`, exploding at
-the degenerate angles). The global `deduplicate_candidates` / `pareto_cull`
-passes still run afterwards but are now near-instant clean-ups.
+[Harmonic's Aristotle](https://aristotle.harmonic.fun/) and
+[Lean 4](https://lean-lang.org/lean4/doc/) are cited only as an external
+mathematical reference for the derivation and checking that informed the native
+implementation. CELLSTINE executes Python/NumPy code and does not copy, vendor,
+or require Lean source files.
 
-`reduce_candidate` Lagrange–Gauss-reduces every reported integer basis, so
-skewed bases such as `(-16, 17), (-15, 16)` are reported as their shortest /
-most orthogonal equivalent (here `(0, 1), (1, 1)`). Reduction is a unimodular
-change of basis, so strain, area ratios, atom count and angle are unchanged.
+## Reproducible comparison
 
-The result is identical to the previous exhaustive cull except that the
-unphysical garbage-strain sliver rows are no longer emitted; every genuine
-candidate is preserved.
+From the repository root, run:
 
-## Performance knob: `--max-pair-matches`
+```bash
+python benchmarks/benchmark_gram_search.py
+```
 
-Highly symmetric ("degenerate") twist angles (0°, 30°, 60° … for a homobilayer)
-have hundreds of coincident vectors, which would blow up the `O(M²)` pairing.
-`--max-pair-matches K` bounds, per angle, how many coincident vectors are paired.
-The cap keeps two pools and unions them:
+The script compares independent canonical candidate classes from the reference
+enumeration and the native Gram search. It stops on mismatch, reports actual
+timings at three increasing length bounds, and treats speed numbers as
+host-dependent measurements rather than fixed performance assertions.
 
-* the shortest vectors overall (the small cells), and
-* the shortest among the **near-exact** coincidences (so a long-period but
-  strain-free supercell is never lost behind a crowd of short, strained
-  near-coincidences).
-
-Because of the second pool, **every zero-/low-strain commensurate cell is
-retained regardless of `K`**; raising `K` only adds more high-strain frontier
-cells at crowded angles. Default `K = 128` reproduces the exhaustive culled
-result through moderate `nindex`. Pass `--max-pair-matches 0` for an exhaustive
-(unbounded, potentially very slow) search.
-
-## CLI options added
-
-| flag | meaning |
-|------|---------|
-| `--no-cull` | keep every candidate per angle (disable the Pareto frontier cull) |
-| `--no-reduce` | report raw integer bases instead of Lagrange–Gauss-reduced ones |
-| `--max-pair-matches K` | per-angle pairing bound (`<= 0` = unlimited/exhaustive); default 128 |
-
-Large `nindex` (e.g. 100) benefits from `--workers N`: the angle list is split
-across processes. Example: `nindex = 100`, MoS₂/MoS₂, `--workers 8` searches
-~7,600 commensurate angles in well under a minute (≈25 s on an 8-core box),
-versus the ~10 angles the old cap reported and the couple of minutes the earlier
-un-vectorised cull took on the full angle list.
+The guided interface remains a simple launcher over the same native backend.
+Its preview and static/interactive visualizations read `results.json`, show
+angles in degrees, and use the terms top strain, bottom strain, and relative
+principal strain.

@@ -105,7 +105,7 @@ def test_static_reader_preserves_native_gram_fields_and_plot(gram_run, tmp_path:
 
     output_path = tmp_path / "summary.png"
     run = plot_moire_summary(gram_run.result_path, output_path=output_path)
-    assert run.results_type == "bilayer_summary"
+    assert run.visualization_type == "bilayer_summary"
     assert run.item_count == len(payload["candidates"])
     assert output_path.stat().st_size > 0
 
@@ -192,4 +192,3 @@ def test_public_moire_docs_describe_only_the_native_json_workflow():
     assert "stops on mismatch" in normalized
     assert "three increasing length bounds" in normalized
     assert "host-dependent" in normalized
-

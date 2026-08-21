@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Sequence
+from typing import Any, Sequence
 
 import numpy as np
 
 from ...io.models import StructureRecord
+from ...moire.search.results import read_results
 
 
 @dataclass(frozen=True)
@@ -335,96 +335,38 @@ def plot_structure_multiview(
     return MatplotlibRun(output_path=output, item_count=record.natoms, visualization_type="structure_multiview")
 
 
-def _safe_float(value: object, default: float = np.nan) -> float:
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return float(default)
+def _read_moire_summary(
+    results_file: str | Path, indices: Sequence[int] | None = None
+) -> tuple[str, list[dict[str, object]], dict[str, Any]]:
+    """Return plotting rows copied from validated native Gram JSON v1."""
 
-
-def _safe_int(value: object, default: int = 0) -> int:
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return int(default)
-
-
-def _read_dat_summary(path: Path) -> tuple[str, list[dict[str, float | int]]]:
-    rows: list[dict[str, float | int]] = []
-    with path.open("r", encoding="utf-8") as handle:
-        for raw_line in handle:
-            stripped = raw_line.strip()
-            if not stripped.startswith("|") or stripped.lower().startswith("| idx"):
-                continue
-            parts = [part.strip() for part in stripped.split("|") if part.strip()]
-            if len(parts) < 6:
-                continue
-            rows.append(
-                {
-                    "index": _safe_int(parts[0]),
-                    "angle": _safe_float(parts[1]),
-                    "strain": _safe_float(parts[2]),
-                    "atoms": _safe_int(parts[5]),
-                }
-            )
-    return "bilayer", rows
-
-
-def _read_json_summary(path: Path) -> tuple[str, list[dict[str, float | int]]]:
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    candidates = list(payload.get("candidates", []))
-    rows: list[dict[str, float | int]] = []
-    if candidates and "upper_layers" in candidates[0]:
-        for fallback_index, candidate in enumerate(candidates, start=1):
-            layers = list(candidate.get("upper_layers", []))
-            angles = [_safe_float(layer.get("angle_deg")) for layer in layers]
-            rows.append(
-                {
-                    "index": _safe_int(candidate.get("index"), fallback_index),
-                    "angle": float(np.nanmean(angles)) if angles else np.nan,
-                    "strain": _safe_float(candidate.get("strain_max", candidate.get("strain_mean"))),
-                    "atoms": _safe_int(candidate.get("total_atoms")),
-                }
-            )
-        return "nlayer", rows
-
-    if candidates and "angle_middle_deg" in candidates[0]:
-        for fallback_index, candidate in enumerate(candidates, start=1):
-            angles = [_safe_float(candidate.get("angle_middle_deg")), _safe_float(candidate.get("angle_top_deg"))]
-            rows.append(
-                {
-                    "index": _safe_int(candidate.get("index"), fallback_index),
-                    "angle": float(np.nanmean(angles)),
-                    "strain": _safe_float(candidate.get("strain_max", candidate.get("strain_mean"))),
-                    "atoms": _safe_int(candidate.get("total_atoms")),
-                }
-            )
-        return "trilayer", rows
-
-    for fallback_index, candidate in enumerate(candidates, start=1):
-        rows.append(
-            {
-                "index": _safe_int(candidate.get("index"), fallback_index),
-                "angle": _safe_float(candidate.get("angle_deg")),
-                "strain": _safe_float(candidate.get("strain_avg")),
-                "atoms": _safe_int(candidate.get("total_atoms")),
-            }
-        )
-    return "bilayer", rows
-
-
-def _read_moire_summary(results_file: str | Path, indices: Sequence[int] | None = None) -> tuple[str, list[dict[str, float | int]]]:
-    path = Path(results_file).resolve()
-    if path.suffix.lower() == ".json":
-        results_type, rows = _read_json_summary(path)
-    else:
-        results_type, rows = _read_dat_summary(path)
+    payload = read_results(results_file)
+    rows = [
+        {
+            "index": candidate["index"],
+            "angle_deg": candidate["angle_deg"],
+            "relative_principal_strain": candidate["strain"],
+            "top_strain": candidate["top_strain"],
+            "bottom_strain": candidate["bottom_strain"],
+            "top_atom_count": candidate["top_atom_count"],
+            "bottom_atom_count": candidate["bottom_atom_count"],
+            "atom_count": candidate["atom_count"],
+            "rank": candidate["rank"],
+            "pareto_optimal": candidate["pareto_optimal"],
+            "loewner_certified": candidate["loewner_certified"],
+            "loewner_borderline": candidate["loewner_borderline"],
+            "top_matrix": candidate["top_matrix"],
+            "bottom_matrix": candidate["bottom_matrix"],
+            "shared_lattice": candidate["shared_lattice"],
+        }
+        for candidate in payload["candidates"]
+    ]
     if indices is not None:
         wanted = {int(index) for index in indices}
         rows = [row for row in rows if int(row["index"]) in wanted]
     if not rows:
         raise ValueError("no candidates were selected for visualization")
-    return results_type, rows
+    return "bilayer", rows, payload
 
 
 def plot_moire_summary(
@@ -435,49 +377,113 @@ def plot_moire_summary(
     title: str | None = None,
     show: bool = False,
 ) -> MatplotlibRun:
-    """Write a static summary plot for a bilayer or N-layer moire search."""
+    """Write a static summary plot for validated native Gram JSON v1."""
 
     plt = _pyplot()
-    results_type, rows = _read_moire_summary(results_file, indices)
+    results_type, rows, payload = _read_moire_summary(results_file, indices)
     indexes = np.asarray([row["index"] for row in rows], dtype=float)
-    angles = np.asarray([row["angle"] for row in rows], dtype=float)
-    strain_percent = 100.0 * np.asarray([row["strain"] for row in rows], dtype=float)
-    atoms = np.asarray([row["atoms"] for row in rows], dtype=float)
+    ranks = np.asarray([row["rank"] for row in rows], dtype=float)
+    angles = np.asarray([row["angle_deg"] for row in rows], dtype=float)
+    relative_strain_percent = 100.0 * np.asarray(
+        [max(abs(float(value)) for value in row["relative_principal_strain"]) for row in rows],
+        dtype=float,
+    )
+    top_atoms = np.asarray([row["top_atom_count"] for row in rows], dtype=float)
+    bottom_atoms = np.asarray([row["bottom_atom_count"] for row in rows], dtype=float)
+    atoms = np.asarray([row["atom_count"] for row in rows], dtype=float)
+    pareto = np.asarray([row["pareto_optimal"] for row in rows], dtype=bool)
 
     fig, axes = plt.subplots(2, 2, figsize=(12, 9), constrained_layout=True)
-    resolved_title = title or f"CELLSTINE {results_type} commensuration summary"
+    metadata = payload["metadata"]
+    search = payload["search"]
+    resolved_title = title or (
+        f"CELLSTINE {results_type} Gram commensuration summary "
+        f"({metadata['engine']}, max length {float(search['max_length']):g} Angstrom)"
+    )
     fig.suptitle(resolved_title, fontsize=15, fontweight="bold")
 
-    scatter = axes[0, 0].scatter(angles, strain_percent, c=atoms, cmap="viridis", s=48, edgecolor="white", linewidth=0.4)
-    axes[0, 0].set_title("Candidate strain by twist angle")
+    scatter = axes[0, 0].scatter(angles, relative_strain_percent, c=atoms, cmap="viridis", s=48, edgecolor="white", linewidth=0.4)
+    axes[0, 0].set_title("Relative principal strain by twist angle")
     axes[0, 0].set_xlabel("twist angle (degrees)")
-    axes[0, 0].set_ylabel("strain or mismatch (%)")
+    axes[0, 0].set_ylabel("max |relative principal strain| (%)")
     axes[0, 0].grid(True, linewidth=0.4, alpha=0.35)
     colorbar = fig.colorbar(scatter, ax=axes[0, 0])
     colorbar.set_label("total atoms")
 
-    axes[0, 1].scatter(angles, atoms, color="#2a9d8f", s=44, edgecolor="white", linewidth=0.4, label="candidate")
-    axes[0, 1].set_title("Cell size by twist angle")
-    axes[0, 1].set_xlabel("twist angle (degrees)")
-    axes[0, 1].set_ylabel("total atoms")
-    axes[0, 1].grid(True, linewidth=0.4, alpha=0.35)
+    axes[0, 1].bar(indexes, bottom_atoms, color="#264653", label="bottom atoms")
+    axes[0, 1].bar(indexes, top_atoms, bottom=bottom_atoms, color="#e76f51", label="top atoms")
+    axes[0, 1].set_title("Candidate atom counts")
+    axes[0, 1].set_xlabel("candidate index")
+    axes[0, 1].set_ylabel("atoms")
+    axes[0, 1].grid(True, axis="y", linewidth=0.4, alpha=0.35)
     axes[0, 1].legend()
 
-    order = np.argsort(indexes)
-    axes[1, 0].plot(indexes[order], strain_percent[order], marker="o", color="#e76f51", label="strain")
-    axes[1, 0].set_title("Search ranking")
-    axes[1, 0].set_xlabel("candidate index")
-    axes[1, 0].set_ylabel("strain or mismatch (%)")
+    for mask, color, label in (
+        (pareto, "#2a9d8f", "Pareto optimal"),
+        (~pareto, "#8d99ae", "non-Pareto"),
+    ):
+        if np.any(mask):
+            axes[1, 0].scatter(
+                ranks[mask],
+                relative_strain_percent[mask],
+                c=color,
+                s=52,
+                edgecolor="white",
+                linewidth=0.4,
+                label=label,
+            )
+    axes[1, 0].axhline(
+        100.0 * float(search["top_strain"]),
+        color="#e76f51",
+        linestyle="--",
+        linewidth=1.0,
+        label="top strain budget",
+    )
+    axes[1, 0].axhline(
+        100.0 * float(search["bottom_strain"]),
+        color="#264653",
+        linestyle=":",
+        linewidth=1.0,
+        label="bottom strain budget",
+    )
+    axes[1, 0].set_title("Rank and Pareto status")
+    axes[1, 0].set_xlabel("rank")
+    axes[1, 0].set_ylabel("max |relative principal strain| (%)")
     axes[1, 0].grid(True, linewidth=0.4, alpha=0.35)
-    axes[1, 0].legend()
+    axes[1, 0].legend(fontsize=8)
 
-    bins = min(max(len(rows), 1), 18)
-    axes[1, 1].hist(angles[np.isfinite(angles)], bins=bins, color="#457b9d", edgecolor="white", alpha=0.9, label="angles")
-    axes[1, 1].set_title("Twist-angle distribution")
-    axes[1, 1].set_xlabel("twist angle (degrees)")
-    axes[1, 1].set_ylabel("candidate count")
-    axes[1, 1].grid(True, axis="y", linewidth=0.4, alpha=0.35)
-    axes[1, 1].legend()
+    first = rows[0]
+    certification = (
+        "borderline"
+        if first["loewner_borderline"]
+        else "certified"
+        if first["loewner_certified"]
+        else "uncertified"
+    )
+    axes[1, 1].axis("off")
+    axes[1, 1].set_title("Selected candidate provenance")
+    axes[1, 1].text(
+        0.0,
+        1.0,
+        "\n".join(
+            [
+                f"candidate {int(first['index'])}, rank {int(first['rank'])}, "
+                f"Pareto={bool(first['pareto_optimal'])}",
+                f"Loewner certification: {certification}",
+                f"top matrix: {first['top_matrix']}",
+                f"bottom matrix: {first['bottom_matrix']}",
+                f"shared lattice: {first['shared_lattice']}",
+                f"symmetric used={metadata['symmetric_used']}; "
+                f"fallback={metadata['symmetric_fallback'] or 'none'}",
+            ]
+        ),
+        transform=axes[1, 1].transAxes,
+        va="top",
+        ha="left",
+        fontsize=9,
+        family="monospace",
+        wrap=True,
+    )
 
     output = Path(output_path).resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
