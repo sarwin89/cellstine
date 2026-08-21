@@ -106,7 +106,7 @@ def _reference_search(
     bottom_metric = bottom_basis.T @ bottom_basis
     radius_squared = max_length * max_length
     budget = top_strain + bottom_strain
-    lower, upper = math.exp(-2.0 * budget), math.exp(2.0 * budget)
+    upper = math.exp(2.0 * budget)
 
     seen_top = set()
     top_cells = []
@@ -125,61 +125,30 @@ def _reference_search(
             key = _hnf(first, second)
             if key not in seen_top:
                 seen_top.add(key)
-                top_cells.append((first, second, gram))
+                top_cells.append((first, second))
 
     bottom_points = _lattice_points(bottom_metric, upper * radius_squared)
     accepted = []
-    for first, second, top_gram in top_cells:
+    for first, second in top_cells:
         top_matrix = np.array([[first[0], second[0]], [first[1], second[1]]], dtype=np.int64)
         for m1, n1, _ in bottom_points:
             for m2, n2, _ in bottom_points:
                 if m1 * n2 - n1 * m2 <= 0:
                     continue
                 bottom_first, bottom_second = (m1, n1), (m2, n2)
-                bottom_gram = _gram(bottom_metric, bottom_first, bottom_second)
-                a11 = bottom_gram[0] - lower * top_gram[0]
-                a12 = bottom_gram[1] - lower * top_gram[1]
-                a22 = bottom_gram[2] - lower * top_gram[2]
-                b11 = upper * top_gram[0] - bottom_gram[0]
-                b12 = upper * top_gram[1] - bottom_gram[1]
-                b22 = upper * top_gram[2] - bottom_gram[2]
-                if (
-                    a11 + a22 >= 0.0
-                    and a11 * a22 - a12 * a12 >= 0.0
-                    and b11 + b22 >= 0.0
-                    and b11 * b22 - b12 * b12 >= 0.0
+                bottom_matrix = np.array(
+                    [[bottom_first[0], bottom_second[0]], [bottom_first[1], bottom_second[1]]],
+                    dtype=np.int64,
+                )
+                deformation = (bottom_basis @ bottom_matrix) @ np.linalg.inv(
+                    top_basis @ top_matrix
+                )
+                singular_values = np.linalg.svd(deformation, compute_uv=False)
+                if np.max(np.abs(np.log(singular_values))) <= (
+                    budget + 64.0 * np.finfo(float).eps
                 ):
-                    bottom_matrix = np.array(
-                        [[bottom_first[0], bottom_second[0]], [bottom_first[1], bottom_second[1]]],
-                        dtype=np.int64,
-                    )
                     accepted.append((top_matrix, bottom_matrix))
     return accepted
-
-
-def _pair_class_key(top_matrix: np.ndarray, bottom_matrix: np.ndarray):
-    """Exact common-right-unimodular class name, independently derived via column HNF."""
-    first = tuple(int(value) for value in top_matrix[:, 0])
-    second = tuple(int(value) for value in top_matrix[:, 1])
-    h11, h12, h22 = _hnf(first, second)
-    hnf = np.array([[h11, h12], [0, h22]], dtype=np.int64)
-    determinant = int(round(np.linalg.det(top_matrix)))
-    adjugate = np.array(
-        [[top_matrix[1, 1], -top_matrix[0, 1]], [-top_matrix[1, 0], top_matrix[0, 0]]],
-        dtype=np.int64,
-    )
-    transform_numerator = adjugate @ hnf
-    assert np.all(transform_numerator % determinant == 0)
-    transform = transform_numerator // determinant
-    canonical_bottom = bottom_matrix @ transform
-    return tuple(int(value) for value in np.concatenate([hnf.ravel(), canonical_bottom.ravel()]))
-
-
-def _result_class_set(result):
-    return {
-        _pair_class_key(top, bottom)
-        for top, bottom in zip(result.top_matrices, result.bottom_matrices, strict=True)
-    }
 
 
 _UNIMODULAR = np.stack(
@@ -191,44 +160,70 @@ _UNIMODULAR = np.stack(
 )
 
 
+def _physical_class_keys(
+    top_matrices: np.ndarray,
+    bottom_matrices: np.ndarray,
+    top_metric: np.ndarray,
+    bottom_metric: np.ndarray,
+) -> np.ndarray:
+    """Independent Aristotle-style canonical Gram keys, vectorized across candidates."""
+    count = len(top_matrices)
+    if count == 0:
+        return np.zeros((0, 6), dtype=np.int64)
+    best = np.zeros((count, 6), dtype=np.int64)
+    found = np.zeros(count, dtype=bool)
+    for transform in _UNIMODULAR:
+        top = top_matrices @ transform
+        bottom = bottom_matrices @ transform
+        top_gram = np.swapaxes(top, 1, 2) @ top_metric @ top
+        bottom_gram = np.swapaxes(bottom, 1, 2) @ bottom_metric @ bottom
+        top_determinant = top[:, 0, 0] * top[:, 1, 1] - top[:, 0, 1] * top[:, 1, 0]
+        bottom_determinant = (
+            bottom[:, 0, 0] * bottom[:, 1, 1] - bottom[:, 0, 1] * bottom[:, 1, 0]
+        )
+        valid = (
+            (top_determinant > 0)
+            & (bottom_determinant > 0)
+            & (top_gram[:, 0, 0] <= top_gram[:, 1, 1] * (1.0 + 1e-9))
+            & (2.0 * np.abs(top_gram[:, 0, 1]) <= top_gram[:, 0, 0] * (1.0 + 1e-9))
+        )
+        key = np.rint(
+            np.stack(
+                [
+                    top_gram[:, 0, 0],
+                    top_gram[:, 0, 1],
+                    top_gram[:, 1, 1],
+                    bottom_gram[:, 0, 0],
+                    bottom_gram[:, 0, 1],
+                    bottom_gram[:, 1, 1],
+                ],
+                axis=1,
+            )
+            * 1_000_000
+        ).astype(np.int64)
+        less = np.zeros(count, dtype=bool)
+        equal = np.ones(count, dtype=bool)
+        for column in range(key.shape[1]):
+            less |= equal & (key[:, column] < best[:, column])
+            equal &= key[:, column] == best[:, column]
+        take = valid & (~found | less)
+        best[take] = key[take]
+        found |= valid
+    assert np.all(found)
+    return best
+
+
+def _class_set_from_matrices(top, bottom, top_metric, bottom_metric):
+    return {
+        tuple(int(value) for value in row)
+        for row in _physical_class_keys(top, bottom, top_metric, bottom_metric)
+    }
+
+
 def _physical_class_set(result, top_metric: np.ndarray, bottom_metric: np.ndarray):
-    """Gauge-independent Gram class names, adapted from the Aristotle test oracle."""
-    classes = set()
-    for top_matrix, bottom_matrix in zip(
-        result.top_matrices, result.bottom_matrices, strict=True
-    ):
-        candidates = []
-        for transform in _UNIMODULAR:
-            top = top_matrix @ transform
-            bottom = bottom_matrix @ transform
-            top_gram = top.T @ top_metric @ top
-            bottom_gram = bottom.T @ bottom_metric @ bottom
-            if (
-                np.linalg.det(top) > 0
-                and np.linalg.det(bottom) > 0
-                and top_gram[0, 0] <= top_gram[1, 1] * (1.0 + 1e-9)
-                and 2.0 * abs(top_gram[0, 1]) <= top_gram[0, 0] * (1.0 + 1e-9)
-            ):
-                candidates.append(
-                    tuple(
-                        int(value)
-                        for value in np.rint(
-                            np.array(
-                                [
-                                    top_gram[0, 0],
-                                    top_gram[0, 1],
-                                    top_gram[1, 1],
-                                    bottom_gram[0, 0],
-                                    bottom_gram[0, 1],
-                                    bottom_gram[1, 1],
-                                ]
-                            )
-                            * 1_000_000
-                        )
-                    )
-                )
-        classes.add(min(candidates))
-    return classes
+    return _class_set_from_matrices(
+        result.top_matrices, result.bottom_matrices, top_metric, bottom_metric
+    )
 
 
 @pytest.mark.parametrize(
@@ -258,6 +253,41 @@ def test_invalid_configuration_is_rejected(changes):
     values.update(changes)
     with pytest.raises((TypeError, ValueError)):
         SearchConfig(**values)
+
+
+def test_near_hexagonal_gauss_boundary_terminates():
+    near_hexagonal = np.array(
+        [
+            [1.0000000000000009, -0.4999999999999995],
+            [0.0, 0.86602540378443882],
+        ]
+    )
+    result = search(
+        SearchConfig(
+            near_hexagonal,
+            near_hexagonal,
+            2.0,
+            0.01,
+            0.01,
+            fold_symmetry=False,
+        )
+    )
+    assert len(result) > 0
+    assert np.all(np.isfinite(result.principal_strains))
+
+
+def test_tiny_positive_strain_budget_uses_a_representable_outward_band():
+    with np.errstate(divide="raise", invalid="raise", over="raise"):
+        result = search(SearchConfig(np.eye(2), np.eye(2), 2.0, 1e-17, 0.0))
+    assert len(result) > 0
+    assert np.max(np.abs(result.principal_strains)) <= np.spacing(1.0)
+
+
+def test_uniformly_small_nonsingular_basis_is_valid_and_searchable():
+    basis = 1e-8 * np.eye(2)
+    result = search(SearchConfig(basis, basis, 2e-8, 0.01, 0.0, fold_symmetry=False))
+    assert len(result) > 0
+    assert result.top_matrices.dtype == np.int64
 
 
 def test_scalar_loewner_acceptance_agrees_with_svd_reference():
@@ -396,7 +426,11 @@ def test_all_six_small_cases_match_the_independent_bounded_oracle(
 ):
     del name
     reference = _reference_search(top, bottom, max_length, top_strain, bottom_strain)
-    expected = {_pair_class_key(top_matrix, bottom_matrix) for top_matrix, bottom_matrix in reference}
+    reference_top = np.stack([pair[0] for pair in reference])
+    reference_bottom = np.stack([pair[1] for pair in reference])
+    expected = _class_set_from_matrices(
+        reference_top, reference_bottom, top.T @ top, bottom.T @ bottom
+    )
     result = search(
         SearchConfig(
             top,
@@ -408,7 +442,7 @@ def test_all_six_small_cases_match_the_independent_bounded_oracle(
             fold_symmetry=False,
         )
     )
-    assert _result_class_set(result) == expected
+    assert _physical_class_set(result, top.T @ top, bottom.T @ bottom) == expected
 
 
 def test_search_result_contains_buildable_certified_geometry():
@@ -475,11 +509,12 @@ def test_symmetric_branch_applicability_and_general_subfamily(top, bottom, appli
     symmetric = search(symmetric_config)
     primitive_c = -1 if np.isclose(top[0, 1] / top[0, 0], -0.5) else 0
     subfamily = _similar_subfamily(general, primitive_c)
-    expected = {
-        _pair_class_key(top_matrix, bottom_matrix)
-        for top_matrix, bottom_matrix in zip(
-            general.top_matrices[subfamily], general.bottom_matrices[subfamily], strict=True
-        )
-    }
-    assert _result_class_set(symmetric) == expected
+    top_metric, bottom_metric = top.T @ top, bottom.T @ bottom
+    expected = _class_set_from_matrices(
+        general.top_matrices[subfamily],
+        general.bottom_matrices[subfamily],
+        top_metric,
+        bottom_metric,
+    )
+    assert _physical_class_set(symmetric, top_metric, bottom_metric) == expected
     assert symmetric.stats["branch"] == "symmetric"

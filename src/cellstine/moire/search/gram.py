@@ -44,9 +44,15 @@ def _validated_basis(value: np.ndarray, name: str) -> np.ndarray:
         raise ValueError(f"{name} must be a 2x2 Cartesian column basis")
     if not np.all(np.isfinite(basis)):
         raise ValueError(f"{name} must contain only finite values")
-    determinant = float(np.linalg.det(basis))
-    scale = max(float(np.linalg.norm(basis, ord=np.inf)) ** 2, 1.0)
-    if abs(determinant) <= 64.0 * np.finfo(float).eps * scale:
+    magnitude = float(np.max(np.abs(basis)))
+    if magnitude == 0.0:
+        raise ValueError(f"{name} must be nonsingular")
+    normalized = basis / magnitude
+    determinant = float(np.linalg.det(normalized))
+    column_scale = float(
+        np.linalg.norm(normalized[:, 0]) * np.linalg.norm(normalized[:, 1])
+    )
+    if abs(determinant) <= 64.0 * np.finfo(float).eps * column_scale:
         raise ValueError(f"{name} must be nonsingular")
     validated = np.array(basis, copy=True)
     validated.setflags(write=False)
@@ -127,7 +133,13 @@ class SearchConfig:
 
     @property
     def _band(self) -> tuple[float, float]:
-        return math.exp(-2.0 * self._budget), math.exp(2.0 * self._budget)
+        lower = math.exp(-2.0 * self._budget)
+        upper = math.exp(2.0 * self._budget)
+        if lower == 1.0:
+            lower = float(np.nextafter(1.0, 0.0))
+        if upper == 1.0:
+            upper = float(np.nextafter(1.0, np.inf))
+        return lower, upper
 
 
 @dataclass(frozen=True)
@@ -168,6 +180,15 @@ def _gram_of_basis(basis: np.ndarray) -> np.ndarray:
     return basis.T @ basis
 
 
+def _gauss_reduction_multiplier(dot_product: float, first_norm: float) -> int:
+    """Nearest shear, treating a roundoff-width ``|dot| = norm/2`` boundary as reduced."""
+    scale = max(abs(dot_product), abs(first_norm), np.finfo(float).tiny)
+    tolerance = 256.0 * np.finfo(float).eps * scale
+    if 2.0 * abs(dot_product) <= first_norm + tolerance:
+        return 0
+    return int(np.round(dot_product / first_norm))
+
+
 def _reduce_basis(basis: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Lagrange--Gauss reduce columns, returning ``(basis @ gauge, gauge)``."""
     reduced = np.array(basis, dtype=float, copy=True)
@@ -179,7 +200,9 @@ def _reduce_basis(basis: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
             reduced = reduced[:, ::-1].copy()
             gauge = gauge[:, ::-1].copy()
             first_norm = second_norm
-        multiplier = int(np.round(float(reduced[:, 0] @ reduced[:, 1]) / first_norm))
+        multiplier = _gauss_reduction_multiplier(
+            float(reduced[:, 0] @ reduced[:, 1]), first_norm
+        )
         if multiplier == 0:
             break
         reduced[:, 1] -= multiplier * reduced[:, 0]

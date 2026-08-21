@@ -10,6 +10,7 @@ measurements, not assertions, because wall-clock performance varies by host.
 
 from __future__ import annotations
 
+import itertools
 import math
 import sys
 import time
@@ -77,27 +78,75 @@ def hnf(first, second):
     return h11, (x * a + y * b) % h11, h22
 
 
-def class_key(top: np.ndarray, bottom: np.ndarray):
-    h11, h12, h22 = hnf(tuple(top[:, 0]), tuple(top[:, 1]))
-    normal = np.array([[h11, h12], [0, h22]], dtype=np.int64)
-    determinant = int(round(np.linalg.det(top)))
-    adjugate = np.array(
-        [[top[1, 1], -top[0, 1]], [-top[1, 0], top[0, 0]]], dtype=np.int64
-    )
-    numerator = adjugate @ normal
-    if np.any(numerator % determinant):
-        raise ArithmeticError("nonintegral canonical transform in benchmark reference")
-    canonical_bottom = bottom @ (numerator // determinant)
-    return tuple(int(value) for value in np.concatenate([normal.ravel(), canonical_bottom.ravel()]))
+UNIMODULAR = np.stack(
+    [
+        np.array(values, dtype=np.int64).reshape(2, 2)
+        for values in itertools.product(range(-2, 3), repeat=4)
+        if abs(values[0] * values[3] - values[1] * values[2]) == 1
+    ]
+)
+
+
+def canonical_class_set(top, bottom, top_metric, bottom_metric):
+    """Independent bounded-unimodular Gram canonicalization from Aristotle's oracle."""
+    if len(top) == 0:
+        return set()
+    best = np.zeros((len(top), 6), dtype=np.int64)
+    found = np.zeros(len(top), dtype=bool)
+    for transform in UNIMODULAR:
+        transformed_top = top @ transform
+        transformed_bottom = bottom @ transform
+        top_gram = np.swapaxes(transformed_top, 1, 2) @ top_metric @ transformed_top
+        bottom_gram = (
+            np.swapaxes(transformed_bottom, 1, 2) @ bottom_metric @ transformed_bottom
+        )
+        top_det = (
+            transformed_top[:, 0, 0] * transformed_top[:, 1, 1]
+            - transformed_top[:, 0, 1] * transformed_top[:, 1, 0]
+        )
+        bottom_det = (
+            transformed_bottom[:, 0, 0] * transformed_bottom[:, 1, 1]
+            - transformed_bottom[:, 0, 1] * transformed_bottom[:, 1, 0]
+        )
+        valid = (
+            (top_det > 0)
+            & (bottom_det > 0)
+            & (top_gram[:, 0, 0] <= top_gram[:, 1, 1] * (1.0 + 1e-9))
+            & (2.0 * np.abs(top_gram[:, 0, 1]) <= top_gram[:, 0, 0] * (1.0 + 1e-9))
+        )
+        key = np.rint(
+            np.stack(
+                [
+                    top_gram[:, 0, 0],
+                    top_gram[:, 0, 1],
+                    top_gram[:, 1, 1],
+                    bottom_gram[:, 0, 0],
+                    bottom_gram[:, 0, 1],
+                    bottom_gram[:, 1, 1],
+                ],
+                axis=1,
+            )
+            * 1_000_000
+        ).astype(np.int64)
+        less = np.zeros(len(top), dtype=bool)
+        equal = np.ones(len(top), dtype=bool)
+        for column in range(6):
+            less |= equal & (key[:, column] < best[:, column])
+            equal &= key[:, column] == best[:, column]
+        take = valid & (~found | less)
+        best[take] = key[take]
+        found |= valid
+    if not np.all(found):
+        raise ArithmeticError("benchmark canonicalizer found no reduced representative")
+    return {tuple(int(value) for value in row) for row in best}
 
 
 def legacy_reference(
     top_basis: np.ndarray, bottom_basis: np.ndarray, max_length: float
-) -> set[tuple[int, ...]]:
-    """Original-style exhaustive nested loop with scalar Löwner acceptance."""
+) -> tuple[np.ndarray, np.ndarray]:
+    """Original-style exhaustive nested loop with direct SVD acceptance."""
     top_metric, bottom_metric = top_basis.T @ top_basis, bottom_basis.T @ bottom_basis
     radius_squared = max_length * max_length
-    lower = math.exp(-2.0 * (TOP_STRAIN + BOTTOM_STRAIN))
     upper = math.exp(2.0 * (TOP_STRAIN + BOTTOM_STRAIN))
     seen_top, top_cells = set(), []
     top_points = lattice_points(top_metric, radius_squared)
@@ -113,39 +162,31 @@ def legacy_reference(
             name = hnf(first, second)
             if name not in seen_top:
                 seen_top.add(name)
-                top_cells.append((first, second, top_gram))
+                top_cells.append((first, second))
 
-    classes = set()
+    accepted_top, accepted_bottom = [], []
     bottom_points = lattice_points(bottom_metric, upper * radius_squared)
-    for first, second, top_gram in top_cells:
+    for first, second in top_cells:
         top = np.array([[first[0], second[0]], [first[1], second[1]]], dtype=np.int64)
         for bottom_first, _ in bottom_points:
             for bottom_second, _ in bottom_points:
                 if bottom_first[0] * bottom_second[1] - bottom_first[1] * bottom_second[0] <= 0:
                     continue
-                bottom_gram = gram(bottom_metric, bottom_first, bottom_second)
-                a11 = bottom_gram[0] - lower * top_gram[0]
-                a12 = bottom_gram[1] - lower * top_gram[1]
-                a22 = bottom_gram[2] - lower * top_gram[2]
-                b11 = upper * top_gram[0] - bottom_gram[0]
-                b12 = upper * top_gram[1] - bottom_gram[1]
-                b22 = upper * top_gram[2] - bottom_gram[2]
-                accepted = (
-                    a11 + a22 >= 0.0
-                    and a11 * a22 - a12 * a12 >= 0.0
-                    and b11 + b22 >= 0.0
-                    and b11 * b22 - b12 * b12 >= 0.0
+                bottom = np.array(
+                    [
+                        [bottom_first[0], bottom_second[0]],
+                        [bottom_first[1], bottom_second[1]],
+                    ],
+                    dtype=np.int64,
                 )
-                if accepted:
-                    bottom = np.array(
-                        [
-                            [bottom_first[0], bottom_second[0]],
-                            [bottom_first[1], bottom_second[1]],
-                        ],
-                        dtype=np.int64,
-                    )
-                    classes.add(class_key(top, bottom))
-    return classes
+                deformation = (bottom_basis @ bottom) @ np.linalg.inv(top_basis @ top)
+                singular_values = np.linalg.svd(deformation, compute_uv=False)
+                if np.max(np.abs(np.log(singular_values))) <= (
+                    TOP_STRAIN + BOTTOM_STRAIN + 64.0 * np.finfo(float).eps
+                ):
+                    accepted_top.append(top)
+                    accepted_bottom.append(bottom)
+    return np.stack(accepted_top), np.stack(accepted_bottom)
 
 
 def main() -> int:
@@ -154,8 +195,14 @@ def main() -> int:
     print("max_length_A  classes  legacy_s  gram_s  legacy_scale  gram_scale")
     for max_length in MAX_LENGTHS:
         started = time.perf_counter()
-        expected = legacy_reference(top_basis, bottom_basis, max_length)
+        legacy_top, legacy_bottom = legacy_reference(top_basis, bottom_basis, max_length)
         legacy_seconds = time.perf_counter() - started
+        expected = canonical_class_set(
+            legacy_top,
+            legacy_bottom,
+            top_basis.T @ top_basis,
+            bottom_basis.T @ bottom_basis,
+        )
 
         started = time.perf_counter()
         result = search(
@@ -170,10 +217,12 @@ def main() -> int:
             )
         )
         gram_seconds = time.perf_counter() - started
-        actual = {
-            class_key(top, bottom)
-            for top, bottom in zip(result.top_matrices, result.bottom_matrices, strict=True)
-        }
+        actual = canonical_class_set(
+            result.top_matrices,
+            result.bottom_matrices,
+            top_basis.T @ top_basis,
+            bottom_basis.T @ bottom_basis,
+        )
         missing, extra = expected - actual, actual - expected
         if missing or extra:
             raise AssertionError(
