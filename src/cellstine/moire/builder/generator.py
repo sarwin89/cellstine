@@ -2,91 +2,27 @@
 
 from __future__ import annotations
 
-import json
 from collections import OrderedDict
-from typing import Dict, List, Sequence, Tuple
+from typing import List, Sequence, Tuple
 
 import numpy as np
 
 from ...io import native as io_mod
-from ..search import lattice as lat
+from ..search.results import read_results
 from ..structure_helpers import expand_species
 
 
-def record_from_candidate_dict(candidate: Dict[str, object], index: int | None = None) -> Dict[str, object]:
-    return {
-        "idx": int(index) if index is not None else int(candidate.get("index", 0)),
-        "angle": float(candidate["angle_deg"]),
-        "ratio1": int(candidate["ratio1"]),
-        "ratio2": int(candidate["ratio2"]),
-        "i11": int(candidate["layer1_vector1"][0]),
-        "i12": int(candidate["layer1_vector1"][1]),
-        "i21": int(candidate["layer1_vector2"][0]),
-        "i22": int(candidate["layer1_vector2"][1]),
-        "j11": int(candidate["layer2_vector1"][0]),
-        "j12": int(candidate["layer2_vector1"][1]),
-        "j21": int(candidate["layer2_vector2"][0]),
-        "j22": int(candidate["layer2_vector2"][1]),
-    }
-
-
 def parse_results(filename: str) -> Tuple[str, str, List[dict], dict]:
-    if filename.lower().endswith(".json"):
-        with open(filename, "r", encoding="utf-8") as handle:
-            payload = json.load(handle)
-        meta = payload.get("meta", {})
-        top_path = meta.get("top_poscar") or meta.get("pos1")
-        bottom_path = meta.get("bottom_poscar") or meta.get("pos2")
-        if not top_path or not bottom_path:
-            raise ValueError("JSON results do not contain top/bottom POSCAR metadata")
-        candidates = payload.get("candidates", [])
-        records = [record_from_candidate_dict(candidate, idx + 1) for idx, candidate in enumerate(candidates)]
-        return str(top_path), str(bottom_path), records, payload
+    """Read validated Gram JSON and expose its original POSCAR paths."""
 
-    records: List[dict] = []
-    meta: Dict[str, object] = {}
-    with open(filename, "r", encoding="utf-8") as handle:
-        first_line = handle.readline().strip().split()
-        if len(first_line) < 2:
-            raise ValueError("results file does not contain the two input filenames on the first line")
-        file1, file2 = first_line[0], first_line[1]
-
-        for raw_line in handle:
-            stripped = raw_line.strip()
-            if stripped.startswith("#"):
-                content = stripped[1:].strip()
-                if "=" in content:
-                    key, value = content.split("=", 1)
-                    meta[key.strip()] = value.strip()
-                continue
-            if not stripped or stripped.startswith("-") or not stripped.startswith("|"):
-                continue
-            parts = [part.strip() for part in stripped.split("|") if part.strip()]
-            if not parts or parts[0].lower() == "idx":
-                continue
-
-            ratio1, ratio2 = [int(value) for value in parts[6].split("/")]
-            i11, i12 = [int(value) for value in parts[7].split()]
-            i21, i22 = [int(value) for value in parts[8].split()]
-            j11, j12 = [int(value) for value in parts[9].split()]
-            j21, j22 = [int(value) for value in parts[10].split()]
-            records.append(
-                {
-                    "idx": int(parts[0]),
-                    "angle": float(parts[1]),
-                    "ratio1": ratio1,
-                    "ratio2": ratio2,
-                    "i11": i11,
-                    "i12": i12,
-                    "i21": i21,
-                    "i22": i22,
-                    "j11": j11,
-                    "j12": j12,
-                    "j21": j21,
-                    "j22": j22,
-                }
-            )
-    return file1, file2, records, {"meta": meta}
+    payload = read_results(filename)
+    search = payload["search"]
+    return (
+        str(search["top_poscar"]),
+        str(search["bottom_poscar"]),
+        list(payload["candidates"]),
+        payload,
+    )
 
 
 def _expand_species(species: Sequence[str], counts: Sequence[int], fallback: str) -> List[str]:
@@ -298,106 +234,152 @@ def _finalise_cartesian_atoms(
     return _finalise_species_order(final_atoms)
 
 
+def _transform_layer_atoms(
+    atoms: Sequence[Tuple[str, np.ndarray, Tuple[str, str, str] | None]],
+    affine: np.ndarray,
+) -> List[Tuple[str, np.ndarray, Tuple[str, str, str] | None]]:
+    """Apply a recorded Cartesian column affine to row-vector atom coordinates."""
+
+    transformed: List[Tuple[str, np.ndarray, Tuple[str, str, str] | None]] = []
+    for species, position, flags in atoms:
+        updated = np.array(position, dtype=float, copy=True)
+        updated[:2] = np.asarray(affine, dtype=float) @ updated[:2]
+        transformed.append((species, updated, flags))
+    return transformed
+
+
+def _recorded_layer_geometry(
+    structure: io_mod.PoscarData,
+    matrix: np.ndarray,
+    affine: np.ndarray,
+    name: str,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Return unstrained 3D supercell rows and recorded transformed 2D rows."""
+
+    planar_scale = max(float(np.max(np.abs(structure.lattice[:2]))), 1.0)
+    if np.max(np.abs(structure.lattice[:2, 2])) > 1e-10 * planar_scale:
+        raise ValueError(f"{name} POSCAR a/b lattice vectors must be planar in Cartesian xy")
+    source_rows = np.asarray(matrix, dtype=int) @ np.asarray(structure.lattice[:2], dtype=float)
+    source_supercell = np.vstack((source_rows, structure.lattice[2]))
+    transformed_rows = source_rows[:, :2] @ np.asarray(affine, dtype=float).T
+    return source_supercell, transformed_rows
+
+
 def build_supercell(
-    pos1: str,
-    pos2: str,
-    coef: dict,
+    top_poscar: str,
+    bottom_poscar: str,
+    candidate: dict,
     *,
-    shift1_direct: Sequence[float] = (0.0, 0.0, 0.0),
-    shift1_cart: Sequence[float] = (0.0, 0.0, 0.0),
-    shift2_direct: Sequence[float] = (0.0, 0.0, 0.0),
-    shift2_cart: Sequence[float] = (0.0, 0.0, 0.0),
+    shift_top_direct: Sequence[float] = (0.0, 0.0, 0.0),
+    shift_top_cart: Sequence[float] = (0.0, 0.0, 0.0),
+    shift_bottom_direct: Sequence[float] = (0.0, 0.0, 0.0),
+    shift_bottom_cart: Sequence[float] = (0.0, 0.0, 0.0),
     tolerance: int = 1,
     tolerance_float: float = 1e-4,
     interlayer_distance: float | None = None,
-    preserve_layer: str = "2",
     zfix: float | None = None,
-    repeat1_c: int = 1,
-    repeat2_c: int = 1,
+    repeat_top_c: int = 1,
+    repeat_bottom_c: int = 1,
 ) -> Tuple[np.ndarray, np.ndarray, List[int], List[str], List[Tuple[str, str, str]] | None]:
-    structure1 = io_mod.repeat_structure_along_c(io_mod.read_poscar(pos1), repeat1_c)
-    structure2 = io_mod.repeat_structure_along_c(io_mod.read_poscar(pos2), repeat2_c)
+    """Build from original-gauge matrices and recorded in-plane affine transforms."""
 
-    angle = float(coef.get("angle", 0.0))
-    rotated_lattice1 = lat.rotate_lattice(structure1.lattice, angle)
-
-    v1 = coef["i11"] * rotated_lattice1[0] + coef["i12"] * rotated_lattice1[1]
-    v2 = coef["i21"] * rotated_lattice1[0] + coef["i22"] * rotated_lattice1[1]
-    g1 = coef["j11"] * structure2.lattice[0] + coef["j12"] * structure2.lattice[1]
-    g2 = coef["j21"] * structure2.lattice[0] + coef["j22"] * structure2.lattice[1]
-
-    preserve_mode = str(preserve_layer).lower()
-    if preserve_mode in {"1", "layer1", "first"}:
-        final_vector1 = v1.copy()
-        final_vector2 = v2.copy()
-    elif preserve_mode in {"avg", "average"}:
-        final_vector1 = (v1 + g1) / 2.0
-        final_vector2 = (v2 + g2) / 2.0
-    else:
-        final_vector1 = g1.copy()
-        final_vector2 = g2.copy()
-
-    layer1_supercell = np.vstack((v1, v2, rotated_lattice1[2]))
-    layer2_supercell = np.vstack((g1, g2, structure2.lattice[2]))
-    reference_c = _reference_c_vector(rotated_lattice1[2], structure2.lattice[2])
-
-    species1 = _expand_species(structure1.species, structure1.counts, "L1")
-    species2 = _expand_species(structure2.species, structure2.counts, "L2")
-
-    atoms_layer1 = _replicate_layer_cartesian(
-        structure1.positions_direct,
-        rotated_lattice1,
-        layer1_supercell,
-        (coef["i11"], coef["i12"]),
-        (coef["i21"], coef["i22"]),
-        shift1_direct,
-        shift1_cart,
-        tolerance,
-        tolerance_float,
-        species1,
-        structure1.selective_flags,
+    top_structure = io_mod.repeat_structure_along_c(
+        io_mod.read_poscar(top_poscar), repeat_top_c
     )
-    atoms_layer2 = _replicate_layer_cartesian(
-        structure2.positions_direct,
-        structure2.lattice,
-        layer2_supercell,
-        (coef["j11"], coef["j12"]),
-        (coef["j21"], coef["j22"]),
-        shift2_direct,
-        shift2_cart,
-        tolerance,
-        tolerance_float,
-        species2,
-        structure2.selective_flags,
+    bottom_structure = io_mod.repeat_structure_along_c(
+        io_mod.read_poscar(bottom_poscar), repeat_bottom_c
     )
+    top_matrix = np.asarray(candidate["top_matrix"], dtype=int)
+    bottom_matrix = np.asarray(candidate["bottom_matrix"], dtype=int)
+    top_affine = np.asarray(candidate["top_affine"], dtype=float)
+    bottom_affine = np.asarray(candidate["bottom_affine"], dtype=float)
+    shared_rows = np.asarray(candidate["shared_lattice"], dtype=float).T
 
-    expected_layer1 = structure1.natoms * int(coef.get("ratio1", 0) or 0)
-    expected_layer2 = structure2.natoms * int(coef.get("ratio2", 0) or 0)
-    if expected_layer1 and len(atoms_layer1) != expected_layer1:
+    top_supercell, transformed_top = _recorded_layer_geometry(
+        top_structure, top_matrix, top_affine, "top"
+    )
+    bottom_supercell, transformed_bottom = _recorded_layer_geometry(
+        bottom_structure, bottom_matrix, bottom_affine, "bottom"
+    )
+    agreement_tolerance = max(float(tolerance_float), 1e-12)
+    if not (
+        np.allclose(transformed_top, transformed_bottom, rtol=agreement_tolerance, atol=agreement_tolerance)
+        and np.allclose(transformed_top, shared_rows, rtol=agreement_tolerance, atol=agreement_tolerance)
+    ):
         raise ValueError(
-            f"layer 1 atom count mismatch: expected {expected_layer1}, found {len(atoms_layer1)}; try increasing tolerance"
-        )
-    if expected_layer2 and len(atoms_layer2) != expected_layer2:
-        raise ValueError(
-            f"layer 2 atom count mismatch: expected {expected_layer2}, found {len(atoms_layer2)}; try increasing tolerance"
+            "recorded transformed top and bottom in-plane lattices do not agree "
+            "with the shared lattice"
         )
 
-    if interlayer_distance is not None and atoms_layer1 and atoms_layer2:
-        top_min_z, _ = _z_bounds(atoms_layer1)
-        _, bottom_max_z = _z_bounds(atoms_layer2)
-        atoms_layer1 = _shift_atoms_z(atoms_layer1, bottom_max_z + float(interlayer_distance) - top_min_z)
+    top_species = _expand_species(top_structure.species, top_structure.counts, "top")
+    bottom_species = _expand_species(
+        bottom_structure.species, bottom_structure.counts, "bottom"
+    )
+    atoms_top = _replicate_layer_cartesian(
+        top_structure.positions_direct,
+        top_structure.lattice,
+        top_supercell,
+        tuple(int(value) for value in top_matrix[0]),
+        tuple(int(value) for value in top_matrix[1]),
+        shift_top_direct,
+        shift_top_cart,
+        tolerance,
+        tolerance_float,
+        top_species,
+        top_structure.selective_flags,
+    )
+    atoms_bottom = _replicate_layer_cartesian(
+        bottom_structure.positions_direct,
+        bottom_structure.lattice,
+        bottom_supercell,
+        tuple(int(value) for value in bottom_matrix[0]),
+        tuple(int(value) for value in bottom_matrix[1]),
+        shift_bottom_direct,
+        shift_bottom_cart,
+        tolerance,
+        tolerance_float,
+        bottom_species,
+        bottom_structure.selective_flags,
+    )
+    atoms_top = _transform_layer_atoms(atoms_top, top_affine)
+    atoms_bottom = _transform_layer_atoms(atoms_bottom, bottom_affine)
 
-    all_atoms = atoms_layer1 + atoms_layer2
+    expected_top = int(candidate["top_atom_count"]) * int(repeat_top_c)
+    expected_bottom = int(candidate["bottom_atom_count"]) * int(repeat_bottom_c)
+    if len(atoms_top) != expected_top:
+        raise ValueError(
+            f"top layer atom count mismatch: expected {expected_top}, found {len(atoms_top)}; "
+            "try increasing tolerance"
+        )
+    if len(atoms_bottom) != expected_bottom:
+        raise ValueError(
+            f"bottom layer atom count mismatch: expected {expected_bottom}, found {len(atoms_bottom)}; "
+            "try increasing tolerance"
+        )
+
+    if interlayer_distance is not None and atoms_top and atoms_bottom:
+        top_min_z, _ = _z_bounds(atoms_top)
+        _, bottom_max_z = _z_bounds(atoms_bottom)
+        atoms_top = _shift_atoms_z(
+            atoms_top, bottom_max_z + float(interlayer_distance) - top_min_z
+        )
+
+    all_atoms = atoms_top + atoms_bottom
+    reference_c = _reference_c_vector(top_structure.lattice[2], bottom_structure.lattice[2])
+    first_shared = np.array([shared_rows[0, 0], shared_rows[0, 1], 0.0])
+    second_shared = np.array([shared_rows[1, 0], shared_rows[1, 1], 0.0])
     final_lattice, min_z, lower_padding = _build_final_lattice(
-        final_vector1,
-        final_vector2,
+        first_shared,
+        second_shared,
         reference_c,
         all_atoms,
         tolerance_float,
     )
     all_atoms = _shift_atoms_z(all_atoms, lower_padding - min_z)
 
-    positions_direct, counts, species, flags = _finalise_cartesian_atoms(all_atoms, final_lattice, zfix)
+    positions_direct, counts, species, flags = _finalise_cartesian_atoms(
+        all_atoms, final_lattice, zfix
+    )
     final_lattice, positions_direct = _swap_if_left_handed(final_lattice, positions_direct)
     return final_lattice, positions_direct, counts, species, flags
 

@@ -77,14 +77,13 @@ def generate_from_results(
     top_c_repeat: int | None = None,
     bottom_c_repeat: int | None = None,
 ) -> MakeRun:
-    top_poscar, bottom_poscar, records, payload = generator_backend.parse_results(results_file)
-    by_index = {int(record["idx"]): record for record in records}
+    top_poscar, bottom_poscar, records, _payload = generator_backend.parse_results(results_file)
+    by_index = {int(record["index"]): record for record in records}
     if index not in by_index:
         raise ValueError(f"index {index} not found in {results_file}")
 
-    metadata = payload.get("meta", {}) if isinstance(payload, dict) else {}
-    resolved_top_c_repeat = int(top_c_repeat if top_c_repeat is not None else metadata.get("top_c_repeat", 1))
-    resolved_bottom_c_repeat = int(bottom_c_repeat if bottom_c_repeat is not None else metadata.get("bottom_c_repeat", 1))
+    resolved_top_c_repeat = int(top_c_repeat if top_c_repeat is not None else 1)
+    resolved_bottom_c_repeat = int(bottom_c_repeat if bottom_c_repeat is not None else 1)
 
     record = by_index[index]
     lattice_out, positions_direct, counts, species, flags = generator_backend.build_supercell(
@@ -92,16 +91,15 @@ def generate_from_results(
         bottom_poscar,
         record,
         interlayer_distance=float(interlayer_distance),
-        preserve_layer="2",
         tolerance=tolerance,
         tolerance_float=tolerance_float,
         zfix=zfix,
-        repeat1_c=resolved_top_c_repeat,
-        repeat2_c=resolved_bottom_c_repeat,
+        repeat_top_c=resolved_top_c_repeat,
+        repeat_bottom_c=resolved_bottom_c_repeat,
     )
 
     total_atoms = int(sum(counts))
-    angle_deg = float(record.get("angle", 0.0))
+    angle_deg = float(record["angle_deg"])
     if output_path is None:
         destination_dir = DEFAULT_OUTPUT_DIR.resolve() if output_dir is None else Path(output_dir).resolve()
         destination_dir.mkdir(parents=True, exist_ok=True)
