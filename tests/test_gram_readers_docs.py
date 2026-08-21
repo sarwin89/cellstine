@@ -156,7 +156,7 @@ def test_all_moire_readers_reject_dat_with_native_rerun_guidance(
 
 
 def test_public_moire_docs_describe_only_the_native_json_workflow():
-    paths = [
+    workflow_paths = [
         ROOT / "README.md",
         ROOT / "USAGE_GUIDE.md",
         ROOT / "docs" / "quickstart.md",
@@ -164,12 +164,16 @@ def test_public_moire_docs_describe_only_the_native_json_workflow():
         ROOT / "docs" / "moire-performance.md",
         ROOT / "src" / "cellstine" / "moire" / "MOIRE_SEARCH.md",
     ]
+    roadmap_path = ROOT / "ROADMAP.md"
+    paths = [*workflow_paths, roadmap_path]
     documents = {
         path.relative_to(ROOT).as_posix(): path.read_text(encoding="utf-8")
         for path in paths
     }
 
-    for name, text in documents.items():
+    for path in workflow_paths:
+        name = path.relative_to(ROOT).as_posix()
+        text = documents[name]
         for required in (
             "--max-length",
             "--top-strain",
@@ -178,8 +182,18 @@ def test_public_moire_docs_describe_only_the_native_json_workflow():
             "moire make",
         ):
             assert required in text, f"{name} is missing {required}"
+
+    for name, text in documents.items():
         for retired in ("--nindex", "--angles", "moire findn", "moire maken"):
             assert retired not in text, f"{name} still recommends {retired}"
+
+    assert "[Roadmap](ROADMAP.md)" in documents["README.md"]
+    normalized_roadmap = " ".join(
+        re.sub(r"[`*_]", "", documents["ROADMAP.md"]).lower().split()
+    )
+    assert "findn" not in normalized_roadmap
+    assert "n-layer gram-form workflow is intentionally deferred" in normalized_roadmap
+    assert "not supported in this release" in normalized_roadmap
 
     readme_linked = {
         name: text

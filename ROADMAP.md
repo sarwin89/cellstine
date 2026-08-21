@@ -4,13 +4,11 @@ This roadmap captures the next development wave after the structural cleanup pas
 
 ## Phase 1: Scientific Workflow Expansion
 
-### 1. Moire and Supermoire
+### 1. Moire
 
-- Consolidate the `find` and `findn` stages around clearer shared candidate validation while preserving the current CLI surface.
-- Strengthen `base_shared`, `base_independent`, and `pairwise` validation so buildable `N`-layer candidates are previewed more explicitly before generation.
-- Expand per-layer prestrain handling with clearer validation, reporting, and candidate filtering.
+- Deepen validation and reporting for the native bilayer Gram-form `find` to JSON `make` workflow.
 - Improve matrix-based filtering and reporting so users can reason about candidate matrices without post-processing.
-- Tighten multilayer translation and reframing logic for large or low-symmetry stacks.
+- The N-layer Gram-form workflow is intentionally deferred and is not supported in this release. Any future design must define and validate its own native JSON contract before it becomes a public workflow.
 
 ### 2. Adsorbate and Molecule-on-Substrate
 
