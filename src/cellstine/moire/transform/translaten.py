@@ -6,4 +6,7 @@ from ..supermoire import Supermoire
 
 
 def translaten(**kwargs):
-    return Supermoire().translaten(**kwargs)
+    raise NotImplementedError(
+        "N-layer moire workflows are not supported by the Gram-form engine. "
+        "Use bilayer moire find and make."
+    )

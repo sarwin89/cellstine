@@ -146,7 +146,7 @@ def build_nlayer_supercell(
     return final_lattice, positions_direct, counts, species, flags
 
 
-def generate_from_results(
+def _generate_from_results_legacy(
     results_file: str,
     *,
     index: int,
@@ -234,3 +234,10 @@ def generate_many_from_results(
 
 def maken(**kwargs):
     return generate_many_from_results(**kwargs)
+
+
+def generate_from_results(*args, **kwargs):
+    raise NotImplementedError(
+        "N-layer moire workflows are not supported by the Gram-form engine. "
+        "Use bilayer moire find and make."
+    )

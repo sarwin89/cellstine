@@ -297,26 +297,7 @@ def _first_artifact(result, key: str) -> str | None:
 
 
 def _detect_moire_build_mode(results_file: str) -> str:
-    path = Path(results_file).resolve()
-    if path.suffix.lower() == ".dat":
-        return "make"
-    if path.suffix.lower() == ".json" and path.name != "manifest.json":
-        return "maken"
-    if path.name == "manifest.json":
-        manifest = RunManifest.load(path)
-        if manifest.stage == "find":
-            return "make"
-        if manifest.stage == "findn" and "results_json" in manifest.artifacts:
-            return "maken"
-    choice = _choice(
-        "I could not tell whether this is a bilayer or N-layer results file.",
-        [
-            {"key": "make", "label": "Bilayer build", "hint": "Use one interlayer distance."},
-            {"key": "maken", "label": "N-layer build", "hint": "Use one gap per interlayer region."},
-        ],
-        default=1,
-    )
-    return choice
+    return "make"
 
 
 def _prompt_prestrain(layer_name: str, prefix: str) -> list[str]:
@@ -350,28 +331,16 @@ def _build_moire_find() -> list[str]:
     _print_title("Moire Search", "Search a commensurate bilayer and save the candidates for later generation.")
     top = _prompt_path("Choose the top-layer POSCAR", patterns=("*.vasp",), roots=(INPUT_DIR, OUTPUT_DIR))
     bottom = _prompt_path("Choose the bottom-layer POSCAR", patterns=("*.vasp",), roots=(INPUT_DIR, OUTPUT_DIR), default=top)
-    nindex = _prompt_int("Maximum supercell index (larger values search more combinations)", 12)
-    angle_mode = _choice(
-        "How should the angle search work?",
-        [
-            {"key": "auto", "label": "Automatic shortlist", "hint": "Recommended. Let CELLSTINE derive a useful search window."},
-            {"key": "explicit", "label": "Explicit angles", "hint": "You already know the twist angles you want to test."},
-            {"key": "range", "label": "Custom angle range", "hint": "Set your own minimum and maximum angles."},
-        ],
-        default=1,
-    )
-    argv = ["moire", "find", top, bottom, "--nindex", str(nindex)]
-    if angle_mode == "explicit":
-        argv.extend(["--angles", _prompt_csv("Comma-separated angles in degrees", "13.15,21.787,27.9")])
-    elif angle_mode == "range":
-        argv.extend(["--min-angle", str(_prompt_float("Minimum angle in degrees", 0.0))])
-        argv.extend(["--max-angle", str(_prompt_float("Maximum angle in degrees", 30.0))])
-    if _prompt_yes_no("Do you want to search with more than one worker?", False):
-        argv.extend(["--workers", str(_prompt_int("Worker count", 4))])
-    if _prompt_yes_no("Keep very thin/sliver mathematical cells in the results?", False):
-        argv.append("--allow-slivers")
-    argv.extend(_prompt_prestrain("top", "prestrain-top"))
-    argv.extend(_prompt_prestrain("bottom", "prestrain-bottom"))
+    argv = [
+        "moire", "find", top, bottom,
+        "--max-length", str(_prompt_float("Maximum supercell length in angstrom", 30.0)),
+        "--top-strain", str(_prompt_float("Top principal logarithmic strain budget as a fraction", 0.02)),
+        "--bottom-strain", str(_prompt_float("Bottom principal logarithmic strain budget as a fraction", 0.02)),
+    ]
+    if _prompt_yes_no("Use the symmetry-preserving branch when it applies?", False):
+        argv.append("--symmetric")
+    if _prompt_yes_no("Show live search progress?", False):
+        argv.append("--progress")
     preview_limit = _prompt_int_range("How many angle-sorted candidates should be shown after the search? (0 hides the preview)", 10, 0, 50)
     argv.extend(["--preview-limit", str(preview_limit)])
     return argv
@@ -472,29 +441,17 @@ def _build_moire_make() -> list[str]:
         patterns=("manifest.json", "*.dat", "*.json"),
         roots=(RUNS_DIR,),
     )
-    mode = _detect_moire_build_mode(results_file)
     _print_saved_moire_preview(results_file, limit=15)
     indexes = _prompt_csv("Candidate indexes to build", "1")
-    if mode == "make":
-        interlayer = _prompt_float("Interlayer distance in angstrom", 3.35)
-        argv = ["moire", "make", results_file, "--indexes", indexes, "--interlayer-distance", str(interlayer)]
-        if _prompt_yes_no("Do you want to generate with more than one worker?", False):
-            argv.extend(["--workers", str(_prompt_int("Worker count", 4))])
-        return argv
-    interlayers = _prompt_csv("Comma-separated interlayer distances in angstrom", "3.35,3.35")
-    return ["moire", "maken", results_file, "--indexes", indexes, "--interlayers", interlayers]
+    interlayer = _prompt_float("Interlayer distance in angstrom", 3.35)
+    argv = ["moire", "make", results_file, "--indexes", indexes, "--interlayer-distance", str(interlayer)]
+    if _prompt_yes_no("Do you want to generate with more than one worker?", False):
+        argv.extend(["--workers", str(_prompt_int("Worker count", 4))])
+    return argv
 
 
 def _build_moire_translate() -> list[str]:
     _print_title("Layer Translation", "Shift the upper part of an already stacked structure.")
-    stage = _choice(
-        "What kind of stacked structure are you shifting?",
-        [
-            {"key": "translate", "label": "Bilayer or topmost layer shift", "hint": "Use the direct bilayer-style shift command."},
-            {"key": "translaten", "label": "Multi-layer topmost shift", "hint": "Use the multi-layer translation entrypoint."},
-        ],
-        default=1,
-    )
     poscar_path = _prompt_path("Choose the stacked POSCAR", patterns=("*.vasp",), roots=(OUTPUT_DIR, INPUT_DIR))
     coordinate_mode = _choice(
         "How do you want to specify the shift?",
@@ -506,7 +463,7 @@ def _build_moire_translate() -> list[str]:
     )
     vector = _prompt_csv("Shift vector", "0.0,0.0")
     flag = "--shift-direct" if coordinate_mode == "direct" else "--shift-cart"
-    return ["moire", stage, poscar_path, flag, vector]
+    return ["moire", "translate", poscar_path, flag, vector]
 
 
 def _build_moire_visualize() -> list[str]:
@@ -984,7 +941,6 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
                 "Moire workflow",
                 [
                     {"key": "find", "label": "Search bilayer candidates", "hint": "Recommended when you are starting a new moire search."},
-                    {"key": "findn", "label": "Search multi-layer candidates", "hint": "Match several upper layers against one base layer."},
                     {"key": "build", "label": "Build from a saved search", "hint": "Generate one or more saved candidates."},
                     {"key": "translate", "label": "Shift a built structure", "hint": "Move the upper part of an existing stack."},
                     {"key": "visualize", "label": "Backup visual inspection", "hint": "Optional. Write a Matplotlib summary if you do not want to open external viewers."},
@@ -995,8 +951,6 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
             try:
                 if stage == "find":
                     return _build_moire_find()
-                if stage == "findn":
-                    return _build_moire_findn()
                 if stage == "build":
                     return _build_moire_make()
                 if stage == "translate":
@@ -1111,18 +1065,6 @@ def _follow_up(group: str, stage: str, result) -> list[str] | None:
         )
         if action == "make":
             return ["moire", "make", str(result.manifest_path), "--indexes", _prompt_csv("Candidate indexes to build", "1"), "--interlayer-distance", str(_prompt_float("Interlayer distance in angstrom", 3.35))]
-        return None
-    if resolved_group == "moire" and stage == "findn" and "results_json" in result.artifacts:
-        action = _choice(
-            "What do you want to do next?",
-            [
-                {"key": "maken", "label": "Generate an N-layer structure now", "hint": "Use the shared-base candidates you just found."},
-                {"key": "done", "label": "Finish here", "hint": "Return to the main workflow menu."},
-            ],
-            default=1,
-        )
-        if action == "maken":
-            return ["moire", "maken", str(result.manifest_path), "--indexes", _prompt_csv("Candidate indexes to build", "1"), "--interlayers", _prompt_csv("Interlayer distances in angstrom", "3.35,3.35")]
         return None
     if resolved_group == "interface" and stage == "surface":
         slab_path = _first_artifact(result, "slab_poscar")

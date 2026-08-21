@@ -15,6 +15,11 @@ from .search.find import run_find
 from .search.findn import run_findn
 from .moire import Moire
 
+N_LAYER_UNSUPPORTED_MESSAGE = (
+    "N-layer moire workflows are not supported by the Gram-form engine. "
+    "Use bilayer moire find and make."
+)
+
 
 class Supermoire(Moire):
     """Multi-layer commensuration workflow."""
@@ -22,9 +27,9 @@ class Supermoire(Moire):
     def findn(
         self,
         *,
-        bottom_poscar: str,
-        upper_poscars: Sequence[str],
-        nindex: int,
+        bottom_poscar: str = "",
+        upper_poscars: Sequence[str] = (),
+        nindex: int = 0,
         match_mode: str = "base_shared",
         min_angles: Sequence[float] | None = None,
         max_angles: Sequence[float] | None = None,
@@ -47,6 +52,7 @@ class Supermoire(Moire):
         prestrains: Sequence[PrestrainConfig] | None = None,
         preview_limit: int = 10,
     ) -> CommandResult:
+        raise NotImplementedError(N_LAYER_UNSUPPORTED_MESSAGE)
         backend = self.choose_backend(feature="moire.findn")
         resolved_mode = str(match_mode).lower()
         label = f"{Path(bottom_poscar).stem}_{len(upper_poscars) + 1}layers"
@@ -230,14 +236,15 @@ class Supermoire(Moire):
     def maken(
         self,
         *,
-        results_file: str,
-        indexes: Sequence[int],
-        interlayers: Sequence[float],
+        results_file: str = "",
+        indexes: Sequence[int] = (),
+        interlayers: Sequence[float] = (),
         output_dir: str | None = None,
         bottom_c_repeat: int | None = None,
         upper_c_repeats: Sequence[int] | None = None,
         zfix: float | None = None,
     ) -> CommandResult:
+        raise NotImplementedError(N_LAYER_UNSUPPORTED_MESSAGE)
         backend = self.choose_backend(feature="moire.maken")
         resolved_results = self.resolve_results_file(results_file, artifact_keys=("results_json",))
         run_id, run_dir = self.create_run_dir("maken", Path(resolved_results).stem)
@@ -278,4 +285,4 @@ class Supermoire(Moire):
         )
 
     def translaten(self, **kwargs) -> CommandResult:
-        return self.translate(**kwargs)
+        raise NotImplementedError(N_LAYER_UNSUPPORTED_MESSAGE)

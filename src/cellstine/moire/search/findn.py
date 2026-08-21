@@ -326,7 +326,7 @@ def parse_results(path: str) -> tuple[Dict[str, object], List[Dict[str, object]]
     return meta, candidates
 
 
-def run_findn(
+def _run_findn_legacy(
     *,
     bottom_poscar: str,
     upper_poscars: Sequence[str],
@@ -506,3 +506,10 @@ def run_findn(
 
 def findn(**kwargs):
     return run_findn(**kwargs)
+
+
+def run_findn(*args, **kwargs):
+    raise NotImplementedError(
+        "N-layer moire workflows are not supported by the Gram-form engine. "
+        "Use bilayer moire find and make."
+    )

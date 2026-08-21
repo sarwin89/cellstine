@@ -3,15 +3,50 @@
 from __future__ import annotations
 
 import argparse
+import math
 from typing import List
 
 
 APP_NAME = "CELLSTINE"
 APP_EXPANSION = "CELL Superlattice Transformation INterface and Engine"
+LEGACY_MOIRE_FIND_MESSAGE = (
+    "Legacy moire find controls are unsupported; use --max-length, --top-strain, "
+    "and --bottom-strain."
+)
 
 
 class HelpFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
     """Readable help text with examples and defaults."""
+
+
+class LegacyMoireFindAction(argparse.Action):
+    """Reject retired find flags with one actionable migration message."""
+
+    def __call__(self, parser, namespace, values, option_string=None) -> None:
+        parser.error(LEGACY_MOIRE_FIND_MESSAGE)
+
+
+def parse_positive_float(raw: str) -> float:
+    value = float(raw)
+    if not math.isfinite(value) or value <= 0.0:
+        raise argparse.ArgumentTypeError("must be a finite positive number")
+    return value
+
+
+def parse_nonnegative_float(raw: str) -> float:
+    value = float(raw)
+    if not math.isfinite(value) or value < 0.0:
+        raise argparse.ArgumentTypeError("must be a finite nonnegative number")
+    return value
+
+
+def add_legacy_moire_find_flag(parser: argparse.ArgumentParser, *flags: str, takes_value: bool = True) -> None:
+    parser.add_argument(
+        *flags,
+        action=LegacyMoireFindAction,
+        nargs="?" if takes_value else 0,
+        help=argparse.SUPPRESS,
+    )
 
 
 def parse_index_spec(raw: str) -> List[int]:
@@ -111,67 +146,30 @@ def build_parser() -> argparse.ArgumentParser:
     )
     moire_find.add_argument("top_poscar")
     moire_find.add_argument("bottom_poscar")
-    moire_find.add_argument("--nindex", type=int, default=12, help="maximum supercell index search size")
-    moire_find.add_argument("--min-angle", type=float, default=0.0, help="minimum twist angle in degrees")
-    moire_find.add_argument("--max-angle", type=float, default=None, help="maximum twist angle in degrees")
-    moire_find.add_argument("--angle-step", type=float, default=0.1, help=argparse.SUPPRESS)
-    moire_find.add_argument("--angles", type=parse_optional_float_list, default=None, help="comma-separated explicit twist angles in degrees")
-    moire_find.add_argument("--angle-length-tolerance", type=float, default=1e-5, help=argparse.SUPPRESS)
-    moire_find.add_argument("--angle-strain-tolerance", type=float, default=2e-3, help="relative span-length tolerance for angle shortlisting as a fraction")
-    moire_find.add_argument("--angle-merge-tolerance", type=float, default=1e-3, help=argparse.SUPPRESS)
-    moire_find.add_argument("--vector-tolerance", type=float, default=None, help=argparse.SUPPRESS)
-    moire_find.add_argument("--vector-strain-tolerance", type=float, default=None, help=argparse.SUPPRESS)
-    moire_find.add_argument("--candidate-tolerance", type=float, default=None, help="candidate merge tolerance as a fraction")
-    moire_find.add_argument("--strain-tolerance", type=float, default=None, help="strain tolerance as a fraction")
-    moire_find.add_argument("--max-atoms", type=int, default=2000, help="maximum atoms allowed in a candidate supercell")
-    moire_find.add_argument("--max-search-angles", type=int, default=None, help=argparse.SUPPRESS)
-    moire_find.add_argument("--matrix-values", type=parse_int_matrix, default=None, help="comma-separated 2x2 matrix entries in any order")
-    moire_find.add_argument("--matrix-layer", choices=["1", "2", "either"], default="either")
-    moire_find.add_argument("--matrix-match-mode", choices=["absolute", "exact"], default="absolute")
-    moire_find.add_argument("--workers", type=int, default=1, help="process workers for parallel commensuration search")
-    moire_find.add_argument("--fold-symmetry", action="store_true", help="fold mirror-equivalent twist angles when both lattices support it")
-    moire_find.add_argument("--max-pair-matches", type=int, default=None, help="per-angle pair cap for crowded angles; <=0 means exhaustive")
-    moire_find.add_argument("--max-cell-aspect-ratio", type=float, default=12.0, help="reject thin/sliver cells whose longest in-plane basis vector is more than this many times the shortest; <=0 disables")
-    moire_find.add_argument("--min-cell-angle", type=float, default=25.0, help="reject cells with an in-plane basis angle below this many degrees; <=0 disables")
-    moire_find.add_argument("--max-cell-angle", type=float, default=155.0, help="reject cells with an in-plane basis angle above this many degrees; <=0 disables")
-    moire_find.add_argument("--allow-slivers", action="store_true", help="disable cell-shape filtering and keep mathematically valid thin cells")
-    moire_find.add_argument("--no-cull", dest="cull_redundant", action="store_false", help="disable Pareto culling and keep dominated same-angle candidates")
-    moire_find.add_argument("--no-reduce", dest="reduce_basis", action="store_false", help="report raw integer bases instead of reduced compact bases")
-    moire_find.set_defaults(cull_redundant=True, reduce_basis=True)
-    moire_find.add_argument("--top-c-repeat", type=int, default=1)
-    moire_find.add_argument("--bottom-c-repeat", type=int, default=1)
+    moire_find.add_argument("--max-length", type=parse_positive_float, required=True, help="maximum in-plane supercell length in angstrom")
+    moire_find.add_argument("--top-strain", type=parse_nonnegative_float, required=True, help="top-layer principal logarithmic strain budget as a fraction")
+    moire_find.add_argument("--bottom-strain", type=parse_nonnegative_float, required=True, help="bottom-layer principal logarithmic strain budget as a fraction")
+    moire_find.add_argument("--min-length", type=parse_positive_float, default=None, help="minimum in-plane supercell length in angstrom")
+    moire_find.add_argument("--max-atoms", type=int, default=None, help="maximum atoms allowed in a candidate supercell")
+    moire_find.add_argument("--max-cell-aspect-ratio", type=parse_positive_float, default=12.0, help="maximum in-plane supercell aspect ratio")
+    moire_find.add_argument("--min-cell-angle", type=parse_positive_float, default=25.0, help="minimum in-plane supercell angle in degrees")
+    moire_find.add_argument("--max-cell-angle", type=parse_positive_float, default=155.0, help="maximum in-plane supercell angle in degrees")
+    moire_find.add_argument("--symmetric", action="store_true", help="request the restricted symmetry-preserving search branch")
     moire_find.add_argument("--progress", action="store_true", help="show live stage progress and elapsed timings while the search runs")
-    moire_find.add_argument("--prestrain-top-mode", choices=["none", "biaxial", "uniaxial"], default="none")
-    moire_find.add_argument("--prestrain-top-value", type=float, default=0.0)
-    moire_find.add_argument("--prestrain-top-axis", default=None)
-    moire_find.add_argument("--prestrain-bottom-mode", choices=["none", "biaxial", "uniaxial"], default="none")
-    moire_find.add_argument("--prestrain-bottom-value", type=float, default=0.0)
-    moire_find.add_argument("--prestrain-bottom-axis", default=None)
     moire_find.add_argument("--preview-limit", type=int, default=10, help="number of angle-sorted candidates to print after the search; use 0 to hide")
-
-    moire_findn = moire_sub.add_parser("findn", formatter_class=HelpFormatter, help="search N-layer commensuration candidates")
-    moire_findn.add_argument("bottom_poscar")
-    moire_findn.add_argument("upper_poscars", nargs="+")
-    moire_findn.add_argument("--match-mode", choices=["base_shared", "base_independent", "pairwise"], default="base_shared")
-    moire_findn.add_argument("--nindex", type=int, default=12)
-    moire_findn.add_argument("--min-angles", type=parse_optional_float_list, default=None, help="comma-separated minimum angles for each upper layer")
-    moire_findn.add_argument("--max-angles", type=parse_optional_float_list, default=None, help="comma-separated maximum angles for each upper layer")
-    moire_findn.add_argument("--angles-by-layer", type=parse_angles_by_layer, default=None, help="semicolon-separated explicit angle lists per upper layer")
-    moire_findn.add_argument("--vector-tolerance", type=float, default=2e-3)
-    moire_findn.add_argument("--vector-strain-tolerance", type=float, default=2e-3)
-    moire_findn.add_argument("--candidate-tolerance", type=float, default=None)
-    moire_findn.add_argument("--max-atoms", type=int, default=2000)
-    moire_findn.add_argument("--max-cell-aspect-ratio", type=float, default=12.0, help="reject thin/sliver pair cells by aspect ratio; <=0 disables")
-    moire_findn.add_argument("--min-cell-angle", type=float, default=25.0, help="reject pair cells with an in-plane basis angle below this many degrees; <=0 disables")
-    moire_findn.add_argument("--max-cell-angle", type=float, default=155.0, help="reject pair cells with an in-plane basis angle above this many degrees; <=0 disables")
-    moire_findn.add_argument("--allow-slivers", action="store_true", help="disable cell-shape filtering")
-    moire_findn.add_argument("--workers", type=int, default=1)
-    moire_findn.add_argument("--bottom-c-repeat", type=int, default=1)
-    moire_findn.add_argument("--upper-c-repeats", type=parse_optional_float_list, default=None, help="comma-separated c repeats for upper layers")
-    moire_findn.add_argument("--prestrain-modes", type=parse_prestrain_modes, default=None, help="comma-separated prestrain modes for bottom then upper layers")
-    moire_findn.add_argument("--prestrain-values", type=parse_optional_float_list, default=None, help="comma-separated prestrain magnitudes for bottom then upper layers")
-    moire_findn.add_argument("--prestrain-axes", type=parse_string_list, default=None, help="comma-separated strain axes for bottom then upper layers")
-    moire_findn.add_argument("--preview-limit", type=int, default=10, help="number of angle-sorted candidates to print after the search; use 0 to hide")
+    for flag in (
+        "--nindex", "--min-angle", "--max-angle", "--angle-step", "--angles",
+        "--angle-length-tolerance", "--angle-strain-tolerance", "--angle-merge-tolerance",
+        "--vector-tolerance", "--vector-strain-tolerance", "--candidate-tolerance",
+        "--strain-tolerance", "--max-search-angles", "--matrix-values", "--matrix-layer",
+        "--matrix-match-mode", "--workers", "--max-pair-matches", "--top-c-repeat",
+        "--bottom-c-repeat", "--prestrain-top-mode", "--prestrain-top-value",
+        "--prestrain-top-axis", "--prestrain-bottom-mode", "--prestrain-bottom-value",
+        "--prestrain-bottom-axis",
+    ):
+        add_legacy_moire_find_flag(moire_find, flag)
+    for flag in ("--fold-symmetry", "--allow-slivers", "--no-cull", "--no-reduce"):
+        add_legacy_moire_find_flag(moire_find, flag, takes_value=False)
 
     moire_make = moire_sub.add_parser("make", formatter_class=HelpFormatter, help="generate bilayer supercells from saved results")
     moire_make.add_argument("results_file")
@@ -179,12 +177,6 @@ def build_parser() -> argparse.ArgumentParser:
     moire_make.add_argument("--interlayer-distance", type=float, default=3.35, help="layer separation in angstrom")
     moire_make.add_argument("--workers", type=int, default=1)
     moire_make.add_argument("--output-dir", default=None)
-
-    moire_maken = moire_sub.add_parser("maken", formatter_class=HelpFormatter, help="generate N-layer supercells from saved results")
-    moire_maken.add_argument("results_file")
-    moire_maken.add_argument("--indexes", type=parse_index_spec, required=True)
-    moire_maken.add_argument("--interlayers", type=parse_optional_float_list, required=True, help="comma-separated interlayer distances in angstrom")
-    moire_maken.add_argument("--output-dir", default=None)
 
     moire_translate = moire_sub.add_parser("translate", formatter_class=HelpFormatter, help="translate the upper layer in a stacked bilayer")
     moire_translate.add_argument("poscar_path")

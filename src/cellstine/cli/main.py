@@ -8,7 +8,6 @@ from pathlib import Path
 from .. import __version__
 from ..adsorbate.molecule import Molecule
 from ..core.dependencies import DependencyManager
-from ..core.models import PrestrainConfig
 from ..defect.workflow import Defect
 from ..interface.surface.surface import Surface
 from ..interface.workflow.interface import Interface
@@ -96,76 +95,21 @@ def execute_namespace(args):
             result = tool.find(
                 top_poscar=args.top_poscar,
                 bottom_poscar=args.bottom_poscar,
-                nindex=args.nindex,
-                min_angle=args.min_angle,
-                max_angle=args.max_angle,
-                angle_step=args.angle_step,
-                explicit_angles=args.angles,
-                angle_length_tolerance=args.angle_length_tolerance,
-                angle_strain_tolerance=args.angle_strain_tolerance,
-                angle_merge_tolerance=args.angle_merge_tolerance,
-                vector_tolerance=args.vector_tolerance,
-                vector_strain_tolerance=args.vector_strain_tolerance,
-                candidate_tolerance=args.candidate_tolerance,
-                strain_tolerance=args.strain_tolerance,
+                max_length=args.max_length,
+                top_strain=args.top_strain,
+                bottom_strain=args.bottom_strain,
+                min_length=args.min_length,
                 max_atoms=args.max_atoms,
-                max_search_angles=args.max_search_angles,
-                matrix_values=args.matrix_values,
-                matrix_layer=args.matrix_layer,
-                matrix_match_mode=args.matrix_match_mode,
-                workers=args.workers,
-                fold_symmetry=args.fold_symmetry,
-                max_pair_matches=args.max_pair_matches,
-                cull_redundant=args.cull_redundant,
-                reduce_basis=args.reduce_basis,
-                max_cell_aspect_ratio=None if args.allow_slivers else args.max_cell_aspect_ratio,
-                min_cell_angle_deg=None if args.allow_slivers else args.min_cell_angle,
-                max_cell_angle_deg=None if args.allow_slivers else args.max_cell_angle,
-                top_c_repeat=args.top_c_repeat,
-                bottom_c_repeat=args.bottom_c_repeat,
-                prestrain_top=PrestrainConfig(args.prestrain_top_mode, args.prestrain_top_value, args.prestrain_top_axis),
-                prestrain_bottom=PrestrainConfig(args.prestrain_bottom_mode, args.prestrain_bottom_value, args.prestrain_bottom_axis),
+                max_aspect_ratio=args.max_cell_aspect_ratio,
+                min_cell_angle_deg=args.min_cell_angle,
+                max_cell_angle_deg=args.max_cell_angle,
+                symmetric=args.symmetric,
                 preview_limit=args.preview_limit,
                 progress=args.progress,
             )
             return result
-        if args.stage == "findn":
-            modes = args.prestrain_modes or ["none"] * (len(args.upper_poscars) + 1)
-            values = args.prestrain_values or [0.0] * (len(args.upper_poscars) + 1)
-            axes = args.prestrain_axes or [None] * (len(args.upper_poscars) + 1)
-            if len(modes) < len(args.upper_poscars) + 1:
-                modes.extend(["none"] * (len(args.upper_poscars) + 1 - len(modes)))
-            if len(values) < len(args.upper_poscars) + 1:
-                values.extend([0.0] * (len(args.upper_poscars) + 1 - len(values)))
-            if len(axes) < len(args.upper_poscars) + 1:
-                axes.extend([None] * (len(args.upper_poscars) + 1 - len(axes)))
-            prestrains = [PrestrainConfig(mode, value, axis) for mode, value, axis in zip(modes, values, axes)]
-            result = Supermoire().findn(
-                bottom_poscar=args.bottom_poscar,
-                upper_poscars=args.upper_poscars,
-                nindex=args.nindex,
-                match_mode=args.match_mode,
-                min_angles=args.min_angles,
-                max_angles=args.max_angles,
-                explicit_angles_by_layer=args.angles_by_layer,
-                vector_tolerance=args.vector_tolerance,
-                vector_strain_tolerance=args.vector_strain_tolerance,
-                candidate_tolerance=args.candidate_tolerance,
-                max_atoms=args.max_atoms,
-                max_cell_aspect_ratio=None if args.allow_slivers else args.max_cell_aspect_ratio,
-                min_cell_angle_deg=None if args.allow_slivers else args.min_cell_angle,
-                max_cell_angle_deg=None if args.allow_slivers else args.max_cell_angle,
-                workers=args.workers,
-                bottom_c_repeat=args.bottom_c_repeat,
-                upper_c_repeats=None if args.upper_c_repeats is None else [int(value) for value in args.upper_c_repeats],
-                prestrains=prestrains,
-                preview_limit=args.preview_limit,
-            )
-            return result
         if args.stage == "make":
             return Moire().make(results_file=args.results_file, indexes=args.indexes, interlayer_distance=args.interlayer_distance, workers=args.workers, output_dir=args.output_dir)
-        if args.stage == "maken":
-            return Supermoire().maken(results_file=args.results_file, indexes=args.indexes, interlayers=args.interlayers, output_dir=args.output_dir)
         if args.stage == "translate":
             return Moire().translate(poscar_path=args.poscar_path, shift_cartesian=args.shift_cart, shift_direct=args.shift_direct)
         if args.stage == "translaten":
