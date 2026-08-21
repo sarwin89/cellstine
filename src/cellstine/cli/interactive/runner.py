@@ -593,14 +593,18 @@ def _build_adsorbate_assemble() -> list[str]:
     use_same_b = _prompt_yes_no("Should b use the same length as a?", True)
     b_length = a_length if use_same_b else _prompt_float("Target b length in angstrom", 12.0)
     angle = _prompt_float("Target in-plane angle in degrees", 60.0)
-    max_strain = _prompt_float("Maximum allowed strain as a fraction", 0.05)
+    max_length = _prompt_float("Maximum in-plane supercell length in angstrom", 30.0)
+    top_strain = _prompt_float("Target molecular-lattice strain budget as a fraction", 0.05)
+    bottom_strain = _prompt_float("Substrate strain budget as a fraction", 0.05)
     preview_limit = _prompt_int_range("How many lowest-strain candidates should be shown after the search? (0 hides the preview)", 10, 0, 50)
     return [
         "adsorbate", "assemble", substrate,
         "--a-length", str(a_length),
         "--b-length", str(b_length),
         "--angle", str(angle),
-        "--max-strain", str(max_strain),
+        "--max-length", str(max_length),
+        "--top-strain", str(top_strain),
+        "--bottom-strain", str(bottom_strain),
         "--preview-limit", str(preview_limit),
     ]
 

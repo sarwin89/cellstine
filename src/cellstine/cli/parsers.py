@@ -183,11 +183,6 @@ def build_parser() -> argparse.ArgumentParser:
     moire_translate.add_argument("--shift-cart", type=parse_float_vector, default=None, help="cartesian shift vector in angstrom")
     moire_translate.add_argument("--shift-direct", type=parse_float_vector, default=None, help="direct shift vector")
 
-    moire_translaten = moire_sub.add_parser("translaten", formatter_class=HelpFormatter, help="translate the uppermost layer in a stacked N-layer structure")
-    moire_translaten.add_argument("poscar_path")
-    moire_translaten.add_argument("--shift-cart", type=parse_float_vector, default=None)
-    moire_translaten.add_argument("--shift-direct", type=parse_float_vector, default=None)
-
     moire_visualize = moire_sub.add_parser(
         "visualize",
         formatter_class=HelpFormatter,
@@ -253,8 +248,9 @@ def build_parser() -> argparse.ArgumentParser:
     ads_assemble.add_argument("--a-length", type=float, required=True, help="target a length in angstrom")
     ads_assemble.add_argument("--b-length", type=float, default=None, help="target b length in angstrom; defaults to a")
     ads_assemble.add_argument("--angle", type=float, default=60.0, help="target in-plane angle in degrees")
-    ads_assemble.add_argument("--nindex", type=int, default=12)
-    ads_assemble.add_argument("--max-strain", type=float, default=0.05, help="maximum allowed strain as a fraction")
+    ads_assemble.add_argument("--max-length", type=parse_positive_float, required=True, help="maximum in-plane supercell length in angstrom")
+    ads_assemble.add_argument("--top-strain", type=parse_nonnegative_float, required=True, help="target molecular-lattice principal logarithmic strain budget as a fraction")
+    ads_assemble.add_argument("--bottom-strain", type=parse_nonnegative_float, required=True, help="substrate principal logarithmic strain budget as a fraction")
     ads_assemble.add_argument("--preview-limit", type=int, default=10, help="number of lowest-strain candidates to print after the search; use 0 to hide")
 
     ads_visualize = adsorbate_sub.add_parser(

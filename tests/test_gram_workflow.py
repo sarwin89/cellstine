@@ -10,6 +10,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from cellstine.io import native as io
+from cellstine.adsorbate.molecule import Molecule
 from cellstine.moire.builder import make
 from cellstine.moire.moire import Moire
 from cellstine.moire.search import find
@@ -409,3 +410,49 @@ def test_moire_manifests_handoff_results_json_not_dat(tmp_path: Path):
     assert set(result.artifacts) == {"results_json"}
     assert set(manifest["artifacts"]) == {"results_json"}
     assert Path(result.artifacts["results_json"]).name == "results.json"
+
+
+def test_adsorbate_assemble_handoffs_native_results_json(tmp_path: Path):
+    from cellstine.moire.search.results import read_results
+
+    substrate_path = tmp_path / "substrate.vasp"
+    io.write_poscar(
+        str(substrate_path),
+        np.array(
+            [
+                [2.0, 0.0, 0.0],
+                [1.0, np.sqrt(3.0), 0.0],
+                [0.0, 0.0, 12.0],
+            ],
+            dtype=float,
+        ),
+        np.array([[0.0, 0.0, 0.25]], dtype=float),
+        [1],
+        ["S"],
+        positions_are_cartesian=False,
+    )
+    tool = Molecule(runs_root=tmp_path / "runs", output_root=tmp_path / "output")
+
+    result = tool.assemble(
+        substrate_poscar=str(substrate_path),
+        a_length=2.0,
+        b_length=2.0,
+        angle_deg=60.0,
+        max_length=2.5,
+        top_strain=0.01,
+        bottom_strain=0.01,
+        max_atoms=20,
+        preview_limit=0,
+    )
+
+    assert set(result.artifacts) == {"target_poscar", "results_json"}
+    results_path = Path(result.artifacts["results_json"])
+    assert results_path.name == "results.json"
+    payload = read_results(results_path)
+    assert payload["schema"] == "cellstine.moire.gram"
+    assert payload["search"]["max_length"] == 2.5
+    assert payload["search"]["top_strain"] == 0.01
+    assert payload["search"]["bottom_strain"] == 0.01
+    manifest = json.loads(Path(result.manifest_path).read_text(encoding="utf-8"))
+    assert set(manifest["artifacts"]) == {"target_poscar", "results_json"}
+    assert manifest["artifacts"]["results_json"] == str(results_path)

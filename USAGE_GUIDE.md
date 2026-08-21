@@ -289,10 +289,12 @@ cellstine adsorbate move output/stacked.vasp --target-cart 12.0,8.0,10.5 --rotat
 This mode uses an experimental target lattice to search for a commensurate substrate supercell beneath it.
 
 ```bash
-cellstine adsorbate assemble input/Au_1x1.vasp --a-length 12.0 --b-length 12.0 --angle 60 --max-strain 0.05
+cellstine adsorbate assemble input/Au_1x1.vasp --a-length 12.0 --b-length 12.0 --angle 60 --max-length 30 --top-strain 0.05 --bottom-strain 0.05
 ```
 
-By default, strain above `5%` is rejected unless you override `--max-strain`.
+`--top-strain` bounds the synthetic molecular lattice and `--bottom-strain`
+bounds the substrate, using the same principal logarithmic strain definition as
+native bilayer moire search. The command writes schema-versioned `results.json`.
 
 ### 6.4 Adsorbate Visualization
 

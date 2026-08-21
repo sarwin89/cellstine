@@ -7,7 +7,7 @@ The `adsorbate` workflow places and moves molecules on substrate slabs.
 ```bash
 cellstine adsorbate place output/examples/Au_Bulk_111_surface.vasp input/examples/graph.vasp --site-type top --site-index 1 --height 2.5
 cellstine adsorbate move output/examples/mos2x_mos2_stack_0deg_atoms6.vasp --target-direct 0.5,0.5 --rotate 30
-cellstine adsorbate assemble input/examples/Au_Bulk.vasp --a-length 12 --b-length 12 --angle 60
+cellstine adsorbate assemble input/examples/Au_Bulk.vasp --a-length 12 --b-length 12 --angle 60 --max-length 30 --top-strain 0.05 --bottom-strain 0.05
 ```
 
 ## Notes

@@ -169,10 +169,56 @@ def test_n_layer_commands_are_hidden_from_cli_help_and_choices():
     parser = build_parser()
     stages = _moire_stages(parser)
 
-    assert "findn" not in stages
-    assert "maken" not in stages
+    for retired_stage in ("findn", "maken", "translaten"):
+        assert retired_stage not in stages
+        assert retired_stage not in parser.format_help()
     assert "findn" not in stages["find"].format_help()
-    assert "maken" not in parser.format_help()
+
+
+def test_adsorbate_assemble_dispatches_native_gram_controls(monkeypatch):
+    captured = {}
+
+    class FakeMolecule:
+        def assemble(self, **kwargs):
+            captured.update(kwargs)
+            return object()
+
+    monkeypatch.setattr(cli_main, "Molecule", FakeMolecule)
+    args = build_parser().parse_args(
+        [
+            "adsorbate",
+            "assemble",
+            "substrate.vasp",
+            "--a-length",
+            "12.0",
+            "--b-length",
+            "10.0",
+            "--angle",
+            "75.0",
+            "--max-length",
+            "30.0",
+            "--top-strain",
+            "0.02",
+            "--bottom-strain",
+            "0.03",
+            "--preview-limit",
+            "4",
+        ]
+    )
+
+    result = cli_main.execute_namespace(args)
+
+    assert result is not None
+    assert captured == {
+        "substrate_poscar": "substrate.vasp",
+        "a_length": 12.0,
+        "b_length": 10.0,
+        "angle_deg": 75.0,
+        "max_length": 30.0,
+        "top_strain": 0.02,
+        "bottom_strain": 0.03,
+        "preview_limit": 4,
+    }
 
 
 def test_retired_n_layer_python_entrypoints_raise_the_consistent_error():

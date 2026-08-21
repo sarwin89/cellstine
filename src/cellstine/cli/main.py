@@ -12,7 +12,6 @@ from ..defect.workflow import Defect
 from ..interface.surface.surface import Surface
 from ..interface.workflow.interface import Interface
 from ..moire.moire import Moire
-from ..moire.supermoire import Supermoire
 from ..symmetry.symmetry import Symmetry
 from ..visualize.visualize import Visualize
 from .parsers import build_parser
@@ -112,8 +111,6 @@ def execute_namespace(args):
             return Moire().make(results_file=args.results_file, indexes=args.indexes, interlayer_distance=args.interlayer_distance, workers=args.workers, output_dir=args.output_dir)
         if args.stage == "translate":
             return Moire().translate(poscar_path=args.poscar_path, shift_cartesian=args.shift_cart, shift_direct=args.shift_direct)
-        if args.stage == "translaten":
-            return Supermoire().translaten(poscar_path=args.poscar_path, shift_cartesian=args.shift_cart, shift_direct=args.shift_direct)
         if args.stage == "visualize":
             return Moire().visualize(
                 results_file=args.results_file,
@@ -161,8 +158,9 @@ def execute_namespace(args):
                 a_length=args.a_length,
                 b_length=args.b_length,
                 angle_deg=args.angle,
-                nindex=args.nindex,
-                max_strain=args.max_strain,
+                max_length=args.max_length,
+                top_strain=args.top_strain,
+                bottom_strain=args.bottom_strain,
                 preview_limit=args.preview_limit,
             )
         if args.stage == "visualize":
