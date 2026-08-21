@@ -290,6 +290,28 @@ def test_uniformly_small_nonsingular_basis_is_valid_and_searchable():
     assert result.top_matrices.dtype == np.int64
 
 
+def test_subnormal_gram_determinant_uses_safe_internal_length_scale():
+    scale = 1e-160
+    reference = search(
+        SearchConfig(np.eye(2), np.eye(2), 2.0, 0.01, 0.0)
+    )
+    result = search(
+        SearchConfig(
+            scale * np.eye(2),
+            scale * np.eye(2),
+            2.0 * scale,
+            0.01,
+            0.0,
+        )
+    )
+    assert np.array_equal(result.top_matrices, reference.top_matrices)
+    assert np.array_equal(result.bottom_matrices, reference.bottom_matrices)
+    gram_scale = np.float64(scale) * np.float64(scale)
+    assert result.top_gram / gram_scale == pytest.approx(reference.top_gram, rel=1e-12)
+    assert result.bottom_gram / gram_scale == pytest.approx(reference.bottom_gram, rel=1e-12)
+    assert result.shared_lattice / scale == pytest.approx(reference.shared_lattice, rel=1e-12)
+
+
 def test_scalar_loewner_acceptance_agrees_with_svd_reference():
     rng = np.random.default_rng(4821)
     budget = 0.08

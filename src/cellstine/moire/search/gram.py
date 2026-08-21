@@ -180,6 +180,17 @@ def _gram_of_basis(basis: np.ndarray) -> np.ndarray:
     return basis.T @ basis
 
 
+def _internal_length_scale(config: SearchConfig) -> float:
+    """Common power-of-two scale keeping metric products away from under/overflow."""
+    reference = max(
+        float(np.max(np.abs(config.top_basis))),
+        float(np.max(np.abs(config.bottom_basis))),
+        float(config.max_length),
+    )
+    _, exponent = math.frexp(reference)
+    return math.ldexp(1.0, exponent - 1)
+
+
 def _gauss_reduction_multiplier(dot_product: float, first_norm: float) -> int:
     """Nearest shear, treating a roundoff-width ``|dot| = norm/2`` boundary as reduced."""
     scale = max(abs(dot_product), abs(first_norm), np.finfo(float).tiny)
@@ -845,6 +856,7 @@ def _finalize(
     bottom_multiplicity: np.ndarray,
     twist: np.ndarray,
     stats: dict[str, Any],
+    length_scale: float,
 ) -> SearchResult:
     finalize_started = time.perf_counter()
     first_stretch, second_stretch, first_strain, second_strain = _stretches_from_gram(
@@ -909,6 +921,8 @@ def _finalize(
         second_stretch,
         sharing,
     )
+    physical_top_gram = (top_gram * length_scale) * length_scale
+    physical_bottom_gram = (bottom_gram * length_scale) * length_scale
     stats = dict(stats)
     finalize_elapsed = time.perf_counter() - finalize_started
     stats["t_finalize"] = finalize_elapsed
@@ -917,11 +931,12 @@ def _finalize(
     stats["n_accepted"] = int(len(top_matrices))
     stats["n_pareto"] = int(pareto.sum())
     stats["n_borderline"] = int((~certified).sum())
+    stats["internal_length_scale"] = length_scale
     return SearchResult(
         top_matrices=top_matrices,
         bottom_matrices=bottom_matrices,
-        top_gram=top_gram,
-        bottom_gram=bottom_gram,
+        top_gram=physical_top_gram,
+        bottom_gram=physical_bottom_gram,
         twist_radians=twist,
         twist_degrees=np.degrees(twist),
         principal_strains=principal_strains,
@@ -945,11 +960,14 @@ def _general_search(config: SearchConfig) -> SearchResult:
     clock = time.perf_counter
     started = clock()
     lower, upper = config._band
-    top_basis, top_gauge = _reduce_basis(config.top_basis)
-    bottom_basis, bottom_gauge = _reduce_basis(config.bottom_basis)
+    length_scale = _internal_length_scale(config)
+    top_basis, top_gauge = _reduce_basis(config.top_basis / length_scale)
+    bottom_basis, bottom_gauge = _reduce_basis(config.bottom_basis / length_scale)
     top_metric, bottom_metric = _gram_of_basis(top_basis), _gram_of_basis(bottom_basis)
-    max_squared = config.max_length * config.max_length
-    min_squared = 0.0 if config.min_length is None else config.min_length**2
+    max_length = config.max_length / length_scale
+    min_length = None if config.min_length is None else config.min_length / length_scale
+    max_squared = max_length * max_length
+    min_squared = 0.0 if min_length is None else min_length * min_length
     top_area = float(np.sqrt(np.linalg.det(top_metric)))
     bottom_area = float(np.sqrt(np.linalg.det(bottom_metric)))
     if config.fold_symmetry:
@@ -1112,6 +1130,7 @@ def _general_search(config: SearchConfig) -> SearchResult:
         bottom_multiplicity,
         twist,
         stats,
+        length_scale,
     )
 
 
@@ -1143,8 +1162,9 @@ def _rotation_generator(metric: np.ndarray, tolerance: float = 1e-10):
 
 def symmetric_branch_applies(config: SearchConfig) -> bool:
     """Return whether both layers have the same square or hexagonal rotation family."""
-    top_basis, _ = _reduce_basis(config.top_basis)
-    bottom_basis, _ = _reduce_basis(config.bottom_basis)
+    length_scale = _internal_length_scale(config)
+    top_basis, _ = _reduce_basis(config.top_basis / length_scale)
+    bottom_basis, _ = _reduce_basis(config.bottom_basis / length_scale)
     top_rotation, top_kind = _rotation_generator(_gram_of_basis(top_basis))
     bottom_rotation, bottom_kind = _rotation_generator(_gram_of_basis(bottom_basis))
     return (
@@ -1177,8 +1197,9 @@ def _symmetric_search(config: SearchConfig) -> SearchResult:
     clock = time.perf_counter
     started = clock()
     lower, upper = config._band
-    top_basis, top_gauge = _reduce_basis(config.top_basis)
-    bottom_basis, bottom_gauge = _reduce_basis(config.bottom_basis)
+    length_scale = _internal_length_scale(config)
+    top_basis, top_gauge = _reduce_basis(config.top_basis / length_scale)
+    bottom_basis, bottom_gauge = _reduce_basis(config.bottom_basis / length_scale)
     top_metric, bottom_metric = _gram_of_basis(top_basis), _gram_of_basis(bottom_basis)
     top_rotation, top_kind = _rotation_generator(top_metric)
     bottom_rotation, bottom_kind = _rotation_generator(bottom_metric)
@@ -1187,12 +1208,14 @@ def _symmetric_search(config: SearchConfig) -> SearchResult:
             "the symmetric branch requires both layers to be square or hexagonal "
             "with the same rotation order"
         )
-    max_squared = config.max_length**2
+    max_length = config.max_length / length_scale
+    min_length = None if config.min_length is None else config.min_length / length_scale
+    max_squared = max_length * max_length
     top_first, top_second, top_squared, top_index = _invariant_table(
         top_metric, top_rotation, max_squared, config.fold_symmetry
     )
-    if config.min_length is not None:
-        keep = top_squared >= config.min_length**2 * (1.0 - _REL)
+    if min_length is not None:
+        keep = top_squared >= min_length**2 * (1.0 - _REL)
         top_first, top_second = top_first[keep], top_second[keep]
         top_squared, top_index = top_squared[keep], top_index[keep]
     bottom_first, bottom_second, bottom_squared, bottom_index = _invariant_table(
@@ -1290,6 +1313,7 @@ def _symmetric_search(config: SearchConfig) -> SearchResult:
         bottom_multiplicity,
         twist,
         stats,
+        length_scale,
     )
 
 
