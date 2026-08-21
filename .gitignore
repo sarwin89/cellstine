@@ -43,12 +43,10 @@ input/*
 !input/.gitkeep
 !input/examples/
 !input/examples/**
-output/*
-!output/.gitkeep
-!output/examples/
-!output/examples/**
-runs/*
-!runs/.gitkeep
+output/
+runs/
+output-final_aristotle/
+benchmark_nindex10_moire/
 
 # Local notebooks and exports
 *.ipynb
