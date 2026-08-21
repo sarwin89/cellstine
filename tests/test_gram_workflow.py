@@ -220,6 +220,66 @@ def test_results_reader_validates_schema_and_candidate_shapes(tmp_path: Path, mu
         read_results(result_path)
 
 
+@pytest.mark.parametrize(
+    "mutation, message",
+    [
+        (
+            lambda payload: payload["candidates"][0]["top_matrix"][0].__setitem__(0, "1"),
+            "top_matrix",
+        ),
+        (
+            lambda payload: payload["candidates"][0]["top_matrix"][0].__setitem__(0, 1.0),
+            "top_matrix",
+        ),
+        (
+            lambda payload: payload["candidates"][0]["top_matrix"][0].__setitem__(0, 1.5),
+            "top_matrix",
+        ),
+        (
+            lambda payload: payload["candidates"][0]["top_gram"].__setitem__(0, "4.09"),
+            "top_gram",
+        ),
+        (
+            lambda payload: payload["candidates"][0]["top_affine"][0].__setitem__(0, "1.0"),
+            "top_affine",
+        ),
+    ],
+    ids=[
+        "matrix-numeric-string",
+        "matrix-integral-float",
+        "matrix-nonintegral-float",
+        "gram-numeric-string",
+        "affine-numeric-string",
+    ],
+)
+def test_results_reader_rejects_coercible_non_schema_numbers(
+    tmp_path: Path, mutation, message: str
+):
+    from cellstine.moire.search.results import read_results
+
+    top_path, bottom_path = _write_layers(tmp_path)
+    payload = _literal_results_payload(top_path, bottom_path)
+    mutation(payload)
+    result_path = tmp_path / "invalid-number.json"
+    result_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    with pytest.raises(ValueError, match=message):
+        read_results(result_path)
+
+
+def test_results_reader_rejects_min_length_above_max_length(tmp_path: Path):
+    from cellstine.moire.search.results import read_results
+
+    top_path, bottom_path = _write_layers(tmp_path)
+    payload = _literal_results_payload(top_path, bottom_path)
+    payload["search"]["min_length"] = 3.0
+    result_path = tmp_path / "invalid-bounds.json"
+    result_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    with pytest.raises(ValueError, match=r"min_length.*max_length"):
+        read_results(result_path)
+
+
 def test_results_reader_rejects_legacy_dat_with_migration_guidance(tmp_path: Path):
     from cellstine.moire.search.results import read_results
 
@@ -245,6 +305,41 @@ def test_native_poscar_row_bases_keep_top_bottom_and_matrix_orientation(tmp_path
     bottom_transformed = bottom_matrix @ BOTTOM_IN_PLANE @ bottom_affine.T
     assert np.allclose(top_transformed, shared_row, atol=1e-10)
     assert np.allclose(bottom_transformed, shared_row, atol=1e-10)
+
+
+def test_actual_run_find_json_builds_every_candidate_with_recorded_affine_lattice(
+    tmp_path: Path,
+):
+    run = _run_find(tmp_path)
+    indexes = [int(candidate["index"]) for candidate in run.candidates]
+    make_runs = make.generate_many_from_results(
+        str(run.result_path),
+        indexes=indexes,
+        interlayer_distance=3.25,
+        output_dir=str(tmp_path / "built"),
+    )
+
+    assert len(make_runs) == len(run.candidates) > 1
+    for candidate, make_run in zip(run.candidates, make_runs):
+        built = io.read_poscar(str(make_run.output_path))
+        shared_row = np.asarray(candidate["shared_lattice"], dtype=float).T
+        top_transformed = (
+            np.asarray(candidate["top_matrix"], dtype=int)
+            @ TOP_IN_PLANE
+            @ np.asarray(candidate["top_affine"], dtype=float).T
+        )
+        bottom_transformed = (
+            np.asarray(candidate["bottom_matrix"], dtype=int)
+            @ BOTTOM_IN_PLANE
+            @ np.asarray(candidate["bottom_affine"], dtype=float).T
+        )
+
+        assert built.natoms == int(candidate["atom_count"])
+        assert built.selective_dynamics
+        assert len(built.selective_flags or []) == built.natoms
+        assert np.allclose(top_transformed, shared_row, atol=1e-10)
+        assert np.allclose(bottom_transformed, shared_row, atol=1e-10)
+        assert np.allclose(built.lattice[:2, :2], shared_row, atol=1e-10)
 
 
 def test_json_make_uses_recorded_affines_and_retains_structure_semantics(

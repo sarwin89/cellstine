@@ -106,21 +106,29 @@ def _positive_integer(value: Any, name: str) -> int:
 
 
 def _finite_array(value: Any, shape: tuple[int, ...], name: str) -> np.ndarray:
-    try:
-        array = np.asarray(value, dtype=float)
-    except (TypeError, ValueError) as exc:
-        raise ValueError(f"{name} must be a finite {shape} array") from exc
-    if array.shape != shape or not np.all(np.isfinite(array)):
+    object_array = np.asarray(value, dtype=object)
+    if object_array.shape != shape:
+        raise ValueError(f"{name} must be a finite {shape} array")
+    scalar_values = object_array.ravel().tolist()
+    if any(
+        isinstance(item, bool) or not isinstance(item, (int, float))
+        for item in scalar_values
+    ):
+        raise ValueError(f"{name} must be a finite {shape} array")
+    array = np.asarray(object_array, dtype=float)
+    if not np.all(np.isfinite(array)):
         raise ValueError(f"{name} must be a finite {shape} array")
     return array
 
 
 def _integer_matrix(value: Any, name: str) -> np.ndarray:
-    array = _finite_array(value, (2, 2), name)
-    flat_values = np.asarray(value, dtype=object).ravel().tolist()
-    if any(isinstance(item, bool) for item in flat_values) or not np.all(array == np.round(array)):
+    object_array = np.asarray(value, dtype=object)
+    if object_array.shape != (2, 2):
         raise ValueError(f"{name} must be a 2x2 integer matrix")
-    matrix = array.astype(np.int64)
+    flat_values = object_array.ravel().tolist()
+    if any(isinstance(item, bool) or not isinstance(item, int) for item in flat_values):
+        raise ValueError(f"{name} must be a 2x2 integer matrix")
+    matrix = np.asarray(object_array, dtype=np.int64)
     if int(round(np.linalg.det(matrix))) == 0:
         raise ValueError(f"{name} must be nonsingular")
     return matrix
@@ -133,7 +141,8 @@ def _validate_search(search: dict[str, Any]) -> None:
     for name in ("top_poscar", "bottom_poscar"):
         if not isinstance(search[name], str) or not search[name].strip():
             raise ValueError(f"search.{name} must be a nonempty path string")
-    if _finite_number(search["max_length"], "search.max_length") <= 0.0:
+    max_length = _finite_number(search["max_length"], "search.max_length")
+    if max_length <= 0.0:
         raise ValueError("search.max_length must be positive")
     for name in ("top_strain", "bottom_strain"):
         if _finite_number(search[name], f"search.{name}") < 0.0:
@@ -141,8 +150,12 @@ def _validate_search(search: dict[str, Any]) -> None:
     if float(search["top_strain"]) + float(search["bottom_strain"]) <= 0.0:
         raise ValueError("search strain budgets cannot both be zero")
     min_length = search["min_length"]
-    if min_length is not None and _finite_number(min_length, "search.min_length") <= 0.0:
-        raise ValueError("search.min_length must be positive when present")
+    if min_length is not None:
+        normalized_min_length = _finite_number(min_length, "search.min_length")
+        if normalized_min_length <= 0.0:
+            raise ValueError("search.min_length must be positive when present")
+        if normalized_min_length > max_length:
+            raise ValueError("search.min_length cannot exceed search.max_length")
     max_atoms = search["max_atoms"]
     if max_atoms is not None:
         _positive_integer(max_atoms, "search.max_atoms")
