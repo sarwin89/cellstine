@@ -40,7 +40,7 @@ lattice vectors -- and reports the Miller family and the interplanar spacing
 seen along that direction are an accident of the cell that was supplied and do
 not describe a repeating stack.
 
-``RequestProject/LayerPartition.lean`` proves the properties the layer census
+``aristotle-lean-reference/RequestProject/LayerPartition.lean`` proves the properties the layer census
 relies on: that grouping the projections by a tolerance is exactly the
 connected-component ("single-linkage") partition, that the partition does not
 depend on where the origin is or on which way round the direction points, and

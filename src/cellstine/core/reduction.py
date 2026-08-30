@@ -12,8 +12,8 @@ plane basis the first row is already a shortest in-plane vector.
 The Niggli reduction is also the canonical cell a crystal is reported in, so it
 is used by the symmetry stage as well as by the searches.
 
-The statements behind the reductions are in ``RequestProject/NiggliCell.lean``
-and ``RequestProject/LagrangeGauss.lean``.
+The statements behind the reductions are in ``aristotle-lean-reference/RequestProject/NiggliCell.lean``
+and ``aristotle-lean-reference/RequestProject/LagrangeGauss.lean``.
 """
 
 from __future__ import annotations
@@ -356,7 +356,7 @@ def plane_form_kernel_basis(form: np.ndarray) -> np.ndarray:
     are ``(f1/g, -f0/g, 0)`` and ``(-p f2/d, -q f2/d, g/d)``.  Both are
     annihilated by ``f`` by construction, and every annihilated vector is an
     integer combination of them --- see ``Cellstine.Plane.exists_kernel_coords``
-    in ``RequestProject/PlaneSublattice.lean``.
+    in ``aristotle-lean-reference/RequestProject/PlaneSublattice.lean``.
     """
 
     values = np.asarray(form, dtype=np.int64).reshape(3)
@@ -395,7 +395,7 @@ def gauss_reduction_multiplier(dot_product: float, first_norm: float) -> int:
     shortens anything: the rounds then oscillate for ever.  A ratio within a few
     hundred ulps of the boundary is therefore reported as reduced.
 
-    ``RequestProject/GaussStep.lean`` backs all of it: the boundary step is the
+    ``aristotle-lean-reference/RequestProject/GaussStep.lean`` backs all of it: the boundary step is the
     cycle (``Cellstine.gaussStep_boundary_involutive``), a boundary basis is
     already reduced (``Cellstine.isReducedGram_of_boundary``), any other basis
     is strictly shortened by its round (``Cellstine.gaussStep_lt_of_not_reduced``,

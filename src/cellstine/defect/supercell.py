@@ -33,10 +33,10 @@ Two things keep the answer honest rather than merely arithmetic:
   and the report can say how close to the best possible the chosen cell is.
 
 The formal statements behind all of this are in
-``RequestProject/DefectImageSeparation.lean`` (what the separation is, that it
+``aristotle-lean-reference/RequestProject/DefectImageSeparation.lean`` (what the separation is, that it
 depends on the lattice rather than on the basis, that a supercell never brings
 the images closer, and the two Minkowski bounds) and
-``RequestProject/HermiteNormalForm.lean`` (that the Hermite enumeration hits
+``aristotle-lean-reference/RequestProject/HermiteNormalForm.lean`` (that the Hermite enumeration hits
 every sublattice of the given index exactly once).
 """
 

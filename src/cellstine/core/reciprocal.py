@@ -43,7 +43,7 @@ some operations; those are detected and dropped, and the count of the ones that
 survived is reported so the loss is visible rather than silent.
 
 The formal statements behind this module are in
-``RequestProject/ReciprocalMesh.lean``.
+``aristotle-lean-reference/RequestProject/ReciprocalMesh.lean``.
 """
 
 from __future__ import annotations

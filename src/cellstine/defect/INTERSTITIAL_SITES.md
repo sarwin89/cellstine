@@ -99,7 +99,7 @@ angular-gap test -- so no direction sampling can miss a narrow escape route.
 Nothing is enumerated beyond the reach a site can have: four atoms on a sphere
 of radius `r` lie within `2 r` of one another, and the neighbour cutoff is twice
 a proven upper bound on the covering radius of the cell
-(`RequestProject/CoveringRadius.lean`).
+(`aristotle-lean-reference/RequestProject/CoveringRadius.lean`).
 
 That bound is found adaptively, because how *tight* it is decides how much the
 enumeration costs.  The distance to the nearest atom is 1-Lipschitz, so its
@@ -109,7 +109,7 @@ bound does not beat that lower bound cannot hold the maximum and is dropped
 unrefined, and the rest are cut in half along every axis and looked at again.
 The sweep stops when the two bounds meet, or when it has spent its probe budget
 -- and stopping early only loosens the answer, never invalidates it.  All of
-that is proved in `RequestProject/CoveringBound.lean`: the per-box bound, that
+that is proved in `aristotle-lean-reference/RequestProject/CoveringBound.lean`: the per-box bound, that
 the reach of a box is attained at a corner (which is what `_grid_box_reach`
 computes, and is up to `sqrt(3)` smaller than the sum of the half-edges), that
 the eight children cover their parent, and that pruning loses no maximum.
@@ -121,4 +121,4 @@ where a short packing distance sits next to a wide hollow -- the whole search
 went from 11.0 s to 1.9 s.  Asking for the saddles costs about a third more.
 
 The criterion itself, and the two body-centred cubic sites, are proved in Lean 4
-in `RequestProject/CriticalVoids.lean`.
+in `aristotle-lean-reference/RequestProject/CriticalVoids.lean`.

@@ -39,7 +39,7 @@ x_k = x + (k / (N + 1)) d.
 
 Consecutive images are then exactly `‖d‖ / (N + 1)` apart and the chain is
 `‖d‖` long — the even spacing a band expects, and no image is a detour. Both
-facts are proved in `RequestProject/MigrationPath.lean`
+facts are proved in `aristotle-lean-reference/RequestProject/MigrationPath.lean`
 (`Cellstine.pathImage_step_norm`, `Cellstine.pathImage_total_length`), together
 with the statement that no chain between the same endpoints can be shorter
 (`Cellstine.norm_sub_le_chain_length`).

@@ -49,7 +49,7 @@ VERSION = 1
 #: by cell size, then area, then twist -- all of which are meaningful.
 #:
 #: What the snapping does and does not do is proved in
-#: ``RequestProject/MatchOrdering.lean``: it never inverts a real strain
+#: ``aristotle-lean-reference/RequestProject/MatchOrdering.lean``: it never inverts a real strain
 #: difference (``Cellstine.lt_of_quantise_lt``), a tie really is a tie to within
 #: this resolution (``Cellstine.abs_sub_le_of_quantise_eq``), and two strains
 #: further apart than it are never merged (``Cellstine.quantise_lt_of_add_lt``).
@@ -209,7 +209,7 @@ def match_order_key(entry: Mapping[str, Any]) -> tuple[float, int, float, float]
     The strain enters at the resolution of :data:`STRAIN_ORDER_RESOLUTION`, so
     matches that are equally strained to within floating-point noise are ordered
     by the quantities a user actually chooses between.  See
-    ``Cellstine.strain_lt_or_tie`` in ``RequestProject/MatchOrdering.lean``.
+    ``Cellstine.strain_lt_or_tie`` in ``aristotle-lean-reference/RequestProject/MatchOrdering.lean``.
     """
 
     quantum = float(STRAIN_ORDER_RESOLUTION)

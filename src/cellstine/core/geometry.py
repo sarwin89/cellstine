@@ -6,7 +6,7 @@ vector of the ``i``-th basis vector, so a site with fractional coordinates ``x``
 :class:`cellstine.io.models.StructureRecord` and of the POSCAR format.
 
 Three facts drive the implementations below; all three are proved in
-``RequestProject/PeriodicGeometry.lean``.
+``aristotle-lean-reference/RequestProject/PeriodicGeometry.lean``.
 
 *Reach bound.*  Write ``b_i`` for the rows of ``inv(lattice).T`` (the reciprocal
 basis) and ``d_i = 1 / ‖b_i‖`` for the spacing of the lattice planes normal to
@@ -168,7 +168,7 @@ def plane_shift_reach(basis: np.ndarray, cutoff: float) -> np.ndarray:
     ``d_i = 1 / |b_i^*|`` the spacing of the rows of lattice points along axis
     ``i``, so shifts outside the box are provably too long
     (``Cellstine.Plane.abs_shift_le_of_euclidNorm_le`` in
-    ``RequestProject/PlaneImages.lean``, the pseudo-inverse counterpart of the
+    ``aristotle-lean-reference/RequestProject/PlaneImages.lean``, the pseudo-inverse counterpart of the
     square-basis ``Cellstine.abs_shift_le_of_cartesian_le``).  The rows here
     span a plane in three-dimensional space, so there is no inverse to pair the
     displacement with; ``Cellstine.Plane.exists_rightInverse`` and
@@ -326,7 +326,7 @@ def minimum_image_displacements(
     shortest lattice vector ``L`` skips the box search altogether: every other
     image is ``c - s`` with ``s`` a nonzero lattice vector, hence at least
     ``L - |c| > |c|`` long (``Cellstine.euclidNorm_le_of_two_mul_le_shortest`` in
-    ``RequestProject/PeriodicGeometry.lean``).  The test is made with a relative
+    ``aristotle-lean-reference/RequestProject/PeriodicGeometry.lean``).  The test is made with a relative
     margin so that the strict inequality survives rounding.
     """
 
@@ -416,7 +416,7 @@ def bounded_minimum_image_squared(
     * ``radius < |c| < L - radius`` -- every image, ``c`` included, is longer
       than ``radius``, so the row misses whatever ``|c|`` happens to be.
 
-    Both steps are proved in ``RequestProject/PeriodicGeometry.lean``, as
+    Both steps are proved in ``aristotle-lean-reference/RequestProject/PeriodicGeometry.lean``, as
     ``Cellstine.euclidNorm_le_of_le_radius`` and
     ``Cellstine.radius_lt_euclidNorm_sub_of_lt_shortest_sub``.
 

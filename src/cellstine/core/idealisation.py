@@ -12,7 +12,7 @@ produces a metric that every element of ``G`` preserves identically; a basis
 with that metric is chosen by orthogonal Procrustes so that it stays as close as
 possible to the input orientation.
 
-Both steps are proved in ``RequestProject/PlanarPointGroup.lean`` for an
+Both steps are proved in ``aristotle-lean-reference/RequestProject/PlanarPointGroup.lean`` for an
 arbitrary finite group acting on an arbitrary finite index type, so the same
 statements cover the planar case of ``core/symmetry2d.py`` and the
 three-dimensional case of ``core/bravais.py``:

@@ -35,7 +35,7 @@ class OrientationNormalizer:
 
         The frame is proved to be a rotation, and the three components zeroed
         below are proved to be exactly zero, in
-        ``RequestProject/SurfaceAlignment.lean``
+        ``aristotle-lean-reference/RequestProject/SurfaceAlignment.lean``
         (``Cellstine.alignFrame_det_eq_one``,
         ``Cellstine.alignFrame_preserves_dist_sq``,
         ``Cellstine.alignFrame_apply_first``,

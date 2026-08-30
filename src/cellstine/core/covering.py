@@ -15,7 +15,7 @@ the maximum and is dropped unrefined; the rest are cut in half along every axis
 and the round repeats.  Stopping -- on the tolerance, or on the probe budget --
 only loosens the answer, never invalidates it.
 
-Everything this rests on is proved in ``RequestProject/CoveringBound.lean``:
+Everything this rests on is proved in ``aristotle-lean-reference/RequestProject/CoveringBound.lean``:
 the per-box bound (``Cellstine.le_of_mem_box``,
 ``Cellstine.infDist_le_of_mem_box``), that the reach of a box is attained at a
 corner (``Cellstine.exists_corner_bound``, ``Cellstine.norm_le_corner_sup``),
@@ -75,7 +75,7 @@ def branch_and_bound_maximum(
     batch of fractional points.
 
     Two facts do the work, and both are proved in
-    ``RequestProject/CoveringBound.lean``.  A box of centre ``c`` and reach ``r``
+    ``aristotle-lean-reference/RequestProject/CoveringBound.lean``.  A box of centre ``c`` and reach ``r``
     -- the distance from its centre to its furthest corner, ``grid_box_reach``
     -- holds no value above ``f(c) + r``, so ``f(c) + r`` bounds the box
     (``Cellstine.le_of_mem_box``).  And the largest value seen anywhere is a

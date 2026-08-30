@@ -4,8 +4,9 @@ The letters ``A``, ``B`` and ``C`` that name the layers of a close-packed slab
 carry two gauge freedoms, so several labelled combinations describe one and the
 same structure.  This module writes an interface as a word of layer-to-layer
 steps in ``Z/3``, quotients that word by the operations which only relabel it,
-and reports one option per class.  The counting is proved in
-``RequestProject/StackingRegistry.lean`` and the module docstring of
+and reports one option per class.  The counting is proved in the external
+Lean reference
+``aristotle-lean-reference/RequestProject/StackingRegistry.lean`` and the module docstring of
 ``stacking.py`` explains the two gauges.
 """
 

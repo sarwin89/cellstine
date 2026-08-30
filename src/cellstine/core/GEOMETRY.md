@@ -14,7 +14,7 @@ That is the convention of `cellstine.io.models.StructureRecord` and of POSCAR.
 ## The three facts everything rests on
 
 The module is small because three inequalities do all the work. All three are
-stated and proved in Lean, in `RequestProject/PeriodicGeometry.lean`.
+stated and proved in Lean, in `aristotle-lean-reference/RequestProject/PeriodicGeometry.lean`.
 
 ### 1. The reach bound
 

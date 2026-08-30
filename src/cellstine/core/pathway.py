@@ -22,7 +22,7 @@ space: image ``k`` of ``n`` intermediate images sits at ``x0 + k/(n+1) * d``.
 Consecutive images are then exactly ``‖d‖ / (n + 1)`` apart, which is the
 even spacing a nudged-elastic-band run expects of its starting chain.
 
-The mathematics is proved in ``RequestProject/MigrationPath.lean``:
+The mathematics is proved in ``aristotle-lean-reference/RequestProject/MigrationPath.lean``:
 
 * ``Cellstine.assignment_cost_le_of_dual_certificate`` -- the pairing this
   module reports really is a minimum-cost one, because the potentials it

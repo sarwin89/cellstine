@@ -44,7 +44,7 @@ search returns instead. (`(1, 4)` has `N = 21`, and what the search reports at
 its angle of 38.213 degrees is the 42-atom `N = 7` cell.) The derivation —
 the index arithmetic, the cosine formula, the labelling of the moire cell by
 `Z^2 / A Z^2`, and the orbit count — is machine-checked in
-`RequestProject/TwistedBilayer.lean`.
+`aristotle-lean-reference/RequestProject/TwistedBilayer.lean`.
 
 ## Reference numbers
 

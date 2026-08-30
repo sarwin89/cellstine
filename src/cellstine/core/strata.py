@@ -16,7 +16,7 @@ reversal contributes ``-M``.  This module is the linear algebra of that action:
 
 Nothing here knows about names, Bravais types or paths; that is
 :mod:`cellstine.core.kpath`, which is where the prose account of the derivation
-(``core/KPATH.md``) and the formal statements (``RequestProject/KPath.lean``)
+(``core/KPATH.md``) and the formal statements (``aristotle-lean-reference/RequestProject/KPath.lean``)
 are pointed at from.
 
 Everything is written in bulk: the "which operations fix me" rows are one

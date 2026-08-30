@@ -9,7 +9,7 @@ that sequence off a structure and reverses it, turning ``ABCABC`` into
 different ways two such slabs can meet.
 
 The letters carry two gauge freedoms, both proved in
-``RequestProject/StackingRegistry.lean`` to be freedoms of the labels only:
+``aristotle-lean-reference/RequestProject/StackingRegistry.lean`` to be freedoms of the labels only:
 
 * The origin is arbitrary.  Translating the whole interface by one hollow
   vector turns ``A-A`` into ``B-B`` and then into ``C-C``, so only the

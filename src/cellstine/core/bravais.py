@@ -42,7 +42,7 @@ The conventional cell is what gives high-symmetry k-points their familiar
 names; see :mod:`cellstine.core.kpath`.
 
 The three steps are backed by machine-checked statements in
-``RequestProject/ConventionalCell.lean``: ``Cellstine.card_preservesGram_eq``
+``aristotle-lean-reference/RequestProject/ConventionalCell.lean``: ``Cellstine.card_preservesGram_eq``
 (a change of basis matches the two point groups one for one, so the holohedry
 and the crystal family are properties of the lattice and not of the setting),
 ``Cellstine.card_cosets_mul_abs_det`` (the volume ratio this module rounds to an

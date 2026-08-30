@@ -78,7 +78,8 @@ stacking sense at all, leave two: the eclipsed contact and the hollow one.
 
 ## Machine-checked statements
 
-The counting above is proved in `RequestProject/StackingRegistry.lean`:
+The counting above is proved in the external Lean reference kept locally at
+`aristotle-lean-reference/RequestProject/StackingRegistry.lean`:
 
 | Statement | Formal name |
 | --- | --- |

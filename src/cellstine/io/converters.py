@@ -4,7 +4,7 @@ An XYZ file carries no cell, so :meth:`StructureConverter._read_xyz` builds one:
 the bounding box of the molecule, each edge widened to at least one angstrom,
 plus the requested vacuum, with the molecule shifted to sit centred in it.  That
 padding is a guaranteed clearance, not merely a margin on the bounding box --
-``RequestProject/MolecularBox.lean`` proves in ``Cellstine.bboxShift_mem_cell``
+``aristotle-lean-reference/RequestProject/MolecularBox.lean`` proves in ``Cellstine.bboxShift_mem_cell``
 that every atom lands strictly inside the box (so the direct coordinates written
 out need no wrapping) and in ``Cellstine.bbox_image_separation`` that any two
 atoms in different periodic images are at least the requested vacuum apart,

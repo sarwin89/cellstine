@@ -1,7 +1,7 @@
 """Utilities for manipulating a top-side adsorbate molecule on a substrate.
 
 Three of the choices made here are choices of a *gap*, and what each of them
-guarantees is proved in ``RequestProject/MoleculeFraming.lean``:
+guarantees is proved in ``aristotle-lean-reference/RequestProject/MoleculeFraming.lean``:
 
 * :func:`identify_top_group` cuts the sorted heights at the midpoint of the
   largest gap (``Cellstine.height_lt_gapCut``, ``Cellstine.gapCut_lt_height``);

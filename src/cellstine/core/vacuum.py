@@ -19,7 +19,7 @@ to a finished slab eats into it, so :func:`fit_cell_to_vacuum` lengthens ``c``
 to what it was, and rigidly translates the atoms so that the assembly keeps its
 place inside the cell.
 
-``RequestProject/VacuumGap.lean`` proves what the two operations here do:
+``aristotle-lean-reference/RequestProject/VacuumGap.lean`` proves what the two operations here do:
 lengthening ``c`` along its own direction leaves the normal and the span alone
 and moves the gap by exactly the added height, a rigid translation moves no
 atom relative to another, and the fitted cell therefore has the requested gap

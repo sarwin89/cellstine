@@ -1,7 +1,7 @@
 """Primitive surface-cell construction for a requested Miller plane.
 
 The in-plane pair is chosen by minimising the longer of the two lengths, then
-their sum, then the area.  ``RequestProject/SurfacePlaneBasis.lean`` proves that
+their sum, then the area.  ``aristotle-lean-reference/RequestProject/SurfacePlaneBasis.lean`` proves that
 this rule always returns a *primitive* cell of the plane lattice --- the pair it
 selects realises the two successive minima, and such a pair has index one
 (``Cellstine.abs_pairDet_eq_one_of_minimal``) --- and that the reported cell
@@ -112,7 +112,7 @@ def _standard_centering_matrices() -> dict[str, np.ndarray]:
     the centring translations of its letter, and its determinant is the
     reciprocal of the number of those translations --- ``1``, ``1/2`` and ``1/4``
     for ``P``, ``A``/``B``/``C``/``I`` and ``F``.  Both facts are proved in
-    ``RequestProject/CenteringLattice.lean``
+    ``aristotle-lean-reference/RequestProject/CenteringLattice.lean``
     (``Cellstine.Centering.span_centeringBasis``,
     ``Cellstine.Centering.det_centeringBasis``).
     """
@@ -219,7 +219,7 @@ def _select_surface_pair(
 ) -> tuple[np.ndarray, np.ndarray]:
     """Pick the surface cell out of a set of in-plane lattice vectors.
 
-    The rule is the one ``RequestProject/SurfacePlaneBasis.lean`` analyses: the
+    The rule is the one ``aristotle-lean-reference/RequestProject/SurfacePlaneBasis.lean`` analyses: the
     longer of the two lengths first, then their sum, then the area, with ties
     broken by the position of the pair in the length-then-coordinate ordering of
     the candidates.  The winner realises the two successive minima of the plane

@@ -358,7 +358,7 @@ class DefectSiteEnumerationMixin:
             # on the pairs, and connectivity is decided by any generating set,
             # so the whole group -- one operation per rotation *and* per lattice
             # translation of a supercell -- never has to be walked.
-            # ``RequestProject/PairOrbits.lean`` proves the three steps this
+            # ``aristotle-lean-reference/RequestProject/PairOrbits.lean`` proves the three steps this
             # relies on: the induced action on unordered pairs is a group
             # homomorphism and sweeping the generators therefore finds the true
             # orbits (``Cellstine.pairLinked_iff_exists_symmetry``), a chain

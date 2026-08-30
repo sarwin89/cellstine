@@ -66,7 +66,7 @@ def _apply_scaling_factor(lattice: np.ndarray, line: str) -> Tuple[np.ndarray, n
     positions exactly as it acts on the cell and leaves fractional coordinates
     alone.  The second return value is that map, as a per-component factor.
 
-    These claims are proved in ``RequestProject/PoscarScaling.lean``:
+    These claims are proved in ``aristotle-lean-reference/RequestProject/PoscarScaling.lean``:
     ``Cellstine.abs_det_volumeScale_smul`` (the rescaled cell has exactly the
     requested volume), ``Cellstine.det_volumeScale_smul_pos_iff`` together with
     ``Cellstine.det_smul_neg_of_neg`` (the handedness survives, where a plain

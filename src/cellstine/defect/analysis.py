@@ -26,7 +26,7 @@ def _cluster_projection_layers(projections: np.ndarray, tolerance: float) -> lis
     """Return the atomic planes of the census, numbered from the bottom up.
 
     The grouping is ``core.layers.layer_partition``, the single rule the
-    package uses everywhere; ``RequestProject/LayerPartition.lean`` proves that
+    package uses everywhere; ``aristotle-lean-reference/RequestProject/LayerPartition.lean`` proves that
     it is the connected-component partition and that plane 1 is the bottom of
     the structure.
     """

@@ -22,11 +22,11 @@ the Python package, under the ignored local folder
 
 - Initial optimized tree: Aristotle delivered a full package-shaped
   implementation under `src/cellstine-optimised`, with the Lean library in
-  `RequestProject/` and Python modules covering `core`, `io`, `moire`,
+  `aristotle-lean-reference/RequestProject/` and Python modules covering `core`, `io`, `moire`,
   `adsorbate`, `interface`, `defect`, `symmetry`, and `visualize`.
 - Formal reference pass: the Lean project was reported as building end to end;
   the donor notes record 58 Lean sources, every one imported by
-  `RequestProject/Main.lean`, and no unfinished `sorry`, `admit`, or `axiom`.
+  `aristotle-lean-reference/RequestProject/Main.lean`, and no unfinished `sorry`, `admit`, or `axiom`.
 - Moiré engine: the old angle/`nindex` path was replaced by staged Gram-form
   search, symmetry folding, exact acceptance checks, JSON result persistence,
   affine-based builders, symmetric-subfamily search, and an exact base-anchored

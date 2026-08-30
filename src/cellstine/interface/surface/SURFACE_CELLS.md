@@ -55,7 +55,8 @@ and `(110)`, `3` for `fcc` `(111)`, `4` for diamond `(100)`, `6` for rock-salt
 
 ## Checked, not asserted
 
-The rule is proved in Lean 4 / Mathlib in `RequestProject/StackingPeriod.lean`:
+The rule is proved in Lean 4 / Mathlib in the external reference at
+`aristotle-lean-reference/RequestProject/StackingPeriod.lean`:
 that a stack of least period `p` closes up after `L` layers exactly when `p`
 divides `L` (`Cellstine.isStackPeriod_iff_dvd`), that an `ABCABC` stack has least
 period three so four layers of it are a fault

@@ -32,7 +32,7 @@ which the cell must tile, and a mismatch is reported rather than ignored -- it
 is the one check that catches a missed face.
 
 The formal statements behind this module are in
-``RequestProject/BrillouinZone.lean``.
+``aristotle-lean-reference/RequestProject/BrillouinZone.lean``.
 """
 
 from __future__ import annotations
@@ -82,7 +82,7 @@ def _merge_close_points(points: np.ndarray, tolerance: float) -> np.ndarray:
     representative of a cluster is its mean.  The result is sorted
     lexicographically, so it does not depend on the order of the input.
 
-    ``RequestProject/VertexMerge.lean`` proves that this is exactly right when
+    ``aristotle-lean-reference/RequestProject/VertexMerge.lean`` proves that this is exactly right when
     the vertices of the polytope are further apart than the tolerance plus twice
     the rounding error: the components are then precisely the vertices
     (``Cellstine.Merge.linked_iff_true_eq``) and the mean of a component is

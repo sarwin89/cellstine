@@ -57,7 +57,7 @@ not by the names of its ends: dimension one is a symmetry line, two a mirror
 plane, three a plain chord of the zone.  Doing it by name would misread any
 segment whose end carries an alias.
 
-The formal statements behind this module are in ``RequestProject/KPath.lean``,
+The formal statements behind this module are in ``aristotle-lean-reference/RequestProject/KPath.lean``,
 and ``core/KPATH.md`` is the prose account.
 """
 

@@ -4,7 +4,7 @@ The supercell is filled by *coset enumeration*, not by scanning translations and
 deduplicating by distance: :func:`_column_hermite_normal_form` puts the
 transposed supercell matrix into column Hermite normal form and
 :func:`_coset_representatives` takes the box ``0 <= x < h11``, ``0 <= y < h22``.
-``RequestProject/CosetRepresentatives.lean`` proves what that guarantees --
+``aristotle-lean-reference/RequestProject/CosetRepresentatives.lean`` proves what that guarantees --
 ``Cellstine.latticeOf_columnHnf`` (the triple computed from the ``gcd``, the
 determinant and a Bezout pair spans the same column lattice),
 ``Cellstine.existsUnique_mem_hnfBox`` (the box meets every coset exactly once,

@@ -22,7 +22,7 @@ h = u · (p − q) ≤ ‖p − x‖ + u · (x − q)
 
 so the height is a *guaranteed clearance*: no substrate atom in the surface plane
 can be closer than `h`. That is `Cellstine.height_le_euclidDist` and
-`Cellstine.height_le_contactDistance` in `RequestProject/ContactDistance.lean`.
+`Cellstine.height_le_contactDistance` in `aristotle-lean-reference/RequestProject/ContactDistance.lean`.
 
 The clearance is only attained when the atom is placed directly over a
 substrate atom. Over a bridge or a hollow site the nearest substrate atom is
@@ -102,7 +102,7 @@ radius is twice as large.
 
 ## Formal statements
 
-`RequestProject/ContactDistance.lean` proves, with no axioms beyond Mathlib's:
+`aristotle-lean-reference/RequestProject/ContactDistance.lean` proves, with no axioms beyond Mathlib's:
 
 | claim | statement |
 | --- | --- |

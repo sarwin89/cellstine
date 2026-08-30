@@ -34,7 +34,7 @@ one half, but never ``Monkhorst`` with a shift of one half, which is a whole
 step and lands back on the Gamma-centred grid.  :func:`write_mesh` picks a
 spelling that reproduces the mesh, and :meth:`KpointsFile.total_shift` folds the
 mode word back into the offset so a file can be compared against the mesh it
-came from.  The statements behind this are in ``RequestProject/MeshShift.lean``.
+came from.  The statements behind this are in ``aristotle-lean-reference/RequestProject/MeshShift.lean``.
 """
 
 from __future__ import annotations

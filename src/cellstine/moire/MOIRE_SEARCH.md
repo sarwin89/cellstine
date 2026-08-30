@@ -123,7 +123,7 @@ turn, `x^2 - xy + y^2` for a sixth turn), which is the squared length the tables
 are already sorted on; and two such cells, one per layer, are always related by a
 rotation and one overall scale, so the join needs only a band on squared lengths
 and every strain it reports is isotropic. All three statements are proved in
-`RequestProject/SymmetricSupercell.lean`, and
+`aristotle-lean-reference/RequestProject/SymmetricSupercell.lean`, and
 `tests/test_moire_symmetric_branch.py` checks them against the running engine and
 against the general search, which must report exactly the same bilayers whenever
 both engines apply.
@@ -191,8 +191,9 @@ being swamped; `tests/test_moire_stretch_conditioning.py` pins both.
 ## Mathematical provenance
 
 The statements the engine relies on are proved in Lean 4 with Mathlib in the
-`RequestProject` directory of this repository; `RequestProject/Main.lean` lists
-them against the search step or reported quantity each one justifies.
+untracked local reference folder
+`aristotle-lean-reference/RequestProject`; `aristotle-lean-reference/RequestProject/Main.lean`
+lists them against the search step or reported quantity each one justifies.
 
 | Reported quantity / search step | Formal statement |
 | --- | --- |

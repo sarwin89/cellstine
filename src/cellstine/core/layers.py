@@ -11,7 +11,7 @@ question, and it also reads a left-handed cell the right way up.
 ``layer_partition`` is the *one* rule the whole package uses to decide which
 atoms share an atomic plane: sort the heights and cut wherever a consecutive
 gap exceeds the tolerance.  That is single linkage, and
-``RequestProject/LayerPartition.lean`` proves what makes it the right rule --
+``aristotle-lean-reference/RequestProject/LayerPartition.lean`` proves what makes it the right rule --
 it is the connected-component partition of "within the tolerance of each
 other" (``Cellstine.linked_iff_smallGaps``), the plane numbers grow with height
 (``Cellstine.layerIndex_mono``), and moving the origin or reading the structure

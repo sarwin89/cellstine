@@ -185,7 +185,7 @@ def species_depth_order(
     A panel drops one coordinate, and two atoms that differ only along it land on
     the same point of the picture, so one hides the other
     (``Cellstine.planarProj_eq_iff_smul`` in
-    ``RequestProject/ViewProjection.lean``).  Which one is visible is decided by
+    ``aristotle-lean-reference/RequestProject/ViewProjection.lean``).  Which one is visible is decided by
     the drawing order.  The markers of one species are identical, so the order
     *inside* a species cannot change the picture, and it is enough to order the
     species themselves; ordering them by how close they come to the observer

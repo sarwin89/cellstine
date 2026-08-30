@@ -409,7 +409,7 @@ def shortlist_offsets(result: SearchResult, max_candidates: int | None) -> list[
     Because the front is kept whole, the shortlist still matches or beats every
     candidate of the search in *both* costs at once --- see
     ``Cellstine.Pareto.exists_mem_le_of_isRecord_subset`` in
-    ``RequestProject/ParetoFront.lean``.
+    ``aristotle-lean-reference/RequestProject/ParetoFront.lean``.
     """
 
     total = len(result)

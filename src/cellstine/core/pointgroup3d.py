@@ -15,7 +15,7 @@ basis.  Everything is exact integer arithmetic apart from the metric
 comparisons, which use a length tolerance.
 
 The claims this rests on are proved in Lean in
-``RequestProject/LatticeAutomorphisms.lean``: metric preservation is exactly
+``aristotle-lean-reference/RequestProject/LatticeAutomorphisms.lean``: metric preservation is exactly
 orthogonality of the induced Cartesian map
 (``Cellstine.preservesGram_iff_orthogonal``), the column test below is that
 condition (``Cellstine.preservesGram_iff_columns``), the enumeration box of

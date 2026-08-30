@@ -221,7 +221,7 @@ def _pareto_front(first_cost: np.ndarray, second_cost: np.ndarray) -> np.ndarray
 
     The sweep sorts by ``(first cost, second cost, index)`` and keeps a candidate
     when its second cost is strictly below the running minimum of the second
-    costs already seen.  ``RequestProject/ParetoFront.lean`` proves that this is
+    costs already seen.  ``aristotle-lean-reference/RequestProject/ParetoFront.lean`` proves that this is
     exactly the Pareto front: a candidate is kept iff nothing scanned before it
     is at least as good in both costs (``Cellstine.Pareto.isRecord_iff_not_dominated``),
     a kept candidate is undominated outright
@@ -320,7 +320,7 @@ def _reduced_symmetry_combinations(
     bottom matrix ``N M^{-1} H``.  Removing one of each such pair halves the work
     of :func:`_pair_orbit_keys` for a centrosymmetric layer without changing a
     single key.  Proved as ``Cellstine.classKey_neg`` in
-    ``RequestProject/PairClassKey.lean``.
+    ``aristotle-lean-reference/RequestProject/PairClassKey.lean``.
     """
 
     combinations = _symmetry_combinations(top_group, bottom_group)

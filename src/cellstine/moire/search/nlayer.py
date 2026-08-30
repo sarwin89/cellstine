@@ -21,7 +21,7 @@ it factorises exactly through the base layer:
   carrying exactly the strain the bilayer search recorded for it.
 
 The exact statements this rests on are proved in Lean in
-``RequestProject/SublatticeIntersection.lean``: the kernel construction below
+``aristotle-lean-reference/RequestProject/SublatticeIntersection.lean``: the kernel construction below
 returns the intersection (``Cellstine.rowLattice_eq_inf_of_kernel_spanning``),
 the intersection is the largest common sublattice and its cell is the smallest
 common cell (``Cellstine.isGreatest_inf_rowLattice``,
@@ -30,7 +30,7 @@ common cell (``Cellstine.isGreatest_inf_rowLattice``,
 unique integer factor (``Cellstine.rowLattice_le_iff_exists_factor``,
 ``Cellstine.factor_unique``), and the rebuilt layers then all carry the same
 cell (``Cellstine.stack_shares_cell``).  The pruning the combination stage does
-rests on ``RequestProject/PruneBounds.lean``:
+rests on ``aristotle-lean-reference/RequestProject/PruneBounds.lean``:
 ``Cellstine.prefixAtoms_le_stackAtoms`` and ``Cellstine.prune_atoms_sound`` for
 the atom bound, ``Cellstine.second_gram_le_of_sublattice`` and
 ``Cellstine.prune_length_sound`` for the length bound.
@@ -413,7 +413,7 @@ def viable_combinations(
     limits as well; this enumeration only removes combinations that function
     would have rejected anyway.
 
-    Both bounds are proved monotone in ``RequestProject/PruneBounds.lean``:
+    Both bounds are proved monotone in ``aristotle-lean-reference/RequestProject/PruneBounds.lean``:
     ``Cellstine.prefixAtoms_le_stackAtoms`` and ``Cellstine.prune_atoms_sound``
     for the atom count, ``Cellstine.second_gram_le_of_sublattice`` and
     ``Cellstine.prune_length_sound`` for the cell length.

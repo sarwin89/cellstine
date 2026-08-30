@@ -106,7 +106,7 @@ def lattice_point_group(
     reject those cells and cost the search its symmetry folding.
 
     Two facts about the search are proved in
-    ``RequestProject/PlanarPointGroup.lean``: the three scalar equations tested
+    ``aristotle-lean-reference/RequestProject/PlanarPointGroup.lean``: the three scalar equations tested
     here are exactly ``G.T @ metric @ G == metric``
     (``Cellstine.gram_preserving_iff_columns``), and the integer box
     :func:`_short_vectors` sweeps contains every vector inside the search ellipse
@@ -288,7 +288,7 @@ def close_group(group: np.ndarray) -> np.ndarray:
     the twelve-element hexagonal holohedry, so the fixed-point iteration is cheap.
 
     The crystallographic restriction behind that bound is proved in
-    ``RequestProject/PlanarPointGroup.lean``: a rotation preserving a positive
+    ``aristotle-lean-reference/RequestProject/PlanarPointGroup.lean``: a rotation preserving a positive
     definite planar metric has ``|trace| <= 2``
     (``Cellstine.planar_trace_sq_le_four``) and an integer trace, so its trace is
     one of five values (``Cellstine.int_trace_mem_of_sq_le_four``) and its order

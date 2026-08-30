@@ -28,7 +28,7 @@ search enumerates every lattice translation that could beat the trivial
 candidate -- a whole-cell translation, of length the shortest lattice vector --
 which by the triangle inequality means every translation no longer than that
 plus the diameter of the group.  The two bounds are proved in
-``RequestProject/ContactDistance.lean``.
+``aristotle-lean-reference/RequestProject/ContactDistance.lean``.
 """
 
 from __future__ import annotations
