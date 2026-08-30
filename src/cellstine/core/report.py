@@ -3,7 +3,7 @@
 Every workflow returns a :class:`~cellstine.core.models.CommandResult` whose
 ``artifacts`` map names the files that were written and whose ``summary`` map
 carries the numbers that describe them.  This module turns that pair into the
-block of text the CLI prints, so ``moire make``, ``interface build``,
+block of text the CLI prints, so ``moire build``, ``interface build``,
 ``adsorbate place`` and ``defect generate`` all report their results in the same
 shape: paths relative to the working directory, one value per line, numbers
 rounded to a readable number of digits instead of full binary precision, and

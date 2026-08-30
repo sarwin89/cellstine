@@ -44,7 +44,7 @@ def aluminium(workspace) -> str:
 @pytest.fixture()
 def slab_111(aluminium) -> str:
     result = run_cli(
-        "interface", "surface", aluminium, "--miller", "1,1,1", "--layers", "6", "--vacuum", "12"
+        "surface", "build", aluminium, "--miller", "1,1,1", "--layers", "6", "--vacuum", "12"
     )
     return str(result.artifacts["slab_poscar"])
 

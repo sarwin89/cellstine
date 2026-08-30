@@ -14,6 +14,12 @@ Install optional scientific and visualization backends when needed:
 python -m pip install -e ".[all]"
 ```
 
+For the recommended Rich/Typer interface without every scientific extra:
+
+```bash
+python -m pip install -e ".[cli]"
+```
+
 ## Check the CLI
 
 ```bash
@@ -29,8 +35,8 @@ Find native Gram-form MoS2/MoS2 bilayer candidates, then build candidate 1
 from the schema-versioned JSON:
 
 ```bash
-cellstine moire find input/examples/mos2.vasp input/examples/mos2.vasp --max-length 20 --top-strain 0.01 --bottom-strain 0.01
-cellstine moire make runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
+cellstine moire search input/examples/mos2.vasp input/examples/mos2.vasp --length 20 --strain 0.01
+cellstine moire build runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
 ```
 
 Here moire **strain** is principal logarithmic strain, `h = log(lambda)`, for
@@ -44,13 +50,13 @@ this release. See the [moire workflow](workflows/moire.md) for details and the
 Generate an Au(111) slab:
 
 ```bash
-cellstine interface surface input/examples/Au_Bulk.vasp --miller 111 --layers 4 --vacuum 15
+cellstine surface build input/examples/Au_Bulk.vasp --miller 111 --layers 4 --vacuum 15
 ```
 
 Inspect adsorption sites on the curated Au(111) example:
 
 ```bash
-cellstine interface sites output/examples/Au_Bulk_111_surface.vasp
+cellstine surface sites output/examples/Au_Bulk_111_surface.vasp
 ```
 
 Analyse symmetry:

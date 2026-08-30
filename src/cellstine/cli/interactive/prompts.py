@@ -270,7 +270,7 @@ def _print_site_index_options(site_report, site_type: str, limit: int = 30) -> N
     print()
     print(format_adsorption_sites(sites, limit=int(limit), title=f"{_SITE_LABELS.get(site_type, site_type)} site positions"))
     if len(sites) > int(limit):
-        print("Use `cellstine interface sites` to export the full site table if you need every equivalent site.")
+        print("Use `cellstine surface sites` to export the full site table if you need every equivalent site.")
 
 
 def _format_command(argv: Sequence[str]) -> str:

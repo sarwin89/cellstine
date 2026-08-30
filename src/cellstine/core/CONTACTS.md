@@ -82,7 +82,7 @@ every note is advisory and the written POSCAR is exactly what was asked for.
 | workflow | key in the summary |
 | --- | --- |
 | `adsorbate place`, `adsorbate move` | `closest_contact`, `closest_contact_pair`, `molecule_image_distance` |
-| `moire make` | `closest_interlayer_contact` |
+| `moire build` | `closest_interlayer_contact` |
 | `interface build` | `closest_contact`, `closest_contact_pair` |
 | `defect generate` | `closest_defect_contact`, `closest_defect_contact_pair` |
 

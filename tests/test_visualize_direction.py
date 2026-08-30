@@ -158,15 +158,14 @@ def test_the_html_viewer_omits_the_camera_when_no_direction_is_asked_for(slab, t
     assert '"camera": null' in html
 
 
-@pytest.mark.parametrize("group", ["defect", "symmetry", "adsorbate", "interface"])
-def test_every_group_can_draw_a_structure_along_a_direction(group, slab, tmp_path, monkeypatch):
-    """All four structure groups expose the same visualize stage."""
+def test_the_root_view_command_can_draw_a_structure_along_a_direction(slab, tmp_path, monkeypatch):
+    """Structure visualization is routed through the root view command."""
 
     pytest.importorskip("matplotlib")
 
     monkeypatch.chdir(tmp_path)
-    output = tmp_path / f"{group}.png"
-    result = _run_cli(group, "visualize", str(slab), "--output", str(output), "--view-direction", "111")
+    output = tmp_path / "structure.png"
+    result = _run_cli("view", str(slab), "--output", str(output), "--view-direction", "111")
     assert output.exists() and output.stat().st_size > 0
     assert result.summary["view_direction"] == "(1 1 1) plane normal"
 

@@ -38,14 +38,12 @@ def test_the_guided_search_can_ask_for_a_rigid_commensurate_scan(monkeypatch, tm
         ],
     )
 
-    assert argv[:4] == ["moire", "find", "top.vasp", "bottom.vasp"]
-    assert "--top-strain" in argv and argv[argv.index("--top-strain") + 1] == "0"
-    assert "--bottom-strain" in argv and argv[argv.index("--bottom-strain") + 1] == "0"
-    assert argv[argv.index("--max-atoms") + 1] == "400"
+    assert argv[:4] == ["moire", "search", "top.vasp", "bottom.vasp"]
+    assert "--rigid" in argv
+    assert argv[argv.index("--atoms") + 1] == "400"
 
     namespace = build_parser().parse_args(argv)
-    assert namespace.top_strain == 0.0
-    assert namespace.bottom_strain == 0.0
+    assert namespace.rigid is True
     assert namespace.max_atoms == 400
 
 
@@ -98,8 +96,7 @@ def test_the_guided_search_can_ask_for_a_twist_angle_window(monkeypatch, tmp_pat
     )
 
     namespace = build_parser().parse_args(argv)
-    assert namespace.min_twist_angle == pytest.approx(9.0)
-    assert namespace.max_twist_angle == pytest.approx(14.0)
+    assert namespace.twist == "9:14"
 
 
 def test_the_guided_search_defaults_to_folding_each_layer_and_can_be_told_not_to(monkeypatch, tmp_path):

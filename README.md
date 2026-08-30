@@ -31,6 +31,7 @@ python -m pip install -e ".[symmetry]"
 python -m pip install -e ".[pymatgen]"
 python -m pip install -e ".[viz]"
 python -m pip install -e ".[plotly]"
+python -m pip install -e ".[cli]"
 python -m pip install -e ".[all]"
 ```
 
@@ -52,10 +53,10 @@ cellstine
 Or run a workflow directly:
 
 ```bash
-cellstine moire find input/examples/mos2.vasp input/examples/mos2.vasp --max-length 20 --top-strain 0.01 --bottom-strain 0.01
-cellstine moire make runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
-cellstine interface surface input/examples/Au_Bulk.vasp --miller 111 --layers 4 --vacuum 15
-cellstine interface sites output/examples/Au_Bulk_111_surface.vasp
+cellstine moire search input/examples/mos2.vasp input/examples/mos2.vasp --length 20 --strain 0.01
+cellstine moire build runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
+cellstine surface build input/examples/Au_Bulk.vasp --miller 111 --layers 4 --vacuum 15
+cellstine surface sites output/examples/Au_Bulk_111_surface.vasp
 cellstine symmetry analyse input/examples/Au_Bulk.vasp
 ```
 

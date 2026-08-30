@@ -572,14 +572,14 @@ def read_results(path: str | Path) -> dict[str, Any]:
     source = Path(path).resolve()
     if source.suffix.lower() == ".dat":
         raise ValueError(
-            "legacy positional .dat moire results are unsupported; rerun `moire find` "
+            "legacy positional .dat moire results are unsupported; rerun `moire search` "
             "to create schema-versioned results.json"
         )
     try:
         with source.open("r", encoding="utf-8") as handle:
             payload = json.load(handle)
     except json.JSONDecodeError as exc:
-        raise ValueError(f"{source} is not valid JSON v1; rerun `moire find`") from exc
+        raise ValueError(f"{source} is not valid JSON v1; rerun `moire search`") from exc
     return validate_results(payload)
 
 

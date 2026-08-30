@@ -9,18 +9,18 @@ matrices, not an angle swept by the user.
 Run a bounded search and then build candidates from its JSON:
 
 ```bash
-cellstine moire find TOP.vasp BOTTOM.vasp --max-length 20 --top-strain 0.01 --bottom-strain 0.01
-cellstine moire make runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
+cellstine moire search TOP.vasp BOTTOM.vasp --length 20 --strain 0.01
+cellstine moire build runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
 ```
 
-Candidate selection is spelled the same way everywhere: `make`, `maken`, and
-`visualize` all accept either `--indexes` or `--indices`, with comma-separated
-values and ranges such as `1,3-5`.
+Candidate selection is spelled the same way everywhere: `build`,
+`stack-build`, and `view` all accept either `--indexes` or `--indices`, with
+comma-separated values and ranges such as `1,3-5`.
 
 The result is schema `cellstine.moire.gram`, version 1, in `results.json`.
 Previews, the builder, and both visualization paths use the same validated
 central reader. Legacy positional `.dat` input is rejected with an instruction
-to rerun native `moire find`.
+to rerun native `moire search`.
 
 The JSON records the top and bottom integer matrices, their Gram triples, angle
 in degrees, relative principal strain pair, strain budgets and sharing fraction,
@@ -45,8 +45,8 @@ Two more modules carry the stages built on top of that pipeline:
 
 | module | contents |
 | --- | --- |
-| `find.py` | the `moire find` stage: reading the layers, detecting and idealising their symmetry, running one search, writing `results.json` |
-| `nlayer.py` | the `moire findn` stage: matching every upper layer against a rigid base layer and intersecting the per-layer base supercells |
+| `find.py` | the `moire search` stage: reading the layers, detecting and idealising their symmetry, running one search, writing `results.json` |
+| `nlayer.py` | the `moire stack-search` stage: matching every upper layer against a rigid base layer and intersecting the per-layer base supercells |
 
 The older coincidence-lattice engine that swept twist angles has been removed;
 the Gram search supersedes it, reports the twist as an output of each candidate,
@@ -82,7 +82,7 @@ sharing fraction is reported as one half, since there is nothing to share.
 ## Search outline
 
 1. Enumerate reduced positive-definite Gram forms whose basis lengths satisfy
-   `--max-length` and the optional cell-shape and atom-count bounds.
+   `--length` and the optional cell-shape and atom-count bounds.
 2. Join top and bottom forms using the Löwner inequalities implied by the sum of
    `--top-strain` and `--bottom-strain`.
 3. Recover candidate matrices, principal stretches, relative logarithmic
@@ -92,13 +92,12 @@ sharing fraction is reported as one half, since there is nothing to share.
 
 ## Asking for a particular twist
 
-The twist angle is an output, but it can be *selected* on: `--min-twist-angle`
-and `--max-twist-angle` keep only the candidates whose reported twist lies in
-that window, in degrees.
+The twist angle is an output, but it can be *selected* with `--twist MIN:MAX`,
+which keeps only the candidates whose reported twist lies in that window, in
+degrees.
 
 ```bash
-cellstine moire find LAYER.vasp LAYER.vasp --max-length 40 \
-    --top-strain 0 --bottom-strain 0 --min-twist-angle 9 --max-twist-angle 14
+cellstine moire search LAYER.vasp LAYER.vasp --length 40 --rigid --twist 9:14
 ```
 
 The window is read on the *folded* angle, the one the candidate table shows, and
@@ -133,9 +132,9 @@ option) the two engines differ on purpose: a plain multiple of a commensurate
 cell need not be rotation invariant, so the restricted branch reports a subset of
 the general search rather than the same list.
 
-Stacks of three or more layers use `moire findn` and `moire maken`, which match
-every upper layer against a rigid base layer and intersect the per-layer base
-supercells exactly.
+Stacks of three or more layers use `moire stack-search` and
+`moire stack-build`, which match every upper layer against a rigid base layer
+and intersect the per-layer base supercells exactly.
 
 ## Symmetry tolerance and layer idealisation
 
@@ -209,7 +208,7 @@ lists them against the search step or reported quantity each one justifies.
 | the twist angle exists and is unique mod `2*pi` | `Cellstine.exists_twist_angle`, `Cellstine.twist_angle_unique` |
 | the joint budget is the sum of the two budgets | `Cellstine.exists_strain_split_iff` |
 | optimal strain sharing between the layers | `Cellstine.isLeast_shared_strain` |
-| `--max-length` on a reduced basis bounds the lattice | `Cellstine.first_minimum`, `Cellstine.second_minimum` |
+| `--length` on a reduced basis bounds the lattice | `Cellstine.first_minimum`, `Cellstine.second_minimum` |
 | per-layer atom counts scale by `|det M|` | `Cellstine.card_quotient_range_eq_natAbs_det` |
 | symmetry folding preserves the atom count | `Cellstine.coincidenceIndex_unimodular_invariant` |
 | relabelling the shared cell leaves the class key alone | `Cellstine.classKey_mul_unimodular` |

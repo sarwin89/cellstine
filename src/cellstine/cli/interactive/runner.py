@@ -59,28 +59,46 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
             stage = _choice(
                 "Moire workflow",
                 [
-                    {"key": "find", "label": "Search bilayer candidates", "hint": "Recommended when you are starting a new moire search."},
+                    {"key": "search", "label": "Search bilayer candidates", "hint": "Recommended when you are starting a new moire search."},
                     {"key": "build", "label": "Build from a saved search", "hint": "Generate one or more saved candidates."},
-                    {"key": "findn", "label": "Search multi-layer candidates", "hint": "Three or more layers sharing one commensurate cell."},
-                    {"key": "maken", "label": "Build from a saved multi-layer search", "hint": "Generate stacks of three or more layers."},
-                    {"key": "translate", "label": "Shift a built structure", "hint": "Move the upper part of an existing stack."},
-                    {"key": "visualize", "label": "Backup visual inspection", "hint": "Optional. Write a Matplotlib summary if you do not want to open external viewers."},
+                    {"key": "stack-search", "label": "Search multi-layer candidates", "hint": "Three or more layers sharing one commensurate cell."},
+                    {"key": "stack-build", "label": "Build from a saved multi-layer search", "hint": "Generate stacks of three or more layers."},
+                    {"key": "shift", "label": "Shift a built structure", "hint": "Move the upper part of an existing stack."},
+                    {"key": "view", "label": "View saved moire results", "hint": "Write a Matplotlib summary or optional Plotly HTML viewer."},
                 ],
                 default=1,
                 allow_back=allow_back,
             )
             try:
-                if stage == "find":
+                if stage == "search":
                     return _build_moire_find()
                 if stage == "build":
                     return _build_moire_make()
-                if stage == "findn":
+                if stage == "stack-search":
                     return _build_moire_findn()
-                if stage == "maken":
+                if stage == "stack-build":
                     return _build_moire_maken()
-                if stage == "translate":
+                if stage == "shift":
                     return _build_moire_translate()
                 return _build_moire_visualize()
+            except _BackInteractive:
+                continue
+
+    if resolved_group == "surface":
+        while True:
+            stage = _choice(
+                "Surface workflow",
+                [
+                    {"key": "build", "label": "Build a surface slab from bulk", "hint": "Recommended when you need a substrate or slab first."},
+                    {"key": "sites", "label": "Analyse adsorption sites on a slab", "hint": "Inspect top, bridge, hollow, and related sites."},
+                ],
+                default=1,
+                allow_back=allow_back,
+            )
+            try:
+                if stage == "build":
+                    return _build_interface_surface()
+                return _build_interface_sites()
             except _BackInteractive:
                 continue
 
@@ -93,7 +111,7 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
                     {"key": "move", "label": "Move a molecule in a stacked structure", "hint": "Translate and rotate a detected top-side molecule."},
                     {"key": "assemble", "label": "Advanced molecular assembly match", "hint": "Does not place a molecule; searches substrate cells for a known packing lattice."},
                     {"key": "path", "label": "Build a diffusion path between two structures", "hint": "Evenly spaced images from one placement to another, ready for a nudged-elastic-band run."},
-                    {"key": "visualize", "label": "Backup visual inspection", "hint": "Optional. Make a quick Matplotlib view if you do not have a structure viewer available."},
+                    {"key": "view", "label": "Backup visual inspection", "hint": "Optional. Make a quick Matplotlib view if you do not have a structure viewer available."},
                 ],
                 default=1,
                 allow_back=allow_back,
@@ -121,7 +139,7 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
                     {"key": "supercell", "label": "Build the host supercell for a defect", "hint": "Choose the cell that puts the most distance between the defect and its images."},
                     {"key": "path", "label": "Build a migration path between two structures", "hint": "Evenly spaced images from one structure to another, ready for a nudged-elastic-band run."},
                     {"key": "preview", "label": "Preview an existing analysis", "hint": "Print the site table from a manifest, analysis JSON, or structure."},
-                    {"key": "visualize", "label": "Backup visual inspection", "hint": "Optional. Draw a defective structure, looking along a direction of your choice."},
+                    {"key": "view", "label": "Backup visual inspection", "hint": "Optional. Draw a defective structure, looking along a direction of your choice."},
                 ],
                 default=1,
                 allow_back=allow_back,
@@ -135,7 +153,7 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
                     return _build_defect_supercell()
                 if stage == "path":
                     return _build_migration_path("defect", subject="a defect hop")
-                if stage == "visualize":
+                if stage == "view":
                     return _build_defect_visualize()
                 return _build_defect_preview()
             except _BackInteractive:
@@ -150,7 +168,7 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
                     {"key": "reduce", "label": "Reduce cell", "hint": "Write primitive, conventional, or refined cells."},
                     {"key": "lattice-reduce", "label": "Reduce lattice", "hint": "Write a Niggli- or Delaunay-reduced lattice."},
                     {"key": "kpoints", "label": "Sample the Brillouin zone", "hint": "Write a symmetry-reduced KPOINTS mesh."},
-                    {"key": "visualize", "label": "Backup visual inspection", "hint": "Optional. Draw a cell, looking along a direction of your choice."},
+                    {"key": "view", "label": "Backup visual inspection", "hint": "Optional. Draw a cell, looking along a direction of your choice."},
                 ],
                 default=1,
                 allow_back=allow_back,
@@ -162,7 +180,7 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
                     return _build_symmetry_reduce()
                 if stage == "kpoints":
                     return _build_symmetry_kpoints()
-                if stage == "visualize":
+                if stage == "view":
                     return _build_symmetry_visualize()
                 return _build_symmetry_lattice_reduce()
             except _BackInteractive:
@@ -172,35 +190,28 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
         stage = _choice(
             "Interface workflow",
             [
-                {"key": "surface", "label": "Build a surface slab from bulk", "hint": "Recommended when you need a substrate or slab first."},
-                {"key": "sites", "label": "Analyse adsorption sites on a slab", "hint": "Inspect top, bridge, hollow, and related sites."},
                 {"key": "build", "label": "Build a slab-on-slab interface", "hint": "Fix the bottom slab and strain the top slab to it."},
                 {"key": "registries", "label": "List the distinct stacking options of two slabs", "hint": "See which contacts and stacking reversals are genuinely different before building."},
                 {"key": "match", "label": "Scan bulk-derived surface matches", "hint": "Estimate promising interface combinations first."},
-                {"key": "visualize", "label": "Backup visual inspection", "hint": "Optional. Make a quick Matplotlib view if you do not have a structure viewer available."},
             ],
             default=1,
             allow_back=allow_back,
         )
         try:
-            if stage == "surface":
-                return _build_interface_surface()
-            if stage == "sites":
-                return _build_interface_sites()
             if stage == "build":
                 return _build_interface_build()
             if stage == "registries":
                 return _build_interface_registries()
             if stage == "match":
                 return _build_interface_match()
-            return _build_interface_visualize()
+            return _build_interface_build()
         except _BackInteractive:
             continue
 
 
 def _follow_up(group: str, stage: str, result) -> list[str] | None:
     resolved_group = str(group).lower()
-    if resolved_group == "moire" and stage == "find":
+    if resolved_group == "moire" and stage == "search":
         action = _choice(
             "What do you want to do next?",
             [
@@ -210,9 +221,9 @@ def _follow_up(group: str, stage: str, result) -> list[str] | None:
             default=1,
         )
         if action == "make":
-            return ["moire", "make", str(result.manifest_path), "--indexes", _prompt_csv("Candidate indexes to build", "1"), "--interlayer-distance", str(_prompt_float("Interlayer distance in angstrom", 3.35))]
+            return ["moire", "build", str(result.manifest_path), "--indexes", _prompt_csv("Candidate indexes to build", "1"), "--interlayer-distance", str(_prompt_float("Interlayer distance in angstrom", 3.35))]
         return None
-    if resolved_group == "interface" and stage == "surface":
+    if resolved_group == "surface" and stage == "build":
         slab_path = _first_artifact(result, "slab_poscar")
         if slab_path is None:
             return None
@@ -224,7 +235,7 @@ def _follow_up(group: str, stage: str, result) -> list[str] | None:
         ]
         action = _choice("What do you want to do next?", options, default=1)
         if action == "sites":
-            return ["interface", "sites", slab_path]
+            return ["surface", "sites", slab_path]
         return None
     if resolved_group == "defect" and stage == "analyse":
         action = _choice(
@@ -273,8 +284,9 @@ def _run_interactive(group: str | None = None) -> int:
                     "CELLSTINE Interactive Mode",
                     [
                         {"key": "moire", "label": "Moire supercell construction", "hint": "Search, build, translate, and visualize commensurate moire structures."},
+                        {"key": "surface", "label": "Surface slab workflows", "hint": "Build slabs and analyse adsorption sites."},
                         {"key": "adsorbate", "label": "Molecule on substrate workflows", "hint": "Place, move, and study adsorbates on surfaces."},
-                        {"key": "interface", "label": "Surface and interface workflows", "hint": "Build slabs, analyse sites, and construct interfaces."},
+                        {"key": "interface", "label": "Interface workflows", "hint": "Match surfaces and construct slab-on-slab interfaces."},
                         {"key": "symmetry", "label": "Symmetry workflows", "hint": "Analyse space groups and reduce conventional or supercells."},
                         {"key": "defect", "label": "Defect workflows", "hint": "Analyse inequivalent defect sites and generate defect POSCARs."},
                     ],
@@ -290,7 +302,8 @@ def _run_interactive(group: str | None = None) -> int:
         print()
         print("Planned command:")
         print(_format_command(argv))
-        print("Running now.")
+        if not _prompt_yes_no("Run this command now?", True):
+            return 0
 
         namespace = parser.parse_args(argv)
         result = execute_namespace(namespace)
@@ -302,7 +315,8 @@ def _run_interactive(group: str | None = None) -> int:
                 print()
                 print("Next step:")
                 print(_format_command(follow_up))
-                print("Running next step.")
+                if not _prompt_yes_no("Run this next command now?", True):
+                    break
                 next_namespace = parser.parse_args(follow_up)
                 result = execute_namespace(next_namespace)
                 _print_result(result)

@@ -1,6 +1,6 @@
 """A vacuum-free ``(hkl)`` cell has to be the bulk crystal, not a squashed slab.
 
-``interface surface --vacuum 0`` asks for the oriented *bulk* cell of a face:
+``surface build --vacuum 0`` asks for the oriented *bulk* cell of a face:
 the same crystal, cut so that ``c`` is the plane normal.  The statements below
 are the ones that make it a crystal rather than a stack of layers with the ends
 glued together:

@@ -1,6 +1,6 @@
 """The moire results document and the rules its validator enforces.
 
-The results file is the contract between `moire find` and every stage that
+The results file is the contract between `moire search` and every stage that
 reads it, so the validator is what stops a damaged or hand-edited document from
 being built into structures.  Each test below breaks exactly one rule of the
 schema and checks that the document is refused, and the healthy document is

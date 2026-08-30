@@ -1,8 +1,8 @@
 """A supercell input must not coarsen the *multi-layer* moire search either.
 
-``moire find`` folds each layer onto its own primitive in-plane cell before it
+``moire search`` folds each layer onto its own primitive in-plane cell before it
 searches, because the commensurate cells of a stack are a property of the
-lattices and not of whichever cell happens to be in the file.  ``moire findn``
+lattices and not of whichever cell happens to be in the file.  ``moire stack-search``
 inherited the bilayer engine but not that fold, and the mismatch was worse than
 a missed option: the per-pair matrices came back in the *folded* base cell while
 the shared lattice, the cell lengths and the atom counts were still computed in
@@ -11,7 +11,7 @@ the *given* one, so a ``2 x 2`` graphene base reported a 4.92 A cell holding an
 describe one structure -- and every twisted candidate was filtered out because
 its length was measured twice too long.
 
-These tests pin the fold for ``findn``: a layer given as a supercell of itself
+These tests pin the fold for ``stack-search``: a layer given as a supercell of itself
 reproduces the primitive search exactly, candidate for candidate; the folded
 cells are written next to the results and are the files the reported matrices
 refer to; the builder rebuilds the same structure from either document; and

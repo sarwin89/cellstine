@@ -60,7 +60,7 @@ def _prompt_view_direction() -> str:
 
 
 def _build_structure_visualize(group: str, *, subject: str) -> list[str]:
-    """Build one ``<group> visualize`` command line."""
+    """Build one root ``view`` command line."""
 
     _print_title(
         "Structure Visualization",
@@ -71,7 +71,7 @@ def _build_structure_visualize(group: str, *, subject: str) -> list[str]:
         patterns=("*.vasp", "POSCAR", "CONTCAR"),
         roots=(OUTPUT_DIR, INPUT_DIR, RUNS_DIR),
     )
-    argv = [str(group), "visualize", structure]
+    argv = ["view", structure]
     if _prompt_yes_no("Use the optional interactive Plotly 3D HTML viewer instead?", False):
         argv.append("--plotly")
     if _prompt_yes_no("Do you want to look along a particular direction?", False):

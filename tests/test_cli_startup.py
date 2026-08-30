@@ -76,6 +76,7 @@ def test_importing_the_cli_loads_no_workflow_and_no_numpy():
         "cellstine.cli.argtypes",
         "cellstine.cli.main",
         "cellstine.cli.parsers",
+        "cellstine.cli.spec",
         "cellstine.core",
         "cellstine.core.constants",
     }

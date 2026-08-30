@@ -14,7 +14,7 @@ same certified quantities as a moire candidate: the two integer matrices, the
 twist angle, the principal *relative* logarithmic strains, how the engine shares
 them between the two slabs, the recorded affine maps, and the shared lattice.
 Those records feed straight back into the shared builder, so ``interface build``
-and ``moire make`` construct their supercells with one code path.
+and ``moire build`` construct their supercells with one code path.
 
 The written document uses schema ``cellstine.interface.match`` version 1.  Every
 match keeps a pointer to the validated moire results file it came from, together

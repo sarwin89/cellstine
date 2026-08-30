@@ -14,5 +14,5 @@ cellstine adsorbate assemble input/examples/Au_Bulk.vasp --a-length 12 --b-lengt
 
 - Placement can use Cartesian or Direct coordinates depending on the command.
 - Molecule movement is center-of-mass based.
-- The substrate can be an existing slab or a bulk cell that is converted through the interface surface workflow.
+- The substrate can be an existing slab or a bulk cell that is converted through the surface build workflow.
 - Site choices should come from analysed sites rather than being guessed blindly.

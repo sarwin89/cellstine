@@ -2,7 +2,7 @@
 
 The native Gram-form search enumerates reduced bilayer cell shapes up to the
 physical length bound and joins compatible top and bottom forms. Search cost
-therefore depends on `--max-length`, the lattice geometry, the sum of
+therefore depends on `--length`, the lattice geometry, the sum of
 `--top-strain` and `--bottom-strain`, and optional cell-shape or atom-count
 bounds.
 
@@ -11,8 +11,8 @@ relative principal strain is bounded by the sum of the two layer budgets and
 shared optimally between the layers. A representative native workflow is:
 
 ```bash
-cellstine moire find input/examples/mos2.vasp input/examples/mos2.vasp --max-length 20 --top-strain 0.01 --bottom-strain 0.01 --progress
-cellstine moire make runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
+cellstine moire search input/examples/mos2.vasp input/examples/mos2.vasp --length 20 --strain 0.01 --progress
+cellstine moire build runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
 ```
 
 The finder writes schema-versioned `results.json`. `--symmetric` requests a

@@ -133,16 +133,16 @@ def bilayer_search(workspace):
             build_parser().parse_args(
                 [
                     "moire",
-                    "find",
+                    "search",
                     str(top),
                     str(bottom),
-                    "--max-length",
+                    "--length",
                     "26.0",
                     "--top-strain",
                     "0",
                     "--bottom-strain",
                     "0",
-                    "--max-atoms",
+                    "--atoms",
                     "400",
                     "--preview-limit",
                     "0",
@@ -198,7 +198,7 @@ def test_the_built_bilayer_has_the_reference_defect_census(
         build_parser().parse_args(
             [
                 "moire",
-                "make",
+                "build",
                 str(results_file),
                 "--indexes",
                 str(int(candidate["index"])),
@@ -276,7 +276,7 @@ def test_the_built_bilayer_is_geometrically_sound(
         build_parser().parse_args(
             [
                 "moire",
-                "make",
+                "build",
                 str(results_file),
                 "--indexes",
                 str(int(candidate["index"])),
@@ -333,7 +333,7 @@ def test_one_vacancy_is_generated_per_inequivalent_sulfur_site(
         build_parser().parse_args(
             [
                 "moire",
-                "make",
+                "build",
                 str(results_file),
                 "--indexes",
                 str(int(candidate["index"])),

@@ -86,7 +86,7 @@ def _build_adsorbate_place() -> list[str]:
             print(f"Site analysis failed for the selected substrate: {exc}")
 
     if site_report is None:
-        raise ValueError("could not analyse adsorption sites for this substrate; run `cellstine interface sites` first to inspect the cell")
+        raise ValueError("could not analyse adsorption sites for this substrate; run `cellstine surface sites` first to inspect the cell")
 
     _print_detected_sites(site_report)
     site_options = _site_options_from_report(site_report)

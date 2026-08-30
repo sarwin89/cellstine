@@ -22,8 +22,8 @@ def _build_moire_find() -> list[str]:
     top = _prompt_path("Choose the top-layer POSCAR", patterns=("*.vasp",), roots=(INPUT_DIR, OUTPUT_DIR))
     bottom = _prompt_path("Choose the bottom-layer POSCAR", patterns=("*.vasp",), roots=(INPUT_DIR, OUTPUT_DIR), default=top)
     argv = [
-        "moire", "find", top, bottom,
-        "--max-length", str(_prompt_float("Maximum supercell length in angstrom", 30.0)),
+        "moire", "search", top, bottom,
+        "--length", str(_prompt_float("Maximum supercell length in angstrom", 30.0)),
     ]
     rigid = _prompt_yes_no(
         "Keep both layers rigid and accept only exactly commensurate twists? "
@@ -31,7 +31,7 @@ def _build_moire_find() -> list[str]:
         False,
     )
     if rigid:
-        argv.extend(["--top-strain", "0", "--bottom-strain", "0"])
+        argv.append("--rigid")
     else:
         argv.extend([
             "--top-strain", str(_prompt_float("Top principal logarithmic strain budget as a fraction", 0.02)),
@@ -42,9 +42,9 @@ def _build_moire_find() -> list[str]:
         upper = _prompt_float("Largest twist angle to report in degrees", 30.0)
         if upper < lower:
             lower, upper = upper, lower
-        argv.extend(["--min-twist-angle", str(lower), "--max-twist-angle", str(upper)])
+        argv.extend(["--twist", f"{lower:g}:{upper:g}"])
     if _prompt_yes_no("Do you want to cap the number of atoms in a candidate cell?", rigid):
-        argv.extend(["--max-atoms", str(_prompt_int("Maximum atoms in a candidate supercell", 400))])
+        argv.extend(["--atoms", str(_prompt_int("Maximum atoms in a candidate supercell", 400))])
     if _prompt_yes_no("Use the symmetry-preserving branch when it applies?", False):
         argv.append("--symmetric")
     if _prompt_yes_no(
@@ -72,7 +72,7 @@ def _build_moire_findn() -> list[str]:
         for index in range(1, upper_count + 1)
     ]
     max_length = _prompt_float("Maximum in-plane cell length in angstrom", 20.0)
-    argv = ["moire", "findn", base, *upper_paths, "--max-length", str(max_length)]
+    argv = ["moire", "stack-search", base, *upper_paths, "--length", str(max_length)]
     if _prompt_yes_no("Do you want a different strain budget for each upper layer?", False):
         budgets = [
             str(_prompt_float(f"Strain budget for upper layer #{index} as a fraction", 0.02))
@@ -81,7 +81,7 @@ def _build_moire_findn() -> list[str]:
         argv.extend(["--layer-strains", ",".join(budgets)])
     else:
         argv.extend(["--layer-strain", str(_prompt_float("Strain budget for every upper layer as a fraction", 0.02))])
-    argv.extend(["--max-atoms", str(_prompt_int("Maximum atoms in the whole stack", 600))])
+    argv.extend(["--atoms", str(_prompt_int("Maximum atoms in the whole stack", 600))])
     if _prompt_yes_no("Do you want to set a minimum in-plane cell length?", False):
         argv.extend(["--min-length", str(_prompt_float("Minimum in-plane cell length in angstrom", 5.0))])
     preview_limit = _prompt_int_range(
@@ -99,7 +99,7 @@ def _build_moire_maken() -> list[str]:
         roots=(RUNS_DIR,),
     )
     indexes = _prompt_csv("Candidate indexes to build", "1")
-    argv = ["moire", "maken", results_file, "--indexes", indexes]
+    argv = ["moire", "stack-build", results_file, "--indexes", indexes]
     if _prompt_yes_no("Do you want a different gap above each layer?", False):
         argv.extend(["--interlayers", _prompt_csv("Gaps in angstrom, bottom to top", "3.35,3.35")])
     else:
@@ -113,13 +113,13 @@ def _build_moire_make() -> list[str]:
     _print_title("Moire Build", "Build one or more saved commensurate candidates.")
     results_file = _prompt_path(
         "Choose a saved moire results file or manifest",
-        patterns=("manifest.json", "*.dat", "*.json"),
+        patterns=("manifest.json", "*.json"),
         roots=(RUNS_DIR,),
     )
     _print_saved_moire_preview(results_file, limit=15)
     indexes = _prompt_csv("Candidate indexes to build", "1")
     interlayer = _prompt_float("Interlayer distance in angstrom", 3.35)
-    argv = ["moire", "make", results_file, "--indexes", indexes, "--interlayer-distance", str(interlayer)]
+    argv = ["moire", "build", results_file, "--indexes", indexes, "--interlayer-distance", str(interlayer)]
     if _prompt_yes_no("Do you want to set the vacuum instead of keeping the input c axis?", False):
         argv.extend(["--vacuum", str(_prompt_float("Total vacuum in angstrom, split equally above and below", 15.0))])
     if _prompt_yes_no("Do you want to generate with more than one worker?", False):
@@ -140,18 +140,18 @@ def _build_moire_translate() -> list[str]:
     )
     vector = _prompt_csv("Shift vector", "0.0,0.0")
     flag = "--shift-direct" if coordinate_mode == "direct" else "--shift-cart"
-    return ["moire", "translate", poscar_path, flag, vector]
+    return ["moire", "shift", poscar_path, flag, vector]
 
 
 def _build_moire_visualize() -> list[str]:
     _print_title("Moire Visualization", "Create a static Matplotlib summary, or optionally an interactive Plotly viewer.")
     results_file = _prompt_path(
         "Choose a saved moire results file or manifest",
-        patterns=("manifest.json", "*.dat", "*.json"),
+        patterns=("manifest.json", "*.json"),
         roots=(RUNS_DIR,),
     )
     use_specific_indices = _prompt_yes_no("Do you want to visualize only selected candidate indices?", False)
-    argv = ["moire", "visualize", results_file]
+    argv = ["moire", "view", results_file]
     if use_specific_indices:
         argv.extend(["--indices", _prompt_csv("Candidate indices", "1,2,3")])
     if _prompt_yes_no("Use the optional interactive Plotly 3D HTML viewer instead of the default Matplotlib plot?", False):

@@ -5,7 +5,7 @@ from __future__ import annotations
 import sys
 
 from .. import __version__
-from .parsers import build_parser
+from .spec import legacy_command_message, parse_twist_window, resolve_moire_strains
 
 # The workflow packages are loaded when a stage asks for one, not at import.
 # Every group pulls in NumPy and its own stack, and a run only ever uses one of
@@ -72,21 +72,28 @@ def execute_namespace(args):
     if args.group == "moire":
         Moire = _workflow("Moire")
         Supermoire = _workflow("Supermoire")
-        if args.stage == "find":
+        if args.stage == "search":
+            top_strain, bottom_strain = resolve_moire_strains(
+                rigid=bool(args.rigid),
+                strain=args.strain,
+                top_strain=args.top_strain,
+                bottom_strain=args.bottom_strain,
+            )
+            min_twist_angle, max_twist_angle = parse_twist_window(args.twist)
             tool = Moire()
             result = tool.find(
                 top_poscar=args.top_poscar,
                 bottom_poscar=args.bottom_poscar,
                 max_length=args.max_length,
-                top_strain=args.top_strain,
-                bottom_strain=args.bottom_strain,
+                top_strain=top_strain,
+                bottom_strain=bottom_strain,
                 min_length=args.min_length,
                 max_atoms=args.max_atoms,
                 max_aspect_ratio=args.max_cell_aspect_ratio,
                 min_cell_angle_deg=args.min_cell_angle,
                 max_cell_angle_deg=args.max_cell_angle,
-                min_twist_angle_deg=args.min_twist_angle,
-                max_twist_angle_deg=args.max_twist_angle,
+                min_twist_angle_deg=min_twist_angle,
+                max_twist_angle_deg=max_twist_angle,
                 symmetric=args.symmetric,
                 reduce_layers=not args.keep_layer_cells,
                 symmetry_tolerance=args.symmetry_tolerance,
@@ -94,7 +101,7 @@ def execute_namespace(args):
                 progress=args.progress,
             )
             return result
-        if args.stage == "make":
+        if args.stage == "build":
             return Moire().make(
                 results_file=args.results_file,
                 indexes=args.indexes,
@@ -103,7 +110,7 @@ def execute_namespace(args):
                 workers=args.workers,
                 output_dir=args.output_dir,
             )
-        if args.stage == "findn":
+        if args.stage == "stack-search":
             return Supermoire().findn(
                 base_poscar=args.base_poscar,
                 upper_poscars=args.upper_poscars,
@@ -120,7 +127,7 @@ def execute_namespace(args):
                 reduce_layers=not args.keep_layer_cells,
                 preview_limit=args.preview_limit,
             )
-        if args.stage == "maken":
+        if args.stage == "stack-build":
             return Supermoire().maken(
                 results_file=args.results_file,
                 indexes=args.indexes,
@@ -128,9 +135,9 @@ def execute_namespace(args):
                 vacuum=args.vacuum,
                 output_dir=args.output_dir,
             )
-        if args.stage == "translate":
+        if args.stage == "shift":
             return Moire().translate(poscar_path=args.poscar_path, shift_cartesian=args.shift_cart, shift_direct=args.shift_direct)
-        if args.stage == "visualize":
+        if args.stage == "view":
             return Moire().visualize(
                 results_file=args.results_file,
                 indices=args.indices,
@@ -138,6 +145,31 @@ def execute_namespace(args):
                 output_path=args.output,
                 plotly=args.plotly,
                 show=args.show,
+            )
+
+    if args.group == "surface":
+        surface_tool = _workflow("Surface")()
+        if args.stage == "build":
+            return surface_tool.surface(
+                bulk_poscar=args.bulk_poscar,
+                miller=args.miller,
+                layers=args.layers,
+                vacuum=args.vacuum,
+                repeat_a=args.repeat_a,
+                repeat_b=args.repeat_b,
+                min_length_a=args.min_length_a,
+                min_length_b=args.min_length_b,
+                supercell_matrix=args.supercell_matrix,
+                output_path=args.output_path,
+                analyse_sites=args.analyse_sites,
+                sites_output_path=args.sites_output_path,
+                site_surface_side=args.site_surface_side,
+            )
+        if args.stage == "sites":
+            return surface_tool.sites(
+                slab_poscar=args.slab_poscar,
+                surface_side=args.surface_side,
+                output_path=args.output_path,
             )
 
     if args.group == "adsorbate":
@@ -207,40 +239,8 @@ def execute_namespace(args):
                 symprec=args.symprec,
                 output_path=args.output,
             )
-        if args.stage == "visualize":
-            return _workflow("Visualize")().structure(
-                structure_path=args.structure_path,
-                output_path=args.output,
-                plotly=args.plotly,
-                show=args.show,
-                view_direction=args.view_direction,
-            )
-
     if args.group == "interface":
-        surface_tool = _workflow("Surface")()
         interface_tool = _workflow("Interface")()
-        if args.stage == "surface":
-            return surface_tool.surface(
-                bulk_poscar=args.bulk_poscar,
-                miller=args.miller,
-                layers=args.layers,
-                vacuum=args.vacuum,
-                repeat_a=args.repeat_a,
-                repeat_b=args.repeat_b,
-                min_length_a=args.min_length_a,
-                min_length_b=args.min_length_b,
-                supercell_matrix=args.supercell_matrix,
-                output_path=args.output_path,
-                analyse_sites=args.analyse_sites,
-                sites_output_path=args.sites_output_path,
-                site_surface_side=args.site_surface_side,
-            )
-        if args.stage == "sites":
-            return surface_tool.sites(
-                slab_poscar=args.slab_poscar,
-                surface_side=args.surface_side,
-                output_path=args.output_path,
-            )
         if args.stage == "build":
             return interface_tool.build(
                 bottom_input=args.bottom_input,
@@ -301,7 +301,7 @@ def execute_namespace(args):
             spacing = args.spacing
             if spacing is None and args.divisions is None:
                 spacing = 0.03
-            return tool.kpath(
+            return _workflow("Symmetry")().kpath(
                 structure_path=args.structure,
                 spacing=spacing,
                 divisions=args.divisions,
@@ -311,14 +311,6 @@ def execute_namespace(args):
                 time_reversal=not args.no_time_reversal,
                 symprec=args.symprec,
                 output_path=args.output,
-            )
-        if args.stage == "visualize":
-            return _workflow("Visualize")().structure(
-                structure_path=args.structure_path,
-                output_path=args.output,
-                plotly=args.plotly,
-                show=args.show,
-                view_direction=args.view_direction,
             )
 
     if args.group == "defect":
@@ -408,15 +400,6 @@ def execute_namespace(args):
                 symprec=args.symprec,
                 output_path=args.output,
             )
-        if args.stage == "visualize":
-            return _workflow("Visualize")().structure(
-                structure_path=args.structure_path,
-                output_path=args.output,
-                plotly=args.plotly,
-                show=args.show,
-                view_direction=args.view_direction,
-            )
-
     if args.group == "symmetry":
         tool = _workflow("Symmetry")()
         if args.stage == "analyse":
@@ -477,14 +460,14 @@ def execute_namespace(args):
                 symprec=args.symprec,
                 output_path=args.output,
             )
-        if args.stage == "visualize":
-            return _workflow("Visualize")().structure(
-                structure_path=args.structure_path,
-                output_path=args.output,
-                plotly=args.plotly,
-                show=args.show,
-                view_direction=args.view_direction,
-            )
+    if args.group == "view":
+        return _workflow("Visualize")().structure(
+            structure_path=args.structure_path,
+            output_path=args.output,
+            plotly=args.plotly,
+            show=args.show,
+            view_direction=args.view_direction,
+        )
 
     raise SystemExit("No workflow stage was selected. Use --help for usage.")
 
@@ -511,13 +494,27 @@ def dispatch_namespace(args) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = build_parser()
-    arguments = parser.parse_args(argv)
-    try:
-        return dispatch_namespace(arguments)
-    except Exception as exc:  # pragma: no cover - friendly CLI surface
-        print(f"Error: {exc}", file=sys.stderr)
-        return 1
+    values = list(sys.argv[1:] if argv is None else argv)
+    force_plain = "--plain" in values
+    filtered = [value for value in values if value != "--plain"]
+    for index, value in enumerate(filtered[:-1]):
+        if value.startswith("-"):
+            continue
+        message = legacy_command_message(value, filtered[index + 1])
+        if message is not None:
+            print(f"Error: {message}", file=sys.stderr)
+            return 2
+        break
+    if not force_plain:
+        try:
+            from .rich_app import run as run_rich
+
+            return int(run_rich(filtered))
+        except ImportError:
+            pass
+    from .plain import run as run_plain
+
+    return int(run_plain(filtered))
 
 
 if __name__ == "__main__":

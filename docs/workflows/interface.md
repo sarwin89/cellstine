@@ -1,12 +1,13 @@
 # Interface Workflow
 
-The `interface` workflow generates slabs, analyses adsorption sites, and builds slab-on-slab heterostructures.
+The `surface` workflow generates slabs and analyses adsorption sites. The
+`interface` workflow matches and builds slab-on-slab heterostructures.
 
 ## Common Commands
 
 ```bash
-cellstine interface surface input/examples/Au_Bulk.vasp --miller 111 --layers 4 --vacuum 15
-cellstine interface sites output/examples/Au_Bulk_111_surface.vasp
+cellstine surface build input/examples/Au_Bulk.vasp --miller 111 --layers 4 --vacuum 15
+cellstine surface sites output/examples/Au_Bulk_111_surface.vasp
 cellstine interface build output/examples/Au_Bulk_111_surface.vasp output/examples/Au_Bulk_111_surface.vasp --gap 3.0
 ```
 

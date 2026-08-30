@@ -75,8 +75,8 @@ Then run a **rigid** search — zero strain budgets, so nothing is deformed and
 only exactly commensurate cells survive:
 
 ```console
-$ cellstine moire find mos2_Aprime.vasp mos2_A.vasp \
-      --max-length 26 --top-strain 0 --bottom-strain 0 --max-atoms 400
+$ cellstine moire search mos2_Aprime.vasp mos2_A.vasp \
+      --length 26 --rigid --atoms 400
 ```
 
 ```text
@@ -96,7 +96,7 @@ Every reference angle is there, each with its 60-degree partner, and every
 strain is exactly zero. Build the one you want and inspect its sites:
 
 ```console
-$ cellstine moire make runs/moire/find_*/results.json \
+$ cellstine moire build runs/moire/find_*/results.json \
       --indexes 3 --interlayer-distance 3.1 --output-dir out42
 $ cellstine defect analyse out42/stack_idx003_*.vasp --structure-kind bulk
 ```
@@ -130,6 +130,6 @@ one in the bottom plane of the other.
 - The search is rigid, so the cells are exact. If instead you allow a strain
   budget you will also get near-commensurate cells, which are smaller but carry
   a real deformation — see `MOIRE_SEARCH.md`.
-- `--max-length` bounds the moire cell, and small angles need large cells: the
-  7.341 degree row already needs a 24.7 A cell. Raise both `--max-length` and
-  `--max-atoms` to reach smaller angles.
+- `--length` bounds the moire cell, and small angles need large cells: the
+  7.341 degree row already needs a 24.7 A cell. Raise both `--length` and
+  `--atoms` to reach smaller angles.

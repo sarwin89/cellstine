@@ -21,8 +21,8 @@ from typing import List
 APP_NAME = "CELLSTINE"
 APP_EXPANSION = "CELL Superlattice Transformation INterface and Engine"
 LEGACY_MOIRE_FIND_MESSAGE = (
-    "Legacy moire find controls are unsupported; use --max-length, --top-strain, "
-    "and --bottom-strain."
+    "Legacy moire search controls are unsupported; use --length plus one strain "
+    "mode (--rigid, --strain E, or both --top-strain and --bottom-strain)."
 )
 
 
@@ -174,4 +174,3 @@ def parse_string_list(raw: str | None) -> List[str] | None:
     if raw in {None, ""}:
         return None
     return [token.strip() for token in str(raw).split(",") if token.strip()]
-

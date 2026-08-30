@@ -98,18 +98,17 @@ def _minimum_image_distance(structure) -> float:
 
 
 def test_the_moire_pipeline_runs_from_search_to_structure(graphene, workspace):
-    """`moire find` feeds `moire make`, and the built cell is the recorded one."""
+    """`moire search` feeds `moire build`, and the built cell is recorded."""
 
     found = run_cli(
-        "moire", "find", graphene, graphene, "--max-length", "8", "--top-strain", "0.01",
-        "--bottom-strain", "0.01",
+        "moire", "search", graphene, graphene, "--length", "8", "--strain", "0.01",
     )
     results_path = Path(found.artifacts["results_json"])
     document = json.loads(results_path.read_text())
     assert document["schema"] == "cellstine.moire.gram"
     assert int(found.summary["candidate_count"]) == len(document["candidates"])
 
-    made = run_cli("moire", "make", str(results_path), "--indexes", "1", "--interlayer-distance", "3.35")
+    made = run_cli("moire", "build", str(results_path), "--indexes", "1", "--interlayer-distance", "3.35")
     built = io_mod.read_poscar(str(Path(made.artifacts["structures"][0])))
     candidate = document["candidates"][0]
 
@@ -127,15 +126,15 @@ def test_the_moire_pipeline_runs_from_search_to_structure(graphene, workspace):
 
 
 def test_the_surface_pipeline_runs_from_slab_to_sites_to_adsorbate(aluminium, carbon_monoxide):
-    """A slab built by `interface surface` is accepted by the later stages."""
+    """A slab built by `surface build` is accepted by later stages."""
 
-    slab_result = run_cli("interface", "surface", aluminium, "--miller", "1,1,1", "--layers", "4", "--vacuum", "15")
+    slab_result = run_cli("surface", "build", aluminium, "--miller", "1,1,1", "--layers", "4", "--vacuum", "15")
     slab_path = str(slab_result.artifacts["slab_poscar"])
     slab = io_mod.read_poscar(slab_path)
     assert sum(slab.counts) == 4
     assert slab_result.summary["stacking_sequence"] == "ABCA"
 
-    sites = run_cli("interface", "sites", slab_path)
+    sites = run_cli("surface", "sites", slab_path)
     report = json.loads(Path(sites.artifacts["sites_json"]).read_text())
     assert {"top", "bridge", "fcc_hollow", "hcp_hollow"} <= set(report["sites"])
     # The close-packed face has one of each hollow and three bridges.
@@ -254,18 +253,18 @@ def test_the_symmetry_stages_reduce_the_conventional_cell(silicon):
 
 
 def test_the_multilayer_pipeline_runs_from_search_to_structure(graphene, workspace):
-    found = run_cli("moire", "findn", graphene, graphene, graphene, "--max-length", "8")
+    found = run_cli("moire", "stack-search", graphene, graphene, graphene, "--length", "8")
     results_path = Path(found.artifacts["results_json"])
     document = json.loads(results_path.read_text())
     assert document["candidates"]
 
-    made = run_cli("moire", "maken", str(results_path), "--indexes", "1")
+    made = run_cli("moire", "stack-build", str(results_path), "--indexes", "1")
     structure = io_mod.read_poscar(str(Path(made.artifacts["structures"][0])))
     assert sum(structure.counts) == int(document["candidates"][0]["total_atoms"])
 
 
 def test_every_run_records_a_readable_manifest(aluminium):
-    result = run_cli("interface", "surface", aluminium, "--miller", "1,0,0", "--layers", "3", "--vacuum", "12")
+    result = run_cli("surface", "build", aluminium, "--miller", "1,0,0", "--layers", "3", "--vacuum", "12")
     manifest = json.loads(Path(result.manifest_path).read_text())
     assert manifest["workflow"] == "interface"
     assert manifest["stage"] == "surface"
@@ -279,24 +278,23 @@ def test_the_visualizers_write_the_files_they_promise(graphene, aluminium, works
     pytest.importorskip("matplotlib")
 
     found = run_cli(
-        "moire", "find", graphene, graphene, "--max-length", "8", "--top-strain", "0.01",
-        "--bottom-strain", "0.01",
+        "moire", "search", graphene, graphene, "--length", "8", "--strain", "0.01",
     )
     results_path = str(Path(found.artifacts["results_json"]))
     png = workspace / "moire.png"
-    picture = run_cli("moire", "visualize", results_path, "--indices", "1", "--output", str(png))
+    picture = run_cli("moire", "view", results_path, "--indices", "1", "--output", str(png))
     assert png.exists() and png.stat().st_size > 0
     assert Path(str(picture.artifacts["png"])) == png
 
-    slab = run_cli("interface", "surface", aluminium, "--miller", "1,1,1", "--layers", "3", "--vacuum", "12")
+    slab = run_cli("surface", "build", aluminium, "--miller", "1,1,1", "--layers", "3", "--vacuum", "12")
     slab_png = workspace / "slab.png"
-    run_cli("interface", "visualize", str(slab.artifacts["slab_poscar"]), "--output", str(slab_png))
+    run_cli("view", str(slab.artifacts["slab_poscar"]), "--output", str(slab_png))
     assert slab_png.exists() and slab_png.stat().st_size > 0
 
     pytest.importorskip("plotly")
     html = workspace / "slab.html"
     run_cli(
-        "interface", "visualize", str(slab.artifacts["slab_poscar"]), "--plotly", "--output", str(html)
+        "view", str(slab.artifacts["slab_poscar"]), "--plotly", "--output", str(html)
     )
     assert html.exists() and html.read_text().lstrip().lower().startswith("<")
 
@@ -305,8 +303,8 @@ def test_candidate_selection_accepts_both_spellings():
     """``--indexes`` and ``--indices`` name the same option on every moire stage."""
 
     parser = build_parser()
-    for stage, destination in (("make", "indexes"), ("maken", "indexes"), ("visualize", "indices")):
-        extra = ["--interlayer-distance", "3.35"] if stage == "make" else []
+    for stage, destination in (("build", "indexes"), ("stack-build", "indexes"), ("view", "indices")):
+        extra = ["--interlayer-distance", "3.35"] if stage == "build" else []
         with_indexes = parser.parse_args(["moire", stage, "results.json", "--indexes", "1,3-4", *extra])
         with_indices = parser.parse_args(["moire", stage, "results.json", "--indices", "1,3-4", *extra])
         assert getattr(with_indexes, destination) == [1, 3, 4]

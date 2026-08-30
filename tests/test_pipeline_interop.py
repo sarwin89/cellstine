@@ -134,7 +134,7 @@ def test_a_slab_carries_its_vacuum_through_interface_defect_and_adsorbate(copper
     """
 
     slab_result = run_cli(
-        "interface", "surface", copper, "--miller", "1,1,1", "--layers", "4", "--vacuum", "14",
+        "surface", "build", copper, "--miller", "1,1,1", "--layers", "4", "--vacuum", "14",
         "--repeat-a", "2", "--repeat-b", "2",
     )
     slab_path = str(slab_result.artifacts["slab_poscar"])
@@ -180,7 +180,7 @@ def test_a_slab_carries_its_vacuum_through_interface_defect_and_adsorbate(copper
 
 def test_an_adatom_keeps_the_vacuum_of_the_slab_it_sits_on(copper):
     slab_result = run_cli(
-        "interface", "surface", copper, "--miller", "1,1,1", "--layers", "5", "--vacuum", "12",
+        "surface", "build", copper, "--miller", "1,1,1", "--layers", "5", "--vacuum", "12",
     )
     slab_path = str(slab_result.artifacts["slab_poscar"])
 
@@ -205,18 +205,18 @@ def test_an_adatom_keeps_the_vacuum_of_the_slab_it_sits_on(copper):
 
 
 def test_a_moire_bilayer_is_accepted_by_the_defect_and_adsorbate_stages(graphene, hbn, carbon_monoxide):
-    """moire find -> make -> defect -> adsorbate place -> adsorbate move."""
+    """moire search -> build -> defect -> adsorbate place -> adsorbate move."""
 
     found = run_cli(
-        "moire", "find", graphene, hbn, "--max-length", "8",
-        "--top-strain", "0.02", "--bottom-strain", "0.02", "--preview-limit", "0",
+        "moire", "search", graphene, hbn, "--length", "8",
+        "--strain", "0.02", "--preview-limit", "0",
     )
     results_path = Path(found.artifacts["results_json"])
     document = json.loads(results_path.read_text())
     assert document["candidates"]
 
     made = run_cli(
-        "moire", "make", str(results_path), "--indexes", "1",
+        "moire", "build", str(results_path), "--indexes", "1",
         "--interlayer-distance", "3.35", "--vacuum", "16",
     )
     moire_path = str(made.artifacts["structures"][0])
@@ -249,7 +249,7 @@ def test_a_moire_bilayer_is_accepted_by_the_defect_and_adsorbate_stages(graphene
 
 def test_a_defected_slab_can_be_read_back_by_the_symmetry_stage(copper):
     slab_result = run_cli(
-        "interface", "surface", copper, "--miller", "1,0,0", "--layers", "4", "--vacuum", "12",
+        "surface", "build", copper, "--miller", "1,0,0", "--layers", "4", "--vacuum", "12",
         "--repeat-a", "2", "--repeat-b", "2",
     )
     slab_path = str(slab_result.artifacts["slab_poscar"])

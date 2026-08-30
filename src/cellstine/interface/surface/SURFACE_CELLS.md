@@ -1,6 +1,6 @@
 # Slabs and vacuum-free cells
 
-`cellstine interface surface BULK.vasp --miller HKL --layers N --vacuum V` cuts
+`cellstine surface build BULK.vasp --miller HKL --layers N --vacuum V` cuts
 the primitive `(hkl)` cell of a crystal and stacks `N` atomic layers of it. The
 cell is written in the canonical surface frame: both in-plane vectors lie in the
 Cartesian `xy` plane with `a` along `+x`, and `c` is the plane normal along `+z`.
@@ -38,7 +38,7 @@ the in-plane positions and the spacings of the layers, not just their letters --
 and refuses a request that would silently produce a fault:
 
 ```text
-$ cellstine interface surface Al.vasp --miller 111 --layers 4 --vacuum 0
+$ cellstine surface build Al.vasp --miller 111 --layers 4 --vacuum 0
 Error: a vacuum-free (1 1 1) cell repeats every 3 atomic layers, so 4 layers
 would emit a stacking fault; ask for 3 or 6 layers, or for a vacuum
 ```
@@ -77,7 +77,7 @@ part-way through a period and is not held to the rule above.
 
 Two further properties decide whether a cut of a *compound* is a usable model of
 a surface, and neither of them is visible in the atom count. `termination.py`
-reports both, and `interface surface` prints them next to the structure it
+reports both, and `surface build` prints them next to the structure it
 wrote.
 
 **Stoichiometry.** A slab need not hold a whole number of formula units. The

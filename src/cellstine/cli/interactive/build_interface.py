@@ -56,7 +56,7 @@ def _build_interface_surface() -> list[str]:
         expansion_args.extend(["--supercell-matrix", _prompt_csv("Matrix entries a,b,c,d", "2,0,0,3")])
     layers = _prompt_int("Number of slab layers", 4)
     vacuum = _prompt_float("Vacuum in angstrom", 15.0)
-    argv = ["interface", "surface", bulk, "--miller", miller, "--layers", str(layers), "--vacuum", str(vacuum), *expansion_args]
+    argv = ["surface", "build", bulk, "--miller", miller, "--layers", str(layers), "--vacuum", str(vacuum), *expansion_args]
     if _prompt_yes_no("Also detect adsorption sites after building the slab?", True):
         argv.append("--analyse-sites")
     return argv
@@ -73,7 +73,7 @@ def _build_interface_sites() -> list[str]:
         ],
         default=1,
     )
-    return ["interface", "sites", slab, "--surface-side", side]
+    return ["surface", "sites", slab, "--surface-side", side]
 
 
 def _prompt_interface_side(label: str) -> list[str]:
