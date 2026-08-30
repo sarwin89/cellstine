@@ -1,16 +1,24 @@
-"""Reproducible, non-gating legacy-reference versus native Gram benchmark.
+"""Cross-check and time the native Gram search against a brute-force reference.
 
-Run from the repository root with::
+Run from the repository root::
 
     python benchmarks/benchmark_gram_search.py
 
-The script exits nonzero if the exact canonical candidate-class sets differ.  Timings are
-measurements, not assertions, because wall-clock performance varies by host.
+For each test system and each length bound the script
+
+1. runs the independent brute-force reference of
+   :mod:`benchmarks.reference_moire`,
+2. runs the native Gram engine,
+3. compares the two sets of physical candidate classes -- twist angle, per-layer
+   atom counts, relative principal strains and supercell area -- and stops on
+   the first mismatch,
+4. prints measured wall-clock timings.  Timings are host-dependent
+   measurements, not performance assertions.
 """
 
 from __future__ import annotations
 
-import itertools
+import importlib.util
 import math
 import sys
 import time
@@ -19,224 +27,204 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
+PACKAGE_ROOT = ROOT / "src" / "cellstine"
 sys.path.insert(0, str(ROOT / "src"))
-
-from cellstine.moire.search.gram import SearchConfig, search  # noqa: E402
-
-MAX_LENGTHS = (6.0, 8.0, 10.0)
-TOP_STRAIN = 0.01
-BOTTOM_STRAIN = 0.01
+sys.path.insert(0, str(ROOT / "benchmarks"))
 
 
-def hex_basis(length: float) -> np.ndarray:
+def _load_cellstine():
+    """Import the repository as the ``cellstine`` package without installation."""
+
+    if "cellstine" in sys.modules:
+        return sys.modules["cellstine"]
+    spec = importlib.util.spec_from_file_location(
+        "cellstine", PACKAGE_ROOT / "__init__.py", submodule_search_locations=[str(PACKAGE_ROOT)]
+    )
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["cellstine"] = module
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+_load_cellstine()
+
+from cellstine.core.symmetry2d import (  # noqa: E402
+    lattice_point_group,
+    layer_point_group,
+)
+from cellstine.moire.search import gram  # noqa: E402
+from reference_moire import ReferenceConfig, reference_search  # noqa: E402
+
+ANGLE_TOLERANCE_DEG = 1e-6
+STRAIN_TOLERANCE = 1e-7
+AREA_TOLERANCE = 1e-6
+
+
+def _hexagonal(constant: float) -> np.ndarray:
     return np.array(
-        [[length, -0.5 * length], [0.0, 0.5 * math.sqrt(3.0) * length]]
+        [[constant, -0.5 * constant], [0.0, 0.5 * math.sqrt(3.0) * constant]]
     )
 
 
-def lattice_points(metric: np.ndarray, radius_squared: float):
-    g11, g12, g22 = metric[0, 0], metric[0, 1], metric[1, 1]
-    determinant = g11 * g22 - g12 * g12
-    m_max = int(math.floor(math.sqrt(radius_squared * g22 / determinant))) + 1
-    n_max = int(math.floor(math.sqrt(radius_squared * g11 / determinant))) + 1
-    points = []
-    for m in range(-m_max, m_max + 1):
-        for n in range(-n_max, n_max + 1):
-            if m == 0 and n == 0:
-                continue
-            squared = g11 * m * m + 2.0 * g12 * m * n + g22 * n * n
-            if squared <= radius_squared:
-                points.append(((m, n), squared))
-    return sorted(points, key=lambda item: item[1])
+def _hexagonal_layer_group(constant: float, sublattices: int) -> np.ndarray:
+    """Return the decorated point group of a honeycomb layer.
+
+    ``sublattices == 1`` is a graphene-like layer whose two sites carry the same
+    species (six-fold); ``sublattices == 2`` is an hBN-like layer with distinct
+    species on the two sites (three-fold).
+    """
+
+    lattice = np.zeros((3, 3))
+    lattice[:2, :2] = _hexagonal(constant).T
+    lattice[2, 2] = 20.0
+    positions = np.array([[1.0 / 3.0, 2.0 / 3.0, 0.5], [2.0 / 3.0, 1.0 / 3.0, 0.5]])
+    species = ["C", "C"] if sublattices == 1 else ["B", "N"]
+    return layer_point_group(lattice, positions, species)
 
 
-def gram(metric: np.ndarray, first, second):
-    def bilinear(left, right):
-        return float(np.asarray(left) @ metric @ np.asarray(right))
-
-    return bilinear(first, first), bilinear(first, second), bilinear(second, second)
-
-
-def extended_gcd(left: int, right: int):
-    old_r, r, old_s, s, old_t, t = left, right, 1, 0, 0, 1
-    while r:
-        quotient = old_r // r
-        old_r, r = r, old_r - quotient * r
-        old_s, s = s, old_s - quotient * s
-        old_t, t = t, old_t - quotient * t
-    sign = -1 if old_r < 0 else 1
-    return old_s * sign, old_t * sign
-
-
-def hnf(first, second):
-    a, c = first
-    b, d = second
-    determinant = abs(a * d - b * c)
-    h22 = math.gcd(c, d)
-    h11 = determinant // h22
-    x, y = extended_gcd(c, d)
-    return h11, (x * a + y * b) % h11, h22
-
-
-UNIMODULAR = np.stack(
-    [
-        np.array(values, dtype=np.int64).reshape(2, 2)
-        for values in itertools.product(range(-2, 3), repeat=4)
-        if abs(values[0] * values[3] - values[1] * values[2]) == 1
-    ]
-)
-
-
-def canonical_class_set(top, bottom, top_metric, bottom_metric):
-    """Independent bounded-unimodular Gram canonicalization from Aristotle's oracle."""
-    if len(top) == 0:
-        return set()
-    best = np.zeros((len(top), 6), dtype=np.int64)
-    found = np.zeros(len(top), dtype=bool)
-    for transform in UNIMODULAR:
-        transformed_top = top @ transform
-        transformed_bottom = bottom @ transform
-        top_gram = np.swapaxes(transformed_top, 1, 2) @ top_metric @ transformed_top
-        bottom_gram = (
-            np.swapaxes(transformed_bottom, 1, 2) @ bottom_metric @ transformed_bottom
-        )
-        top_det = (
-            transformed_top[:, 0, 0] * transformed_top[:, 1, 1]
-            - transformed_top[:, 0, 1] * transformed_top[:, 1, 0]
-        )
-        bottom_det = (
-            transformed_bottom[:, 0, 0] * transformed_bottom[:, 1, 1]
-            - transformed_bottom[:, 0, 1] * transformed_bottom[:, 1, 0]
-        )
-        valid = (
-            (top_det > 0)
-            & (bottom_det > 0)
-            & (top_gram[:, 0, 0] <= top_gram[:, 1, 1] * (1.0 + 1e-9))
-            & (2.0 * np.abs(top_gram[:, 0, 1]) <= top_gram[:, 0, 0] * (1.0 + 1e-9))
-        )
-        key = np.rint(
-            np.stack(
-                [
-                    top_gram[:, 0, 0],
-                    top_gram[:, 0, 1],
-                    top_gram[:, 1, 1],
-                    bottom_gram[:, 0, 0],
-                    bottom_gram[:, 0, 1],
-                    bottom_gram[:, 1, 1],
-                ],
-                axis=1,
+def _engine_signatures(result) -> list[tuple]:
+    signatures = []
+    for row in range(len(result)):
+        strains = np.sort(result.principal_strains[row])
+        cell = gram_cell_area(result, row)
+        signatures.append(
+            (
+                float(result.twist_degrees[row]),
+                int(result.top_atom_counts[row]),
+                int(result.bottom_atom_counts[row]),
+                float(strains[0]),
+                float(strains[1]),
+                cell,
             )
-            * 1_000_000
-        ).astype(np.int64)
-        less = np.zeros(len(top), dtype=bool)
-        equal = np.ones(len(top), dtype=bool)
-        for column in range(6):
-            less |= equal & (key[:, column] < best[:, column])
-            equal &= key[:, column] == best[:, column]
-        take = valid & (~found | less)
-        best[take] = key[take]
-        found |= valid
-    if not np.all(found):
-        raise ArithmeticError("benchmark canonicalizer found no reduced representative")
-    return {tuple(int(value) for value in row) for row in best}
+        )
+    return signatures
 
 
-def legacy_reference(
-    top_basis: np.ndarray, bottom_basis: np.ndarray, max_length: float
-) -> tuple[np.ndarray, np.ndarray]:
-    """Original-style exhaustive nested loop with direct SVD acceptance."""
-    top_metric, bottom_metric = top_basis.T @ top_basis, bottom_basis.T @ bottom_basis
-    radius_squared = max_length * max_length
-    upper = math.exp(2.0 * (TOP_STRAIN + BOTTOM_STRAIN))
-    seen_top, top_cells = set(), []
-    top_points = lattice_points(top_metric, radius_squared)
-    for (first, _) in top_points:
-        for (second_raw, _) in top_points:
-            determinant = first[0] * second_raw[1] - first[1] * second_raw[0]
-            if determinant == 0:
-                continue
-            second = second_raw if determinant > 0 else (-second_raw[0], -second_raw[1])
-            top_gram = gram(top_metric, first, second)
-            if top_gram[0] > top_gram[2] or 2.0 * abs(top_gram[1]) > top_gram[0] * (1 + 1e-12):
-                continue
-            name = hnf(first, second)
-            if name not in seen_top:
-                seen_top.add(name)
-                top_cells.append((first, second))
+def gram_cell_area(result, row: int) -> float:
+    """Return the top supercell area implied by the reported Gram triple."""
 
-    accepted_top, accepted_bottom = [], []
-    bottom_points = lattice_points(bottom_metric, upper * radius_squared)
-    for first, second in top_cells:
-        top = np.array([[first[0], second[0]], [first[1], second[1]]], dtype=np.int64)
-        for bottom_first, _ in bottom_points:
-            for bottom_second, _ in bottom_points:
-                if bottom_first[0] * bottom_second[1] - bottom_first[1] * bottom_second[0] <= 0:
-                    continue
-                bottom = np.array(
-                    [
-                        [bottom_first[0], bottom_second[0]],
-                        [bottom_first[1], bottom_second[1]],
-                    ],
-                    dtype=np.int64,
-                )
-                deformation = (bottom_basis @ bottom) @ np.linalg.inv(top_basis @ top)
-                singular_values = np.linalg.svd(deformation, compute_uv=False)
-                if np.max(np.abs(np.log(singular_values))) <= (
-                    TOP_STRAIN + BOTTOM_STRAIN + 64.0 * np.finfo(float).eps
-                ):
-                    accepted_top.append(top)
-                    accepted_bottom.append(bottom)
-    return np.stack(accepted_top), np.stack(accepted_bottom)
+    g11, g12, g22 = result.top_gram[row]
+    return float(math.sqrt(max(g11 * g22 - g12 * g12, 0.0)))
+
+
+def _matches(left: tuple, right: tuple) -> bool:
+    return (
+        abs(left[0] - right[0]) <= ANGLE_TOLERANCE_DEG
+        and left[1] == right[1]
+        and left[2] == right[2]
+        and abs(left[3] - right[3]) <= STRAIN_TOLERANCE
+        and abs(left[4] - right[4]) <= STRAIN_TOLERANCE
+        and abs(left[5] - right[5]) <= AREA_TOLERANCE
+    )
+
+
+def _missing(wanted: list[tuple], available: list[tuple]) -> list[tuple]:
+    return [
+        item for item in wanted if not any(_matches(item, other) for other in available)
+    ]
+
+
+def compare(name: str, basis_top, basis_bottom, group_top, group_bottom, *, atoms_top,
+            atoms_bottom, max_length: float, budget: float) -> None:
+    reference_config = ReferenceConfig(
+        top_basis=basis_top,
+        bottom_basis=basis_bottom,
+        max_length=max_length,
+        top_strain=0.5 * budget,
+        bottom_strain=0.5 * budget,
+        top_atoms=atoms_top,
+        bottom_atoms=atoms_bottom,
+        top_group=group_top,
+        bottom_group=group_bottom,
+    )
+    started = time.perf_counter()
+    reference = reference_search(reference_config)
+    reference_seconds = time.perf_counter() - started
+
+    engine_config = gram.SearchConfig(
+        top_basis=basis_top,
+        bottom_basis=basis_bottom,
+        max_length=max_length,
+        top_strain=0.5 * budget,
+        bottom_strain=0.5 * budget,
+        top_atoms=atoms_top,
+        bottom_atoms=atoms_bottom,
+        top_group=group_top,
+        bottom_group=group_bottom,
+    )
+    started = time.perf_counter()
+    engine = gram.search(engine_config)
+    engine_seconds = time.perf_counter() - started
+
+    reference_signatures = [item.signature() for item in reference]
+    engine_signatures = _engine_signatures(engine)
+    lost = _missing(reference_signatures, engine_signatures)
+    spurious = _missing(engine_signatures, reference_signatures)
+    if lost or spurious:
+        print(f"MISMATCH for {name} at max length {max_length:g} Angstrom")
+        for item in lost[:5]:
+            print(f"  reference class missing from the engine: {item}")
+        for item in spurious[:5]:
+            print(f"  engine class absent from the reference:  {item}")
+        raise SystemExit(1)
+
+    speedup = reference_seconds / engine_seconds if engine_seconds > 0 else float("inf")
+    print(
+        f"{name:22s} L<={max_length:5.1f} A  "
+        f"reference {len(reference_signatures):4d} classes in {reference_seconds:7.3f} s  |  "
+        f"engine {len(engine_signatures):4d} classes in {engine_seconds:7.3f} s  "
+        f"({speedup:6.1f}x)"
+    )
 
 
 def main() -> int:
-    top_basis, bottom_basis = hex_basis(2.46), hex_basis(2.504)
-    measurements = []
-    print("max_length_A  classes  legacy_s  gram_s  legacy_scale  gram_scale")
-    for max_length in MAX_LENGTHS:
-        started = time.perf_counter()
-        legacy_top, legacy_bottom = legacy_reference(top_basis, bottom_basis, max_length)
-        legacy_seconds = time.perf_counter() - started
-        expected = canonical_class_set(
-            legacy_top,
-            legacy_bottom,
-            top_basis.T @ top_basis,
-            bottom_basis.T @ bottom_basis,
-        )
+    graphene = _hexagonal(2.46)
+    hbn = _hexagonal(2.504)
+    graphene_group = _hexagonal_layer_group(2.46, 1)
+    hbn_group = _hexagonal_layer_group(2.504, 2)
+    square = np.array([[3.9, 0.0], [0.0, 3.9]])
+    square_group = lattice_point_group(square)
 
-        started = time.perf_counter()
-        result = search(
-            SearchConfig(
-                top_basis,
-                bottom_basis,
-                max_length,
-                TOP_STRAIN,
-                BOTTOM_STRAIN,
-                max_aspect_ratio=100.0,
-                fold_symmetry=False,
-            )
+    print("Cross-check of the native Gram search against the brute-force reference.")
+    print("Timings are measurements on this host, not performance guarantees.\n")
+    for max_length in (8.0, 12.0, 16.0):
+        compare(
+            "graphene / graphene",
+            graphene,
+            graphene,
+            graphene_group,
+            graphene_group,
+            atoms_top=2,
+            atoms_bottom=2,
+            max_length=max_length,
+            budget=0.02,
         )
-        gram_seconds = time.perf_counter() - started
-        actual = canonical_class_set(
-            result.top_matrices,
-            result.bottom_matrices,
-            top_basis.T @ top_basis,
-            bottom_basis.T @ bottom_basis,
+    for max_length in (8.0, 12.0, 16.0):
+        compare(
+            "graphene / hBN",
+            graphene,
+            hbn,
+            graphene_group,
+            hbn_group,
+            atoms_top=2,
+            atoms_bottom=2,
+            max_length=max_length,
+            budget=0.02,
         )
-        missing, extra = expected - actual, actual - expected
-        if missing or extra:
-            raise AssertionError(
-                f"candidate-class mismatch at {max_length:g} A: "
-                f"missing={len(missing)}, extra={len(extra)}"
-            )
-        measurements.append((max_length, len(actual), legacy_seconds, gram_seconds))
-        base_legacy, base_gram = measurements[0][2], measurements[0][3]
-        print(
-            f"{max_length:12.1f}  {len(actual):7d}  {legacy_seconds:8.6f}  "
-            f"{gram_seconds:7.6f}  {legacy_seconds / base_legacy:12.3f}  "
-            f"{gram_seconds / base_gram:10.3f}"
+    for max_length in (8.0, 12.0, 16.0):
+        compare(
+            "square / square",
+            square,
+            square,
+            square_group,
+            square_group,
+            atoms_top=1,
+            atoms_bottom=1,
+            max_length=max_length,
+            budget=0.02,
         )
-    print("candidate classes equal at every length; timings are measured wall-clock values")
+    print("\nAll compared systems agree class for class.")
     return 0
 
 

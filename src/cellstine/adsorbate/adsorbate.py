@@ -2,28 +2,57 @@
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 from typing import Sequence
 
 from ..core.base import Base, run_output_suffix
 from ..core.lattice import build_target_lattice
+from ..core.naming import safe_token
 from ..core.models import CommandResult
+from ..core.path_stage import MigrationPathMixin
 from ..core.previews import format_bilayer_candidates
+from ..interface.surface import backend as surface_backend
 from ..interface.surface.surface import Surface
+from ..io import native as io_mod
 from ..io.converters import StructureConverter
 from ..io.vasp import VaspIO
 from ..moire.search.find import run_find
 from .placement.operations import place_molecule_on_site, transform_top_molecule
 
 
-def _safe_token(value: object) -> str:
-    text = str(value).strip().replace("-", "m").replace(".", "p")
-    safe = [char if char.isalnum() or char in {"_", "m", "p"} else "_" for char in text]
-    return "".join(safe).strip("_") or "x"
+def _contact_summary(run) -> dict[str, object]:
+    """Report how close the molecule really comes to anything else.
+
+    A placement is steered by a height along the surface normal, which is a
+    clearance and not a bond length, so the summary carries the measured closest
+    approach to the substrate and to the molecule's own periodic images, and any
+    warning those distances earn.
+    """
+
+    summary: dict[str, object] = {}
+    contact = float(getattr(run, "contact_distance", float("nan")))
+    image = float(getattr(run, "self_image_distance", float("nan")))
+    if math.isfinite(contact):
+        summary["closest_contact"] = round(contact, 4)
+        species = getattr(run, "contact_species", None)
+        if species:
+            summary["closest_contact_pair"] = "-".join(str(symbol) for symbol in species)
+    if math.isfinite(image):
+        summary["molecule_image_distance"] = round(image, 4)
+    notes = tuple(getattr(run, "notes", ()) or ())
+    if notes:
+        summary["warnings"] = list(notes)
+    return summary
 
 
-class Adsorbate(Base):
-    """Molecule-on-substrate workflow."""
+class Adsorbate(MigrationPathMixin, Base):
+    """Molecule-on-substrate workflow.
+
+    Besides placing and moving a molecule, the class carries the shared ``path``
+    stage, so a diffusion path between two placements is built the same way a
+    defect hop is.
+    """
 
     workflow_name = "adsorbate"
 
@@ -43,10 +72,18 @@ class Adsorbate(Base):
         repeat_a: int = 1,
         repeat_b: int = 1,
         supercell_matrix: Sequence[int] | None = None,
+        run_dir: Path | None = None,
     ) -> tuple[str, dict[str, object]]:
         resolved_kind = str(substrate_kind).lower()
         if resolved_kind in {"slab", "substrate", "patch", "surface"}:
-            return str(Path(substrate_path).resolve()), {"substrate_kind": resolved_kind}
+            return self._expand_slab_substrate(
+                substrate_path=substrate_path,
+                substrate_kind=resolved_kind,
+                repeat_a=int(repeat_a),
+                repeat_b=int(repeat_b),
+                supercell_matrix=supercell_matrix,
+                run_dir=run_dir,
+            )
         if resolved_kind != "bulk":
             raise ValueError("substrate_kind must be one of: bulk, substrate, patch, surface, slab")
         slab_result = Surface(
@@ -64,6 +101,59 @@ class Adsorbate(Base):
             supercell_matrix=supercell_matrix,
         )
         return slab_result.artifacts["slab_poscar"], {"substrate_kind": "bulk", "surface_manifest": str(slab_result.manifest_path)}
+
+    def _expand_slab_substrate(
+        self,
+        *,
+        substrate_path: str,
+        substrate_kind: str,
+        repeat_a: int,
+        repeat_b: int,
+        supercell_matrix: Sequence[int] | None,
+        run_dir: Path | None,
+    ) -> tuple[str, dict[str, object]]:
+        """Return the substrate path, enlarged in plane when that was requested.
+
+        A slab given directly is expanded exactly as a bulk-derived one is: the
+        integer repeats are applied first, then the in-plane supercell matrix.
+        Silently ignoring the request would place the molecule on a cell smaller
+        than the one the user asked for.
+        """
+
+        source = Path(substrate_path).resolve()
+        entries = [int(value) for value in supercell_matrix] if supercell_matrix else None
+        repeat_a = max(1, int(repeat_a))
+        repeat_b = max(1, int(repeat_b))
+        if repeat_a == 1 and repeat_b == 1 and not entries:
+            return str(source), {"substrate_kind": substrate_kind}
+
+        structure = io_mod.read_poscar(str(source))
+        structure = surface_backend.repeat_structure_inplane(structure, repeat_a, repeat_b)
+        structure, applied_matrix = surface_backend.apply_inplane_supercell_matrix(structure, entries)
+
+        target_dir = Path(run_dir) if run_dir is not None else self.output_root
+        target_dir.mkdir(parents=True, exist_ok=True)
+        expanded_path = target_dir / f"{safe_token(source.stem)}_substrate_expanded.vasp"
+        io_mod.write_poscar(
+            str(expanded_path),
+            structure.lattice,
+            structure.positions_direct,
+            structure.counts,
+            structure.species,
+            comment=structure.comment,
+            positions_are_cartesian=False,
+            wrap_positions=False,
+            selective_flags=structure.selective_flags,
+        )
+        extra: dict[str, object] = {
+            "substrate_kind": substrate_kind,
+            "substrate_source_poscar": str(source),
+            "expanded_substrate_poscar": str(expanded_path),
+            "substrate_repeat": [repeat_a, repeat_b],
+        }
+        if applied_matrix is not None:
+            extra["substrate_supercell_matrix"] = list(applied_matrix)
+        return str(expanded_path), extra
 
     def place(
         self,
@@ -86,6 +176,7 @@ class Adsorbate(Base):
         tilt_deg: float = 0.0,
         roll_deg: float = 0.0,
         surface_side: str = "top",
+        preserve_vacuum: bool = True,
         output_path: str | None = None,
     ) -> CommandResult:
         backend = self.choose_backend(feature="adsorbate.place")
@@ -93,7 +184,7 @@ class Adsorbate(Base):
         output_suffix = run_output_suffix(run_id)
         molecule_path = Path(molecule_poscar).resolve()
         if molecule_path.suffix.lower() not in {".vasp", ".poscar", ".contcar", ""}:
-            converted_molecule_path = run_dir / f"{_safe_token(molecule_path.stem)}_molecule.vasp"
+            converted_molecule_path = run_dir / f"{safe_token(molecule_path.stem)}_molecule.vasp"
             molecule_record = self.converter.read(str(molecule_path), canonicalize=False)
             self.vasp_io.write(molecule_record, str(converted_molecule_path), positions_are_cartesian=False, wrap_positions=False)
             resolved_molecule_path = converted_molecule_path
@@ -108,12 +199,13 @@ class Adsorbate(Base):
             repeat_a=substrate_repeat_a,
             repeat_b=substrate_repeat_b,
             supercell_matrix=substrate_supercell_matrix,
+            run_dir=run_dir,
         )
         resolved_output_path = output_path or str(
             self.output_root
             / (
-                f"adsorbate_{_safe_token(site_type)}{int(site_index):02d}_h{_safe_token(f'{float(height):.2f}')}"
-                f"_rot{_safe_token(f'{float(rotation_deg):.2f}')}_tilt{_safe_token(f'{float(tilt_deg):.2f}')}_roll{_safe_token(f'{float(roll_deg):.2f}')}_{output_suffix}.vasp"
+                f"adsorbate_{safe_token(site_type)}{int(site_index):02d}_h{safe_token(f'{float(height):.2f}')}"
+                f"_rot{safe_token(f'{float(rotation_deg):.2f}')}_tilt{safe_token(f'{float(tilt_deg):.2f}')}_roll{safe_token(f'{float(roll_deg):.2f}')}_{output_suffix}.vasp"
             )
         )
         run = place_molecule_on_site(
@@ -128,6 +220,7 @@ class Adsorbate(Base):
             surface_side=str(surface_side),
             auto_repeat_substrate=bool(auto_repeat_substrate),
             fit_padding=float(fit_padding),
+            preserve_vacuum=bool(preserve_vacuum),
             output_path=resolved_output_path,
         )
         manifest_path = self.write_manifest(
@@ -154,6 +247,7 @@ class Adsorbate(Base):
                 "substrate_supercell_matrix": list(substrate_supercell_matrix or []),
                 "auto_repeat_substrate": bool(auto_repeat_substrate),
                 "fit_padding": float(fit_padding),
+                "preserve_vacuum": bool(preserve_vacuum),
             },
             artifacts={"output_poscar": run.output_path},
             summary={
@@ -161,13 +255,22 @@ class Adsorbate(Base):
                 "site_index": run.site_index,
                 "molecule_atom_count": run.molecule_atom_count,
                 "substrate_atom_count": run.substrate_atom_count,
+                "vacuum_before": round(float(run.vacuum_before), 6),
+                "vacuum_after": round(float(run.vacuum_after), 6),
+                **_contact_summary(run),
             },
         )
         return self.result(
             manifest_path=manifest_path,
             run_dir=run_dir,
             artifacts={"output_poscar": run.output_path},
-            summary={"site_type": run.site_type, "site_index": run.site_index, "substrate_atom_count": run.substrate_atom_count},
+            summary={
+                "site_type": run.site_type,
+                "site_index": run.site_index,
+                "substrate_atom_count": run.substrate_atom_count,
+                "vacuum": round(float(run.vacuum_after), 4),
+                **_contact_summary(run),
+            },
             payload={"site_direct": run.site_direct, "site_cartesian": run.site_cartesian},
         )
 
@@ -183,6 +286,7 @@ class Adsorbate(Base):
         z_cutoff: float | None = None,
         min_gap: float = 1.0,
         reframe_axes: str | Sequence[str] | None = "xy",
+        preserve_vacuum: bool = True,
         output_path: str | None = None,
     ) -> CommandResult:
         backend = self.choose_backend(feature="adsorbate.move")
@@ -190,13 +294,13 @@ class Adsorbate(Base):
         output_suffix = run_output_suffix(run_id)
         target_token = "same"
         if target_cartesian is not None:
-            target_token = "cart_" + "_".join(_safe_token(f"{float(value):.3f}") for value in target_cartesian)
+            target_token = "cart_" + "_".join(safe_token(f"{float(value):.3f}") for value in target_cartesian)
         if target_direct is not None:
-            target_token = "direct_" + "_".join(_safe_token(f"{float(value):.3f}") for value in target_direct)
+            target_token = "direct_" + "_".join(safe_token(f"{float(value):.3f}") for value in target_direct)
         resolved_output_path = output_path or str(
             self.output_root
             / (
-                f"move_{target_token}_rot{_safe_token(f'{float(rotation_deg):.2f}')}_tilt{_safe_token(f'{float(tilt_deg):.2f}')}_roll{_safe_token(f'{float(roll_deg):.2f}')}_{output_suffix}.vasp"
+                f"move_{target_token}_rot{safe_token(f'{float(rotation_deg):.2f}')}_tilt{safe_token(f'{float(tilt_deg):.2f}')}_roll{safe_token(f'{float(roll_deg):.2f}')}_{output_suffix}.vasp"
             )
         )
         run = transform_top_molecule(
@@ -210,6 +314,7 @@ class Adsorbate(Base):
             z_cutoff=z_cutoff,
             min_gap=float(min_gap),
             reframe_axes=reframe_axes,
+            preserve_vacuum=bool(preserve_vacuum),
         )
         manifest_path = self.write_manifest(
             stage="move",
@@ -219,13 +324,23 @@ class Adsorbate(Base):
             inputs={"poscar_path": str(Path(poscar_path).resolve())},
             parameters={"target_cartesian": list(target_cartesian or []), "target_direct": list(target_direct or []), "rotation_deg": float(rotation_deg), "tilt_deg": float(tilt_deg), "roll_deg": float(roll_deg)},
             artifacts={"output_poscar": run.output_path},
-            summary={"molecule_atom_count": run.molecule_atom_count, "substrate_atom_count": run.substrate_atom_count},
+            summary={
+                "molecule_atom_count": run.molecule_atom_count,
+                "substrate_atom_count": run.substrate_atom_count,
+                "vacuum_before": round(float(run.vacuum_before), 6),
+                "vacuum_after": round(float(run.vacuum_after), 6),
+                **_contact_summary(run),
+            },
         )
         return self.result(
             manifest_path=manifest_path,
             run_dir=run_dir,
             artifacts={"output_poscar": run.output_path},
-            summary={"molecule_atom_count": run.molecule_atom_count},
+            summary={
+                "molecule_atom_count": run.molecule_atom_count,
+                "vacuum": round(float(run.vacuum_after), 4),
+                **_contact_summary(run),
+            },
             payload={"center_of_mass_after": run.center_of_mass_after},
         )
 

@@ -49,15 +49,19 @@ def _format_matrix(value: Any, *, precision: int | None = None) -> str:
     ) + "]"
 
 
+def _largest_magnitude(values: Any) -> float:
+    entries = [abs(float(value)) for value in list(values or [0.0])]
+    return max(entries) if entries else 0.0
+
+
 def _format_gram_candidates(
     candidates: Sequence[Any], *, limit: int, title: str | None
 ) -> str:
     rows = sorted(
         list(candidates),
         key=lambda item: (
-            float(_get(item, "angle_deg", default=0.0)),
             int(_get(item, "rank", default=0)),
-            int(_get(item, "atom_count", default=0)),
+            int(_get(item, "index", default=0)),
         ),
     )
     shown = rows[: max(0, int(limit))]
@@ -69,8 +73,9 @@ def _format_gram_candidates(
         lines.append(str(title))
     lines.extend(
         [
-            " idx  angle (deg)  relative principal strain (%)  top strain (%)  bottom strain (%)  top/bottom/total atoms  rank  Pareto  certification",
-            "-" * 142,
+            " idx  angle (deg)   moire a x b (Ang)   gamma  top/bottom/total atoms  "
+            "relative principal strain (%)  top (%)  bottom (%)  Pareto  certification",
+            "-" * 152,
         ]
     )
     for candidate in shown:
@@ -85,13 +90,15 @@ def _format_gram_candidates(
         lines.append(
             f"{int(_get(candidate, 'index')):4d}  "
             f"{float(_get(candidate, 'angle_deg')):11.4f}  "
-            f"({100.0 * float(strains[0]):+9.4f}, {100.0 * float(strains[1]):+9.4f})  "
-            f"{_percent(_get(candidate, 'top_strain')):14.4f}  "
-            f"{_percent(_get(candidate, 'bottom_strain')):17.4f}  "
-            f"{int(_get(candidate, 'top_atom_count')):4d}/"
+            f"{float(_get(candidate, 'moire_a', default=0.0)):8.3f} x "
+            f"{float(_get(candidate, 'moire_b', default=0.0)):7.3f}  "
+            f"{float(_get(candidate, 'moire_gamma_deg', default=0.0)):6.2f}  "
+            f"{int(_get(candidate, 'top_atom_count')):5d}/"
             f"{int(_get(candidate, 'bottom_atom_count')):6d}/"
             f"{int(_get(candidate, 'atom_count')):5d}  "
-            f"{int(_get(candidate, 'rank')):4d}  "
+            f"({100.0 * float(strains[0]):+9.4f}, {100.0 * float(strains[1]):+9.4f})  "
+            f"{100.0 * _largest_magnitude(_get(candidate, 'top_layer_strain')):7.4f}  "
+            f"{100.0 * _largest_magnitude(_get(candidate, 'bottom_layer_strain')):10.4f}  "
             f"{'yes' if bool(_get(candidate, 'pareto_optimal')) else 'no':>6s}  "
             f"{certification}"
         )
@@ -107,7 +114,7 @@ def _format_gram_candidates(
 
 
 def format_bilayer_candidates(candidates: Sequence[Any], *, limit: int = 10, title: str | None = None) -> str:
-    """Return a compact table of bilayer candidates in increasing angle order."""
+    """Return a compact table of bilayer candidates, best ranked first."""
 
     rows = list(candidates)
     if rows and _get(rows[0], "top_matrix", default=None) is not None:
@@ -153,15 +160,13 @@ def format_bilayer_candidates(candidates: Sequence[Any], *, limit: int = 10, tit
 
 
 def format_nlayer_candidates(candidates: Sequence[Any], *, limit: int = 10, title: str | None = None) -> str:
-    """Return a compact table of N-layer candidates in increasing angle order."""
+    """Return a compact table of multi-layer candidates, smallest cell first."""
 
     rows = list(candidates)
     rows.sort(
         key=lambda item: (
-            tuple(float(_get(layer, "angle_deg", default=0.0)) for layer in list(_get(item, "upper_layers", default=[]))),
-            float(_get(item, "strain_max", default=0.0)),
-            float(_get(item, "strain_mean", default=0.0)),
             int(_get(item, "total_atoms", default=0)),
+            float(_get(item, "max_abs_strain", default=0.0)),
         )
     )
     shown = rows[: max(0, int(limit))]
@@ -173,23 +178,27 @@ def format_nlayer_candidates(candidates: Sequence[Any], *, limit: int = 10, titl
         lines.append(str(title))
     lines.extend(
         [
-            " idx  strain_max(%)  strain_mean(%)   atoms  bottom ratio  upper angles (deg)",
-            "-" * 80,
+            " idx   cell a x b (Ang)   gamma   base/total atoms  max strain (%)  layers (twist deg / atoms / strain %)",
+            "-" * 128,
         ]
     )
     for fallback_index, candidate in enumerate(shown, start=1):
         idx = int(_get(candidate, "index", default=fallback_index))
-        layers = list(_get(candidate, "upper_layers", default=[]))
-        angle_summary = ", ".join(
-            f"L{int(_get(layer, 'layer_index', default=0)) + 1}={float(_get(layer, 'angle_deg', default=0.0)):.3f}"
+        lengths = list(_get(candidate, "cell_lengths", default=[0.0, 0.0]))
+        angle = float(_get(candidate, "cell_angle_deg", default=0.0))
+        layers = list(_get(candidate, "layers", default=[]))
+        summary = "; ".join(
+            f"L{int(_get(layer, 'layer', default=0))}={float(_get(layer, 'angle_deg', default=0.0)):.3f}"
+            f"/{int(_get(layer, 'atom_count', default=0))}"
+            f"/{100.0 * float(_get(layer, 'max_abs_strain', default=0.0)):.3f}"
             for layer in layers
         )
         lines.append(
-            f"{idx:4d}  {_percent(_get(candidate, 'strain_max')):13.4f}  "
-            f"{_percent(_get(candidate, 'strain_mean')):14.4f}  "
-            f"{int(_get(candidate, 'total_atoms', default=0)):6d}  "
-            f"{int(_get(candidate, 'ratio_bottom', default=0)):12d}  {angle_summary}"
+            f"{idx:4d}  {float(lengths[0]):8.3f} x {float(lengths[1]):8.3f}  {angle:6.2f}  "
+            f"{int(_get(candidate, 'base_atom_count', default=0)):5d}/{int(_get(candidate, 'total_atoms', default=0)):<6d}  "
+            f"{100.0 * float(_get(candidate, 'max_abs_strain', default=0.0)):13.4f}  {summary}"
         )
+        lines.append(f"      base matrix={_format_matrix(_get(candidate, 'base_matrix'))}")
     if len(rows) > len(shown):
         lines.append(f"... {len(rows) - len(shown)} more candidate(s) not shown.")
     return "\n".join(lines)

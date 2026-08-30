@@ -8,6 +8,8 @@ from pathlib import Path
 
 import numpy as np
 
+from ...core.directions import ViewDirection
+from ...core.species import expand_species
 from ...io.models import StructureRecord
 from .matplotlib import _atomic_radius
 
@@ -53,30 +55,45 @@ def _cell_outline_points(lattice: np.ndarray) -> tuple[list[float], list[float],
     return xs, ys, zs
 
 
-def _expanded_species(record: StructureRecord) -> list[str]:
-    species: list[str] = []
-    for symbol, count in zip(record.species, record.counts):
-        species.extend([str(symbol)] * int(count))
-    if len(species) < record.natoms:
-        species.extend(["X"] * (record.natoms - len(species)))
-    return species[: record.natoms]
+def write_structure_html(
+    record: StructureRecord,
+    *,
+    output_path: str | Path,
+    title: str | None = None,
+    direction: ViewDirection | None = None,
+) -> Path:
+    """Write a lightweight Plotly CDN HTML viewer for one structure.
 
-
-def write_structure_html(record: StructureRecord, *, output_path: str | Path, title: str | None = None) -> Path:
-    """Write a lightweight Plotly CDN HTML viewer for one structure."""
+    When a direction of observation is given, the viewer opens looking along
+    it: the camera is placed on that axis, and the axes are labelled with the
+    direction so the reader knows which way the structure is being read.  The
+    coordinates themselves are the ones in the file, so nothing is moved.
+    """
 
     output = Path(output_path).resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
     xs, ys, zs = _cell_outline_points(record.lattice)
+    heading = title or record.comment or "CELLSTINE structure"
+    if direction is not None:
+        heading = f"{heading} | observed along the {direction.label}"
     payload = {
-        "title": title or record.comment or "CELLSTINE structure",
+        "title": heading,
         "atoms": {
             "x": [float(value) for value in record.positions_cartesian[:, 0]],
             "y": [float(value) for value in record.positions_cartesian[:, 1]],
             "z": [float(value) for value in record.positions_cartesian[:, 2]],
-            "text": _expanded_species(record),
+            "text": expand_species(record.species, record.counts, natoms=record.natoms),
         },
         "cell": {"x": xs, "y": ys, "z": zs},
+        "camera": None
+        if direction is None
+        else {
+            "eye": {
+                "x": float(-direction.unit[0]) * 2.0,
+                "y": float(-direction.unit[1]) * 2.0,
+                "z": float(-direction.unit[2]) * 2.0,
+            }
+        },
     }
     payload["atoms"]["size"] = [max(7.0, min(22.0, 9.0 * _atomic_radius(symbol))) for symbol in payload["atoms"]["text"]]
     html = f"""<!doctype html>
@@ -113,14 +130,16 @@ def write_structure_html(record: StructureRecord, *, output_path: str | Path, ti
         hoverinfo: "skip"
       }}
     ];
-    Plotly.newPlot("viewer", traces, {{
-      title: payload.title,
-      scene: {{
+    const scene = {{
         aspectmode: "data",
         xaxis: {{ title: "x (Angstrom)" }},
         yaxis: {{ title: "y (Angstrom)" }},
         zaxis: {{ title: "z (Angstrom)" }}
-      }},
+      }};
+    if (payload.camera) {{ scene.camera = payload.camera; }}
+    Plotly.newPlot("viewer", traces, {{
+      title: payload.title,
+      scene: scene,
       legend: {{ orientation: "h" }},
       margin: {{ l: 0, r: 0, t: 48, b: 0 }}
     }}, {{ responsive: true }});

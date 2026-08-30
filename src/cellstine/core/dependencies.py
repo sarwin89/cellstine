@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from importlib import metadata
 from importlib.util import find_spec
 from typing import Dict
 
@@ -39,6 +38,12 @@ class DependencyManager:
         available = find_spec(package_name) is not None
         version = None
         if available:
+            # ``importlib.metadata`` costs about 50 ms to import and is only
+            # needed once a dependency is actually present, so it is loaded here
+            # rather than at module import: every CLI invocation pays that cost
+            # otherwise, including ``--help``.
+            from importlib import metadata
+
             try:
                 version = metadata.version(package_name)
             except metadata.PackageNotFoundError:

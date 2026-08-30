@@ -1,4 +1,15 @@
-"""Cross-format structure conversion helpers."""
+"""Cross-format structure conversion helpers.
+
+An XYZ file carries no cell, so :meth:`StructureConverter._read_xyz` builds one:
+the bounding box of the molecule, each edge widened to at least one angstrom,
+plus the requested vacuum, with the molecule shifted to sit centred in it.  That
+padding is a guaranteed clearance, not merely a margin on the bounding box --
+``RequestProject/MolecularBox.lean`` proves in ``Cellstine.bboxShift_mem_cell``
+that every atom lands strictly inside the box (so the direct coordinates written
+out need no wrapping) and in ``Cellstine.bbox_image_separation`` that any two
+atoms in different periodic images are at least the requested vacuum apart,
+whatever the shape of the molecule.
+"""
 
 from __future__ import annotations
 
@@ -7,6 +18,7 @@ from pathlib import Path
 import numpy as np
 
 from ..core.dependencies import DependencyManager
+from ..core.species import group_species
 from ..core.validation import ensure_existing_file
 from .models import StructureRecord
 from .orientation import OrientationNormalizer
@@ -73,14 +85,10 @@ class StructureConverter:
         for line in lines[2 : 2 + atom_count]:
             tokens = line.split()
             atoms.append((tokens[0], [float(tokens[1]), float(tokens[2]), float(tokens[3])]))
-        species_order: list[str] = []
-        counts: list[int] = []
-        for symbol, _ in atoms:
-            if symbol not in species_order:
-                species_order.append(symbol)
-                counts.append(0)
-            counts[species_order.index(symbol)] += 1
-        cartesian = np.array([coords for _, coords in atoms], dtype=float)
+        # A POSCAR groups its atoms by species, so the atoms are reordered here
+        # rather than merely counted: an XYZ may list them in any order.
+        species_order, counts, atom_order = group_species([symbol for symbol, _ in atoms])
+        cartesian = np.array([coords for _, coords in atoms], dtype=float)[atom_order]
         minima = cartesian.min(axis=0)
         maxima = cartesian.max(axis=0)
         span = np.maximum(maxima - minima, 1.0)
@@ -122,21 +130,16 @@ class StructureConverter:
 
         try:
             structure = PymatgenStructure.from_file(str(path))
-            ordered_species = [str(site.specie) for site in structure]
-            species_out: list[str] = []
-            counts_out: list[int] = []
-            for symbol in ordered_species:
-                if symbol not in species_out:
-                    species_out.append(symbol)
-                    counts_out.append(0)
-                counts_out[species_out.index(symbol)] += 1
+            species_out, counts_out, atom_order = group_species(
+                [str(site.specie) for site in structure]
+            )
             return StructureRecord(
                 comment=f"Converted from {path.name}",
                 lattice=np.array(structure.lattice.matrix, dtype=float),
                 species=species_out,
                 counts=counts_out,
-                positions_direct=np.array(structure.frac_coords, dtype=float),
-                positions_cartesian=np.array(structure.cart_coords, dtype=float),
+                positions_direct=np.array(structure.frac_coords, dtype=float)[atom_order],
+                positions_cartesian=np.array(structure.cart_coords, dtype=float)[atom_order],
                 coordinate_mode="Direct",
                 selective_dynamics=False,
                 selective_flags=None,

@@ -1,227 +1,82 @@
-"""N-layer moire workflow wrapper."""
+"""Multi-layer moire workflow: search and build stacks of three or more layers."""
 
 from __future__ import annotations
 
-from itertools import combinations
 from pathlib import Path
 from typing import Sequence
 
 from ..core.base import run_output_suffix
-from ..core.lattice import apply_inplane_prestrain
-from ..core.models import CommandResult, PrestrainConfig
-from ..core.previews import format_bilayer_candidates, format_nlayer_candidates
-from .builder.maken import generate_many_from_results
-from .search.find import run_find
-from .search.findn import run_findn
+from ..core.models import CommandResult
+from ..core.previews import format_nlayer_candidates
+from .builder.nlayer import generate_many_from_results
+from .search.nlayer import read_nlayer_results, run_findn
 from .moire import Moire
-
-N_LAYER_UNSUPPORTED_MESSAGE = (
-    "N-layer moire workflows are not supported by the Gram-form engine. "
-    "Use bilayer moire find and make."
-)
 
 
 class Supermoire(Moire):
-    """Multi-layer commensuration workflow."""
+    """Commensuration and construction for a base layer plus several upper layers.
+
+    The base layer is held rigid and every upper layer is matched against it with
+    the bilayer Gram engine; the shared cell of the whole stack is the exact
+    integer intersection of the per-layer base supercells.  See
+    :mod:`cellstine.moire.search.nlayer` for the construction.
+    """
 
     def findn(
         self,
         *,
-        bottom_poscar: str = "",
-        upper_poscars: Sequence[str] = (),
-        nindex: int = 0,
-        match_mode: str = "base_shared",
-        min_angles: Sequence[float] | None = None,
-        max_angles: Sequence[float] | None = None,
-        angle_step: float = 0.1,
-        explicit_angles_by_layer: Sequence[Sequence[float] | None] | None = None,
-        angle_length_tolerance: float = 1e-5,
-        angle_strain_tolerance: float | None = 2e-3,
-        angle_merge_tolerance: float = 1e-3,
-        vector_tolerance: float = 2e-3,
-        vector_strain_tolerance: float | None = 2e-3,
-        candidate_tolerance: float | None = None,
-        pair_strain_tolerance: float | None = None,
+        base_poscar: str,
+        upper_poscars: Sequence[str],
+        max_length: float,
+        layer_strains: Sequence[float] | float = 0.02,
+        min_length: float | None = None,
         max_atoms: int | None = 2000,
-        max_cell_aspect_ratio: float | None = 12.0,
-        min_cell_angle_deg: float | None = 25.0,
-        max_cell_angle_deg: float | None = 155.0,
-        bottom_c_repeat: int = 1,
-        upper_c_repeats: Sequence[int] | None = None,
-        workers: int = 1,
-        prestrains: Sequence[PrestrainConfig] | None = None,
+        max_pair_atoms: int | None = None,
+        max_aspect_ratio: float = 12.0,
+        min_cell_angle_deg: float = 25.0,
+        max_cell_angle_deg: float = 155.0,
+        per_layer_limit: int = 40,
+        max_candidates: int = 200,
+        reduce_layers: bool = True,
         preview_limit: int = 10,
     ) -> CommandResult:
-        raise NotImplementedError(N_LAYER_UNSUPPORTED_MESSAGE)
+        """Search commensurate cells for a rigid base layer plus upper layers."""
+
         backend = self.choose_backend(feature="moire.findn")
-        resolved_mode = str(match_mode).lower()
-        label = f"{Path(bottom_poscar).stem}_{len(upper_poscars) + 1}layers"
+        label = f"{Path(base_poscar).stem}_{len(list(upper_poscars)) + 1}layers"
         run_id, run_dir = self.create_run_dir("findn", label)
-
-        bottom = self.converter.read(bottom_poscar)
-        uppers = [self.converter.read(path) for path in upper_poscars]
-        all_prestrains = list(prestrains or [PrestrainConfig()] * (len(upper_poscars) + 1))
-        if len(all_prestrains) < len(upper_poscars) + 1:
-            all_prestrains.extend([PrestrainConfig()] * (len(upper_poscars) + 1 - len(all_prestrains)))
-
-        bottom_lattice = apply_inplane_prestrain(
-            bottom.lattice,
-            mode=all_prestrains[0].mode,
-            magnitude=all_prestrains[0].magnitude,
-            axis=all_prestrains[0].axis,
+        run = run_findn(
+            base_poscar=str(Path(base_poscar).resolve()),
+            upper_poscars=[str(Path(path).resolve()) for path in upper_poscars],
+            max_length=float(max_length),
+            layer_strains=layer_strains,
+            min_length=min_length,
+            max_atoms=max_atoms,
+            max_pair_atoms=max_pair_atoms,
+            max_aspect_ratio=float(max_aspect_ratio),
+            min_cell_angle_deg=float(min_cell_angle_deg),
+            max_cell_angle_deg=float(max_cell_angle_deg),
+            per_layer_limit=int(per_layer_limit),
+            max_candidates=int(max_candidates),
+            reduce_layers=bool(reduce_layers),
+            output_root=str(run_dir),
         )
-        upper_lattices = [
-            apply_inplane_prestrain(
-                structure.lattice,
-                mode=prestrain.mode,
-                magnitude=prestrain.magnitude,
-                axis=prestrain.axis,
-            )
-            for structure, prestrain in zip(uppers, all_prestrains[1:])
-        ]
-        resolved_min_angles = list(min_angles or [0.0] * len(upper_poscars))
-        resolved_max_angles = list(max_angles or [60.0] * len(upper_poscars))
-
-        if resolved_mode == "base_shared":
-            run = run_findn(
-                bottom_poscar=str(Path(bottom_poscar).resolve()),
-                upper_poscars=[str(Path(path).resolve()) for path in upper_poscars],
-                bottom_lattice=bottom_lattice,
-                upper_lattices=upper_lattices,
-                bottom_atoms=bottom.natoms,
-                upper_atoms=[structure.natoms for structure in uppers],
-                nindex=int(nindex),
-                min_angles=resolved_min_angles,
-                max_angles=resolved_max_angles,
-                angle_step=float(angle_step),
-                explicit_angles_by_layer=explicit_angles_by_layer,
-                angle_length_tolerance=float(angle_length_tolerance),
-                angle_strain_tolerance=angle_strain_tolerance,
-                angle_merge_tolerance=float(angle_merge_tolerance),
-                vector_tolerance=float(vector_tolerance),
-                vector_strain_tolerance=vector_strain_tolerance,
-                candidate_tolerance=candidate_tolerance,
-                pair_strain_tolerance=pair_strain_tolerance,
-                max_atoms=max_atoms,
-                max_cell_aspect_ratio=max_cell_aspect_ratio,
-                min_cell_angle_deg=min_cell_angle_deg,
-                max_cell_angle_deg=max_cell_angle_deg,
-                output_root=str(run_dir),
-                bottom_c_repeat=int(bottom_c_repeat),
-                upper_c_repeats=upper_c_repeats,
-                workers=int(workers),
-            )
-            artifacts = {"results_json": run.result_path}
-            summary = {"candidate_count": len(run.candidates), "match_mode": resolved_mode}
-            payload = {
-                "result_path": str(run.result_path),
-                "layer_count": len(upper_poscars) + 1,
-                "candidate_preview": format_nlayer_candidates(run.candidates, limit=int(preview_limit)) if int(preview_limit) > 0 else "",
-            }
-        elif resolved_mode == "base_independent":
-            artifacts = {}
-            summary = {"match_mode": resolved_mode, "layer_count": len(upper_poscars) + 1}
-            payload = {"result_paths": [], "candidate_preview": ""}
-            preview_sections = []
-            for index, (upper_path, upper, upper_lattice) in enumerate(zip(upper_poscars, uppers, upper_lattices), start=1):
-                subdir = run_dir / f"upper_{index:02d}"
-                subdir.mkdir(parents=True, exist_ok=True)
-                run = run_find(
-                    top_poscar=str(Path(upper_path).resolve()),
-                    bottom_poscar=str(Path(bottom_poscar).resolve()),
-                    top_lattice=upper_lattice,
-                    bottom_lattice=bottom_lattice,
-                    top_atoms=upper.natoms,
-                    bottom_atoms=bottom.natoms,
-                    nindex=int(nindex),
-                    min_angle=float(resolved_min_angles[index - 1]),
-                    max_angle=float(resolved_max_angles[index - 1]),
-                    angle_step=float(angle_step),
-                    explicit_angles=explicit_angles_by_layer[index - 1] if explicit_angles_by_layer else None,
-                    angle_length_tolerance=float(angle_length_tolerance),
-                    angle_strain_tolerance=angle_strain_tolerance,
-                    angle_merge_tolerance=float(angle_merge_tolerance),
-                    vector_tolerance=float(vector_tolerance),
-                    vector_strain_tolerance=vector_strain_tolerance,
-                    candidate_tolerance=candidate_tolerance,
-                    max_atoms=max_atoms,
-                    max_cell_aspect_ratio=max_cell_aspect_ratio,
-                    min_cell_angle_deg=min_cell_angle_deg,
-                    max_cell_angle_deg=max_cell_angle_deg,
-                    output_root=str(subdir),
-                    workers=int(workers),
-                )
-                artifacts[f"results_dat_upper_{index}"] = run.dat_path
-                summary[f"candidate_count_upper_{index}"] = len(run.candidates)
-                payload["result_paths"].append(str(run.dat_path))
-                if int(preview_limit) > 0:
-                    preview_sections.append(format_bilayer_candidates(run.candidates, limit=int(preview_limit), title=f"Upper layer {index} candidates"))
-            payload["candidate_preview"] = "\n\n".join(preview_sections)
-        elif resolved_mode == "pairwise":
-            artifacts = {}
-            summary = {"match_mode": resolved_mode, "pair_count": 0}
-            payload = {"result_paths": [], "candidate_preview": ""}
-            preview_sections = []
-            structures = [bottom] + uppers
-            lattices = [bottom_lattice] + upper_lattices
-            paths = [bottom_poscar] + list(upper_poscars)
-            for pair_index, (i_value, j_value) in enumerate(combinations(range(len(paths)), 2), start=1):
-                subdir = run_dir / f"pair_{i_value + 1}_{j_value + 1}"
-                subdir.mkdir(parents=True, exist_ok=True)
-                run = run_find(
-                    top_poscar=str(Path(paths[j_value]).resolve()),
-                    bottom_poscar=str(Path(paths[i_value]).resolve()),
-                    top_lattice=lattices[j_value],
-                    bottom_lattice=lattices[i_value],
-                    top_atoms=structures[j_value].natoms,
-                    bottom_atoms=structures[i_value].natoms,
-                    nindex=int(nindex),
-                    min_angle=0.0,
-                    max_angle=60.0,
-                    angle_step=float(angle_step),
-                    angle_length_tolerance=float(angle_length_tolerance),
-                    angle_strain_tolerance=angle_strain_tolerance,
-                    angle_merge_tolerance=float(angle_merge_tolerance),
-                    vector_tolerance=float(vector_tolerance),
-                    vector_strain_tolerance=vector_strain_tolerance,
-                    candidate_tolerance=candidate_tolerance,
-                    max_atoms=max_atoms,
-                    max_cell_aspect_ratio=max_cell_aspect_ratio,
-                    min_cell_angle_deg=min_cell_angle_deg,
-                    max_cell_angle_deg=max_cell_angle_deg,
-                    output_root=str(subdir),
-                    workers=int(workers),
-                )
-                artifacts[f"results_dat_pair_{pair_index}"] = run.dat_path
-                payload["result_paths"].append(str(run.dat_path))
-                summary["pair_count"] = int(summary["pair_count"]) + 1
-                if int(preview_limit) > 0:
-                    preview_sections.append(
-                        format_bilayer_candidates(
-                            run.candidates,
-                            limit=int(preview_limit),
-                            title=f"Pair {i_value + 1}-{j_value + 1} candidates",
-                        )
-                    )
-            payload["candidate_preview"] = "\n\n".join(preview_sections)
-        else:
-            raise ValueError("findn match_mode must be one of: base_shared, base_independent, pairwise")
-
+        artifacts = {"results_json": str(run.result_path)}
+        summary = {
+            "candidate_count": len(run.candidates),
+            "layer_count": len(list(upper_poscars)) + 1,
+            "smallest_total_atoms": min((int(item["total_atoms"]) for item in run.candidates), default=0),
+        }
         manifest_path = self.write_manifest(
             stage="findn",
             run_id=run_id,
             run_dir=run_dir,
             backend=backend,
-            inputs={"bottom_poscar": str(Path(bottom_poscar).resolve()), "upper_poscars": [str(Path(path).resolve()) for path in upper_poscars]},
-            parameters={
-                "nindex": int(nindex),
-                "match_mode": resolved_mode,
-                "workers": int(workers),
-                "max_cell_aspect_ratio": max_cell_aspect_ratio,
-                "min_cell_angle_deg": min_cell_angle_deg,
-                "max_cell_angle_deg": max_cell_angle_deg,
-                "prestrains": all_prestrains,
+            inputs={
+                "base_poscar": str(Path(base_poscar).resolve()),
+                "upper_poscars": [str(Path(path).resolve()) for path in upper_poscars],
             },
+            parameters=dict(run.document["search"]),
             artifacts=artifacts,
             summary=summary,
         )
@@ -230,32 +85,52 @@ class Supermoire(Moire):
             run_dir=run_dir,
             artifacts=artifacts,
             summary=summary,
-            payload=payload,
+            payload={
+                "result_path": str(run.result_path),
+                "timings": dict(run.timings),
+                "candidate_preview": format_nlayer_candidates(run.candidates, limit=int(preview_limit))
+                if int(preview_limit) > 0
+                else "",
+            },
         )
 
     def maken(
         self,
         *,
-        results_file: str = "",
-        indexes: Sequence[int] = (),
-        interlayers: Sequence[float] = (),
+        results_file: str,
+        indexes: Sequence[int],
+        interlayers: Sequence[float] | float = 3.35,
         output_dir: str | None = None,
-        bottom_c_repeat: int | None = None,
+        vacuum: float | None = None,
+        base_c_repeat: int = 1,
         upper_c_repeats: Sequence[int] | None = None,
         zfix: float | None = None,
     ) -> CommandResult:
-        raise NotImplementedError(N_LAYER_UNSUPPORTED_MESSAGE)
+        """Build one structure per selected multi-layer candidate."""
+
         backend = self.choose_backend(feature="moire.maken")
         resolved_results = self.resolve_results_file(results_file, artifact_keys=("results_json",))
+        document = read_nlayer_results(resolved_results)
+        layer_count = len(document["search"]["upper_poscars"])
+        if isinstance(interlayers, (int, float)):
+            gaps = [float(interlayers)] * layer_count
+        else:
+            gaps = [float(value) for value in interlayers]
+        if len(gaps) == 1 and layer_count > 1:
+            gaps = gaps * layer_count
+        if len(gaps) != layer_count:
+            raise ValueError(f"this document has {layer_count} upper layer(s); give one interlayer distance each")
+
         run_id, run_dir = self.create_run_dir("maken", Path(resolved_results).stem)
         output_suffix = run_output_suffix(run_id)
         resolved_output_dir = output_dir or str(self.output_root / run_id)
         runs = generate_many_from_results(
             resolved_results,
             indexes=[int(value) for value in indexes],
-            interlayers=[float(value) for value in interlayers],
+            interlayers=gaps,
             output_dir=resolved_output_dir,
-            bottom_c_repeat=bottom_c_repeat,
+            vacuum=None if vacuum is None else float(vacuum),
+            base_c_repeat=int(base_c_repeat),
             upper_c_repeats=upper_c_repeats,
             zfix=zfix,
         )
@@ -266,23 +141,35 @@ class Supermoire(Moire):
                 current_path.replace(renamed_path)
                 run.output_path = renamed_path.resolve()
         artifact_paths = [str(run.output_path) for run in runs]
+        artifacts = {"structures": artifact_paths}
+        summary = {
+            "generated_count": len(runs),
+            "total_atoms": [int(run.total_atoms) for run in runs],
+        }
         manifest_path = self.write_manifest(
             stage="maken",
             run_id=run_id,
             run_dir=run_dir,
             backend=backend,
             inputs={"results_file": str(Path(resolved_results).resolve())},
-            parameters={"indexes": [int(value) for value in indexes], "interlayers": [float(value) for value in interlayers]},
-            artifacts={"structures": artifact_paths},
-            summary={"generated_count": len(runs)},
+            parameters={
+                "indexes": [int(value) for value in indexes],
+                "interlayers": gaps,
+                "vacuum": None if vacuum is None else float(vacuum),
+                "base_c_repeat": int(base_c_repeat),
+                "upper_c_repeats": None if upper_c_repeats is None else [int(value) for value in upper_c_repeats],
+                "zfix": zfix,
+            },
+            artifacts=artifacts,
+            summary=summary,
         )
         return self.result(
             manifest_path=manifest_path,
             run_dir=run_dir,
-            artifacts={"structures": artifact_paths},
-            summary={"generated_count": len(runs)},
-            payload={"angles_deg": [list(run.angles_deg) for run in runs]},
+            artifacts=artifacts,
+            summary=summary,
+            payload={
+                "angles_deg": [list(run.angles_deg) for run in runs],
+                "layer_atom_counts": [list(run.layer_counts) for run in runs],
+            },
         )
-
-    def translaten(self, **kwargs) -> CommandResult:
-        raise NotImplementedError(N_LAYER_UNSUPPORTED_MESSAGE)

@@ -8,6 +8,8 @@ from typing import Any, Sequence
 
 import numpy as np
 
+from ...core.directions import ViewDirection
+from ...core.species import expand_species
 from ...io.models import StructureRecord
 from ...moire.search.results import read_results
 
@@ -136,15 +138,6 @@ def _pyplot():
         ) from exc
 
 
-def _expanded_species(record: StructureRecord) -> list[str]:
-    expanded: list[str] = []
-    for symbol, count in zip(record.species, record.counts):
-        expanded.extend([str(symbol)] * int(count))
-    if len(expanded) < record.natoms:
-        expanded.extend(["X"] * (record.natoms - len(expanded)))
-    return expanded[: record.natoms]
-
-
 def _element_symbol(label: str) -> str:
     letters = "".join(character for character in str(label) if character.isalpha())
     if not letters:
@@ -179,6 +172,40 @@ def _cell_corners(lattice: np.ndarray) -> dict[str, np.ndarray]:
         "011": b_vec + c_vec,
         "111": a_vec + b_vec + c_vec,
     }
+
+
+def species_depth_order(
+    species: np.ndarray,
+    positions: np.ndarray,
+    depth_axis: int,
+    unique_species: Sequence[str],
+) -> list[str]:
+    """Order the species so the ones further from the observer are drawn first.
+
+    A panel drops one coordinate, and two atoms that differ only along it land on
+    the same point of the picture, so one hides the other
+    (``Cellstine.planarProj_eq_iff_smul`` in
+    ``RequestProject/ViewProjection.lean``).  Which one is visible is decided by
+    the drawing order.  The markers of one species are identical, so the order
+    *inside* a species cannot change the picture, and it is enough to order the
+    species themselves; ordering them by how close they come to the observer
+    resolves every overlap correctly whenever the species do not interleave in
+    depth -- an adsorbate on a substrate, or the two sides of an interface
+    (``Cellstine.drawn_later_of_separated``).  Panels are read from the positive
+    end of the axis they drop, so a larger dropped coordinate is nearer.
+
+    Species that are not present keep their place, and ties are broken by the
+    order the species appear in the file, so the picture is deterministic.
+    """
+
+    def _depth(symbol: str) -> float:
+        mask = species == symbol
+        if not np.any(mask):
+            return float("-inf")
+        return float(np.max(positions[mask, depth_axis]))
+
+    order = {symbol: index for index, symbol in enumerate(unique_species)}
+    return sorted(unique_species, key=lambda symbol: (_depth(symbol), order[symbol]))
 
 
 def _cell_edges() -> list[tuple[str, str]]:
@@ -264,27 +291,60 @@ def plot_structure_multiview(
     output_path: str | Path,
     title: str | None = None,
     show: bool = False,
+    direction: ViewDirection | None = None,
 ) -> MatplotlibRun:
-    """Write a labelled four-panel structure view: xy, xz, yz, and 3D."""
+    """Write a labelled four-panel structure view: two side views, a plan view, and 3D.
+
+    Without a direction the panels are the Cartesian ``x-y``, ``x-z`` and
+    ``y-z`` projections of the file.  With one, the structure is turned so that
+    the direction of observation points out of the plan view: the coordinates
+    are taken in a right-handed frame whose third axis is that direction, which
+    is a rotation and therefore moves no atom relative to another.
+    """
 
     plt = _pyplot()
     positions = np.asarray(record.positions_cartesian, dtype=float)
-    species = np.asarray(_expanded_species(record), dtype=object)
+    lattice = np.asarray(record.lattice, dtype=float)
+    if direction is None:
+        panel_names = (
+            ("Top view: x-y", "x (Angstrom)", "y (Angstrom)"),
+            ("Side view: x-z", "x (Angstrom)", "z (Angstrom)"),
+            ("Side view: y-z", "y (Angstrom)", "z (Angstrom)"),
+        )
+        axis_labels = ("x (Angstrom)", "y (Angstrom)", "z (Angstrom)")
+    else:
+        frame = direction.frame(lattice)
+        positions = positions @ frame.T
+        lattice = lattice @ frame.T
+        panel_names = (
+            (f"Looking along the {direction.label}", "u (Angstrom)", "v (Angstrom)"),
+            ("Side view: u-h", "u (Angstrom)", "height along the direction (Angstrom)"),
+            ("Side view: v-h", "v (Angstrom)", "height along the direction (Angstrom)"),
+        )
+        axis_labels = ("u (Angstrom)", "v (Angstrom)", "height (Angstrom)")
+
+    species = np.asarray(expand_species(record.species, record.counts, natoms=record.natoms), dtype=object)
     unique_species = list(dict.fromkeys(species.tolist()))
     colors = {symbol: _PALETTE[index % len(_PALETTE)] for index, symbol in enumerate(unique_species)}
 
     fig = plt.figure(figsize=(13, 10), constrained_layout=True)
-    fig.suptitle(title or record.comment or "CELLSTINE structure view", fontsize=15, fontweight="bold")
+    heading = title or record.comment or "CELLSTINE structure view"
+    if direction is not None:
+        heading = f"{heading}  |  observed along the {direction.label}"
+    fig.suptitle(heading, fontsize=15, fontweight="bold")
     axes_2d = [
-        (fig.add_subplot(2, 2, 1), (0, 1), "Top view: x-y", "x (Angstrom)", "y (Angstrom)"),
-        (fig.add_subplot(2, 2, 2), (0, 2), "Side view: x-z", "x (Angstrom)", "z (Angstrom)"),
-        (fig.add_subplot(2, 2, 3), (1, 2), "Side view: y-z", "y (Angstrom)", "z (Angstrom)"),
+        (fig.add_subplot(2, 2, 1), (0, 1), *panel_names[0]),
+        (fig.add_subplot(2, 2, 2), (0, 2), *panel_names[1]),
+        (fig.add_subplot(2, 2, 3), (1, 2), *panel_names[2]),
     ]
 
+    handles_by_species: dict[str, object] = {}
     for ax, projection, panel_title, x_label, y_label in axes_2d:
-        for symbol in unique_species:
+        depth_axis = 3 - projection[0] - projection[1]
+        drawn = species_depth_order(species, positions, depth_axis, unique_species)
+        for depth_index, symbol in enumerate(drawn):
             mask = species == symbol
-            ax.scatter(
+            handle = ax.scatter(
                 positions[mask, projection[0]],
                 positions[mask, projection[1]],
                 s=_marker_size(str(symbol), projection="2d"),
@@ -293,8 +353,10 @@ def plot_structure_multiview(
                 color=colors[str(symbol)],
                 edgecolor="white",
                 linewidth=0.55,
+                zorder=3 + depth_index,
             )
-        _draw_projected_cell(ax, record.lattice, projection, label="unit cell")
+            handles_by_species.setdefault(str(symbol), handle)
+        _draw_projected_cell(ax, lattice, projection, label="unit cell")
         _set_equal_2d(ax, positions[:, projection[0]], positions[:, projection[1]])
         ax.set_title(panel_title)
         ax.set_xlabel(x_label)
@@ -315,15 +377,18 @@ def plot_structure_multiview(
             edgecolor="white",
             linewidth=0.45,
         )
-    _draw_3d_cell(ax_3d, record.lattice)
-    _set_equal_3d(ax_3d, positions, _cell_corners(record.lattice))
+    _draw_3d_cell(ax_3d, lattice)
+    _set_equal_3d(ax_3d, positions, _cell_corners(lattice))
     ax_3d.set_title("3D overview")
-    ax_3d.set_xlabel("x (Angstrom)")
-    ax_3d.set_ylabel("y (Angstrom)")
-    ax_3d.set_zlabel("z (Angstrom)")
+    ax_3d.set_xlabel(axis_labels[0])
+    ax_3d.set_ylabel(axis_labels[1])
+    ax_3d.set_zlabel(axis_labels[2])
     ax_3d.view_init(elev=22, azim=-55)
 
-    handles, labels = axes_2d[0][0].get_legend_handles_labels()
+    # The panels draw the species in depth order, which differs from panel to
+    # panel; the legend keeps the order of the file so it reads the same way.
+    handles = [handles_by_species[str(symbol)] for symbol in unique_species]
+    labels = [f"{symbol} (r={_atomic_radius(str(symbol)):.2f} A)" for symbol in unique_species]
     fig.legend(handles, labels, loc="lower center", ncol=min(len(labels), 6), frameon=True)
 
     output = Path(output_path).resolve()
@@ -338,7 +403,7 @@ def plot_structure_multiview(
 def _read_moire_summary(
     results_file: str | Path, indices: Sequence[int] | None = None
 ) -> tuple[str, list[dict[str, object]], dict[str, Any]]:
-    """Return plotting rows copied from validated native Gram JSON v1."""
+    """Return plotting rows copied from validated native Gram JSON v2."""
 
     payload = read_results(results_file)
     rows = [
@@ -346,8 +411,12 @@ def _read_moire_summary(
             "index": candidate["index"],
             "angle_deg": candidate["angle_deg"],
             "relative_principal_strain": candidate["strain"],
-            "top_strain": candidate["top_strain"],
-            "bottom_strain": candidate["bottom_strain"],
+            "top_layer_strain": candidate["top_layer_strain"],
+            "bottom_layer_strain": candidate["bottom_layer_strain"],
+            "moire_a": candidate["moire_a"],
+            "moire_b": candidate["moire_b"],
+            "moire_gamma_deg": candidate["moire_gamma_deg"],
+            "coincidence_index": candidate["coincidence_index"],
             "top_atom_count": candidate["top_atom_count"],
             "bottom_atom_count": candidate["bottom_atom_count"],
             "atom_count": candidate["atom_count"],
@@ -433,18 +502,11 @@ def plot_moire_summary(
                 label=label,
             )
     axes[1, 0].axhline(
-        100.0 * float(search["top_strain"]),
+        100.0 * (float(search["top_strain"]) + float(search["bottom_strain"])),
         color="#e76f51",
         linestyle="--",
         linewidth=1.0,
-        label="top strain budget",
-    )
-    axes[1, 0].axhline(
-        100.0 * float(search["bottom_strain"]),
-        color="#264653",
-        linestyle=":",
-        linewidth=1.0,
-        label="bottom strain budget",
+        label="combined strain budget",
     )
     axes[1, 0].set_title("Rank and Pareto status")
     axes[1, 0].set_xlabel("rank")

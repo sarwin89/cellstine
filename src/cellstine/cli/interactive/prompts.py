@@ -1,0 +1,292 @@
+"""Prompt primitives and screen helpers for the interactive launcher."""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Sequence
+
+from ...core.previews import format_adsorption_sites, preview_moire_results_file
+from ...interface.surface import backend as surface_backend
+
+
+INPUT_DIR = Path("input")
+RUNS_DIR = Path("runs")
+OUTPUT_DIR = Path("output")
+
+MAIN_MENU_BANNER = r"""
+ ██████╗███████╗██╗     ██╗     ███████╗████████╗██╗███╗   ██╗███████╗
+██╔════╝██╔════╝██║     ██║     ██╔════╝╚══██╔══╝██║████╗  ██║██╔════╝
+██║     █████╗  ██║     ██║     ███████╗   ██║   ██║██╔██╗ ██║█████╗
+██║     ██╔══╝  ██║     ██║     ╚════██║   ██║   ██║██║╚██╗██║██╔══╝
+╚██████╗███████╗███████╗███████╗███████║   ██║   ██║██║ ╚████║███████╗
+ ╚═════╝╚══════╝╚══════╝╚══════╝╚══════╝   ╚═╝   ╚═╝╚═╝  ╚═══╝╚══════╝
+""".strip("\n")
+
+
+class _QuitInteractive(Exception):
+    """Internal signal for a graceful interactive-mode exit."""
+
+
+class _BackInteractive(Exception):
+    """Internal signal for returning to the previous interactive menu."""
+
+
+def _print_title(title: str, subtitle: str | None = None) -> None:
+    print()
+    print(title)
+    print("-" * len(title))
+    if subtitle:
+        print(subtitle)
+
+
+def _print_main_menu_banner() -> None:
+    print()
+    print(MAIN_MENU_BANNER)
+    print()
+    print("Made by Sarwin Chandran 2026")
+
+
+def _prompt(
+    prompt: str,
+    default: str | None = None,
+    *,
+    allow_empty: bool = False,
+    allow_back: bool = True,
+) -> str:
+    shown = f" [{default}]" if default not in {None, ""} else ""
+    while True:
+        answer = input(f"{prompt}{shown}: ").strip()
+        if answer:
+            if allow_back and answer.lower() in {"b", "back"}:
+                raise _BackInteractive()
+            return answer
+        if default is not None:
+            return default
+        if allow_empty:
+            return ""
+        print("Please enter a value.")
+
+
+def _prompt_int(prompt: str, default: int) -> int:
+    while True:
+        try:
+            return int(_prompt(prompt, str(default)))
+        except ValueError:
+            print("Please enter a whole number.")
+
+
+def _prompt_float(prompt: str, default: float) -> float:
+    while True:
+        try:
+            return float(_prompt(prompt, str(default)))
+        except ValueError:
+            print("Please enter a number.")
+
+
+def _prompt_yes_no(prompt: str, default_yes: bool = True) -> bool:
+    default = "y" if default_yes else "n"
+    while True:
+        answer = _prompt(prompt, default).strip().lower()
+        if answer in {"y", "yes"}:
+            return True
+        if answer in {"n", "no"}:
+            return False
+        print("Please answer with y or n.")
+
+
+def _choice(title: str, options: Sequence[dict[str, str]], default: int = 1, *, allow_back: bool = True) -> str:
+    _print_title(title)
+    for index, option in enumerate(options, start=1):
+        print(f"{index}. {option['label']}")
+        if option.get("hint"):
+            print(f"   {option['hint']}")
+    if allow_back:
+        print("b. Back")
+    print("q. Quit interactive mode")
+    while True:
+        answer = _prompt("Choose an option", str(default), allow_back=allow_back).strip().lower()
+        if answer in {"q", "quit", "exit"}:
+            raise _QuitInteractive()
+        if answer.isdigit():
+            index = int(answer)
+            if 1 <= index <= len(options):
+                option = options[index - 1]
+                return str(option.get("value", option["key"]))
+        for option in options:
+            if answer == str(option["key"]).lower():
+                return str(option.get("value", option["key"]))
+        print("Please choose one of the numbered options.")
+
+
+def _relative_display(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(Path.cwd().resolve()))
+    except ValueError:
+        return str(path.resolve())
+
+
+def _find_candidates(patterns: Sequence[str], roots: Sequence[Path], *, limit: int = 8) -> list[Path]:
+    found: list[tuple[int, Path]] = []
+    seen: set[Path] = set()
+    for root_index, root in enumerate(roots):
+        if not root.exists():
+            continue
+        for pattern in patterns:
+            for path in root.rglob(pattern):
+                if path.is_file():
+                    resolved = path.resolve()
+                    if resolved not in seen:
+                        seen.add(resolved)
+                        found.append((root_index, resolved))
+    found.sort(key=lambda item: (item[0], -item[1].stat().st_mtime))
+    return [path for _, path in found[:limit]]
+
+
+def _prompt_path(
+    label: str,
+    *,
+    patterns: Sequence[str],
+    roots: Sequence[Path],
+    default: str | None = None,
+    allow_manual: bool = True,
+) -> str:
+    suggestions = _find_candidates(patterns, roots)
+    print()
+    print(label)
+    if roots:
+        print("Search order: " + " -> ".join(str(root) for root in roots))
+    if suggestions:
+        print("Recent matches:")
+        for index, path in enumerate(suggestions, start=1):
+            print(f"  {index}. {_relative_display(path)}")
+        if allow_manual:
+            print("  m. Type a different path")
+        print("  b. Back")
+        print("  q. Quit interactive mode")
+        default_value = "1"
+    else:
+        print("No suggested files were found, so please type a path.")
+        print("Type b to go back or q to quit.")
+        default_value = default
+    while True:
+        answer = _prompt("Selection", default_value, allow_empty=default is not None).strip()
+        if answer.lower() in {"q", "quit", "exit"}:
+            raise _QuitInteractive()
+        if suggestions and answer.isdigit():
+            index = int(answer)
+            if 1 <= index <= len(suggestions):
+                return str(suggestions[index - 1])
+        if allow_manual and answer.lower() in {"m", "manual"}:
+            manual_path = _prompt("Path").strip()
+            if manual_path.lower() in {"q", "quit", "exit"}:
+                raise _QuitInteractive()
+            return manual_path
+        if answer:
+            return answer
+        if default is not None:
+            return default
+        print("Please choose a suggested file or type a path.")
+
+
+def _prompt_csv(prompt: str, default: str) -> str:
+    return _prompt(prompt, default)
+
+
+def _prompt_int_range(prompt: str, default: int, minimum: int, maximum: int) -> int:
+    while True:
+        value = _prompt_int(prompt, default)
+        if int(minimum) <= value <= int(maximum):
+            return value
+        print(f"Please enter a value from {int(minimum)} to {int(maximum)}.")
+
+
+def _parse_matrix_entries(text: str) -> list[int]:
+    values = [int(token.strip()) for token in str(text).replace(";", ",").split(",") if token.strip()]
+    if len(values) != 4:
+        raise ValueError("a 2x2 matrix needs exactly four entries")
+    return values
+
+
+_SITE_LABELS = {
+    "top": "Top",
+    "bridge": "Bridge",
+    "fcc_hollow": "fcc hollow",
+    "hcp_hollow": "hcp hollow",
+    "hollow": "Generic hollow",
+    "fourfold_hollow": "Fourfold hollow",
+}
+
+
+_SITE_HINTS = {
+    "top": "Above an outermost surface atom.",
+    "bridge": "Above a nearest-neighbour midpoint.",
+    "fcc_hollow": "Close-packed hollow with fcc registry.",
+    "hcp_hollow": "Close-packed hollow with hcp registry.",
+    "hollow": "Triangular hollow where fcc/hcp registry could not be assigned.",
+    "fourfold_hollow": "Square-like fourfold hollow.",
+}
+
+
+def _site_options_from_report(site_report) -> list[dict[str, str]]:
+    options = []
+    for key in ("top", "bridge", "fcc_hollow", "hcp_hollow", "hollow", "fourfold_hollow"):
+        count = int(site_report.site_counts.get(key, 0))
+        if count <= 0:
+            continue
+        options.append(
+            {
+                "key": key,
+                "label": f"{_SITE_LABELS.get(key, key)} ({count} found)",
+                "hint": _SITE_HINTS.get(key, "Detected in this cell."),
+            }
+        )
+    return options
+
+
+def _print_detected_sites(site_report) -> None:
+    print()
+    print("Detected adsorption sites in the selected substrate:")
+    if not site_report.site_counts:
+        print("  none")
+        return
+    for key in sorted(site_report.site_counts):
+        print(f"  {_SITE_LABELS.get(key, key)}: {int(site_report.site_counts[key])}")
+
+
+def _print_saved_moire_preview(results_file: str, limit: int = 15) -> None:
+    try:
+        preview = preview_moire_results_file(results_file, limit=int(limit))
+    except Exception as exc:
+        print()
+        print(f"Candidate preview was skipped: {exc}")
+        return
+    print()
+    print("Candidate options in the selected results file:")
+    print(preview)
+
+
+def _print_site_index_options(site_report, site_type: str, limit: int = 30) -> None:
+    sites = surface_backend.sorted_sites_for_type(site_report, site_type)
+    print()
+    print(format_adsorption_sites(sites, limit=int(limit), title=f"{_SITE_LABELS.get(site_type, site_type)} site positions"))
+    if len(sites) > int(limit):
+        print("Use `cellstine interface sites` to export the full site table if you need every equivalent site.")
+
+
+def _format_command(argv: Sequence[str]) -> str:
+    parts = []
+    for value in argv:
+        if any(character.isspace() for character in value):
+            parts.append(f'"{value}"')
+        else:
+            parts.append(value)
+    return "cellstine " + " ".join(parts)
+
+
+def _first_artifact(result, key: str) -> str | None:
+    value = result.artifacts.get(key)
+    if value is None:
+        return None
+    if isinstance(value, list):
+        return None if not value else str(value[0])
+    return str(value)

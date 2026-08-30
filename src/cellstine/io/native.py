@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import List, Sequence, Tuple
 
 import numpy as np
@@ -48,6 +49,52 @@ def wrap_direct(direct: np.ndarray, tol: float = 1e-10) -> np.ndarray:
     return wrapped
 
 
+def _apply_scaling_factor(lattice: np.ndarray, line: str) -> Tuple[np.ndarray, np.ndarray]:
+    """Return the scaled cell, and the scaling to apply to Cartesian positions.
+
+    The second line of a POSCAR is VASP's scaling factor, and it has three legal
+    forms:
+
+    * one positive number, which multiplies the cell;
+    * one negative number, whose magnitude is the *volume* the cell is to have,
+      so the cell is scaled by ``(|s| / V)^(1/3)`` and keeps its shape and its
+      handedness -- reading it as a plain multiplier would turn the cell inside
+      out and give it the wrong size;
+    * three numbers, which scale the three Cartesian components.
+
+    In every case the factor is a linear map of space, so it acts on Cartesian
+    positions exactly as it acts on the cell and leaves fractional coordinates
+    alone.  The second return value is that map, as a per-component factor.
+
+    These claims are proved in ``RequestProject/PoscarScaling.lean``:
+    ``Cellstine.abs_det_volumeScale_smul`` (the rescaled cell has exactly the
+    requested volume), ``Cellstine.det_volumeScale_smul_pos_iff`` together with
+    ``Cellstine.det_smul_neg_of_neg`` (the handedness survives, where a plain
+    multiplier would flip it), and ``Cellstine.vecMul_scaled_cell`` (fractional
+    coordinates are untouched).
+    """
+
+    tokens = line.split()
+    if not tokens:
+        raise ValueError("the POSCAR scaling factor line is empty")
+    values = [float(token) for token in tokens[:3]]
+    if len(values) >= 3:
+        factors = np.array(values[:3], dtype=float)
+        if np.any(factors == 0.0):
+            raise ValueError("a POSCAR scaling factor may not be zero")
+        return lattice * factors[None, :], factors
+    scale = float(values[0])
+    if scale == 0.0:
+        raise ValueError("a POSCAR scaling factor may not be zero")
+    if scale < 0.0:
+        volume = abs(float(np.linalg.det(lattice)))
+        if volume <= 0.0:
+            raise ValueError("a POSCAR that asks for a target volume needs a non-degenerate cell")
+        scale = (abs(scale) / volume) ** (1.0 / 3.0)
+    factors = np.full(3, scale, dtype=float)
+    return lattice * scale, factors
+
+
 def read_poscar(path: str) -> PoscarData:
     """Read a POSCAR/CONTCAR file."""
 
@@ -58,9 +105,8 @@ def read_poscar(path: str) -> PoscarData:
         raise ValueError(f"{path} does not look like a POSCAR/CONTCAR file")
 
     comment = lines[0].rstrip("\n")
-    scale = float(lines[1].split()[0])
     lattice = np.array([list(map(float, lines[i].split()[:3])) for i in range(2, 5)], dtype=float)
-    lattice *= scale
+    lattice, coordinate_scale = _apply_scaling_factor(lattice, lines[1])
 
     line_index = 5
     first_tokens = lines[line_index].split()
@@ -98,8 +144,10 @@ def read_poscar(path: str) -> PoscarData:
         positions_direct = raw_array
         positions_cartesian = direct_to_cartesian(raw_array, lattice)
     else:
-        positions_cartesian = raw_array
-        positions_direct = cartesian_to_direct(raw_array, lattice)
+        # The scaling factor is a map of space, so it moves Cartesian positions
+        # exactly as it moves the cell; fractional positions are unchanged by it.
+        positions_cartesian = raw_array * coordinate_scale
+        positions_direct = cartesian_to_direct(positions_cartesian, lattice)
 
     return PoscarData(
         comment=comment,
@@ -165,13 +213,6 @@ def repeat_structure_along_c(structure: PoscarData, repeats: int) -> PoscarData:
     )
 
 
-def parse_poscar(path: str) -> Tuple[np.ndarray, np.ndarray, List[int], List[str]]:
-    """Read a POSCAR-style structure into the native data model."""
-
-    data = read_poscar(path)
-    return data.lattice, data.positions_cartesian, data.counts, data.species
-
-
 def _normalise_flags(
     selective_flags: Sequence[Sequence[str]] | None,
     natoms: int,
@@ -194,8 +235,16 @@ def write_poscar(
     positions_are_cartesian: bool = True,
     wrap_positions: bool = True,
     selective_flags: Sequence[Sequence[str]] | None = None,
+    validate: bool = True,
 ) -> None:
-    """Write a POSCAR using Direct coordinates."""
+    """Write a POSCAR using Direct coordinates.
+
+    Unless ``validate`` is switched off, the structure is checked before the
+    file is opened: a degenerate cell, a count list that disagrees with the
+    positions, a non-finite coordinate or two atoms on one site are faults that
+    no plane-wave code can be given, and it is cheaper to raise them here than
+    to find them in a failed calculation.
+    """
 
     lattice = np.asarray(lattice, dtype=float)
     positions_array = np.asarray(positions, dtype=float)
@@ -209,6 +258,17 @@ def write_poscar(
         direct = positions_array
     if wrap_positions:
         direct = wrap_direct(direct)
+
+    if validate:
+        from ..core.validation import validate_structure
+
+        validate_structure(
+            lattice=lattice,
+            species=list(types) if types else ["X"] * len(list(counts)),
+            counts=[int(value) for value in counts],
+            positions_direct=direct,
+            context=f"refusing to write {Path(path).name}",
+        )
 
     normalised_flags = _normalise_flags(selective_flags, natoms)
 

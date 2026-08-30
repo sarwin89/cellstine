@@ -8,17 +8,15 @@ from typing import Sequence
 import numpy as np
 
 from ...core.base import run_output_suffix
+from ...core.layers import LAYER_TOLERANCE
 from ...core.models import CommandResult
+from ...core.naming import safe_token
 from ...core.previews import format_site_report
 from ...io.converters import StructureConverter
 from ..workflow.interface import Interface, parse_miller_notation
 from . import backend as surface_backend
-
-
-def _safe_token(value: object) -> str:
-    text = str(value).strip().replace("-", "m").replace(".", "p")
-    safe = [char if char.isalnum() or char in {"_", "m", "p"} else "_" for char in text]
-    return "".join(safe).strip("_") or "x"
+from .sequence import stacking_sequence
+from .termination import termination_report
 
 
 def _miller_token(values: Sequence[int]) -> str:
@@ -39,57 +37,15 @@ def _surface_descriptor(
     if supercell_matrix:
         expansion = "m" + "_".join(str(int(value)).replace("-", "m") for value in supercell_matrix)
     return (
-        f"{_safe_token(Path(bulk_poscar).stem)}_hkl{_miller_token(miller_values)}"
-        f"_L{int(layers):02d}_vac{_safe_token(f'{float(vacuum):.2f}')}_{expansion}"
+        f"{safe_token(Path(bulk_poscar).stem)}_hkl{_miller_token(miller_values)}"
+        f"_L{int(layers):02d}_vac{safe_token(f'{float(vacuum):.2f}')}_{expansion}"
     )
 
 
-def _stacking_sequence(structure, z_tolerance: float = 0.35, xy_tolerance: float = 1e-3) -> str:
-    direct = np.asarray(structure.positions_direct, dtype=float)
-    cartesian = np.asarray(structure.positions_cartesian, dtype=float)
-    if direct.size == 0:
-        return ""
-    lattice = np.asarray(structure.lattice, dtype=float)
-    normal = np.cross(lattice[0], lattice[1])
-    normal_length = float(np.linalg.norm(normal))
-    if normal_length <= 1e-12:
-        return ""
-    normal = normal / normal_length
-    projections = cartesian @ normal
-    order = np.argsort(projections)
-    groups = []
-    current = [int(order[0])]
-    last_z = float(projections[order[0]])
-    for atom_index in order[1:]:
-        z_value = float(projections[atom_index])
-        if abs(z_value - last_z) <= float(z_tolerance):
-            current.append(int(atom_index))
-        else:
-            groups.append(current)
-            current = [int(atom_index)]
-        last_z = z_value
-    groups.append(current)
+def _stacking_sequence(structure) -> str:
+    """Return the plane letters of a slab, bottom of the cell upwards."""
 
-    signature_to_letter = {}
-    letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    sequence = []
-    for group in groups:
-        points = np.mod(direct[np.array(group, dtype=int), :2], 1.0)
-        points[np.isclose(points, 1.0, atol=xy_tolerance)] = 0.0
-        points[np.isclose(points, 0.0, atol=xy_tolerance)] = 0.0
-        signature = tuple(
-            sorted(
-                (
-                    round(float(point[0]) / xy_tolerance) * xy_tolerance,
-                    round(float(point[1]) / xy_tolerance) * xy_tolerance,
-                )
-                for point in points
-            )
-        )
-        if signature not in signature_to_letter:
-            signature_to_letter[signature] = letters[len(signature_to_letter) % len(letters)]
-        sequence.append(signature_to_letter[signature])
-    return "".join(sequence)
+    return stacking_sequence(structure)[0]
 
 
 class Surface(Interface):
@@ -120,18 +76,10 @@ class Surface(Interface):
         miller_values = parse_miller_notation(miller)
         run_id, run_dir = self.create_run_dir("surface", f"{Path(bulk_poscar).stem}_{miller_values[0]}{miller_values[1]}{miller_values[2]}")
         output_suffix = run_output_suffix(run_id)
-        descriptor = _surface_descriptor(
-            bulk_poscar,
-            miller_values,
-            layers=int(layers),
-            vacuum=float(vacuum),
-            repeat_a=int(repeat_a),
-            repeat_b=int(repeat_b),
-            supercell_matrix=supercell_matrix,
-        )
-        resolved_output_path = output_path or str(self.output_root / f"{descriptor}_surface_{output_suffix}.vasp")
-        resolved_sites_output_path = sites_output_path or (str(self.output_root / f"{descriptor}_sites_{output_suffix}.json") if analyse_sites else None)
-        run = surface_backend.build_surface(
+        # Build first, then name: a minimum in-plane length turns into a repeat
+        # count that only the builder knows, and the file name has to state the
+        # cell that was actually produced.
+        build = surface_backend.build_surface_structure(
             str(Path(bulk_poscar).resolve()),
             miller=miller_values,
             layers=int(layers),
@@ -141,13 +89,63 @@ class Surface(Interface):
             min_length_a=min_length_a,
             min_length_b=min_length_b,
             supercell_matrix=supercell_matrix,
-            output_path=resolved_output_path,
-            sites_output_path=resolved_sites_output_path,
-            analyse_sites=bool(analyse_sites),
-            site_surface_side=str(site_surface_side),
+        )
+        descriptor = _surface_descriptor(
+            bulk_poscar,
+            miller_values,
+            layers=int(layers),
+            vacuum=float(vacuum),
+            repeat_a=int(build.repeat_a),
+            repeat_b=int(build.repeat_b),
+            supercell_matrix=build.supercell_matrix,
+        )
+        resolved_output_path = output_path or str(self.output_root / f"{descriptor}_surface_{output_suffix}.vasp")
+        resolved_sites_output_path = sites_output_path or (str(self.output_root / f"{descriptor}_sites_{output_suffix}.json") if analyse_sites else None)
+        written_path = surface_backend.write_surface_poscar(resolved_output_path, build.structure, miller_values)
+
+        site_report_path = None
+        site_counts = None
+        if resolved_sites_output_path is not None:
+            site_run = surface_backend.find_adsorption_sites(
+                build.structure,
+                surface_side=str(site_surface_side),
+                output_path=resolved_sites_output_path,
+                source_poscar=str(written_path),
+            )
+            site_report_path = site_run.output_path
+            site_counts = dict(site_run.site_counts)
+
+        run = surface_backend.SurfaceRun(
+            output_path=written_path,
+            miller=miller_values,
+            layers=int(layers),
+            vacuum=float(vacuum),
+            total_atoms=build.structure.natoms,
+            repeat_a=int(build.repeat_a),
+            repeat_b=int(build.repeat_b),
+            supercell_matrix=build.supercell_matrix,
+            site_output_path=site_report_path,
+            site_counts=site_counts,
         )
         slab = self.converter.read(str(run.output_path), canonicalize=True)
         stacking_sequence = _stacking_sequence(slab)
+        bulk = self.converter.read(str(Path(bulk_poscar).resolve()), canonicalize=False)
+        termination = termination_report(
+            bulk_species=bulk.species,
+            bulk_counts=bulk.counts,
+            slab_lattice=build.structure.lattice,
+            slab_positions_cartesian=build.structure.positions_cartesian,
+            slab_species=build.structure.species,
+            slab_counts=build.structure.counts,
+        )
+        summary: dict[str, object] = {
+            "total_atoms": run.total_atoms,
+            "stacking_sequence": stacking_sequence,
+            "stoichiometric": termination.stoichiometric,
+            "symmetric_terminations": termination.symmetric_terminations,
+        }
+        if termination.notes:
+            summary["warnings"] = list(termination.notes)
         artifacts = {"slab_poscar": run.output_path}
         if run.site_output_path is not None:
             artifacts["sites_json"] = run.site_output_path
@@ -161,19 +159,25 @@ class Surface(Interface):
                 "miller": list(miller_values),
                 "layers": int(layers),
                 "vacuum": float(vacuum),
-                "repeat_a": int(repeat_a),
-                "repeat_b": int(repeat_b),
-                "supercell_matrix": list(supercell_matrix or []),
+                "repeat_a": int(run.repeat_a),
+                "repeat_b": int(run.repeat_b),
+                "min_length_a": None if min_length_a is None else float(min_length_a),
+                "min_length_b": None if min_length_b is None else float(min_length_b),
+                "supercell_matrix": list(run.supercell_matrix or []),
+                "site_surface_side": str(site_surface_side) if analyse_sites or sites_output_path else None,
             },
             artifacts=artifacts,
-            summary={"total_atoms": run.total_atoms, "stacking_sequence": stacking_sequence},
+            summary=summary,
         )
         return self.result(
             manifest_path=manifest_path,
             run_dir=run_dir,
             artifacts=artifacts,
-            summary={"total_atoms": run.total_atoms, "stacking_sequence": stacking_sequence},
-            payload={"site_counts": run.site_counts or {}},
+            summary=summary,
+            payload={
+                "site_counts": run.site_counts or {},
+                "termination": termination.summary(),
+            },
         )
 
     def sites(
@@ -181,7 +185,7 @@ class Surface(Interface):
         *,
         slab_poscar: str,
         surface_side: str = "top",
-        layer_tolerance: float = 0.35,
+        layer_tolerance: float = LAYER_TOLERANCE,
         neighbour_tolerance: float = 0.15,
         hollow_match_tolerance: float | None = None,
         output_path: str | None = None,
@@ -190,7 +194,7 @@ class Surface(Interface):
         slab_path = self.resolve_results_file(slab_poscar, artifact_keys=("slab_poscar",))
         run_id, run_dir = self.create_run_dir("sites", Path(slab_path).stem)
         output_suffix = run_output_suffix(run_id)
-        resolved_output_path = output_path or str(self.output_root / f"{_safe_token(Path(slab_path).stem)}_sites_{output_suffix}.json")
+        resolved_output_path = output_path or str(self.output_root / f"{safe_token(Path(slab_path).stem)}_sites_{output_suffix}.json")
         report = surface_backend.find_adsorption_sites(
             slab_path,
             surface_side=str(surface_side),

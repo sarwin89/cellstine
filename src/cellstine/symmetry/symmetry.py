@@ -3,18 +3,23 @@
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Any, Sequence
 
 import numpy as np
 
+from ..core.species import expand_species
+from ..core.lattice import vector_angle_deg
 from ..core.base import Base, run_output_suffix
 from ..core.models import CommandResult
 from ..io.converters import StructureConverter
 from ..io.models import StructureRecord
 from ..io.vasp import VaspIO
-from ..core.lattice import infer_rotational_symmetry_angle, in_plane_lengths_and_angle
+from ..core import bravais, reciprocal, symmetry3d
+from ..core.idealisation import symmetrise_basis
+from ..io import kpoints as kpoints_io
+from .kpath_stage import BandPathMixin
 
 
 @dataclass
@@ -60,6 +65,9 @@ class SymmetryAnalysis:
     wyckoffs: list[str] = field(default_factory=list)
     transformation_matrix: list[list[float]] | None = None
     origin_shift: tuple[float, float, float] | None = None
+    lattice_point_group: str | None = None
+    symmorphic_setting: bool | None = None
+    centering_translation_count: int | None = None
     notes: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -77,6 +85,9 @@ class SymmetryAnalysis:
             "point_group": self.point_group,
             "crystal_system": self.crystal_system,
             "lattice_type": self.lattice_type,
+            "lattice_point_group": self.lattice_point_group,
+            "symmorphic_setting": self.symmorphic_setting,
+            "centering_translation_count": self.centering_translation_count,
             "laue": self.laue,
             "operation_count": int(self.operation_count),
             "operations": [asdict(operation) for operation in self.operations],
@@ -86,13 +97,6 @@ class SymmetryAnalysis:
             "origin_shift": None if self.origin_shift is None else [float(value) for value in self.origin_shift],
             "notes": list(self.notes),
         }
-
-
-def _expanded_species(record: StructureRecord) -> list[str]:
-    symbols: list[str] = []
-    for symbol, count in zip(record.species, record.counts):
-        symbols.extend([str(symbol)] * int(count))
-    return symbols
 
 
 def _species_type_map(species_by_atom: Sequence[str]) -> tuple[list[int], dict[int, str]]:
@@ -115,10 +119,23 @@ def _record_from_spglib_cell(
     comment: str,
 ) -> StructureRecord:
     lattice, positions, numbers = cell
+    atom_species = [species_map.get(int(number), f"X{int(number)}") for number in list(numbers)]
+    return _record_from_atoms(source, lattice, positions, atom_species, comment=comment)
+
+
+def _record_from_atoms(
+    source: StructureRecord,
+    lattice: Any,
+    positions: Any,
+    atom_species: Sequence[str],
+    *,
+    comment: str,
+) -> StructureRecord:
+    """Return a species-grouped record from a per-atom species list."""
+
     lattice_array = np.asarray(lattice, dtype=float)
-    direct = np.mod(np.asarray(positions, dtype=float), 1.0)
-    type_numbers = [int(value) for value in list(numbers)]
-    atom_species = [species_map.get(number, f"X{number}") for number in type_numbers]
+    direct = np.mod(np.asarray(positions, dtype=float).reshape(-1, 3), 1.0)
+    atom_species = [str(value) for value in atom_species]
 
     ordered_species: list[str] = []
     for symbol in source.species:
@@ -166,11 +183,10 @@ def _dataset_value(dataset: Any, key: str, default: Any = None) -> Any:
 def _lattice_parameters(lattice: np.ndarray) -> dict[str, float]:
     matrix = np.asarray(lattice, dtype=float)
     lengths = [float(np.linalg.norm(matrix[index])) for index in range(3)]
-    angles = []
-    for first, second in ((1, 2), (0, 2), (0, 1)):
-        denominator = max(lengths[first] * lengths[second], 1e-12)
-        cosine = np.clip(float(np.dot(matrix[first], matrix[second]) / denominator), -1.0, 1.0)
-        angles.append(float(np.degrees(np.arccos(cosine))))
+    angles = [
+        vector_angle_deg(matrix[first], matrix[second])
+        for first, second in ((1, 2), (0, 2), (0, 1))
+    ]
     return {
         "a": lengths[0],
         "b": lengths[1],
@@ -218,7 +234,7 @@ def _write_analysis_file(path: Path, analysis: SymmetryAnalysis) -> Path:
     return path.resolve()
 
 
-class Symmetry(Base):
+class Symmetry(BandPathMixin, Base):
     """Analyse symmetry and reduce cells without routing through pymatgen."""
 
     workflow_name = "symmetry"
@@ -229,7 +245,7 @@ class Symmetry(Base):
         self.vasp_io = VaspIO()
 
     def _spglib_cell(self, record: StructureRecord) -> tuple[tuple[np.ndarray, np.ndarray, list[int]], dict[int, str]]:
-        species_by_atom = _expanded_species(record)
+        species_by_atom = expand_species(record.species, record.counts)
         if len(species_by_atom) != int(record.natoms):
             raise ValueError("structure species/counts do not match atom positions")
         numbers, species_map = _species_type_map(species_by_atom)
@@ -250,7 +266,7 @@ class Symmetry(Base):
     ) -> SymmetryAnalysis:
         resolved_backend = self.dependency_manager.choose_symmetry_backend(backend, feature="symmetry analysis")
         if resolved_backend == "native":
-            return self._native_analysis(record, structure_path=structure_path)
+            return self._native_analysis(record, structure_path=structure_path, symprec=float(symprec))
         return self._spglib_analysis(
             record,
             structure_path=structure_path,
@@ -258,26 +274,79 @@ class Symmetry(Base):
             angle_tolerance=float(angle_tolerance),
         )
 
-    def _native_analysis(self, record: StructureRecord, *, structure_path: str | None) -> SymmetryAnalysis:
-        a_length, b_length, gamma_deg = in_plane_lengths_and_angle(np.asarray(record.lattice, dtype=float))
-        rotation_limit = infer_rotational_symmetry_angle(np.asarray(record.lattice, dtype=float))
-        notes = [
-            "Native symmetry analysis reports lattice geometry only.",
-            "Install cellstine[symmetry] for exact space groups, primitive reduction, Wyckoff labels, and equivalent atom groups.",
+    def _native_analysis(self, record: StructureRecord, *, structure_path: str | None, symprec: float = 0.01) -> SymmetryAnalysis:
+        """Return the symmetry of a cell from the native engine.
+
+        The operations, their point group, the orbits of equivalent atoms and
+        the centering translations are computed exactly (up to ``symprec``) by
+        :mod:`cellstine.core.symmetry3d`.  Naming the space-group *type* and the
+        Wyckoff letters needs the tabulated standard settings of all 230 groups
+        and stays with the spglib backend.
+        """
+
+        lattice = np.asarray(record.lattice, dtype=float)
+        species_by_atom = expand_species(record.species, record.counts)
+        dataset = symmetry3d.analyse_symmetry(
+            lattice,
+            np.asarray(record.positions_direct, dtype=float),
+            species_by_atom,
+            symprec=float(symprec),
+        )
+
+        operations = [
+            SymmetryOperation(
+                rotation=np.asarray(rotation, dtype=int).tolist(),
+                translation=tuple(float(value) for value in np.asarray(translation, dtype=float)),
+            )
+            for rotation, translation in zip(dataset.rotations, dataset.translations)
         ]
+
+        grouped: dict[int, list[int]] = {}
+        for atom_index, representative in enumerate(dataset.equivalent_atoms.tolist()):
+            grouped.setdefault(int(representative), []).append(int(atom_index))
+        groups = [
+            EquivalentAtomGroup(
+                group_id=f"atom_{group_index:03d}",
+                species=str(species_by_atom[representative]),
+                representative_index=int(representative) + 1,
+                equivalent_indices=[int(index) + 1 for index in sorted(atom_indices)],
+                multiplicity=int(len(atom_indices)),
+                wyckoff=None,
+            )
+            for group_index, (representative, atom_indices) in enumerate(sorted(grouped.items()), start=1)
+        ]
+
+        notes = [
+            "Native symmetry engine: exact integer lattice automorphisms plus a decorated-cell translation search.",
+            f"Point group {dataset.point_group or 'unclassified'}; the lattice alone has point group {dataset.lattice_point_group or 'unclassified'}.",
+            "Space-group type numbers, Hall symbols, and Wyckoff letters need the spglib backend.",
+        ]
+        if dataset.operation_count > 0 and not dataset.symmorphic_setting:
+            notes.append("Some operations carry a non-lattice translation in this setting (screw axis or glide plane).")
+        if len(dataset.primitive_translations) > 1:
+            notes.append(
+                f"The cell is {len(dataset.primitive_translations)}-fold non-primitive; "
+                "`cellstine symmetry reduce --cell primitive` writes the primitive cell."
+            )
+
         return SymmetryAnalysis(
             structure_path=structure_path,
             backend="native",
             atom_count=int(record.natoms),
             species=list(record.species),
             counts=[int(value) for value in record.counts],
-            lattice_parameters=_lattice_parameters(np.asarray(record.lattice, dtype=float)),
-            operation_count=0,
-            notes=[
-                *notes,
-                f"Approximate in-plane rotational search limit: {int(rotation_limit)} degrees.",
-                f"In-plane cell: a={a_length:.6g} A, b={b_length:.6g} A, gamma={gamma_deg:.6g} deg.",
-            ],
+            lattice_parameters=_lattice_parameters(lattice),
+            point_group=dataset.point_group,
+            crystal_system=dataset.crystal_system,
+            lattice_type=symmetry3d.crystal_system_of_point_group(dataset.lattice_point_group),
+            lattice_point_group=dataset.lattice_point_group,
+            symmorphic_setting=bool(dataset.symmorphic_setting),
+            centering_translation_count=int(len(dataset.primitive_translations)),
+            laue=bool(dataset.has_inversion),
+            operation_count=len(operations),
+            operations=operations,
+            equivalent_groups=groups,
+            notes=notes,
         )
 
     def _spglib_analysis(
@@ -300,10 +369,25 @@ class Symmetry(Base):
         equivalent_atoms = _dataset_value(dataset, "equivalent_atoms")
         wyckoffs_raw = _dataset_value(dataset, "wyckoffs", [])
         wyckoffs = [str(value) for value in list(wyckoffs_raw)]
-        species_by_atom = _expanded_species(record)
+        species_by_atom = expand_species(record.species, record.counts)
 
         operations: list[SymmetryOperation] = []
+        centering_translation_count = None
+        symmorphic_setting = None
         if rotations is not None and translations is not None:
+            rotation_array = np.asarray(rotations, dtype=int)
+            translation_array = np.asarray(translations, dtype=float)
+            centering_translations = symmetry3d.pure_translations(
+                rotation_array,
+                translation_array,
+                symprec=float(symprec),
+            )
+            centering_translation_count = int(
+                len(centering_translations)
+            )
+            symmorphic_setting = bool(
+                symmetry3d._translations_are_centering(translation_array, centering_translations)
+            )
             for rotation, translation in zip(rotations, translations):
                 operations.append(
                     SymmetryOperation(
@@ -348,10 +432,12 @@ class Symmetry(Base):
             crystal_system=_crystal_system(space_group_number),
             lattice_type=_crystal_system(space_group_number),
             laue=_has_inversion(None if rotations is None else np.asarray(rotations, dtype=int)),
+            symmorphic_setting=symmorphic_setting,
             operation_count=len(operations),
             operations=operations,
             equivalent_groups=groups,
             wyckoffs=wyckoffs,
+            centering_translation_count=centering_translation_count,
             transformation_matrix=None if transformation is None else np.asarray(transformation, dtype=float).tolist(),
             origin_shift=None if origin_shift is None else tuple(float(value) for value in np.asarray(origin_shift, dtype=float).tolist()),
             notes=["Exact crystallographic symmetry supplied by direct spglib backend."],
@@ -387,18 +473,117 @@ class Symmetry(Base):
             raise RuntimeError(f"spglib could not produce a {kind} cell for this structure")
         return _record_from_spglib_cell(record, reduced, species_map, comment=f"{record.comment} | {kind} cell")
 
-    def _lattice_reduced_record(self, record: StructureRecord, *, reduction: str, symprec: float) -> StructureRecord:
-        import spglib
+    def _native_primitive_record(self, record: StructureRecord, *, symprec: float) -> StructureRecord:
+        """Return the primitive cell found by the native symmetry engine."""
 
+        lattice, positions, species_by_atom = symmetry3d.primitive_cell(
+            np.asarray(record.lattice, dtype=float),
+            np.asarray(record.positions_direct, dtype=float),
+            expand_species(record.species, record.counts),
+            symprec=float(symprec),
+        )
+        return _record_from_atoms(record, lattice, positions, species_by_atom, comment=f"{record.comment} | primitive cell")
+
+    def _native_conventional_record(
+        self, record: StructureRecord, *, symprec: float, idealise: bool = False
+    ) -> StructureRecord:
+        """Return the conventional cell found by the native symmetry engine.
+
+        The conventional cell is a property of the *translation lattice of the
+        crystal*, not of the cell the file happens to be written in, so the
+        primitive cell is taken first and classified with
+        :func:`core.bravais.conventional_cell`.  That returns a basis spanning a
+        superlattice cell of index ``multiplicity`` together with the fractional
+        coordinates of the lattice points inside it, so the atoms of the
+        conventional cell are exactly the primitive basis translated by each of
+        those centring vectors: ``multiplicity`` times as many atoms in
+        ``multiplicity`` times the volume, which the checks below assert.
+
+        With ``idealise`` the conventional metric is additionally averaged over
+        its own lattice point group
+        (:func:`core.idealisation.symmetrise_basis`), so the cell obeys the
+        symmetry of its Bravais class exactly rather than to within ``symprec``.
+        Fractional coordinates are untouched by that step, so -- unlike spglib's
+        ``refine_cell`` -- the atoms are not additionally snapped onto ideal
+        Wyckoff positions; the deviation is recorded in the metadata so the size
+        of the correction is visible.
+        """
+
+        lattice, positions, species_by_atom = symmetry3d.primitive_cell(
+            np.asarray(record.lattice, dtype=float),
+            np.asarray(record.positions_direct, dtype=float),
+            expand_species(record.species, record.counts),
+            symprec=float(symprec),
+        )
+        primitive = np.asarray(lattice, dtype=float)
+        classification = bravais.conventional_cell(primitive)
+        conventional_basis = np.asarray(classification.cell, dtype=float)
+        multiplicity = int(classification.multiplicity)
+
+        centrings = np.asarray(classification.centring_vectors, dtype=float).reshape(-1, 3)
+        if centrings.shape[0] != multiplicity:
+            raise RuntimeError("the conventional cell reported a centring count that is not its index")
+        volume_ratio = abs(float(np.linalg.det(conventional_basis))) / abs(float(np.linalg.det(primitive)))
+        if abs(volume_ratio - multiplicity) > 1e-6 * max(1.0, multiplicity):
+            raise RuntimeError("the conventional cell volume is not the index times the primitive volume")
+
+        conventional_coords = np.asarray(positions, dtype=float) @ np.asarray(
+            classification.to_conventional, dtype=float
+        )
+        expanded = np.mod(conventional_coords[:, None, :] + centrings[None, :, :], 1.0).reshape(-1, 3)
+        expanded_species = [symbol for symbol in species_by_atom for _ in range(multiplicity)]
+
+        cell = conventional_basis
+        deviation = 0.0
+        if idealise:
+            operations = symmetry3d.lattice_point_group(conventional_basis)
+            idealised, deviation = symmetrise_basis(
+                conventional_basis.T, operations, max_order=48, name="conventional cell"
+            )
+            cell = np.array(idealised.T, dtype=float)
+
+        kind = "refined" if idealise else "conventional"
+        conventional_record = _record_from_atoms(
+            record,
+            cell,
+            expanded,
+            expanded_species,
+            comment=f"{record.comment} | {kind} cell ({classification.symbol})",
+        )
+        metadata = dict(conventional_record.metadata)
+        metadata["bravais_symbol"] = classification.symbol
+        metadata["centring"] = classification.centring
+        metadata["crystal_system"] = classification.system
+        metadata["conventional_multiplicity"] = multiplicity
+        if idealise:
+            metadata["metric_idealisation"] = float(deviation)
+        return replace(conventional_record, metadata=metadata)
+
+    def _lattice_reduced_record(
+        self,
+        record: StructureRecord,
+        *,
+        reduction: str,
+        symprec: float,
+        backend: str = "native",
+    ) -> StructureRecord:
         method = str(reduction).lower()
-        if method == "niggli":
-            lattice = spglib.niggli_reduce(np.asarray(record.lattice, dtype=float), eps=float(symprec))
-        elif method == "delaunay":
-            lattice = spglib.delaunay_reduce(np.asarray(record.lattice, dtype=float), eps=float(symprec))
-        else:
+        if method not in {"niggli", "delaunay"}:
             raise ValueError("reduction must be one of: niggli, delaunay")
-        if lattice is None:
-            raise RuntimeError(f"spglib could not perform {method} lattice reduction")
+        source_lattice = np.asarray(record.lattice, dtype=float)
+        if str(backend) == "spglib":
+            import spglib
+
+            if method == "niggli":
+                lattice = spglib.niggli_reduce(source_lattice, eps=float(symprec))
+            else:
+                lattice = spglib.delaunay_reduce(source_lattice, eps=float(symprec))
+            if lattice is None:
+                raise RuntimeError(f"spglib could not perform {method} lattice reduction")
+        elif method == "niggli":
+            lattice, _ = symmetry3d.niggli_reduce(source_lattice)
+        else:
+            lattice, _ = symmetry3d.delaunay_reduce(source_lattice)
         lattice_array = np.asarray(lattice, dtype=float)
         direct = np.mod(np.asarray(record.positions_cartesian, dtype=float) @ np.linalg.inv(lattice_array), 1.0)
         return StructureRecord(
@@ -477,15 +662,21 @@ class Symmetry(Base):
         """Write a primitive, conventional, or refined cell."""
 
         resolved_backend = self.dependency_manager.choose_symmetry_backend(backend, feature="cell reduction")
-        if resolved_backend != "spglib":
-            raise RuntimeError("cell reduction requires spglib; install cellstine[symmetry]")
+        kind = str(cell).lower()
+        if kind not in {"primitive", "conventional", "refined"}:
+            raise ValueError("cell must be one of: primitive, conventional, refined")
         source = str(Path(structure_path).resolve())
         record = self.converter.read(source, canonicalize=False)
-        reduced = self._reduced_record(record, cell_kind=cell, symprec=float(symprec), angle_tolerance=float(angle_tolerance))
+        if resolved_backend == "spglib":
+            reduced = self._reduced_record(record, cell_kind=kind, symprec=float(symprec), angle_tolerance=float(angle_tolerance))
+        elif kind == "primitive":
+            reduced = self._native_primitive_record(record, symprec=float(symprec))
+        else:
+            reduced = self._native_conventional_record(record, symprec=float(symprec), idealise=kind == "refined")
         run_id, run_dir = self.create_run_dir("reduce", label=Path(source).stem)
         destination = Path(output_path).resolve() if output_path is not None else self.output_root / f"symmetry_{cell}_{Path(source).stem}_{run_output_suffix(run_id).replace('_', '-')}.vasp"
         written = self.vasp_io.write(reduced, str(destination), positions_are_cartesian=False, wrap_positions=True)
-        summary = {"backend": resolved_backend, "cell": str(cell).lower(), "atom_count": int(reduced.natoms)}
+        summary = {"backend": resolved_backend, "cell": kind, "atom_count": int(reduced.natoms)}
         artifacts = {"output_poscar": str(written)}
         manifest_path = self.write_manifest(
             stage="reduce",
@@ -511,11 +702,14 @@ class Symmetry(Base):
         """Write a Niggli- or Delaunay-reduced lattice representation."""
 
         resolved_backend = self.dependency_manager.choose_symmetry_backend(backend, feature="lattice reduction")
-        if resolved_backend != "spglib":
-            raise RuntimeError("lattice reduction requires spglib; install cellstine[symmetry]")
         source = str(Path(structure_path).resolve())
         record = self.converter.read(source, canonicalize=False)
-        reduced = self._lattice_reduced_record(record, reduction=reduction, symprec=float(symprec))
+        reduced = self._lattice_reduced_record(
+            record,
+            reduction=reduction,
+            symprec=float(symprec),
+            backend=resolved_backend,
+        )
         run_id, run_dir = self.create_run_dir("lattice_reduce", label=Path(source).stem)
         destination = Path(output_path).resolve() if output_path is not None else self.output_root / f"symmetry_{reduction}_{Path(source).stem}_{run_output_suffix(run_id).replace('_', '-')}.vasp"
         written = self.vasp_io.write(reduced, str(destination), positions_are_cartesian=False, wrap_positions=True)
@@ -533,6 +727,134 @@ class Symmetry(Base):
         )
         return self.result(manifest_path=manifest_path, run_dir=run_dir, artifacts=artifacts, summary=summary, payload={})
 
+    def kpoints(
+        self,
+        structure_path: str,
+        *,
+        spacing: float | None = None,
+        divisions: Sequence[int] | None = None,
+        mode: str = "gamma",
+        shift: Sequence[float] | None = None,
+        surface: bool = False,
+        use_symmetry: bool = True,
+        time_reversal: bool = True,
+        explicit: bool | None = None,
+        symprec: float = 0.01,
+        output_path: str | Path | None = None,
+    ) -> CommandResult:
+        """Write a symmetry-reduced Brillouin-zone sampling mesh for a structure.
+
+        Either ``spacing`` -- a largest allowed step in reciprocal space, in
+        inverse angstrom and in the ``2 pi`` convention, the quantity VASP calls
+        ``KSPACING`` -- or an explicit set of ``divisions`` fixes the mesh.
+        ``surface`` pins the third division to one, which is what a slab with a
+        vacuum gap needs: its bands do not disperse along the surface normal, so
+        sampling that direction only multiplies the cost.
+
+        The mesh is reduced by the rotation parts of the space-group operations
+        of the cell itself, so a decorated cell keeps only the symmetry its atoms
+        actually have, and by time reversal unless it is turned off.  The
+        reported weights are exact orbit sizes and always add up to the size of
+        the unreduced mesh.
+        """
+
+        source = str(Path(structure_path).resolve())
+        record = self.converter.read(source, canonicalize=False)
+        lattice = np.asarray(record.lattice, dtype=float)
+        rotations = None
+        centering_count = None
+        if use_symmetry:
+            rotations, operation_translations = symmetry3d.symmetry_operations(
+                lattice,
+                np.asarray(record.positions_direct, dtype=float),
+                expand_species(record.species, record.counts),
+                symprec=float(symprec),
+            )
+            centering_count = int(
+                len(symmetry3d.pure_translations(rotations, operation_translations))
+            )
+        minimum = (1, 1, 1)
+        if divisions is None and spacing is None:
+            raise ValueError("give either a k-point spacing or explicit mesh divisions")
+        counts = None if divisions is None else [int(value) for value in divisions]
+        if counts is not None and surface:
+            counts = [counts[0], counts[1], 1]
+        if counts is None:
+            counts = list(
+                reciprocal.mesh_divisions_for_spacing(lattice, float(spacing), minimum=minimum)
+            )
+            if surface:
+                counts[2] = 1
+        mesh = reciprocal.build_mesh(
+            lattice,
+            divisions=counts,
+            mode=str(mode),
+            shift=shift,
+            rotations=rotations,
+            time_reversal=bool(time_reversal),
+        )
+        run_id, run_dir = self.create_run_dir("kpoints", label=Path(source).stem)
+        destination = (
+            Path(output_path).resolve()
+            if output_path is not None
+            else self.output_root
+            / f"KPOINTS_{Path(source).stem}_{run_output_suffix(run_id).replace('_', '-')}"
+        )
+        comment = (
+            f"{Path(source).stem} {counts[0]}x{counts[1]}x{counts[2]} "
+            f"{'Gamma' if not any(mesh.shift) else 'shifted'} mesh"
+        )
+        written = kpoints_io.write_mesh(destination, mesh, explicit=explicit, comment=comment)
+        summary = dict(mesh.summary())
+        summary["structure"] = source
+        summary["reduction_factor"] = float(mesh.full_point_count) / float(mesh.point_count)
+        summary["points_per_zone_volume"] = reciprocal.kpoint_density(lattice, mesh.divisions)
+        notes: list[str] = []
+        if not mesh.symmetry_complete:
+            notes.append(
+                "the mesh is not invariant under every operation of this cell, so "
+                f"only {mesh.operations_used} of {mesh.operations_given} could reduce it"
+            )
+        if centering_count is not None and centering_count > 1:
+            notes.append(
+                f"the cell is {centering_count}-fold non-primitive, so its zone is "
+                f"{centering_count} times smaller than the zone of the primitive cell and every one "
+                f"of these points carries {centering_count} folded points of that zone; "
+                "`cellstine symmetry reduce --cell primitive` writes the primitive cell"
+            )
+        if notes:
+            summary["note"] = "; ".join(notes)
+        artifacts = {"kpoints": str(written)}
+        manifest_path = self.write_manifest(
+            stage="kpoints",
+            run_id=run_id,
+            run_dir=run_dir,
+            backend="native",
+            inputs={"structure_path": source},
+            parameters={
+                "spacing": None if spacing is None else float(spacing),
+                "divisions": [int(value) for value in counts],
+                "mode": str(mode),
+                "shift": None if shift is None else [float(value) for value in shift],
+                "surface": bool(surface),
+                "use_symmetry": bool(use_symmetry),
+                "time_reversal": bool(time_reversal),
+                "symprec": float(symprec),
+            },
+            artifacts=artifacts,
+            summary=summary,
+        )
+        return self.result(
+            manifest_path=manifest_path,
+            run_dir=run_dir,
+            artifacts=artifacts,
+            summary=summary,
+            payload={
+                "points": mesh.points.tolist(),
+                "weights": [int(value) for value in mesh.weights],
+            },
+        )
+
     @staticmethod
     def format_analysis(analysis: SymmetryAnalysis) -> str:
         """Return a compact CLI preview."""
@@ -542,8 +864,14 @@ class Symmetry(Base):
             lines.append(f"Space group: {analysis.space_group_symbol} ({analysis.space_group_number})")
         if analysis.point_group:
             lines.append(f"Point group: {analysis.point_group}")
+        if analysis.crystal_system:
+            lines.append(f"Crystal system: {analysis.crystal_system}")
+        if analysis.lattice_point_group:
+            lines.append(f"Lattice point group: {analysis.lattice_point_group}")
         lines.append(f"Atoms: {analysis.atom_count}")
         lines.append(f"Operations: {analysis.operation_count}")
+        if analysis.centering_translation_count and analysis.centering_translation_count > 1:
+            lines.append(f"Centering translations: {analysis.centering_translation_count}")
         if analysis.equivalent_groups:
             lines.append("Equivalent atom groups:")
             for group in analysis.equivalent_groups[:20]:

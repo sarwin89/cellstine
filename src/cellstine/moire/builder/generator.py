@@ -1,12 +1,30 @@
-"""Generator backend for exact moire supercell construction."""
+"""Generator backend for exact moire supercell construction.
+
+The supercell is filled by *coset enumeration*, not by scanning translations and
+deduplicating by distance: :func:`_column_hermite_normal_form` puts the
+transposed supercell matrix into column Hermite normal form and
+:func:`_coset_representatives` takes the box ``0 <= x < h11``, ``0 <= y < h22``.
+``RequestProject/CosetRepresentatives.lean`` proves what that guarantees --
+``Cellstine.latticeOf_columnHnf`` (the triple computed from the ``gcd``, the
+determinant and a Bezout pair spans the same column lattice),
+``Cellstine.existsUnique_mem_hnfBox`` (the box meets every coset exactly once,
+so no image is duplicated or lost) and ``Cellstine.hnf_card_eq_abs_det`` (there
+are ``|det M|`` of them, so each atom is copied exactly as often as the index of
+the supercell).  No tolerance enters anywhere, and the atom count of the output
+is decided by the integers alone.  ``tests/test_moire_coset_enumeration.py``
+checks all three on the implementation with exact integer arithmetic.
+"""
 
 from __future__ import annotations
 
+import math
 from collections import OrderedDict
+from dataclasses import dataclass
 from typing import List, Sequence, Tuple
 
 import numpy as np
 
+from ...core.contacts import layer_contact_report, merge_notes, structure_contact_report
 from ...io import native as io_mod
 from ..search.results import read_results
 from ..structure_helpers import expand_species
@@ -25,30 +43,64 @@ def parse_results(filename: str) -> Tuple[str, str, List[dict], dict]:
     )
 
 
-def _expand_species(species: Sequence[str], counts: Sequence[int], fallback: str) -> List[str]:
-    return expand_species(species, counts, fallback)
+def _column_hermite_normal_form(matrix: np.ndarray) -> tuple[int, int, int]:
+    """Return ``(h11, h12, h22)`` of the column Hermite normal form of ``matrix``.
+
+    The columns of ``[[h11, h12], [0, h22]]`` span the same integer lattice as the
+    columns of ``matrix``.  Only exact integer arithmetic is used.
+    """
+
+    integers = np.asarray(matrix, dtype=np.int64)
+    determinant = int(
+        integers[0, 0] * integers[1, 1] - integers[0, 1] * integers[1, 0]
+    )
+    if determinant == 0:
+        raise ValueError("supercell matrix must be nonsingular")
+    lower_left, lower_right = int(integers[1, 0]), int(integers[1, 1])
+    h22 = math.gcd(lower_left, lower_right)
+    h11 = abs(determinant) // h22
+    # Bezout coefficients of the bottom row give the column combination whose
+    # lower entry is exactly ``h22``; its upper entry is reduced modulo ``h11``.
+    left, right = _bezout(lower_left, lower_right)
+    h12 = (left * int(integers[0, 0]) + right * int(integers[0, 1])) % h11
+    return h11, h12, h22
 
 
-def _search_range(coef_a: int, coef_b: int, tolerance_r: int) -> range:
-    sign_a = 1 if coef_a >= 0 else -1
-    sign_b = 1 if coef_b >= 0 else -1
-    if sign_a != sign_b:
-        lower = min(coef_a, coef_b) - tolerance_r
-        upper = max(coef_a, coef_b) + tolerance_r
-    else:
-        lower = min(coef_a + coef_b, 0) - tolerance_r
-        upper = max(coef_a + coef_b, 0) + tolerance_r
-    return range(int(lower), int(upper))
+def _bezout(left: int, right: int) -> tuple[int, int]:
+    """Return ``(x, y)`` with ``x * left + y * right == gcd(left, right) >= 0``."""
+
+    old_r, r = int(left), int(right)
+    old_x, x = 1, 0
+    old_y, y = 0, 1
+    while r != 0:
+        quotient = old_r // r
+        old_r, r = r, old_r - quotient * r
+        old_x, x = x, old_x - quotient * x
+        old_y, y = y, old_y - quotient * y
+    if old_r < 0:
+        old_x, old_y = -old_x, -old_y
+    return old_x, old_y
 
 
-def _is_duplicate(existing: Sequence[np.ndarray], candidate: np.ndarray, tolerance: float) -> bool:
-    for previous in existing:
-        dx = previous[0] - candidate[0]
-        dy = previous[1] - candidate[1]
-        dz = previous[2] - candidate[2]
-        if abs(dx - round(dx)) < tolerance and abs(dy - round(dy)) < tolerance and abs(dz) < tolerance:
-            return True
-    return False
+def _coset_representatives(matrix: np.ndarray) -> np.ndarray:
+    """Return the ``|det M|`` lattice translations that fill one supercell.
+
+    A supercell whose rows are ``M`` in units of the primitive cell contains
+    exactly ``|det M|`` copies of every atom, one per coset of ``Z^2 / Z^2 M``.
+    Writing that lattice with column vectors, ``(n M)^T = M^T n^T``, so the cosets
+    are those of ``Z^2 / M^T Z^2``; in the Hermite normal form of ``M^T`` they are
+    represented by ``0 <= x < h11`` and ``0 <= y < h22``.
+
+    Enumerating the cosets is exact, needs no distance tolerance, and produces no
+    duplicates, unlike scanning a heuristic box of translations and discarding
+    coincident images afterwards.
+    """
+
+    h11, _, h22 = _column_hermite_normal_form(np.asarray(matrix, dtype=np.int64).T)
+    first = np.arange(h11, dtype=np.int64)
+    second = np.arange(h22, dtype=np.int64)
+    grid = np.stack(np.meshgrid(first, second, indexing="ij"), axis=-1)
+    return grid.reshape(-1, 2)
 
 
 def _shift_vector(lattice: np.ndarray, direct_shift: Sequence[float], cart_shift: Sequence[float]) -> np.ndarray:
@@ -73,61 +125,38 @@ def _relax_flags(z_value: float, zfix: float | None) -> Tuple[str, str, str] | N
 def _replicate_layer_cartesian(
     positions_direct: np.ndarray,
     source_lattice: np.ndarray,
-    source_supercell: np.ndarray,
-    coef_pair1: Tuple[int, int],
-    coef_pair2: Tuple[int, int],
+    source_matrix: np.ndarray,
     shift_direct: Sequence[float],
     shift_cart: Sequence[float],
-    tolerance: int,
-    tolerance_float: float,
     species: Sequence[str],
     selective_flags: Sequence[Tuple[str, str, str]] | None,
 ) -> List[Tuple[str, np.ndarray, Tuple[str, str, str] | None]]:
+    """Fill one supercell with the images of every atom of the primitive layer.
+
+    ``source_matrix`` holds the integer supercell rows.  Every atom appears once
+    per coset of ``Z^2 / Z^2 M``, so the result always contains exactly
+    ``|det M|`` images per atom.
+    """
+
+    lattice = np.asarray(source_lattice, dtype=float)
+    matrix = np.asarray(source_matrix, dtype=np.int64)
+    translations = _coset_representatives(matrix)
+    supercell_rows = matrix.astype(float) @ lattice[:2]
+    inverse = np.linalg.inv(matrix.astype(float))
+    shift_vector = _shift_vector(lattice, shift_direct, shift_cart)
+
     results: List[Tuple[str, np.ndarray, Tuple[str, str, str] | None]] = []
-    accepted_source_positions: List[np.ndarray] = []
-    shift_vector = _shift_vector(source_lattice, shift_direct, shift_cart)
-
-    range1 = np.array(list(_search_range(coef_pair1[0], coef_pair2[0], tolerance)), dtype=float)
-    range2 = np.array(list(_search_range(coef_pair1[1], coef_pair2[1], tolerance)), dtype=float)
-    grid1, grid2 = np.meshgrid(range1, range2, indexing="ij")
-    translations = np.stack((grid1.ravel(), grid2.ravel()), axis=1)
-
-    source_lattice_array = np.asarray(source_lattice, dtype=float)
-    source_supercell_inverse = np.linalg.inv(np.asarray(source_supercell, dtype=float))
-    basis_a = source_lattice_array[0]
-    basis_b = source_lattice_array[1]
-    basis_c = source_lattice_array[2]
-
     for atom_index, base_direct in enumerate(np.asarray(positions_direct, dtype=float)):
-        direct_xy = translations + base_direct[:2]
-        cartesian_images = (
-            direct_xy[:, :1] * basis_a.reshape(1, 3)
-            + direct_xy[:, 1:2] * basis_b.reshape(1, 3)
-            + base_direct[2] * basis_c.reshape(1, 3)
+        planar = (translations + base_direct[:2]) @ inverse
+        planar -= np.floor(planar)
+        cartesian = (
+            planar @ supercell_rows
+            + base_direct[2] * lattice[2].reshape(1, 3)
+            + shift_vector.reshape(1, 3)
         )
-        source_direct = cartesian_images @ source_supercell_inverse
-        valid_mask = (
-            (source_direct[:, 0] >= -tolerance_float)
-            & (source_direct[:, 0] <= 1.0 + tolerance_float)
-            & (source_direct[:, 1] >= -tolerance_float)
-            & (source_direct[:, 1] <= 1.0 + tolerance_float)
-        )
-        if not np.any(valid_mask):
-            continue
-
-        valid_source = source_direct[valid_mask]
-        valid_cartesian = cartesian_images[valid_mask] + shift_vector.reshape(1, 3)
-        source_flag = tuple(selective_flags[atom_index]) if selective_flags is not None else None
-
-        for source_position, shifted_cartesian in zip(valid_source, valid_cartesian):
-            wrapped_source = np.array(
-                [source_position[0] % 1.0, source_position[1] % 1.0, source_position[2]],
-                dtype=float,
-            )
-            if _is_duplicate(accepted_source_positions, wrapped_source, tolerance_float):
-                continue
-            accepted_source_positions.append(wrapped_source)
-            results.append((species[atom_index], shifted_cartesian, source_flag))
+        flags = tuple(selective_flags[atom_index]) if selective_flags is not None else None
+        for position in cartesian:
+            results.append((species[atom_index], np.array(position, dtype=float), flags))
     return results
 
 
@@ -202,15 +231,31 @@ def _build_final_lattice(
     reference_c: np.ndarray,
     atoms: Sequence[Tuple[str, np.ndarray, Tuple[str, str, str] | None]],
     tolerance_float: float,
+    vacuum: float | None = None,
 ) -> Tuple[np.ndarray, float, float]:
+    """Return the output cell, the current lowest atom, and its target height.
+
+    The stack is centred along ``c``: the empty space is split equally above and
+    below the atoms, so both free surfaces of the slab see the same vacuum and no
+    atom sits on the cell boundary, where rounding could wrap it to the far side.
+    With ``vacuum`` given, the cell height is exactly the occupied span plus that
+    vacuum; otherwise the longer input ``c`` vector is kept whenever it already
+    leaves room for the stack.
+    """
+
     min_z, max_z = _z_bounds(atoms)
     z_span = max_z - min_z
-    reference_length = float(np.linalg.norm(reference_c))
-    lower_padding = max(float(tolerance_float), 1e-3)
-    padding = 2.0 * lower_padding
-    c_length = max(reference_length, z_span + padding)
+    padding = 2.0 * max(float(tolerance_float), 1e-3)
+    if vacuum is None:
+        reference_length = float(np.linalg.norm(reference_c))
+        c_length = max(reference_length, z_span + padding)
+    else:
+        if not np.isfinite(float(vacuum)) or float(vacuum) < 0.0:
+            raise ValueError("vacuum must be a finite nonnegative length in angstrom")
+        c_length = z_span + max(float(vacuum), padding)
     final_c = _scale_vector(reference_c, c_length)
     final_lattice = np.vstack((in_plane_vector1, in_plane_vector2, final_c))
+    lower_padding = 0.5 * (c_length - z_span)
     return final_lattice, min_z, lower_padding
 
 
@@ -265,7 +310,20 @@ def _recorded_layer_geometry(
     return source_supercell, transformed_rows
 
 
-def build_supercell(
+@dataclass(frozen=True)
+class LayerStack:
+    """A built bilayer candidate: the output cell and its two Cartesian layers.
+
+    ``top_atoms`` and ``bottom_atoms`` are ``(species, cartesian, flags)`` triples
+    already shifted so that the stack sits centred inside ``lattice``.
+    """
+
+    lattice: np.ndarray
+    top_atoms: List[Tuple[str, np.ndarray, Tuple[str, str, str] | None]]
+    bottom_atoms: List[Tuple[str, np.ndarray, Tuple[str, str, str] | None]]
+
+
+def build_candidate_layers(
     top_poscar: str,
     bottom_poscar: str,
     candidate: dict,
@@ -274,14 +332,17 @@ def build_supercell(
     shift_top_cart: Sequence[float] = (0.0, 0.0, 0.0),
     shift_bottom_direct: Sequence[float] = (0.0, 0.0, 0.0),
     shift_bottom_cart: Sequence[float] = (0.0, 0.0, 0.0),
-    tolerance: int = 1,
     tolerance_float: float = 1e-4,
     interlayer_distance: float | None = None,
-    zfix: float | None = None,
     repeat_top_c: int = 1,
     repeat_bottom_c: int = 1,
-) -> Tuple[np.ndarray, np.ndarray, List[int], List[str], List[Tuple[str, str, str]] | None]:
-    """Build from original-gauge matrices and recorded in-plane affine transforms."""
+    vacuum: float | None = None,
+) -> LayerStack:
+    """Replicate, strain and stack the two layers of one validated candidate.
+
+    This is the shared geometry stage behind POSCAR generation and the result
+    visualizers, so every consumer sees exactly the same atoms.
+    """
 
     top_structure = io_mod.repeat_structure_along_c(
         io_mod.read_poscar(top_poscar), repeat_top_c
@@ -311,33 +372,25 @@ def build_supercell(
             "with the shared lattice"
         )
 
-    top_species = _expand_species(top_structure.species, top_structure.counts, "top")
-    bottom_species = _expand_species(
+    top_species = expand_species(top_structure.species, top_structure.counts, "top")
+    bottom_species = expand_species(
         bottom_structure.species, bottom_structure.counts, "bottom"
     )
     atoms_top = _replicate_layer_cartesian(
         top_structure.positions_direct,
         top_structure.lattice,
-        top_supercell,
-        tuple(int(value) for value in top_matrix[0]),
-        tuple(int(value) for value in top_matrix[1]),
+        top_matrix,
         shift_top_direct,
         shift_top_cart,
-        tolerance,
-        tolerance_float,
         top_species,
         top_structure.selective_flags,
     )
     atoms_bottom = _replicate_layer_cartesian(
         bottom_structure.positions_direct,
         bottom_structure.lattice,
-        bottom_supercell,
-        tuple(int(value) for value in bottom_matrix[0]),
-        tuple(int(value) for value in bottom_matrix[1]),
+        bottom_matrix,
         shift_bottom_direct,
         shift_bottom_cart,
-        tolerance,
-        tolerance_float,
         bottom_species,
         bottom_structure.selective_flags,
     )
@@ -348,13 +401,13 @@ def build_supercell(
     expected_bottom = int(candidate["bottom_atom_count"]) * int(repeat_bottom_c)
     if len(atoms_top) != expected_top:
         raise ValueError(
-            f"top layer atom count mismatch: expected {expected_top}, found {len(atoms_top)}; "
-            "try increasing tolerance"
+            f"top layer atom count mismatch: the candidate records {expected_top} atoms "
+            f"but its supercell matrix holds {len(atoms_top)}"
         )
     if len(atoms_bottom) != expected_bottom:
         raise ValueError(
-            f"bottom layer atom count mismatch: expected {expected_bottom}, found {len(atoms_bottom)}; "
-            "try increasing tolerance"
+            f"bottom layer atom count mismatch: the candidate records {expected_bottom} "
+            f"atoms but its supercell matrix holds {len(atoms_bottom)}"
         )
 
     if interlayer_distance is not None and atoms_top and atoms_bottom:
@@ -374,14 +427,122 @@ def build_supercell(
         reference_c,
         all_atoms,
         tolerance_float,
+        vacuum,
     )
-    all_atoms = _shift_atoms_z(all_atoms, lower_padding - min_z)
+    shift_z = lower_padding - min_z
+    return LayerStack(
+        lattice=final_lattice,
+        top_atoms=_shift_atoms_z(atoms_top, shift_z),
+        bottom_atoms=_shift_atoms_z(atoms_bottom, shift_z),
+    )
 
+
+def build_supercell(
+    top_poscar: str,
+    bottom_poscar: str,
+    candidate: dict,
+    *,
+    shift_top_direct: Sequence[float] = (0.0, 0.0, 0.0),
+    shift_top_cart: Sequence[float] = (0.0, 0.0, 0.0),
+    shift_bottom_direct: Sequence[float] = (0.0, 0.0, 0.0),
+    shift_bottom_cart: Sequence[float] = (0.0, 0.0, 0.0),
+    tolerance: int = 1,
+    tolerance_float: float = 1e-4,
+    interlayer_distance: float | None = None,
+    zfix: float | None = None,
+    repeat_top_c: int = 1,
+    repeat_bottom_c: int = 1,
+    vacuum: float | None = None,
+) -> Tuple[np.ndarray, np.ndarray, List[int], List[str], List[Tuple[str, str, str]] | None]:
+    """Build from original-gauge matrices and recorded in-plane affine transforms.
+
+    Layer replication is exact coset enumeration, so ``tolerance`` no longer has
+    any effect; it is accepted so that existing callers keep working.
+    ``tolerance_float`` is still used when the recorded transforms are checked
+    against the shared lattice and when the vacuum padding is chosen.
+    """
+
+    del tolerance
+
+    stack = build_candidate_layers(
+        top_poscar,
+        bottom_poscar,
+        candidate,
+        shift_top_direct=shift_top_direct,
+        shift_top_cart=shift_top_cart,
+        shift_bottom_direct=shift_bottom_direct,
+        shift_bottom_cart=shift_bottom_cart,
+        tolerance_float=tolerance_float,
+        interlayer_distance=interlayer_distance,
+        repeat_top_c=repeat_top_c,
+        repeat_bottom_c=repeat_bottom_c,
+        vacuum=vacuum,
+    )
+    final_lattice = stack.lattice
     positions_direct, counts, species, flags = _finalise_cartesian_atoms(
-        all_atoms, final_lattice, zfix
+        stack.top_atoms + stack.bottom_atoms, final_lattice, zfix
     )
     final_lattice, positions_direct = _swap_if_left_handed(final_lattice, positions_direct)
     return final_lattice, positions_direct, counts, species, flags
+
+
+def interlayer_contact_report(
+    stack: LayerStack, *, requested_gap: float | None = None
+) -> dict:
+    """Measure how close the two layers of a built stack really come.
+
+    The interlayer distance a stack is built with separates the two layers along
+    the surface normal.  What decides whether the two surfaces are touching is
+    the closest approach between an atom of one layer and an atom of the other,
+    over the periodic images as well, and for a twisted stack that distance
+    varies across the cell: the registry is different at every moire site.
+    """
+
+    return layer_contact_report(
+        lattice=stack.lattice,
+        first_cartesian=np.array([position for _, position, _ in stack.bottom_atoms], dtype=float).reshape(-1, 3),
+        second_cartesian=np.array([position for _, position, _ in stack.top_atoms], dtype=float).reshape(-1, 3),
+        first_species=[str(symbol) for symbol, _, _ in stack.bottom_atoms],
+        second_species=[str(symbol) for symbol, _, _ in stack.top_atoms],
+        subject="interlayer",
+        requested=None if requested_gap is None else float(requested_gap),
+        requested_name="interlayer distance",
+    )
+
+
+def build_supercell_with_report(
+    top_poscar: str,
+    bottom_poscar: str,
+    candidate: dict,
+    **kwargs,
+) -> Tuple[np.ndarray, np.ndarray, List[int], List[str], List[Tuple[str, str, str]] | None, dict]:
+    """Build a supercell and measure the contact its two layers make.
+
+    Same as :func:`build_supercell`, with the interlayer contact report of
+    :func:`interlayer_contact_report` appended, so a caller that writes a
+    structure can also say how close its layers come without rebuilding it.
+    """
+
+    stack_kwargs = {key: value for key, value in kwargs.items() if key not in {"zfix", "tolerance"}}
+    stack = build_candidate_layers(top_poscar, bottom_poscar, candidate, **stack_kwargs)
+    final_lattice = stack.lattice
+    positions_direct, counts, species, flags = _finalise_cartesian_atoms(
+        stack.top_atoms + stack.bottom_atoms, final_lattice, kwargs.get("zfix")
+    )
+    final_lattice, positions_direct = _swap_if_left_handed(final_lattice, positions_direct)
+    report = interlayer_contact_report(stack, requested_gap=kwargs.get("interlayer_distance"))
+    # The interlayer contact is the one the stage controls; it says nothing about
+    # the layers themselves, so the written cell is measured as a whole too.
+    whole = structure_contact_report(
+        lattice=final_lattice,
+        positions_direct=positions_direct,
+        species=expand_species(species, counts),
+    )
+    for key in ("structure_contact_distance", "structure_contact"):
+        if key in whole:
+            report[key] = whole[key]
+    report["notes"] = merge_notes(whole, report.get("notes", ()))
+    return final_lattice, positions_direct, counts, species, flags, report
 
 
 def write_supercell_poscar(

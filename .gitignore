@@ -47,6 +47,8 @@ output/
 runs/
 output-final_aristotle/
 benchmark_nindex10_moire/
+src/cellstine-optimised/
+aristotle-lean-reference/
 
 # Local notebooks and exports
 *.ipynb

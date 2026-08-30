@@ -1,4 +1,32 @@
-"""Layer-selection and layer-shift helpers shared across workflows."""
+"""Layer-selection and layer-shift helpers shared across workflows.
+
+Which atoms belong to the upper layer is decided by height *along the surface
+normal*, not by Cartesian ``z``: the layers of a stack are planes parallel to
+``a`` and ``b``, so that is the coordinate that separates them.  For the
+convention every stage writes -- ``a`` along ``x``, ``b`` in the ``xy`` plane --
+the two agree exactly, and ``z_cutoff`` keeps its usual meaning; for a cell in
+any other orientation the normal projection is the one that answers the
+question, and it also reads a left-handed cell the right way up.
+
+``layer_partition`` is the *one* rule the whole package uses to decide which
+atoms share an atomic plane: sort the heights and cut wherever a consecutive
+gap exceeds the tolerance.  That is single linkage, and
+``RequestProject/LayerPartition.lean`` proves what makes it the right rule --
+it is the connected-component partition of "within the tolerance of each
+other" (``Cellstine.linked_iff_smallGaps``), the plane numbers grow with height
+(``Cellstine.layerIndex_mono``), and moving the origin or reading the structure
+from the other end changes no layer, only the numbering, which is exactly
+reversed (``Cellstine.linked_add_const``, ``Cellstine.linked_neg``,
+``Cellstine.layerIndex_reverse_add``).
+
+That last invariance is the reason the rule is shared.  Comparing each atom
+with the *first* member of the growing group, or with its running *mean*, gives
+a partition that depends on which end of the slab the sweep starts from: with a
+tolerance of ``0.35`` the heights ``0.00, 0.34, 0.50`` are one group read
+upwards and two groups read downwards, so the same slab reported a different
+layer count, different terminations, and a spurious dipole warning depending on
+how it happened to be written.  Cutting at the gaps cannot do that.
+"""
 
 from __future__ import annotations
 
@@ -9,6 +37,48 @@ from typing import Sequence
 import numpy as np
 
 from ..io import native as io_mod
+from .constants import LAYER_TOLERANCE
+from .vacuum import normal_heights
+
+__all__ = [
+    "LAYER_TOLERANCE",
+    "LayerSelection",
+    "LayerShiftRun",
+    "identify_top_layer",
+    "layer_partition",
+    "resolve_shift_vectors",
+    "shift_top_layer",
+]
+
+
+def layer_partition(
+    heights: Sequence[float] | np.ndarray, tolerance: float
+) -> list[tuple[float, list[int]]]:
+    """Group atoms into atomic planes by height, bottom plane first.
+
+    Two atoms share a plane when a chain of steps no longer than ``tolerance``
+    joins them, which -- the heights being read in order -- is the same as every
+    consecutive gap between them being within the tolerance
+    (``Cellstine.linked_iff_smallGaps``).  Each plane is returned as its mean
+    height together with the indices of its atoms, ordered by height; the
+    planes themselves are ordered from the bottom of the structure up
+    (``Cellstine.layerIndex_mono``).
+
+    A negative tolerance puts every atom in a plane of its own -- no gap, not
+    even a zero one, is within it -- and an empty input has no planes.
+    """
+
+    values = np.asarray(heights, dtype=float).reshape(-1)
+    if values.size == 0:
+        return []
+    order = np.argsort(values, kind="stable")
+    sorted_values = values[order]
+    cut = np.flatnonzero(np.diff(sorted_values) > float(tolerance)) + 1
+    groups = np.split(order, cut)
+    return [
+        (float(np.mean(values[group])), [int(index) for index in group.tolist()])
+        for group in groups
+    ]
 
 
 @dataclass(frozen=True)
@@ -48,7 +118,7 @@ def identify_top_layer(
     if positions.shape[0] == 0:
         raise ValueError("structure does not contain any atoms")
 
-    z_values = positions[:, 2]
+    z_values = normal_heights(structure.lattice, positions)
     if z_cutoff is None:
         order = np.argsort(z_values)
         sorted_z = z_values[order]

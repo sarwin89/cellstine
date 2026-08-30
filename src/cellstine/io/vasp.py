@@ -40,7 +40,17 @@ class VaspIO:
         positions_are_cartesian: bool = False,
         wrap_positions: bool = False,
         comment: str | None = None,
+        validate: bool = True,
     ) -> Path:
+        """Write ``record`` to ``path`` and return the resolved path.
+
+        The structure is checked first: a degenerate cell, a species list that
+        disagrees with the positions, or two atoms on one site are faults that no
+        plane-wave code can be given, so they are raised here rather than written
+        out and discovered by the calculation.  Pass ``validate=False`` to skip
+        the check when a deliberately unusual structure has to be written.
+        """
+
         output_path = Path(path).resolve()
         output_path.parent.mkdir(parents=True, exist_ok=True)
         positions = record.positions_cartesian if positions_are_cartesian else record.positions_direct
@@ -54,5 +64,6 @@ class VaspIO:
             positions_are_cartesian=bool(positions_are_cartesian),
             wrap_positions=bool(wrap_positions),
             selective_flags=record.selective_flags,
+            validate=bool(validate),
         )
         return output_path

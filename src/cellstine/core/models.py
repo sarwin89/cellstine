@@ -7,15 +7,6 @@ from pathlib import Path
 from typing import Any, Dict
 
 
-@dataclass(frozen=True)
-class PrestrainConfig:
-    """Pre-commensuration strain definition for a single layer."""
-
-    mode: str = "none"
-    magnitude: float = 0.0
-    axis: str | None = None
-
-
 @dataclass
 class CommandResult:
     """Thin user-facing result wrapper shared by the workflow APIs."""

@@ -1,119 +1,49 @@
-"""Utilities for manipulating a top-side adsorbate molecule on a substrate."""
+"""Utilities for manipulating a top-side adsorbate molecule on a substrate.
+
+Three of the choices made here are choices of a *gap*, and what each of them
+guarantees is proved in ``RequestProject/MoleculeFraming.lean``:
+
+* :func:`identify_top_group` cuts the sorted heights at the midpoint of the
+  largest gap (``Cellstine.height_lt_gapCut``, ``Cellstine.gapCut_lt_height``);
+  every atom is then at least half a gap clear of the cut
+  (``Cellstine.gapCut_clearance_below``) and no other cut is more robust
+  (``Cellstine.exists_height_near_of_mem_range``).
+* :func:`_unwrap_periodic_axis_with_start` puts the branch cut of a fractional
+  coordinate at the largest empty arc.  Unwrapping moves each atom by a whole
+  lattice vector (``Cellstine.unwrapTo_sub_mem``), always lands inside one
+  period (``Cellstine.arcSpan_lt_one``), and the cut it picks minimises the
+  span over *all* cuts, not only those at an atom
+  (``Cellstine.arcSpan_min_le``); the recentring of
+  :func:`_reframe_direct_positions` then leaves the molecule strictly inside
+  the cell (``Cellstine.centred_mem_Ioo``).
+* :func:`_estimate_inplane_repeats_for_molecule` asks for
+  ``ceil(span + 2 * padding)`` repeats, which leaves at least ``2 * padding`` of
+  empty cell between the molecule and its next image and never more than one
+  repeat beyond that (``Cellstine.inplaneRepeats_clearance``,
+  ``Cellstine.inplaneRepeats_le``).
+
+``tests/test_molecule_framing.py`` re-measures all three on the real functions.
+"""
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Sequence
+from typing import Sequence
 
 import numpy as np
 
-from ...core.species import expand_species as _expand_species_shared
+from ...core.contacts import contact_report
+from ...core.elements import ATOMIC_MASSES, species_masses
+from ...core.layers import LAYER_TOLERANCE, LayerShiftRun, resolve_shift_vectors
+from ...core.provenance import restage_comment
+from ...core.species import expand_species
 from ...core.transforms import yaw_pitch_roll_matrix
+from ...core.vacuum import fit_cell_to_vacuum, normal_heights, vacuum_gap
 from ...interface.surface import backend as surface_mod
 from ...io import native as io_mod
 
 
-_ATOMIC_MASS_ROWS = """
-H 1.008
-He 4.002602
-Li 6.94
-Be 9.0121831
-B 10.81
-C 12.011
-N 14.007
-O 15.999
-F 18.998403163
-Ne 20.1797
-Na 22.98976928
-Mg 24.305
-Al 26.9815385
-Si 28.085
-P 30.973761998
-S 32.06
-Cl 35.45
-Ar 39.948
-K 39.0983
-Ca 40.078
-Sc 44.955908
-Ti 47.867
-V 50.9415
-Cr 51.9961
-Mn 54.938044
-Fe 55.845
-Co 58.933194
-Ni 58.6934
-Cu 63.546
-Zn 65.38
-Ga 69.723
-Ge 72.63
-As 74.921595
-Se 78.971
-Br 79.904
-Kr 83.798
-Rb 85.4678
-Sr 87.62
-Y 88.90584
-Zr 91.224
-Nb 92.90637
-Mo 95.95
-Tc 98.0
-Ru 101.07
-Rh 102.9055
-Pd 106.42
-Ag 107.8682
-Cd 112.414
-In 114.818
-Sn 118.71
-Sb 121.76
-Te 127.6
-I 126.90447
-Xe 131.293
-Cs 132.90545196
-Ba 137.327
-La 138.90547
-Ce 140.116
-Pr 140.90766
-Nd 144.242
-Pm 145.0
-Sm 150.36
-Eu 151.964
-Gd 157.25
-Tb 158.92535
-Dy 162.5
-Ho 164.93033
-Er 167.259
-Tm 168.93422
-Yb 173.045
-Lu 174.9668
-Hf 178.49
-Ta 180.94788
-W 183.84
-Re 186.207
-Os 190.23
-Ir 192.217
-Pt 195.084
-Au 196.966569
-Hg 200.592
-Tl 204.38
-Pb 207.2
-Bi 208.9804
-Po 209.0
-At 210.0
-Rn 222.0
-Fr 223.0
-Ra 226.0
-Ac 227.0
-Th 232.0377
-Pa 231.03588
-U 238.02891
-"""
-
-ATOMIC_MASSES = {
-    symbol: float(mass)
-    for symbol, mass in (line.split() for line in _ATOMIC_MASS_ROWS.splitlines() if line.strip())
-}
 DEFAULT_OUTPUT_DIR = Path("output")
 
 
@@ -146,17 +76,12 @@ class MoleculeTransformRun:
     center_of_mass_after: np.ndarray
     target_cartesian: np.ndarray
     reframe_shift_direct: np.ndarray
-
-
-@dataclass(frozen=True)
-class LayerShiftRun:
-    output_path: Path
-    top_atom_count: int
-    bottom_atom_count: int
-    z_cutoff: float
-    gap_size: float
-    shift_cartesian: np.ndarray
-    shift_direct: np.ndarray
+    vacuum_before: float = 0.0
+    vacuum_after: float = 0.0
+    contact_distance: float = float("nan")
+    contact_species: tuple[str, str] | None = None
+    self_image_distance: float = float("nan")
+    notes: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -173,6 +98,16 @@ class AdsorbRun:
     site_cartesian: np.ndarray
     site_direct: np.ndarray
     reframe_shift_direct: np.ndarray
+    vacuum_before: float = 0.0
+    vacuum_after: float = 0.0
+    contact_distance: float = float("nan")
+    contact_species: tuple[str, str] | None = None
+    self_image_distance: float = float("nan")
+    notes: tuple[str, ...] = ()
+    surface_area: float = float("nan")
+    top_layer_atom_count: int = 0
+    coverage_monolayer: float = float("nan")
+    coverage_per_nm2: float = float("nan")
 
 
 @dataclass(frozen=True)
@@ -181,10 +116,6 @@ class _TopGroupSplit:
     substrate_mask: np.ndarray
     z_cutoff: float
     gap_size: float
-
-
-def _expand_species(species: Sequence[str], counts: Sequence[int]) -> List[str]:
-    return _expand_species_shared(species, counts)
 
 
 def _species_disjoint_split(
@@ -205,7 +136,7 @@ def _species_disjoint_split(
     if gap_candidates.size == 0:
         return None
 
-    expanded_species = np.array(_expand_species(structure.species, structure.counts), dtype=object)
+    expanded_species = np.array(expand_species(structure.species, structure.counts), dtype=object)
     for gap_index in gap_candidates.tolist():
         bottom_cluster = order[: gap_index + 1]
         upper_cluster = order[gap_index + 1 :]
@@ -229,28 +160,8 @@ def _species_disjoint_split(
     return None
 
 
-def _normalise_element_symbol(label: str) -> str:
-    cleaned = "".join(re.findall(r"[A-Za-z]+", str(label)))
-    if not cleaned:
-        raise ValueError(f"could not infer an element symbol from {label!r}")
-
-    candidate_two = cleaned[:2].capitalize()
-    if candidate_two in ATOMIC_MASSES:
-        return candidate_two
-
-    candidate_one = cleaned[:1].upper()
-    if candidate_one in ATOMIC_MASSES:
-        return candidate_one
-
-    raise ValueError(f"no atomic mass is available for species label {label!r}")
-
-
-def _species_masses(species: Sequence[str]) -> np.ndarray:
-    return np.array([ATOMIC_MASSES[_normalise_element_symbol(symbol)] for symbol in species], dtype=float)
-
-
 def center_of_mass_cartesian(positions: np.ndarray, species: Sequence[str]) -> np.ndarray:
-    masses = _species_masses(species)
+    masses = species_masses(species)
     weight = float(np.sum(masses))
     if weight <= 0.0:
         raise ValueError("total atomic mass must be positive")
@@ -267,7 +178,10 @@ def identify_top_group(
     if positions.shape[0] == 0:
         raise ValueError("structure does not contain any atoms")
 
-    z_values = positions[:, 2]
+    # Heights are measured along the surface normal, which is the Cartesian z
+    # of every structure this package writes and the right coordinate for any
+    # other orientation of the same slab.
+    z_values = normal_heights(structure.lattice, positions)
     order = np.argsort(z_values)
     sorted_z = z_values[order]
     gaps = np.diff(sorted_z)
@@ -304,7 +218,7 @@ def identify_top_group(
     if not np.any(substrate_mask):
         raise ValueError(f"all atoms are above z_cutoff={z_cutoff:.6f} A; no substrate atoms remain")
 
-    expanded_species = _expand_species(structure.species, structure.counts)
+    expanded_species = expand_species(structure.species, structure.counts)
     molecule_indices = tuple(int(index) for index in np.flatnonzero(molecule_mask))
     substrate_indices = tuple(int(index) for index in np.flatnonzero(substrate_mask))
     molecule_species = [expanded_species[index] for index in molecule_indices]
@@ -367,35 +281,6 @@ def _resolve_target_cartesian(
     return current.copy()
 
 
-def _resolve_shift_vectors(
-    lattice: np.ndarray,
-    shift_cartesian: Sequence[float] | None,
-    shift_direct: Sequence[float] | None,
-) -> tuple[np.ndarray, np.ndarray]:
-    if shift_cartesian is not None and shift_direct is not None:
-        raise ValueError("use either shift_cartesian or shift_direct, not both")
-
-    if shift_direct is not None:
-        values = list(shift_direct)
-        if len(values) not in {2, 3}:
-            raise ValueError("shift_direct must contain either 2 values (du,dv) or 3 values (du,dv,dw)")
-        direct_shift = np.zeros(3, dtype=float)
-        direct_shift[: len(values)] = np.array(values, dtype=float)
-        cartesian_shift = io_mod.direct_to_cartesian(direct_shift.reshape(1, 3), lattice)[0]
-        return cartesian_shift, direct_shift
-
-    if shift_cartesian is not None:
-        values = list(shift_cartesian)
-        if len(values) not in {2, 3}:
-            raise ValueError("shift_cartesian must contain either 2 values (dx,dy) or 3 values (dx,dy,dz)")
-        cartesian_shift = np.zeros(3, dtype=float)
-        cartesian_shift[: len(values)] = np.array(values, dtype=float)
-        direct_shift = io_mod.cartesian_to_direct(cartesian_shift.reshape(1, 3), lattice)[0]
-        return cartesian_shift, direct_shift
-
-    return np.zeros(3, dtype=float), np.zeros(3, dtype=float)
-
-
 def _transform_molecule_cartesian(
     positions: np.ndarray,
     species: Sequence[str],
@@ -442,7 +327,7 @@ def _normalise_reframe_axes(reframe_axes: str | Sequence[str] | None) -> tuple[i
 def _surface_outward_normal(lattice: np.ndarray, surface_side: str) -> np.ndarray:
     if surface_side not in {"top", "bottom"}:
         raise ValueError("surface_side must be 'top' or 'bottom'")
-    normal = surface_mod._surface_normal(lattice)
+    normal = surface_mod.surface_normal(lattice)
     return normal if surface_side == "top" else -normal
 
 
@@ -455,7 +340,7 @@ def _estimate_inplane_repeats_for_molecule(
     roll_deg: float = 0.0,
     fit_padding: float,
 ) -> tuple[int, int]:
-    molecule_species = _expand_species(molecule.species, molecule.counts)
+    molecule_species = expand_species(molecule.species, molecule.counts)
     positions = np.asarray(molecule.positions_cartesian, dtype=float)
     com = center_of_mass_cartesian(positions, molecule_species)
     centered = positions - com
@@ -485,7 +370,7 @@ def _translate_molecule_to_site(
     if float(height) < 0.0:
         raise ValueError("height must be non-negative")
 
-    slab_normal = surface_mod._surface_normal(substrate_lattice)
+    slab_normal = surface_mod.surface_normal(substrate_lattice)
     outward_normal = _surface_outward_normal(substrate_lattice, surface_side)
     site_cart = np.asarray(site_cartesian, dtype=float)
 
@@ -511,6 +396,19 @@ def _translate_molecule_to_site(
     return translated, com_before
 
 
+def _contact_species(report: dict[str, object]) -> tuple[str, str] | None:
+    """Return the two species of the closest contact a report found."""
+
+    contact = report.get("contact")
+    if not isinstance(contact, dict):
+        return None
+    species = contact.get("species")
+    if not species:
+        return None
+    first, second = species
+    return (str(first), str(second))
+
+
 def _default_flag_list(natoms: int) -> list[tuple[str, str, str]]:
     return [("T", "T", "T")] * int(natoms)
 
@@ -521,24 +419,31 @@ def _combine_substrate_and_molecule(
     molecule_positions_cartesian: np.ndarray,
     *,
     reframe_axes: str | Sequence[str] | None,
+    lattice: np.ndarray | None = None,
+    substrate_positions_cartesian: np.ndarray | None = None,
 ) -> tuple[np.ndarray, list[int], list[str], list[tuple[str, str, str]] | None, np.ndarray, np.ndarray]:
-    substrate_species_expanded = _expand_species(substrate.species, substrate.counts)
-    molecule_species_expanded = _expand_species(molecule.species, molecule.counts)
+    substrate_species_expanded = expand_species(substrate.species, substrate.counts)
+    molecule_species_expanded = expand_species(molecule.species, molecule.counts)
 
+    cell = np.asarray(substrate.lattice if lattice is None else lattice, dtype=float)
+    substrate_cartesian = np.asarray(
+        substrate.positions_cartesian if substrate_positions_cartesian is None else substrate_positions_cartesian,
+        dtype=float,
+    )
     combined_cartesian = np.vstack(
         (
-            np.asarray(substrate.positions_cartesian, dtype=float),
+            substrate_cartesian,
             np.asarray(molecule_positions_cartesian, dtype=float),
         )
     )
     molecule_indices = tuple(range(substrate.natoms, substrate.natoms + molecule.natoms))
-    combined_direct = io_mod.cartesian_to_direct(combined_cartesian, substrate.lattice)
+    combined_direct = io_mod.cartesian_to_direct(combined_cartesian, cell)
     reframed_direct, shift_direct = _reframe_direct_positions(
         combined_direct,
         molecule_indices,
         _normalise_reframe_axes(reframe_axes),
     )
-    reframed_cartesian = io_mod.direct_to_cartesian(reframed_direct, substrate.lattice)
+    reframed_cartesian = io_mod.direct_to_cartesian(reframed_direct, cell)
 
     substrate_flags = (
         _default_flag_list(substrate.natoms)
@@ -618,6 +523,13 @@ def _reframe_direct_positions(
         direct_array[molecule_index_array, axis] = molecule_direct
         shift[axis] = 0.5 * (float(np.max(molecule_direct)) + float(np.min(molecule_direct))) - 0.5
         direct_array[:, axis] -= shift[axis]
+        if axis in (0, 1):
+            # After the shift the molecule is centred on 0.5 and, because its span
+            # along this axis is strictly below one lattice vector, it lies inside
+            # (0, 1).  Every other atom is only defined modulo the lattice, so wrap
+            # the in-plane coordinates back into the cell instead of writing the
+            # negative values produced by the shift.
+            direct_array[:, axis] = io_mod.wrap_direct(direct_array[:, axis])
 
     return direct_array, shift
 
@@ -634,11 +546,12 @@ def transform_top_molecule(
     z_cutoff: float | None = None,
     min_gap: float = 1.0,
     reframe_axes: str | Sequence[str] | None = None,
+    preserve_vacuum: bool = True,
 ) -> MoleculeTransformRun:
     structure = io_mod.read_poscar(poscar_path)
     selection = identify_top_group(structure, z_cutoff=z_cutoff, min_gap=min_gap)
 
-    expanded_species = _expand_species(structure.species, structure.counts)
+    expanded_species = expand_species(structure.species, structure.counts)
     molecule_indices = np.array(selection.molecule_indices, dtype=int)
     molecule_species = [expanded_species[index] for index in selection.molecule_indices]
     resolved_target_cartesian = _resolve_target_cartesian(
@@ -661,16 +574,41 @@ def transform_top_molecule(
     )
     all_cartesian[molecule_indices] = transformed_molecule
 
-    direct_positions = io_mod.cartesian_to_direct(all_cartesian, structure.lattice)
+    # Moving the molecule must not push it into the periodic image of the slab:
+    # keep at least the vacuum the structure arrived with.
+    gap_before = vacuum_gap(structure.lattice, structure.positions_cartesian)
+    lattice_out = np.asarray(structure.lattice, dtype=float)
+    if preserve_vacuum:
+        anchor = float(
+            np.min(
+                np.asarray(structure.positions_cartesian, dtype=float)
+                @ _surface_outward_normal(structure.lattice, "top")
+            )
+        )
+        lattice_out, all_cartesian = fit_cell_to_vacuum(
+            structure.lattice, all_cartesian, gap_before, anchor=anchor
+        )
+    gap_after = vacuum_gap(lattice_out, all_cartesian)
+
+    direct_positions = io_mod.cartesian_to_direct(all_cartesian, lattice_out)
     reframe_axes_normalised = _normalise_reframe_axes(reframe_axes)
     reframed_direct, shift_direct = _reframe_direct_positions(
         direct_positions,
         selection.molecule_indices,
         reframe_axes_normalised,
     )
-    final_cartesian = io_mod.direct_to_cartesian(reframed_direct, structure.lattice)
+    final_cartesian = io_mod.direct_to_cartesian(reframed_direct, lattice_out)
     final_molecule_positions = final_cartesian[molecule_indices]
     final_center_of_mass = center_of_mass_cartesian(final_molecule_positions, molecule_species)
+
+    substrate_index_array = np.array(selection.substrate_indices, dtype=int)
+    contacts = contact_report(
+        lattice=lattice_out,
+        group_direct=io_mod.cartesian_to_direct(final_molecule_positions, lattice_out),
+        other_direct=io_mod.cartesian_to_direct(final_cartesian[substrate_index_array], lattice_out),
+        group_species=molecule_species,
+        other_species=[expanded_species[index] for index in selection.substrate_indices],
+    )
 
     if output_path is None:
         input_path = Path(poscar_path).resolve()
@@ -683,11 +621,11 @@ def transform_top_molecule(
 
     io_mod.write_poscar(
         output_path,
-        structure.lattice,
+        lattice_out,
         reframed_direct,
         structure.counts,
         structure.species,
-        comment=f"{structure.comment} | molecule adjusted",
+        comment=restage_comment(structure.comment, "adsorbate move", "molecule adjusted"),
         positions_are_cartesian=False,
         wrap_positions=False,
         selective_flags=structure.selective_flags,
@@ -703,6 +641,12 @@ def transform_top_molecule(
         center_of_mass_after=final_center_of_mass,
         target_cartesian=final_center_of_mass,
         reframe_shift_direct=shift_direct,
+        vacuum_before=float(gap_before),
+        vacuum_after=float(gap_after),
+        contact_distance=float(contacts.get("contact_distance", float("nan"))),
+        contact_species=_contact_species(contacts),
+        self_image_distance=float(contacts.get("self_image_distance", float("nan"))),
+        notes=tuple(contacts.get("notes", ())),
     )
 
 
@@ -717,12 +661,13 @@ def place_molecule_on_site(
     tilt_deg: float = 0.0,
     roll_deg: float = 0.0,
     surface_side: str = "top",
-    layer_tolerance: float = 0.35,
+    layer_tolerance: float = LAYER_TOLERANCE,
     neighbour_tolerance: float = 0.15,
     hollow_match_tolerance: float | None = None,
     reframe_axes: str | Sequence[str] | None = "xy",
     auto_repeat_substrate: bool = False,
     fit_padding: float = 0.15,
+    preserve_vacuum: bool = True,
     output_path: str | None = None,
 ) -> AdsorbRun:
     substrate = io_mod.read_poscar(substrate_poscar)
@@ -736,7 +681,7 @@ def place_molecule_on_site(
             roll_deg=float(roll_deg),
             fit_padding=float(fit_padding),
         )
-        substrate = surface_mod._repeat_structure_inplane(substrate, repeat_a, repeat_b)
+        substrate = surface_mod.repeat_structure_inplane(substrate, repeat_a, repeat_b)
 
     site_report = surface_mod.find_adsorption_sites(
         substrate,
@@ -747,7 +692,7 @@ def place_molecule_on_site(
     )
     selected_site = surface_mod.select_adsorption_site(site_report, site_type, site_index)
 
-    molecule_species_expanded = _expand_species(molecule.species, molecule.counts)
+    molecule_species_expanded = expand_species(molecule.species, molecule.counts)
     placed_molecule_cartesian, center_before = _translate_molecule_to_site(
         molecule.positions_cartesian,
         molecule_species_expanded,
@@ -759,15 +704,56 @@ def place_molecule_on_site(
         tilt_deg=tilt_deg,
         roll_deg=roll_deg,
     )
+
+    # A molecule sitting on a finished slab eats into the vacuum the slab was
+    # built with, and would end up talking to its own periodic image.  Grow the
+    # c axis -- along its own direction, so the cell keeps its shape -- until
+    # the gap is back to what the substrate arrived with.
+    substrate_cartesian = np.asarray(substrate.positions_cartesian, dtype=float)
+    gap_before = vacuum_gap(substrate.lattice, substrate_cartesian)
+    lattice_out = np.asarray(substrate.lattice, dtype=float)
+    placed_substrate_cartesian = substrate_cartesian
+    if preserve_vacuum:
+        anchor = float(np.min(substrate_cartesian @ _surface_outward_normal(substrate.lattice, "top")))
+        combined = np.vstack((substrate_cartesian, placed_molecule_cartesian))
+        lattice_out, fitted = fit_cell_to_vacuum(substrate.lattice, combined, gap_before, anchor=anchor)
+        placed_substrate_cartesian = fitted[: substrate.natoms]
+        placed_molecule_cartesian = fitted[substrate.natoms :]
+    gap_after = vacuum_gap(
+        lattice_out, np.vstack((placed_substrate_cartesian, placed_molecule_cartesian))
+    )
+
     positions_direct_out, counts_out, species_out, flags_out, shift_direct, final_molecule_cartesian = (
         _combine_substrate_and_molecule(
             substrate,
             molecule,
             placed_molecule_cartesian,
             reframe_axes=reframe_axes,
+            lattice=lattice_out,
+            substrate_positions_cartesian=placed_substrate_cartesian,
         )
     )
     center_after = center_of_mass_cartesian(final_molecule_cartesian, molecule_species_expanded)
+
+    # The requested height is a clearance measured along the surface normal; the
+    # distance that decides whether the structure is physical is the closest
+    # approach the molecule makes to the substrate and to its own periodic
+    # images, so measure both and say what they are.
+    contacts = contact_report(
+        lattice=lattice_out,
+        group_direct=io_mod.cartesian_to_direct(placed_molecule_cartesian, lattice_out),
+        other_direct=io_mod.cartesian_to_direct(placed_substrate_cartesian, lattice_out),
+        group_species=molecule_species_expanded,
+        other_species=expand_species(substrate.species, substrate.counts),
+        requested=float(height),
+    )
+
+    # One molecule in this cell is a coverage, and a coverage is what an
+    # adsorption energy is quoted at; the cell area and the number of surface
+    # atoms it holds are both already known here, so report it rather than
+    # leaving it to be worked out from the file.
+    surface_area = float(np.linalg.norm(np.cross(lattice_out[0], lattice_out[1])))
+    top_layer_atoms = int(getattr(site_report, "top_layer_atom_count", 0) or 0)
 
     if output_path is None:
         substrate_path = Path(substrate_poscar).resolve()
@@ -785,13 +771,15 @@ def place_molecule_on_site(
 
     io_mod.write_poscar(
         output_path,
-        substrate.lattice,
+        lattice_out,
         positions_direct_out,
         counts_out,
         species_out,
-        comment=(
-            f"{substrate.comment} | adsorbed {Path(molecule_poscar).stem} on "
-            f"{surface_mod.canonical_site_type(site_type)} #{int(site_index)}"
+        comment=restage_comment(
+            substrate.comment,
+            "adsorbate place",
+            f"adsorbed {Path(molecule_poscar).stem} on "
+            f"{surface_mod.canonical_site_type(site_type)} #{int(site_index)}",
         ),
         positions_are_cartesian=False,
         wrap_positions=False,
@@ -811,6 +799,20 @@ def place_molecule_on_site(
         site_cartesian=np.array(selected_site.cartesian, dtype=float),
         site_direct=np.array(selected_site.direct, dtype=float),
         reframe_shift_direct=shift_direct,
+        vacuum_before=float(gap_before),
+        vacuum_after=float(gap_after),
+        contact_distance=float(contacts.get("contact_distance", float("nan"))),
+        contact_species=_contact_species(contacts),
+        self_image_distance=float(contacts.get("self_image_distance", float("nan"))),
+        notes=tuple(contacts.get("notes", ())),
+        surface_area=surface_area,
+        top_layer_atom_count=top_layer_atoms,
+        coverage_monolayer=(
+            float("nan") if top_layer_atoms <= 0 else 1.0 / float(top_layer_atoms)
+        ),
+        coverage_per_nm2=(
+            float("nan") if surface_area <= 0.0 else 100.0 / surface_area
+        ),
     )
 
 
@@ -825,7 +827,7 @@ def shift_top_layer(
 ) -> LayerShiftRun:
     structure = io_mod.read_poscar(poscar_path)
     selection = identify_top_group(structure, z_cutoff=z_cutoff, min_gap=min_gap)
-    cartesian_shift, direct_shift = _resolve_shift_vectors(structure.lattice, shift_cartesian, shift_direct)
+    cartesian_shift, direct_shift = resolve_shift_vectors(structure.lattice, shift_cartesian, shift_direct)
 
     direct_positions = np.array(structure.positions_direct, dtype=float, copy=True)
     top_indices = np.array(selection.molecule_indices, dtype=int)

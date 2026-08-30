@@ -3,114 +3,55 @@
 from __future__ import annotations
 
 import argparse
-import math
-from typing import List
 
-
-APP_NAME = "CELLSTINE"
-APP_EXPANSION = "CELL Superlattice Transformation INterface and Engine"
-LEGACY_MOIRE_FIND_MESSAGE = (
-    "Legacy moire find controls are unsupported; use --max-length, --top-strain, "
-    "and --bottom-strain."
+# Only the dependency-free constants module is imported here: building the
+# parser must not drag in NumPy or a workflow package, so ``--help``, a
+# mistyped flag and the interactive menu all start immediately.
+from ..core.constants import (
+    DEFAULT_CELL_LIMIT,
+    DEFAULT_MATCH_LIMIT,
+    DEFAULT_SYMMETRY_TOLERANCE,
+    DIRECTION_HELP,
+    LAYER_SELECTION_HELP,
+    LAYER_TOLERANCE,
+)
+from .argtypes import (
+    APP_EXPANSION,
+    APP_NAME,
+    HelpFormatter,
+    LEGACY_MOIRE_FIND_MESSAGE,
+    LegacyMoireFindAction,
+    add_legacy_moire_find_flag,
+    parse_float_vector,
+    parse_index_spec,
+    parse_int_matrix,
+    parse_mesh_shift,
+    parse_nonnegative_float,
+    parse_positive_float,
+    parse_positive_int,
+    parse_string_list,
+    parse_supercell,
+    parse_supercell_matrix,
 )
 
-
-class HelpFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
-    """Readable help text with examples and defaults."""
-
-
-class LegacyMoireFindAction(argparse.Action):
-    """Reject retired find flags with one actionable migration message."""
-
-    def __call__(self, parser, namespace, values, option_string=None) -> None:
-        parser.error(LEGACY_MOIRE_FIND_MESSAGE)
-
-
-def parse_positive_float(raw: str) -> float:
-    value = float(raw)
-    if not math.isfinite(value) or value <= 0.0:
-        raise argparse.ArgumentTypeError("must be a finite positive number")
-    return value
-
-
-def parse_nonnegative_float(raw: str) -> float:
-    value = float(raw)
-    if not math.isfinite(value) or value < 0.0:
-        raise argparse.ArgumentTypeError("must be a finite nonnegative number")
-    return value
-
-
-def add_legacy_moire_find_flag(parser: argparse.ArgumentParser, *flags: str, takes_value: bool = True) -> None:
-    parser.add_argument(
-        *flags,
-        action=LegacyMoireFindAction,
-        nargs="?" if takes_value else 0,
-        help=argparse.SUPPRESS,
-    )
-
-
-def parse_index_spec(raw: str) -> List[int]:
-    values: List[int] = []
-    for chunk in str(raw).split(","):
-        token = chunk.strip()
-        if not token:
-            continue
-        if "-" in token:
-            start_text, end_text = token.split("-", 1)
-            start = int(start_text.strip())
-            end = int(end_text.strip())
-            step = 1 if end >= start else -1
-            values.extend(list(range(start, end + step, step)))
-        else:
-            values.append(int(token))
-    if not values:
-        raise argparse.ArgumentTypeError("please provide at least one index")
-    return list(dict.fromkeys(values))
-
-
-def parse_float_vector(raw: str) -> List[float]:
-    values = [float(token.strip()) for token in str(raw).replace(";", ",").split(",") if token.strip()]
-    if len(values) not in {2, 3}:
-        raise argparse.ArgumentTypeError("please provide 2 or 3 numeric values separated by commas")
-    return values
-
-
-def parse_int_matrix(raw: str) -> List[int]:
-    values = [int(token.strip()) for token in str(raw).replace(";", ",").split(",") if token.strip()]
-    if len(values) != 4:
-        raise argparse.ArgumentTypeError("please provide exactly four integer values")
-    return values
-
-
-def parse_optional_float_list(raw: str | None) -> List[float] | None:
-    if raw in {None, ""}:
-        return None
-    return [float(token.strip()) for token in str(raw).replace(";", ",").split(",") if token.strip()]
-
-
-def parse_prestrain_modes(raw: str | None) -> List[str] | None:
-    if raw in {None, ""}:
-        return None
-    return [token.strip().lower() for token in str(raw).split(",") if token.strip()]
-
-
-def parse_string_list(raw: str | None) -> List[str] | None:
-    if raw in {None, ""}:
-        return None
-    return [token.strip() for token in str(raw).split(",") if token.strip()]
-
-
-def parse_angles_by_layer(raw: str | None) -> List[List[float] | None] | None:
-    if raw in {None, ""}:
-        return None
-    groups = []
-    for chunk in str(raw).split(";"):
-        token = chunk.strip()
-        if not token:
-            groups.append(None)
-        else:
-            groups.append([float(item.strip()) for item in token.split(",") if item.strip()])
-    return groups
+__all__ = ["build_parser"] + [
+    'APP_EXPANSION',
+    'APP_NAME',
+    'HelpFormatter',
+    'LEGACY_MOIRE_FIND_MESSAGE',
+    'LegacyMoireFindAction',
+    'add_legacy_moire_find_flag',
+    'parse_float_vector',
+    'parse_index_spec',
+    'parse_int_matrix',
+    'parse_mesh_shift',
+    'parse_nonnegative_float',
+    'parse_positive_float',
+    'parse_positive_int',
+    'parse_string_list',
+    'parse_supercell',
+    'parse_supercell_matrix',
+]
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -123,7 +64,7 @@ def build_parser() -> argparse.ArgumentParser:
             "  moire      Build commensurate moire supercells\n"
             "  adsorbate  Place and manipulate molecules on substrates\n"
             "  interface  Build surfaces and heterointerfaces from bulk or slab inputs\n"
-            "  symmetry  Analyse space groups and reduce cells\n"
+            "  symmetry   Analyse space groups and reduce cells\n"
             "  defect     Analyse and generate vacancy, substitution, interstitial, and adatom defects"
         ),
     )
@@ -152,9 +93,29 @@ def build_parser() -> argparse.ArgumentParser:
     moire_find.add_argument("--min-length", type=parse_positive_float, default=None, help="minimum in-plane supercell length in angstrom")
     moire_find.add_argument("--max-atoms", type=int, default=None, help="maximum atoms allowed in a candidate supercell")
     moire_find.add_argument("--max-cell-aspect-ratio", type=parse_positive_float, default=12.0, help="maximum in-plane supercell aspect ratio")
+    moire_find.add_argument("--min-twist-angle", type=parse_nonnegative_float, default=None, help="report only candidates whose twist angle is at least this many degrees")
+    moire_find.add_argument("--max-twist-angle", type=parse_nonnegative_float, default=None, help="report only candidates whose twist angle is at most this many degrees")
     moire_find.add_argument("--min-cell-angle", type=parse_positive_float, default=25.0, help="minimum in-plane supercell angle in degrees")
     moire_find.add_argument("--max-cell-angle", type=parse_positive_float, default=155.0, help="maximum in-plane supercell angle in degrees")
+    moire_find.add_argument(
+        "--symmetry-tolerance",
+        type=parse_positive_float,
+        default=DEFAULT_SYMMETRY_TOLERANCE,
+        help=(
+            "relative metric tolerance for detecting each layer point group; "
+            "the layers are then idealised onto the metric their group preserves exactly"
+        ),
+    )
     moire_find.add_argument("--symmetric", action="store_true", help="request the restricted symmetry-preserving search branch")
+    moire_find.add_argument(
+        "--keep-layer-cells",
+        action="store_true",
+        help=(
+            "search on the layer cells exactly as given instead of first folding each layer onto "
+            "its own in-plane primitive cell; a supercell input then yields the coarser, larger "
+            "moire candidates that cell allows"
+        ),
+    )
     moire_find.add_argument("--progress", action="store_true", help="show live stage progress and elapsed timings while the search runs")
     moire_find.add_argument("--preview-limit", type=int, default=10, help="number of angle-sorted candidates to print after the search; use 0 to hide")
     for flag in (
@@ -171,10 +132,79 @@ def build_parser() -> argparse.ArgumentParser:
     for flag in ("--fold-symmetry", "--allow-slivers", "--no-cull", "--no-reduce"):
         add_legacy_moire_find_flag(moire_find, flag, takes_value=False)
 
+    moire_findn = moire_sub.add_parser(
+        "findn",
+        formatter_class=HelpFormatter,
+        help="search commensurate cells for three or more layers",
+        description=(
+            "Search commensurate cells for a rigid base layer with one or more upper layers. "
+            "Every upper layer is matched against the unstrained base and the shared cell of the "
+            "stack is the exact integer intersection of the per-layer base supercells."
+        ),
+    )
+    moire_findn.add_argument("base_poscar")
+    moire_findn.add_argument("upper_poscars", nargs="+", help="one POSCAR per upper layer, bottom to top")
+    moire_findn.add_argument("--max-length", type=parse_positive_float, required=True, help="maximum in-plane supercell length in angstrom")
+    moire_findn.add_argument(
+        "--layer-strains",
+        type=parse_float_vector,
+        default=None,
+        help="per-layer principal logarithmic strain budget; one value applies to every upper layer",
+    )
+    moire_findn.add_argument("--layer-strain", type=parse_nonnegative_float, default=0.02, help="strain budget used for every upper layer")
+    moire_findn.add_argument("--min-length", type=parse_positive_float, default=None, help="minimum in-plane supercell length in angstrom")
+    moire_findn.add_argument("--max-atoms", type=int, default=2000, help="maximum atoms allowed in the whole stack")
+    moire_findn.add_argument("--max-pair-atoms", type=int, default=None, help="maximum atoms allowed in each base-upper pair candidate")
+    moire_findn.add_argument("--max-cell-aspect-ratio", type=parse_positive_float, default=12.0, help="maximum in-plane supercell aspect ratio")
+    moire_findn.add_argument("--min-cell-angle", type=parse_positive_float, default=25.0, help="minimum in-plane supercell angle in degrees")
+    moire_findn.add_argument("--max-cell-angle", type=parse_positive_float, default=155.0, help="maximum in-plane supercell angle in degrees")
+    moire_findn.add_argument("--per-layer-limit", type=int, default=40, help="pair candidates kept per upper layer before combining")
+    moire_findn.add_argument("--max-candidates", type=int, default=200, help="maximum multi-layer candidates to record")
+    moire_findn.add_argument(
+        "--keep-layer-cells",
+        action="store_true",
+        help=(
+            "search on the layer cells exactly as given instead of first folding every layer, base "
+            "included, onto its own in-plane primitive cell; a supercell input then yields the "
+            "coarser, larger stacks that cell allows"
+        ),
+    )
+    moire_findn.add_argument("--preview-limit", type=int, default=10, help="number of candidates to print after the search; use 0 to hide")
+
+    moire_maken = moire_sub.add_parser(
+        "maken",
+        formatter_class=HelpFormatter,
+        help="generate multi-layer supercells from saved findn results",
+    )
+    moire_maken.add_argument("results_file")
+    moire_maken.add_argument("--indexes", "--indices", dest="indexes", type=parse_index_spec, required=True, help="comma-separated indices or ranges, e.g. 1,3-5")
+    moire_maken.add_argument(
+        "--interlayers",
+        type=parse_float_vector,
+        default=None,
+        help="gap in angstrom above each layer, bottom to top; a single value applies to every gap",
+    )
+    moire_maken.add_argument("--interlayer-distance", type=float, default=3.35, help="gap used for every layer separation in angstrom")
+    moire_maken.add_argument(
+        "--vacuum",
+        type=float,
+        default=None,
+        help="total vacuum in angstrom, split equally above and below the stack; "
+        "the default keeps the longer input c vector",
+    )
+    moire_maken.add_argument("--output-dir", default=None)
+
     moire_make = moire_sub.add_parser("make", formatter_class=HelpFormatter, help="generate bilayer supercells from saved results")
     moire_make.add_argument("results_file")
-    moire_make.add_argument("--indexes", type=parse_index_spec, required=True, help="comma-separated indices or ranges, e.g. 1,3-5")
+    moire_make.add_argument("--indexes", "--indices", dest="indexes", type=parse_index_spec, required=True, help="comma-separated indices or ranges, e.g. 1,3-5")
     moire_make.add_argument("--interlayer-distance", type=float, default=3.35, help="layer separation in angstrom")
+    moire_make.add_argument(
+        "--vacuum",
+        type=float,
+        default=None,
+        help="total vacuum in angstrom, split equally above and below the stack; "
+        "the default keeps the longer input c vector",
+    )
     moire_make.add_argument("--workers", type=int, default=1)
     moire_make.add_argument("--output-dir", default=None)
 
@@ -194,7 +224,7 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     moire_visualize.add_argument("results_file")
-    moire_visualize.add_argument("--indices", type=parse_index_spec, default=None)
+    moire_visualize.add_argument("--indices", "--indexes", dest="indices", type=parse_index_spec, default=None, help="comma-separated indices or ranges, e.g. 1,3-5; the default plots every candidate")
     moire_visualize.add_argument("--interlayer", type=float, default=3.35)
     moire_visualize.add_argument("--output", default=None, help="output PNG path by default, or HTML path with --plotly")
     moire_visualize.add_argument("--plotly", action="store_true", help="write the optional interactive 3D HTML viewer instead of the default Matplotlib PNG")
@@ -226,6 +256,11 @@ def build_parser() -> argparse.ArgumentParser:
     ads_place.add_argument("--rotate", type=float, default=0.0, help="rotation about the c axis in degrees")
     ads_place.add_argument("--tilt", type=float, default=0.0, help="tilt/pitch angle in degrees")
     ads_place.add_argument("--roll", type=float, default=0.0, help="roll angle in degrees")
+    ads_place.add_argument(
+        "--keep-cell-height",
+        action="store_true",
+        help="write the substrate cell unchanged instead of lengthening c to keep its vacuum gap",
+    )
 
     ads_move = adsorbate_sub.add_parser("move", formatter_class=HelpFormatter, help="move a top-side molecule in a stacked structure")
     ads_move.add_argument("poscar_path")
@@ -234,6 +269,11 @@ def build_parser() -> argparse.ArgumentParser:
     ads_move.add_argument("--rotate", type=float, default=0.0)
     ads_move.add_argument("--tilt", type=float, default=0.0)
     ads_move.add_argument("--roll", type=float, default=0.0)
+    ads_move.add_argument(
+        "--keep-cell-height",
+        action="store_true",
+        help="write the cell unchanged instead of lengthening c to keep its vacuum gap",
+    )
 
     ads_assemble = adsorbate_sub.add_parser(
         "assemble",
@@ -253,6 +293,34 @@ def build_parser() -> argparse.ArgumentParser:
     ads_assemble.add_argument("--bottom-strain", type=parse_nonnegative_float, required=True, help="substrate principal logarithmic strain budget as a fraction")
     ads_assemble.add_argument("--preview-limit", type=int, default=10, help="number of lowest-strain candidates to print after the search; use 0 to hide")
 
+    ads_path = adsorbate_sub.add_parser(
+        "path",
+        formatter_class=HelpFormatter,
+        help="build the chain of images between two structures of one cell",
+        description=(
+            "Write the evenly spaced chain of images a nudged-elastic-band run starts from -- a "
+            "molecule or adatom diffusing from one site to the next, say. 00/POSCAR is the "
+            "initial structure and the last folder the final one. The atoms of the two endpoints "
+            "are paired by the assignment that makes the path shortest, and every atom travels to "
+            "its nearest periodic image. Both endpoints must share one cell and one composition."
+        ),
+    )
+    ads_path.add_argument("start_structure")
+    ads_path.add_argument("end_structure")
+    ads_path.add_argument(
+        "--images",
+        type=int,
+        default=3,
+        help="number of intermediate images; the chain holds two more than this",
+    )
+    ads_path.add_argument(
+        "--no-match",
+        dest="match",
+        action="store_false",
+        help="pair the atoms in file order instead of by the shortest-path assignment",
+    )
+    ads_path.add_argument("--output-dir", default=None, help="where to write the numbered image folders")
+
     ads_visualize = adsorbate_sub.add_parser(
         "visualize",
         formatter_class=HelpFormatter,
@@ -266,6 +334,7 @@ def build_parser() -> argparse.ArgumentParser:
     ads_visualize.add_argument("--output", default=None, help="output PNG path by default, or HTML path with --plotly")
     ads_visualize.add_argument("--plotly", action="store_true", help="write the optional interactive 3D HTML viewer instead of the default Matplotlib PNG")
     ads_visualize.add_argument("--show", action="store_true", help="also open the Matplotlib window after saving when a GUI backend is available")
+    ads_visualize.add_argument("--view-direction", default=None, help=DIRECTION_HELP)
 
     interface = groups.add_parser(
         "interface",
@@ -282,18 +351,49 @@ def build_parser() -> argparse.ArgumentParser:
     int_surface.add_argument("--vacuum", type=float, default=15.0)
     int_surface.add_argument("--repeat-a", type=int, default=1)
     int_surface.add_argument("--repeat-b", type=int, default=1)
+    int_surface.add_argument(
+        "--min-length-a",
+        type=float,
+        default=None,
+        help="repeat along the surface a axis until the cell is at least this long in angstrom",
+    )
+    int_surface.add_argument(
+        "--min-length-b",
+        type=float,
+        default=None,
+        help="repeat along the surface b axis until the cell is at least this long in angstrom",
+    )
     int_surface.add_argument("--supercell-matrix", type=parse_int_matrix, default=None)
+    int_surface.add_argument("--output-path", default=None, help="where to write the slab POSCAR")
     int_surface.add_argument("--analyse-sites", action="store_true")
+    int_surface.add_argument("--sites-output-path", default=None, help="where to write the adsorption-site report")
+    int_surface.add_argument(
+        "--site-surface-side",
+        choices=["top", "bottom"],
+        default="top",
+        help="which face of the new slab to analyse for adsorption sites",
+    )
 
     int_sites = interface_sub.add_parser("sites", formatter_class=HelpFormatter, help="identify adsorption sites for a slab")
     int_sites.add_argument("slab_poscar")
     int_sites.add_argument("--surface-side", choices=["top", "bottom"], default="top")
+    int_sites.add_argument("--output-path", default=None, help="where to write the adsorption-site report")
 
-    int_build = interface_sub.add_parser("build", formatter_class=HelpFormatter, help="build a heterointerface from slabs or bulks")
-    int_build.add_argument("bottom_input")
-    int_build.add_argument("top_input")
-    int_build.add_argument("--bottom-kind", choices=["bulk", "surface", "slab"], default="surface")
-    int_build.add_argument("--top-kind", choices=["bulk", "surface", "slab"], default="surface")
+    int_build = interface_sub.add_parser(
+        "build",
+        formatter_class=HelpFormatter,
+        help="build a heterointerface from slabs or bulks",
+        description=(
+            "Stack two slabs. Without --match the two 1x1 cells are stacked directly and the top slab is "
+            "forced onto the bottom cell, which is refused above --max-strain. With --match the interface "
+            "is built on a commensurate supercell found by `interface match`, sharing a small strain "
+            "between the two slabs."
+        ),
+    )
+    int_build.add_argument("bottom_input", nargs="?", default=None)
+    int_build.add_argument("top_input", nargs="?", default=None)
+    int_build.add_argument("--bottom-kind", choices=["auto", "bulk", "surface", "slab"], default="auto", help="auto reads a cell with no vacuum as bulk and cuts a slab from it")
+    int_build.add_argument("--top-kind", choices=["auto", "bulk", "surface", "slab"], default="auto", help="auto reads a cell with no vacuum as bulk and cuts a slab from it")
     int_build.add_argument("--bottom-miller", default="1,1,1")
     int_build.add_argument("--top-miller", default="1,1,1")
     int_build.add_argument("--bottom-layers", type=int, default=4)
@@ -301,6 +401,76 @@ def build_parser() -> argparse.ArgumentParser:
     int_build.add_argument("--bottom-vacuum", type=float, default=15.0)
     int_build.add_argument("--top-vacuum", type=float, default=15.0)
     int_build.add_argument("--gap", type=float, default=3.0)
+    int_build.add_argument("--vacuum", type=float, default=None, help="vacuum thickness of the finished interface cell in angstrom")
+    int_build.add_argument("--output-path", default=None, help="where to write the interface POSCAR")
+    int_build.add_argument("--match", dest="match_json", default=None, help="matches.json from `interface match`; builds the commensurate supercell")
+    int_build.add_argument("--match-index", type=int, default=1, help="one-based match index inside matches.json")
+    int_build.add_argument(
+        "--max-strain",
+        type=parse_nonnegative_float,
+        default=0.05,
+        help="largest principal logarithmic strain accepted when stacking two 1x1 cells directly",
+    )
+    int_build.add_argument(
+        "--bottom-stacking",
+        choices=["keep", "mirror"],
+        default="keep",
+        help="keep the bottom slab as built, or mirror it to reverse its ABCABC stacking to CBACBA",
+    )
+    int_build.add_argument(
+        "--top-stacking",
+        choices=["keep", "mirror", "abc", "cba"],
+        default="keep",
+        help=(
+            "stacking of the top slab relative to the bottom one: abc stacks it the same way, "
+            "cba reverses it, mirror always reflects it, keep leaves it alone"
+        ),
+    )
+    int_build.add_argument(
+        "--registry",
+        default=None,
+        help=(
+            "which layer meets which at the contact: a contact such as C-A, a kind such as "
+            "eclipsed/fcc/hcp, or an index from `interface registries`"
+        ),
+    )
+    int_build.add_argument(
+        "--include-equivalent",
+        action="store_true",
+        help="number the registry options as `interface registries --include-equivalent` does",
+    )
+
+    int_registries = interface_sub.add_parser(
+        "registries",
+        formatter_class=HelpFormatter,
+        help="list the distinct stacking sequences and contacts of two slabs",
+        description=(
+            "List the genuinely different ways two close-packed slabs can meet. The letters of a "
+            "stacking sequence carry an origin gauge, so A-A, B-B and C-C are one contact, and "
+            "reversing both slabs at once only reflects the whole interface, so twelve labelled "
+            "combinations collapse to six distinct ones, and fewer still when the two slabs are "
+            "interchangeable. Use --include-equivalent to see the removed ones as well."
+        ),
+    )
+    int_registries.add_argument("bottom_input")
+    int_registries.add_argument("top_input")
+    int_registries.add_argument("--bottom-kind", choices=["auto", "bulk", "surface", "slab"], default="auto", help="auto reads a cell with no vacuum as bulk and cuts a slab from it")
+    int_registries.add_argument("--top-kind", choices=["auto", "bulk", "surface", "slab"], default="auto", help="auto reads a cell with no vacuum as bulk and cuts a slab from it")
+    int_registries.add_argument("--bottom-miller", default="1,1,1")
+    int_registries.add_argument("--top-miller", default="1,1,1")
+    int_registries.add_argument("--bottom-layers", type=int, default=4)
+    int_registries.add_argument("--top-layers", type=int, default=4)
+    int_registries.add_argument("--bottom-vacuum", type=float, default=15.0)
+    int_registries.add_argument("--top-vacuum", type=float, default=15.0)
+    int_registries.add_argument(
+        "--include-equivalent",
+        action="store_true",
+        help=(
+            "also list the options removed as duplicates, that is mirror images and interfaces "
+            "that are the same boundary turned over"
+        ),
+    )
+    int_registries.add_argument("--output-path", default=None, help="where to write registries.json")
 
     int_match = interface_sub.add_parser("match", formatter_class=HelpFormatter, help="scan bulk surfaces for interface matches")
     int_match.add_argument("bottom_bulk")
@@ -310,7 +480,34 @@ def build_parser() -> argparse.ArgumentParser:
     int_match.add_argument("--bottom-layers-list", nargs="*", type=int, default=None, help="candidate bottom slab layer counts")
     int_match.add_argument("--top-layers-list", nargs="*", type=int, default=None, help="candidate top slab layer counts")
     int_match.add_argument("--vacuum", type=float, default=15.0)
-    int_match.add_argument("--max-strain", type=float, default=0.05)
+    int_match.add_argument(
+        "--max-strain",
+        type=parse_nonnegative_float,
+        default=0.05,
+        help="principal logarithmic strain budget for one slab, as a fraction",
+    )
+    int_match.add_argument(
+        "--max-length",
+        type=parse_positive_float,
+        default=20.0,
+        help="maximum in-plane length of the matched supercell in angstrom",
+    )
+    int_match.add_argument(
+        "--strain-mode",
+        choices=["shared", "film"],
+        default="shared",
+        help="share the strain between both slabs, or keep the bottom slab rigid and strain only the film",
+    )
+    int_match.add_argument("--min-length", type=parse_positive_float, default=None, help="minimum in-plane supercell length in angstrom")
+    int_match.add_argument("--max-atoms", type=int, default=None, help="maximum atoms allowed in a matched interface cell")
+    int_match.add_argument(
+        "--max-matches",
+        type=int,
+        default=DEFAULT_MATCH_LIMIT,
+        help="keep only this many best matches; use 0 to keep every match",
+    )
+    int_match.add_argument("--preview-limit", type=int, default=10, help="number of matches to print; use 0 to hide")
+    int_match.add_argument("--output-path", default=None, help="where to write matches.json")
 
     int_visualize = interface_sub.add_parser(
         "visualize",
@@ -325,12 +522,13 @@ def build_parser() -> argparse.ArgumentParser:
     int_visualize.add_argument("--output", default=None, help="output PNG path by default, or HTML path with --plotly")
     int_visualize.add_argument("--plotly", action="store_true", help="write the optional interactive 3D HTML viewer instead of the default Matplotlib PNG")
     int_visualize.add_argument("--show", action="store_true", help="also open the Matplotlib window after saving when a GUI backend is available")
+    int_visualize.add_argument("--view-direction", default=None, help=DIRECTION_HELP)
 
     symmetry = groups.add_parser(
         "symmetry",
         formatter_class=HelpFormatter,
         help="symmetry analysis and cell reduction",
-        description="Symmetry workflows using direct spglib when installed, with a native lattice-summary fallback.",
+        description="Symmetry workflows. The native engine computes symmetry operations, point groups, equivalent-atom orbits, primitive cells, and Niggli/Delaunay reductions; direct spglib adds space-group types and Wyckoff labels when installed.",
     )
     symmetry_sub = symmetry.add_subparsers(dest="stage")
 
@@ -351,7 +549,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     sym_reduce.add_argument("structure")
     sym_reduce.add_argument("--cell", choices=["primitive", "conventional", "refined"], default="primitive")
-    sym_reduce.add_argument("--backend", choices=["auto", "spglib"], default="auto")
+    sym_reduce.add_argument("--backend", choices=["auto", "native", "spglib"], default="auto")
     sym_reduce.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for symmetry finding")
     sym_reduce.add_argument("--angle-tolerance", type=float, default=5.0, help="angle tolerance in degrees for symmetry finding")
     sym_reduce.add_argument("--output", default=None, help="optional output POSCAR path")
@@ -363,9 +561,114 @@ def build_parser() -> argparse.ArgumentParser:
     )
     sym_lattice_reduce.add_argument("structure")
     sym_lattice_reduce.add_argument("--reduction", choices=["niggli", "delaunay"], default="niggli")
-    sym_lattice_reduce.add_argument("--backend", choices=["auto", "spglib"], default="auto")
+    sym_lattice_reduce.add_argument("--backend", choices=["auto", "native", "spglib"], default="auto")
     sym_lattice_reduce.add_argument("--symprec", type=float, default=1e-5, help="lattice reduction tolerance")
     sym_lattice_reduce.add_argument("--output", default=None, help="optional output POSCAR path")
+
+    sym_kpoints = symmetry_sub.add_parser(
+        "kpoints",
+        formatter_class=HelpFormatter,
+        help="write a symmetry-reduced Brillouin-zone sampling mesh",
+        description=(
+            "Write a KPOINTS file for a structure. The mesh follows either a largest allowed "
+            "reciprocal-space step (--spacing, the quantity VASP calls KSPACING, in 1/angstrom "
+            "with the 2 pi convention) or explicit divisions, and is reduced by the rotations of "
+            "the space group of the cell together with time reversal. The weights written are "
+            "exact orbit sizes and add up to the size of the unreduced mesh."
+        ),
+    )
+    sym_kpoints.add_argument("structure")
+    sym_kpoints.add_argument(
+        "--spacing",
+        type=parse_positive_float,
+        default=None,
+        help="largest allowed step between sampled wavevectors, in 1/angstrom",
+    )
+    sym_kpoints.add_argument(
+        "--divisions",
+        type=parse_supercell,
+        default=None,
+        help="explicit mesh divisions as 'n1,n2,n3' instead of a spacing",
+    )
+    sym_kpoints.add_argument(
+        "--mesh",
+        choices=["gamma", "monkhorst"],
+        default="gamma",
+        help="Gamma-centred mesh, or the Monkhorst-Pack half-step offset on even axes",
+    )
+    sym_kpoints.add_argument(
+        "--shift",
+        type=parse_mesh_shift,
+        default=None,
+        help="explicit mesh offset in grid steps as 's1,s2,s3', overriding --mesh",
+    )
+    sym_kpoints.add_argument(
+        "--surface",
+        action="store_true",
+        help="sample the surface normal with a single point, as a slab with vacuum needs",
+    )
+    sym_kpoints.add_argument("--no-symmetry", action="store_true", help="reduce by time reversal only")
+    sym_kpoints.add_argument("--no-time-reversal", action="store_true", help="do not identify k with -k")
+    sym_kpoints.add_argument("--list-points", action="store_true", help="always write the explicit irreducible list with weights")
+    sym_kpoints.add_argument("--automatic", action="store_true", help="always write the automatic mesh line instead of the list")
+    sym_kpoints.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for symmetry finding")
+    sym_kpoints.add_argument("--output", default=None, help="optional output KPOINTS path")
+
+    sym_kpath = symmetry_sub.add_parser(
+        "kpath",
+        formatter_class=HelpFormatter,
+        help="write a band-structure path through the Brillouin zone",
+        description=(
+            "Write the line-mode KPOINTS file of a band structure. The high-symmetry points are "
+            "derived from the symmetry of the cell -- they are the points and the ends of the "
+            "symmetry lines of the Brillouin zone, not a table look-up -- and are named after the "
+            "conventional cell of the Bravais lattice. The walk is the conventional one for the "
+            "Bravais types that have one and is otherwise derived from the symmetry lines; --path "
+            "chooses it explicitly, as 'GAMMA-X-W|K-L'."
+        ),
+    )
+    sym_kpath.add_argument("structure")
+    sym_kpath.add_argument(
+        "--spacing",
+        type=parse_positive_float,
+        default=None,
+        help="largest allowed step along the path, in 1/angstrom (default 0.03)",
+    )
+    sym_kpath.add_argument(
+        "--divisions",
+        type=parse_positive_int,
+        default=None,
+        help="explicit number of points per segment instead of a spacing",
+    )
+    sym_kpath.add_argument(
+        "--path",
+        default=None,
+        help="explicit walk, such as 'GAMMA-X-W|K-L'; '|' breaks the line",
+    )
+    sym_kpath.add_argument(
+        "--derived-path",
+        action="store_true",
+        help="always derive the walk from the symmetry lines, never use the conventional one",
+    )
+    sym_kpath.add_argument("--no-symmetry", action="store_true", help="use the point group of the lattice, ignoring the atoms")
+    sym_kpath.add_argument("--no-time-reversal", action="store_true", help="do not identify k with -k")
+    sym_kpath.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for symmetry finding")
+    sym_kpath.add_argument("--output", default=None, help="optional output KPOINTS path")
+
+    sym_visualize = symmetry_sub.add_parser(
+        "visualize",
+        formatter_class=HelpFormatter,
+        help="plot a structure, optionally along a chosen direction",
+        description=(
+            "Plot a structure. The default is a Matplotlib multi-view PNG; with --view-direction "
+            "the plan view is the picture an observer looking along that direction would see."
+        ),
+    )
+    sym_visualize.add_argument("structure_path")
+    sym_visualize.add_argument("--output", default=None, help="output PNG path by default, or HTML path with --plotly")
+    sym_visualize.add_argument("--plotly", action="store_true", help="write the optional interactive 3D HTML viewer instead of the default Matplotlib PNG")
+    sym_visualize.add_argument("--show", action="store_true", help="also open the Matplotlib window after saving when a GUI backend is available")
+    sym_visualize.add_argument("--view-direction", default=None, help=DIRECTION_HELP)
 
     defect = groups.add_parser(
         "defect",
@@ -391,9 +694,11 @@ def build_parser() -> argparse.ArgumentParser:
     defect_analyse.add_argument("--structure-kind", choices=["auto", "bulk", "surface", "slab", "molecule-on-substrate"], default="auto")
     defect_analyse.add_argument("--backend", choices=["auto", "native", "spglib"], default="auto")
     defect_analyse.add_argument("--surface-side", choices=["top", "bottom"], default="top")
-    defect_analyse.add_argument("--layer-tolerance", type=float, default=0.35, help="layer grouping tolerance in angstrom")
-    defect_analyse.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for spglib symmetry finding")
+    defect_analyse.add_argument("--layer-tolerance", type=float, default=LAYER_TOLERANCE, help="layer grouping tolerance in angstrom")
+    defect_analyse.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for symmetry finding")
     defect_analyse.add_argument("--divacancy-distance", type=float, default=3.5, help="maximum cut-off distance for divacancy pairing in angstrom")
+    defect_analyse.add_argument("--view-direction", default="auto", help=DIRECTION_HELP)
+    defect_analyse.add_argument("--interstitial-saddles", action="store_true", help="also list the saddles of the distance to the nearest atom as interstitial candidates: the sites held by two or three atoms, such as the octahedral site of a body-centred cubic metal and the bond centre of a covalent crystal")
 
     defect_generate = defect_sub.add_parser(
         "generate",
@@ -410,15 +715,133 @@ def build_parser() -> argparse.ArgumentParser:
     defect_generate.add_argument("--species", default=None, help="inserted species for interstitial/adatom, or replacement fallback for substitution")
     defect_generate.add_argument("--substitution-species", default=None, help="replacement species for substitution or antisite defects")
     defect_generate.add_argument("--original-species", default=None, help="restrict atom-site defects to this original species")
-    defect_generate.add_argument("--generate", choices=["inequivalent"], default="inequivalent")
+    defect_generate.add_argument(
+        "--generate",
+        choices=["inequivalent", "all"],
+        default="inequivalent",
+        help=(
+            "inequivalent: one structure per orbit of symmetry-equivalent sites (default); "
+            "all: one structure per equivalent atom, restricted to --layers when it is given"
+        ),
+    )
     defect_generate.add_argument("--height", type=float, default=2.5, help="adatom height above the detected surface site in angstrom")
     defect_generate.add_argument("--output-dir", default=None)
     defect_generate.add_argument("--structure-kind", choices=["auto", "bulk", "surface", "slab", "molecule-on-substrate"], default="auto")
     defect_generate.add_argument("--backend", choices=["auto", "native", "spglib"], default="auto")
     defect_generate.add_argument("--surface-side", choices=["top", "bottom"], default="top")
-    defect_generate.add_argument("--layer-tolerance", type=float, default=0.35, help="layer grouping tolerance in angstrom")
-    defect_generate.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for spglib symmetry finding")
+    defect_generate.add_argument("--layer-tolerance", type=float, default=LAYER_TOLERANCE, help="layer grouping tolerance in angstrom")
+    defect_generate.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for symmetry finding")
     defect_generate.add_argument("--divacancy-distance", type=float, default=3.5, help="maximum cut-off distance for divacancy pairing in angstrom")
+    defect_generate.add_argument("--view-direction", default="auto", help=DIRECTION_HELP)
+    defect_generate.add_argument("--layers", default=None, help=LAYER_SELECTION_HELP)
+    defect_generate.add_argument("--interstitial-saddles", action="store_true", help="also list the saddles of the distance to the nearest atom as interstitial candidates: the sites held by two or three atoms, such as the octahedral site of a body-centred cubic metal and the bond centre of a covalent crystal")
+    defect_generate.add_argument(
+        "--supercell",
+        type=parse_supercell,
+        default=None,
+        help="repeat the host cell before the defect is made, e.g. 2,2,1 (dilutes the defect)",
+    )
+    defect_generate.add_argument(
+        "--supercell-matrix",
+        type=parse_supercell_matrix,
+        default=None,
+        help=(
+            "repeat the host cell by any integer matrix, row by row; write a matrix with a "
+            "negative first entry as --supercell-matrix=-1,1,1,1,-1,1,1,1,-1"
+        ),
+    )
+    defect_generate.add_argument(
+        "--min-image-distance",
+        type=parse_positive_float,
+        default=None,
+        help=(
+            "enlarge the host cell to the smallest supercell that puts this distance in angstrom "
+            "between the defect and its nearest periodic image"
+        ),
+    )
+    defect_generate.add_argument(
+        "--cell-limit",
+        type=int,
+        default=DEFAULT_CELL_LIMIT,
+        help="largest cell count searched by --min-image-distance",
+    )
+    defect_generate.add_argument(
+        "--keep-cell-height",
+        action="store_true",
+        help="write the host cell unchanged instead of lengthening c to keep an adatom's vacuum gap",
+    )
+
+    defect_supercell = defect_sub.add_parser(
+        "supercell",
+        formatter_class=HelpFormatter,
+        help="build the host supercell a point defect should be made in",
+        description=(
+            "Choose and write the host supercell a point defect should be made in. The cell is "
+            "chosen for the distance it puts between the defect and its periodic images, not for "
+            "the number of atoms: every sublattice of the host lattice of a given size is "
+            "enumerated in Hermite normal form and the roundest one wins, which is usually not a "
+            "plain repeat. A slab is measured in the plane only, since vacuum already separates "
+            "its images along c."
+        ),
+    )
+    defect_supercell.add_argument("structure")
+    defect_supercell.add_argument(
+        "--min-image-distance",
+        type=parse_positive_float,
+        default=None,
+        help="smallest acceptable distance from the defect to its nearest periodic image, in angstrom",
+    )
+    defect_supercell.add_argument(
+        "--max-cells",
+        type=int,
+        default=None,
+        help="instead, use the best cell holding at most this many host cells",
+    )
+    defect_supercell.add_argument(
+        "--cell-limit",
+        type=int,
+        default=DEFAULT_CELL_LIMIT,
+        help="largest cell count searched when a minimum image distance is requested",
+    )
+    defect_supercell.add_argument(
+        "--table",
+        dest="table_limit",
+        type=int,
+        default=0,
+        help="also print the best supercell of every size up to this many host cells",
+    )
+    defect_supercell.add_argument("--structure-kind", choices=["auto", "bulk", "surface", "slab", "molecule-on-substrate"], default="auto")
+    defect_supercell.add_argument("--layer-tolerance", type=float, default=LAYER_TOLERANCE, help="layer grouping tolerance in angstrom")
+    defect_supercell.add_argument("--output", default=None, help="where to write the host supercell POSCAR")
+
+    defect_path = defect_sub.add_parser(
+        "path",
+        formatter_class=HelpFormatter,
+        help="build the chain of images between two structures of one cell",
+        description=(
+            "Write the evenly spaced chain of images a nudged-elastic-band run starts from: "
+            "00/POSCAR is the initial structure, the last folder the final one. The atoms of the "
+            "two endpoints are paired by the assignment that makes the path shortest -- the file "
+            "order of the two structures is not trusted -- and every atom travels to its nearest "
+            "periodic image, so an atom that leaves through one face returns through the opposite "
+            "one the short way. Both endpoints must share one cell and one composition."
+        ),
+    )
+    defect_path.add_argument("start_structure")
+    defect_path.add_argument("end_structure")
+    defect_path.add_argument(
+        "--images",
+        type=int,
+        default=3,
+        help="number of intermediate images; the chain holds two more than this",
+    )
+    defect_path.add_argument(
+        "--no-match",
+        dest="match",
+        action="store_false",
+        help="pair the atoms in file order instead of by the shortest-path assignment",
+    )
+    defect_path.add_argument("--output-dir", default=None, help="where to write the numbered image folders")
 
     defect_preview = defect_sub.add_parser(
         "preview",
@@ -430,8 +853,26 @@ def build_parser() -> argparse.ArgumentParser:
     defect_preview.add_argument("--structure-kind", choices=["auto", "bulk", "surface", "slab", "molecule-on-substrate"], default="auto")
     defect_preview.add_argument("--backend", choices=["auto", "native", "spglib"], default="auto")
     defect_preview.add_argument("--surface-side", choices=["top", "bottom"], default="top")
-    defect_preview.add_argument("--layer-tolerance", type=float, default=0.35, help="layer grouping tolerance in angstrom")
-    defect_preview.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for spglib symmetry finding")
+    defect_preview.add_argument("--layer-tolerance", type=float, default=LAYER_TOLERANCE, help="layer grouping tolerance in angstrom")
+    defect_preview.add_argument("--symprec", type=float, default=0.01, help="Cartesian distance tolerance for symmetry finding")
     defect_preview.add_argument("--divacancy-distance", type=float, default=3.5, help="maximum cut-off distance for divacancy pairing in angstrom")
+    defect_preview.add_argument("--view-direction", default="auto", help=DIRECTION_HELP)
+    defect_preview.add_argument("--interstitial-saddles", action="store_true", help="also list the saddles of the distance to the nearest atom as interstitial candidates: the sites held by two or three atoms, such as the octahedral site of a body-centred cubic metal and the bond centre of a covalent crystal")
+
+    defect_visualize = defect_sub.add_parser(
+        "visualize",
+        formatter_class=HelpFormatter,
+        help="plot a host or defect structure",
+        description=(
+            "Plot a host or generated defect structure. With --view-direction the plan view is "
+            "taken along the same direction the atomic planes are counted along, so a defect can "
+            "be checked in the plane it was meant for."
+        ),
+    )
+    defect_visualize.add_argument("structure_path")
+    defect_visualize.add_argument("--output", default=None, help="output PNG path by default, or HTML path with --plotly")
+    defect_visualize.add_argument("--plotly", action="store_true", help="write the optional interactive 3D HTML viewer instead of the default Matplotlib PNG")
+    defect_visualize.add_argument("--show", action="store_true", help="also open the Matplotlib window after saving when a GUI backend is available")
+    defect_visualize.add_argument("--view-direction", default=None, help=DIRECTION_HELP)
 
     return parser

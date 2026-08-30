@@ -10,7 +10,6 @@ from typing import Dict, Sequence
 
 import numpy as np
 
-from ...io import native as io_mod
 from ...moire.builder import generator as generator_backend
 from ...moire.search.results import read_results
 
@@ -57,15 +56,11 @@ def _cell_outline_points(lattice: np.ndarray) -> tuple[list[float], list[float],
     return xs, ys, zs
 
 
-def _z_shift_layers(
-    layer_atoms: Sequence[list[tuple[str, np.ndarray, tuple[str, str, str] | None]]],
-    final_lattice: np.ndarray,
-    min_z: float,
-    lower_padding: float,
-) -> tuple[list[list[tuple[str, np.ndarray, tuple[str, str, str] | None]]], np.ndarray]:
-    z_shift = float(lower_padding) - float(min_z)
-    shifted_layers = [generator_backend._shift_atoms_z(atoms, z_shift) for atoms in layer_atoms]
-    return shifted_layers, final_lattice
+def _peak_percent(values: object) -> float:
+    """Return the largest principal strain magnitude of a layer, in percent."""
+
+    entries = [abs(float(value)) for value in list(values or [0.0])]
+    return 100.0 * (max(entries) if entries else 0.0)
 
 
 def _build_bilayer_frame(
@@ -79,81 +74,15 @@ def _build_bilayer_frame(
     search: Dict[str, object],
     metadata: Dict[str, object],
 ) -> dict[str, object]:
-    top = io_mod.repeat_structure_along_c(io_mod.read_poscar(top_poscar), top_c_repeat)
-    bottom = io_mod.repeat_structure_along_c(io_mod.read_poscar(bottom_poscar), bottom_c_repeat)
-
-    top_matrix = np.asarray(record["top_matrix"], dtype=int)
-    bottom_matrix = np.asarray(record["bottom_matrix"], dtype=int)
-    top_affine = np.asarray(record["top_affine"], dtype=float)
-    bottom_affine = np.asarray(record["bottom_affine"], dtype=float)
-    shared_rows = np.asarray(record["shared_lattice"], dtype=float).T
-    top_supercell, transformed_top = generator_backend._recorded_layer_geometry(
-        top, top_matrix, top_affine, "top"
+    stack = generator_backend.build_candidate_layers(
+        top_poscar,
+        bottom_poscar,
+        record,
+        interlayer_distance=float(interlayer),
+        repeat_top_c=int(top_c_repeat),
+        repeat_bottom_c=int(bottom_c_repeat),
     )
-    bottom_supercell, transformed_bottom = generator_backend._recorded_layer_geometry(
-        bottom, bottom_matrix, bottom_affine, "bottom"
-    )
-    if not (
-        np.allclose(transformed_top, transformed_bottom, rtol=1e-4, atol=1e-4)
-        and np.allclose(transformed_top, shared_rows, rtol=1e-4, atol=1e-4)
-    ):
-        raise ValueError(
-            "recorded transformed top and bottom in-plane lattices do not agree "
-            "with the shared lattice"
-        )
-
-    top_species = generator_backend._expand_species(top.species, top.counts, "Top")
-    bottom_species = generator_backend._expand_species(bottom.species, bottom.counts, "Bottom")
-    atoms_top = generator_backend._replicate_layer_cartesian(
-        top.positions_direct,
-        top.lattice,
-        top_supercell,
-        tuple(int(value) for value in top_matrix[0]),
-        tuple(int(value) for value in top_matrix[1]),
-        (0.0, 0.0, 0.0),
-        (0.0, 0.0, 0.0),
-        1,
-        1e-4,
-        top_species,
-        top.selective_flags,
-    )
-    atoms_bottom = generator_backend._replicate_layer_cartesian(
-        bottom.positions_direct,
-        bottom.lattice,
-        bottom_supercell,
-        tuple(int(value) for value in bottom_matrix[0]),
-        tuple(int(value) for value in bottom_matrix[1]),
-        (0.0, 0.0, 0.0),
-        (0.0, 0.0, 0.0),
-        1,
-        1e-4,
-        bottom_species,
-        bottom.selective_flags,
-    )
-    atoms_top = generator_backend._transform_layer_atoms(atoms_top, top_affine)
-    atoms_bottom = generator_backend._transform_layer_atoms(atoms_bottom, bottom_affine)
-    expected_top = int(record["top_atom_count"]) * int(top_c_repeat)
-    expected_bottom = int(record["bottom_atom_count"]) * int(bottom_c_repeat)
-    if len(atoms_top) != expected_top or len(atoms_bottom) != expected_bottom:
-        raise ValueError(
-            "visualized layer atom counts do not match the validated Gram candidate"
-        )
-    if atoms_top and atoms_bottom:
-        top_min_z, _ = generator_backend._z_bounds(atoms_top)
-        _, bottom_max_z = generator_backend._z_bounds(atoms_bottom)
-        atoms_top = generator_backend._shift_atoms_z(atoms_top, bottom_max_z + float(interlayer) - top_min_z)
-
-    final_vector1 = np.array([shared_rows[0, 0], shared_rows[0, 1], 0.0])
-    final_vector2 = np.array([shared_rows[1, 0], shared_rows[1, 1], 0.0])
-    reference_c = generator_backend._reference_c_vector(top.lattice[2], bottom.lattice[2])
-    final_lattice, min_z, lower_padding = generator_backend._build_final_lattice(
-        final_vector1,
-        final_vector2,
-        reference_c,
-        atoms_top + atoms_bottom,
-        1e-4,
-    )
-    shifted_layers, _ = _z_shift_layers([atoms_bottom, atoms_top], final_lattice, min_z, lower_padding)
+    final_lattice = stack.lattice
     index = int(record["index"])
     angle_deg = float(record["angle_deg"])
     strain = [100.0 * float(value) for value in record["strain"]]
@@ -169,8 +98,11 @@ def _build_bilayer_frame(
         [
             f"Candidate {index} at {angle_deg:.4f} degrees; rank {int(record['rank'])}; {pareto}; {certification}",
             f"relative principal strain = ({strain[0]:+.4f}%, {strain[1]:+.4f}%); "
-            f"top strain = {100.0 * float(record['top_strain']):.4f}%; "
-            f"bottom strain = {100.0 * float(record['bottom_strain']):.4f}%",
+            f"top layer strain = {_peak_percent(record['top_layer_strain']):.4f}%; "
+            f"bottom layer strain = {_peak_percent(record['bottom_layer_strain']):.4f}%",
+            f"moire cell = {float(record['moire_a']):.3f} x {float(record['moire_b']):.3f} Angstrom "
+            f"at {float(record['moire_gamma_deg']):.2f} degrees; "
+            f"coincidence index = {int(record['coincidence_index'])}",
             f"top/bottom/total atoms = {int(record['top_atom_count'])}/"
             f"{int(record['bottom_atom_count'])}/{int(record['atom_count'])}",
             f"top matrix = {json.dumps(record['top_matrix'], separators=(',', ':'))}; "
@@ -185,8 +117,8 @@ def _build_bilayer_frame(
         "name": f"candidate {index} | {angle_deg:.4f} deg | rank {int(record['rank'])}",
         "lattice": final_lattice.tolist(),
         "layers": [
-            {"label": "Bottom", "color": "#264653", "positions": [position.tolist() for _, position, _ in shifted_layers[0]]},
-            {"label": "Top", "color": "#e76f51", "positions": [position.tolist() for _, position, _ in shifted_layers[1]]},
+            {"label": "Bottom", "color": "#264653", "positions": [position.tolist() for _, position, _ in stack.bottom_atoms]},
+            {"label": "Top", "color": "#e76f51", "positions": [position.tolist() for _, position, _ in stack.top_atoms]},
         ],
         "subtitle": subtitle,
     }

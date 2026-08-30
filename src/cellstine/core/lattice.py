@@ -3,40 +3,19 @@
 from __future__ import annotations
 
 import math
-from typing import Sequence
 
 import numpy as np
 
-def in_plane_lengths_and_angle(lattice: np.ndarray) -> tuple[float, float, float]:
-    basis = np.asarray(lattice, dtype=float)[:2, :2]
-    vector_a = basis[0]
-    vector_b = basis[1]
-    length_a = float(np.linalg.norm(vector_a))
-    length_b = float(np.linalg.norm(vector_b))
-    denominator = max(length_a * length_b, 1e-12)
-    cosine = np.clip(float(np.dot(vector_a, vector_b) / denominator), -1.0, 1.0)
-    gamma_deg = float(np.degrees(np.arccos(cosine)))
-    return length_a, length_b, gamma_deg
 
+def build_target_lattice(
+    a_length: float, b_length: float, angle_deg: float, c_length: float = 30.0
+) -> np.ndarray:
+    """Return a cell with the requested in-plane lengths, angle, and height.
 
-def infer_rotational_symmetry_angle(lattice: np.ndarray, tolerance: float = 1e-2) -> int:
-    length_a, length_b, gamma_deg = in_plane_lengths_and_angle(lattice)
-    relative_length_delta = abs(length_a - length_b) / max((length_a + length_b) * 0.5, 1e-12)
-    equal_lengths = relative_length_delta <= tolerance
-    if equal_lengths and (abs(gamma_deg - 60.0) <= 3.0 or abs(gamma_deg - 120.0) <= 3.0):
-        return 60
-    if equal_lengths and abs(gamma_deg - 90.0) <= 3.0:
-        return 90
-    return 180
+    The first vector is placed along ``+x`` and the second at ``angle_deg`` from
+    it, so the cell is right handed and the third vector is the surface normal.
+    """
 
-
-def combined_symmetry_limit(lattice1: np.ndarray, lattice2: np.ndarray) -> tuple[int, int, int]:
-    symmetry_1 = infer_rotational_symmetry_angle(lattice1)
-    symmetry_2 = infer_rotational_symmetry_angle(lattice2)
-    return symmetry_1, symmetry_2, int(math.lcm(symmetry_1, symmetry_2))
-
-
-def build_target_lattice(a_length: float, b_length: float, angle_deg: float, c_length: float = 30.0) -> np.ndarray:
     angle_rad = math.radians(float(angle_deg))
     return np.array(
         [
@@ -48,40 +27,58 @@ def build_target_lattice(a_length: float, b_length: float, angle_deg: float, c_l
     )
 
 
-def apply_inplane_prestrain(
-    lattice: np.ndarray,
-    *,
-    mode: str = "none",
-    magnitude: float = 0.0,
-    axis: str | None = None,
-) -> np.ndarray:
-    strained = np.array(lattice, dtype=float, copy=True)
-    resolved_mode = str(mode).lower()
-    if resolved_mode == "none" or abs(float(magnitude)) <= 1e-15:
-        return strained
-    if resolved_mode == "biaxial":
-        strained[0] *= 1.0 + float(magnitude)
-        strained[1] *= 1.0 + float(magnitude)
-        return strained
-    if resolved_mode == "uniaxial":
-        axis_name = (axis or "a").lower()
-        axis_index = 0 if axis_name in {"a", "x", "0"} else 1
-        strained[axis_index] *= 1.0 + float(magnitude)
-        return strained
-    raise ValueError("prestrain mode must be one of: none, biaxial, uniaxial")
+def vector_angle_deg(first: np.ndarray, second: np.ndarray) -> float:
+    """Return the angle between two nonzero vectors, in degrees.
+
+    Reading the angle as ``arccos(u . v / (|u| |v|))`` is accurate only away from
+    ``0`` and ``180`` degrees: ``arccos`` has an infinite derivative at its end
+    points, so a cosine carrying a relative error ``eps`` gives an angle carrying
+    an error of order ``sqrt(eps)``, and a cosine rounded just outside ``[-1, 1]``
+    has to be clipped before it can be used at all.  Cell angles of nearly
+    degenerate supercells and the interlayer twist of an almost aligned bilayer
+    both live exactly there.
+
+    This uses Kahan's formula instead: with ``a`` and ``b`` the two unit vectors,
+
+    ``angle = 2 arctan2(|a - b|, |a + b|)``,
+
+    which is the half-angle written through the chord and is uniformly accurate
+    over the whole range, needs no clipping, and returns exactly ``90`` degrees
+    for exactly orthogonal vectors.  It works in any dimension.
+    """
+
+    left = np.asarray(first, dtype=float).ravel()
+    right = np.asarray(second, dtype=float).ravel()
+    left_norm = float(np.linalg.norm(left))
+    right_norm = float(np.linalg.norm(right))
+    if left_norm <= 0.0 or right_norm <= 0.0:
+        raise ValueError("the angle between vectors needs two nonzero vectors")
+    unit_left = left / left_norm
+    unit_right = right / right_norm
+    chord = float(np.linalg.norm(unit_left - unit_right))
+    span = float(np.linalg.norm(unit_left + unit_right))
+    return float(np.degrees(2.0 * math.atan2(chord, span)))
 
 
-def lattice_mismatch_fraction(bottom_lattice: np.ndarray, top_lattice: np.ndarray) -> float:
-    bottom_inplane = np.asarray(bottom_lattice, dtype=float)[:2, :]
-    top_inplane = np.asarray(top_lattice, dtype=float)[:2, :]
-    denominator = max(float(np.linalg.norm(bottom_inplane)), 1e-12)
-    return float(np.linalg.norm(bottom_inplane - top_inplane) / denominator)
+def inplane_principal_log_strains(
+    bottom_lattice: np.ndarray, top_lattice: np.ndarray
+) -> tuple[float, float]:
+    """Return the two principal logarithmic strains that map the top cell onto the bottom one.
 
+    Forcing the top slab to adopt the in-plane cell of the bottom slab applies the
+    linear map ``F = T^-1 B`` to the top layer, where ``B`` and ``T`` hold the two
+    in-plane lattice vectors as rows.  Its principal stretches are the singular
+    values of ``F``, so the principal logarithmic (Hencky) strains are their
+    logarithms.  Unlike a norm of ``B - T`` this does not depend on how either
+    cell happens to be oriented or on which pair of lattice vectors was chosen to
+    describe it, and it is the strain a plane-wave calculation actually sees.
+    """
 
-def parse_float_list(raw_values: Sequence[str] | None, expected: int | None = None) -> list[float] | None:
-    if raw_values is None:
-        return None
-    values = [float(value) for value in raw_values]
-    if expected is not None and len(values) != expected:
-        raise ValueError(f"expected {expected} numeric values, received {len(values)}")
-    return values
+    bottom = np.asarray(bottom_lattice, dtype=float)[:2, :2]
+    top = np.asarray(top_lattice, dtype=float)[:2, :2]
+    if abs(float(np.linalg.det(top))) <= 1e-12:
+        raise ValueError("top in-plane lattice vectors must be linearly independent")
+    deformation = np.linalg.solve(top, bottom)
+    stretches = np.linalg.svd(deformation, compute_uv=False)
+    strains = np.sort(np.log(np.maximum(stretches, 1e-300)))
+    return float(strains[0]), float(strains[1])
