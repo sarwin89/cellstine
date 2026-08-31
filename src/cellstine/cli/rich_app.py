@@ -7,10 +7,17 @@ import sys
 
 
 def run(argv: list[str] | None = None) -> int:
-    """Run the Typer/Rich frontend, delegating execution to the shared plain spec."""
+    """Run the optional Rich frontend, delegating execution to the shared plain spec.
+
+    Typer is part of the optional ``cli`` extra and is imported here so missing
+    optional dependencies still trigger the intended plain fallback. The command
+    grammar itself remains owned by ``plain.run``; keeping Typer out of the
+    runtime dispatch path avoids a second parser and prevents Typer callback
+    state from leaking as command failures.
+    """
 
     try:
-        import typer
+        import typer as _typer  # noqa: F401
         from rich.console import Console
         from rich.panel import Panel
     except ImportError:
@@ -19,23 +26,8 @@ def run(argv: list[str] | None = None) -> int:
     from .plain import run as run_plain
     from .spec import APP_EXPANSION, APP_NAME
 
-    app = typer.Typer(
-        add_completion=False,
-        context_settings={"allow_extra_args": True, "ignore_unknown_options": True},
-        help=f"{APP_NAME}: {APP_EXPANSION}",
-    )
-
-    @app.callback(invoke_without_command=True)
-    def main(ctx: typer.Context, version: bool = False) -> None:
-        console = Console(no_color=bool(os.environ.get("NO_COLOR")) or not sys.stdout.isatty())
-        forwarded = list(ctx.args)
-        if version:
-            forwarded.insert(0, "--version")
-        if not forwarded:
-            console.print(Panel.fit("Starting guided CELLSTINE workflow", title=APP_NAME))
-        raise typer.Exit(run_plain(forwarded))
-
-    # Typer owns presentation here; the plain frontend still owns the command
-    # grammar so base installs and rich installs cannot drift apart.
-    app(args=argv, standalone_mode=False)
-    return 0
+    forwarded = list(sys.argv[1:] if argv is None else argv)
+    console = Console(no_color=bool(os.environ.get("NO_COLOR")) or not sys.stdout.isatty())
+    if not forwarded:
+        console.print(Panel.fit("Starting guided CELLSTINE workflow", title=f"{APP_NAME}: {APP_EXPANSION}"))
+    return int(run_plain(forwarded))

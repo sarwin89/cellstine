@@ -10,6 +10,7 @@ from __future__ import annotations
 import subprocess
 import sys
 import textwrap
+import types
 from pathlib import Path
 
 import pytest
@@ -113,10 +114,88 @@ def test_rich_frontend_help_renders_when_optional_dependencies_exist(capsys):
 
     from cellstine.cli.rich_app import run
 
-    with pytest.raises(SystemExit) as raised:
-        run(["--help"])
-    assert raised.value.code == 0
+    assert run(["--help"]) == 0
     assert "CELLSTINE" in capsys.readouterr().out
+
+
+def test_rich_frontend_delegates_without_typer_runtime_state(monkeypatch):
+    fake_typer = types.ModuleType("typer")
+    fake_rich = types.ModuleType("rich")
+    fake_console = types.ModuleType("rich.console")
+    fake_panel = types.ModuleType("rich.panel")
+
+    class Console:
+        def __init__(self, **_kwargs):
+            pass
+
+        def print(self, *_args, **_kwargs):
+            pass
+
+    class Panel:
+        @staticmethod
+        def fit(*_args, **_kwargs):
+            return "panel"
+
+    fake_console.Console = Console
+    fake_panel.Panel = Panel
+    monkeypatch.setitem(sys.modules, "typer", fake_typer)
+    monkeypatch.setitem(sys.modules, "rich", fake_rich)
+    monkeypatch.setitem(sys.modules, "rich.console", fake_console)
+    monkeypatch.setitem(sys.modules, "rich.panel", fake_panel)
+
+    import cellstine.cli.plain as plain
+    from cellstine.cli.rich_app import run
+
+    captured = {}
+
+    def fake_run(argv):
+        captured["argv"] = list(argv)
+        return 0
+
+    monkeypatch.setattr(plain, "run", fake_run)
+
+    assert run(["moire", "search"]) == 0
+    assert captured["argv"] == ["moire", "search"]
+
+
+def test_main_can_select_optional_frontend_without_typer_runtime_state(monkeypatch):
+    fake_typer = types.ModuleType("typer")
+    fake_rich = types.ModuleType("rich")
+    fake_console = types.ModuleType("rich.console")
+    fake_panel = types.ModuleType("rich.panel")
+
+    class Console:
+        def __init__(self, **_kwargs):
+            pass
+
+        def print(self, *_args, **_kwargs):
+            pass
+
+    class Panel:
+        @staticmethod
+        def fit(*_args, **_kwargs):
+            return "panel"
+
+    fake_console.Console = Console
+    fake_panel.Panel = Panel
+    monkeypatch.setitem(sys.modules, "typer", fake_typer)
+    monkeypatch.setitem(sys.modules, "rich", fake_rich)
+    monkeypatch.setitem(sys.modules, "rich.console", fake_console)
+    monkeypatch.setitem(sys.modules, "rich.panel", fake_panel)
+
+    import cellstine.cli.plain as plain
+    from cellstine.cli.main import main
+
+    captured = {}
+
+    def fake_run(argv):
+        captured["argv"] = list(argv)
+        return 0
+
+    monkeypatch.setattr(plain, "run", fake_run)
+
+    assert main(["moire", "search"]) == 0
+    assert captured["argv"] == ["moire", "search"]
 
 
 def test_plain_frontend_imports_without_numpy_or_workflows():
