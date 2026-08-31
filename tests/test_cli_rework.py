@@ -291,6 +291,40 @@ def test_root_cellstine_launcher_exists_and_uses_maintained_entrypoint():
     assert "cellstine" in finished.stdout
 
 
+def test_root_cellstine_launcher_starts_guided_mode_without_shadowing_the_package():
+    launcher = ROOT / "cellstine.py"
+    finished = subprocess.run(
+        [sys.executable, str(launcher)],
+        input="q\n",
+        capture_output=True,
+        text=True,
+        timeout=300,
+        cwd=ROOT,
+    )
+    assert finished.returncode == 0, finished.stderr
+    assert "CELLSTINE" in finished.stdout
+    assert "Closed CELLSTINE interactive mode." in finished.stdout
+
+
+def test_root_cellstine_launcher_without_stdin_exits_cleanly():
+    launcher = ROOT / "cellstine.py"
+    finished = subprocess.run(
+        [sys.executable, str(launcher)],
+        capture_output=True,
+        text=True,
+        timeout=300,
+        cwd=ROOT,
+    )
+    assert finished.returncode == 0, finished.stderr
+    assert "Closed CELLSTINE interactive mode." in finished.stdout
+
+
+def test_plain_guided_banner_is_ascii_safe_for_non_utf8_consoles():
+    from cellstine.cli.interactive.prompts import MAIN_MENU_BANNER
+
+    assert MAIN_MENU_BANNER.isascii()
+
+
 def test_stale_moire_only_launcher_was_removed():
     assert not (ROOT / "moire_cli.py").exists()
 

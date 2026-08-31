@@ -340,7 +340,7 @@ def run_interactive(group: str | None = None, *, ui: PlainGuidedUI | None = None
     with use_guided_ui(ui):
         try:
             return _run_interactive(group=group, show_banner=show_banner)
-        except (KeyboardInterrupt, _QuitInteractive, _BackInteractive):
+        except (KeyboardInterrupt, EOFError, _QuitInteractive, _BackInteractive):
             get_guided_ui().print()
             get_guided_ui().print("Closed CELLSTINE interactive mode.")
             return 0
