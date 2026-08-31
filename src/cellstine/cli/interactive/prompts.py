@@ -17,12 +17,12 @@ RUNS_DIR = Path("runs")
 OUTPUT_DIR = Path("output")
 
 MAIN_MENU_BANNER = r"""
-  _____ ______ _      _      _____ _______ _____ _   _ ______
- / ____|  ____| |    | |    / ____|__   __|_   _| \ | |  ____|
-| |    | |__  | |    | |   | (___    | |    | | |  \| | |__
-| |    |  __| | |    | |    \___ \   | |    | | | . ` |  __|
-| |____| |____| |____| |____ ____) |  | |   _| |_| |\  | |____
- \_____|______|______|______|_____/   |_|  |_____|_| \_|______|
+ ██████╗███████╗██╗     ██╗     ███████╗████████╗██╗███╗   ██╗███████╗
+██╔════╝██╔════╝██║     ██║     ██╔════╝╚══██╔══╝██║████╗  ██║██╔════╝
+██║     █████╗  ██║     ██║     ███████╗   ██║   ██║██╔██╗ ██║█████╗
+██║     ██╔══╝  ██║     ██║     ╚════██║   ██║   ██║██║╚██╗██║██╔══╝
+╚██████╗███████╗███████╗███████╗███████║   ██║   ██║██║ ╚████║███████╗
+ ╚═════╝╚══════╝╚══════╝╚══════╝╚══════╝   ╚═╝   ╚═╝╚═╝  ╚═══╝╚══════╝
 """.strip("\n")
 
 
@@ -38,7 +38,15 @@ class PlainGuidedUI:
     """Dependency-free guided-mode presentation and prompt backend."""
 
     def print(self, *args, **kwargs) -> None:
-        print(*args, **kwargs)
+        try:
+            print(*args, **kwargs)
+        except UnicodeEncodeError:
+            encoding = getattr(sys.stdout, "encoding", None) or "utf-8"
+            safe_args = [
+                str(arg).encode(encoding, errors="replace").decode(encoding, errors="replace")
+                for arg in args
+            ]
+            print(*safe_args, **kwargs)
 
     def title(self, title: str, subtitle: str | None = None) -> None:
         self.print()

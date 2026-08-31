@@ -319,10 +319,11 @@ def test_root_cellstine_launcher_without_stdin_exits_cleanly():
     assert "Closed CELLSTINE interactive mode." in finished.stdout
 
 
-def test_plain_guided_banner_is_ascii_safe_for_non_utf8_consoles():
+def test_plain_guided_banner_uses_the_historical_block_art():
     from cellstine.cli.interactive.prompts import MAIN_MENU_BANNER
 
-    assert MAIN_MENU_BANNER.isascii()
+    assert "██████╗███████╗██╗" in MAIN_MENU_BANNER
+    assert "╚═════╝╚══════╝" in MAIN_MENU_BANNER
 
 
 def test_stale_moire_only_launcher_was_removed():
