@@ -39,16 +39,19 @@ from .build_moire import (
     _build_moire_visualize,
 )
 from .prompts import (
+    PlainGuidedUI,
     _BackInteractive,
     _QuitInteractive,
     _choice,
     _first_artifact,
-    _format_command,
+    _print_command_preview,
     _print_main_menu_banner,
     _prompt,
     _prompt_csv,
     _prompt_float,
     _prompt_yes_no,
+    get_guided_ui,
+    use_guided_ui,
 )
 
 
@@ -272,14 +275,17 @@ def _follow_up(group: str, stage: str, result) -> list[str] | None:
     return None
 
 
-def _run_interactive(group: str | None = None) -> int:
+def _run_interactive(group: str | None = None, *, show_banner: bool = True) -> int:
     parser = build_parser()
     active_group = None if group is None else str(group).lower()
+    banner_pending = bool(show_banner)
 
     while True:
         try:
-            if active_group is None:
+            if banner_pending:
                 _print_main_menu_banner()
+                banner_pending = False
+            if active_group is None:
                 active_group = _choice(
                     "CELLSTINE Interactive Mode",
                     [
@@ -299,9 +305,7 @@ def _run_interactive(group: str | None = None) -> int:
             active_group = None
             continue
 
-        print()
-        print("Planned command:")
-        print(_format_command(argv))
+        _print_command_preview("Planned command", argv)
         if not _prompt_yes_no("Run this command now?", True):
             return 0
 
@@ -312,9 +316,7 @@ def _run_interactive(group: str | None = None) -> int:
         try:
             follow_up = _follow_up(active_group, str(namespace.stage), result)
             while follow_up is not None:
-                print()
-                print("Next step:")
-                print(_format_command(follow_up))
+                _print_command_preview("Next step", follow_up)
                 if not _prompt_yes_no("Run this next command now?", True):
                     break
                 next_namespace = parser.parse_args(follow_up)
@@ -334,10 +336,11 @@ def _run_interactive(group: str | None = None) -> int:
         active_group = None
 
 
-def run_interactive(group: str | None = None) -> int:
-    try:
-        return _run_interactive(group=group)
-    except (KeyboardInterrupt, _QuitInteractive, _BackInteractive):
-        print()
-        print("Closed CELLSTINE interactive mode.")
-        return 0
+def run_interactive(group: str | None = None, *, ui: PlainGuidedUI | None = None, show_banner: bool = True) -> int:
+    with use_guided_ui(ui):
+        try:
+            return _run_interactive(group=group, show_banner=show_banner)
+        except (KeyboardInterrupt, _QuitInteractive, _BackInteractive):
+            get_guided_ui().print()
+            get_guided_ui().print("Closed CELLSTINE interactive mode.")
+            return 0

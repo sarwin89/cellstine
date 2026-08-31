@@ -42,6 +42,13 @@ cellstine --help
 cellstine --version
 ```
 
+When working from a checkout without installing the console script, use the
+repo-local launcher:
+
+```bash
+python cellstine.py --help
+```
+
 ## Quick Start
 
 Launch the guided interface:
@@ -49,6 +56,10 @@ Launch the guided interface:
 ```bash
 cellstine
 ```
+
+Install `.[cli]` for the recommended Rich/Typer guided presentation. Base
+installs remain dependency-free and automatically use the plain prompt UI; pass
+`--plain` to force that fallback explicitly.
 
 Or run a workflow directly:
 

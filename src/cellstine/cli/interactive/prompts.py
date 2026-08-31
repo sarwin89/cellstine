@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import os
+import sys
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Sequence
+from typing import Iterator, Sequence
 
 from ...core.previews import format_adsorption_sites, preview_moire_results_file
 from ...interface.surface import backend as surface_backend
@@ -31,19 +34,195 @@ class _BackInteractive(Exception):
     """Internal signal for returning to the previous interactive menu."""
 
 
+class PlainGuidedUI:
+    """Dependency-free guided-mode presentation and prompt backend."""
+
+    def print(self, *args, **kwargs) -> None:
+        print(*args, **kwargs)
+
+    def title(self, title: str, subtitle: str | None = None) -> None:
+        self.print()
+        self.print(title)
+        self.print("-" * len(title))
+        if subtitle:
+            self.print(subtitle)
+
+    def banner(self) -> None:
+        self.print()
+        self.print(MAIN_MENU_BANNER)
+        self.print()
+        self.print("Made by Sarwin Chandran 2026")
+
+    def prompt(
+        self,
+        prompt: str,
+        default: str | None = None,
+        *,
+        allow_empty: bool = False,
+        allow_back: bool = True,
+    ) -> str:
+        shown = f" [{default}]" if default not in {None, ""} else ""
+        while True:
+            answer = input(f"{prompt}{shown}: ").strip()
+            if answer:
+                if allow_back and answer.lower() in {"b", "back"}:
+                    raise _BackInteractive()
+                return answer
+            if default is not None:
+                return default
+            if allow_empty:
+                return ""
+            self.print("Please enter a value.")
+
+    def confirm(self, prompt: str, default_yes: bool = True) -> bool:
+        default = "y" if default_yes else "n"
+        while True:
+            answer = self.prompt(prompt, default).strip().lower()
+            if answer in {"y", "yes"}:
+                return True
+            if answer in {"n", "no"}:
+                return False
+            self.print("Please answer with y or n.")
+
+    def choice(self, title: str, options: Sequence[dict[str, str]], default: int = 1, *, allow_back: bool = True) -> str:
+        self.title(title)
+        for index, option in enumerate(options, start=1):
+            self.print(f"{index}. {option['label']}")
+            if option.get("hint"):
+                self.print(f"   {option['hint']}")
+        if allow_back:
+            self.print("b. Back")
+        self.print("q. Quit interactive mode")
+        while True:
+            answer = self.prompt("Choose an option", str(default), allow_back=allow_back).strip().lower()
+            if answer in {"q", "quit", "exit"}:
+                raise _QuitInteractive()
+            if answer.isdigit():
+                index = int(answer)
+                if 1 <= index <= len(options):
+                    option = options[index - 1]
+                    return str(option.get("value", option["key"]))
+            for option in options:
+                if answer == str(option["key"]).lower():
+                    return str(option.get("value", option["key"]))
+            self.print("Please choose one of the numbered options.")
+
+    def command_preview(self, title: str, argv: Sequence[str]) -> None:
+        self.print()
+        self.print(title)
+        self.print(_format_command(argv))
+
+
+class RichGuidedUI(PlainGuidedUI):
+    """Rich-backed guided-mode presentation.
+
+    Imports are intentionally local so base installs can import the CLI without
+    Typer/Rich. The command builders stay shared with plain mode.
+    """
+
+    def __init__(self) -> None:
+        from rich.console import Console
+        from rich.panel import Panel
+        from rich.prompt import Confirm, Prompt
+        from rich.table import Table
+
+        self.console = Console(no_color=bool(os.environ.get("NO_COLOR")) or not sys.stdout.isatty())
+        self._panel = Panel
+        self._prompt = Prompt
+        self._confirm = Confirm
+        self._table = Table
+
+    def print(self, *args, **kwargs) -> None:
+        self.console.print(*args, **kwargs)
+
+    def title(self, title: str, subtitle: str | None = None) -> None:
+        body = subtitle or "Choose the workflow settings below."
+        self.print()
+        self.print(self._panel.fit(body, title=title))
+
+    def banner(self) -> None:
+        self.print()
+        self.print(self._panel.fit(f"{MAIN_MENU_BANNER}\n\nMade by Sarwin Chandran 2026", title="CELLSTINE"))
+
+    def prompt(
+        self,
+        prompt: str,
+        default: str | None = None,
+        *,
+        allow_empty: bool = False,
+        allow_back: bool = True,
+    ) -> str:
+        while True:
+            answer = str(self._prompt.ask(prompt, default=default)).strip()
+            if answer:
+                if allow_back and answer.lower() in {"b", "back"}:
+                    raise _BackInteractive()
+                return answer
+            if default is not None:
+                return default
+            if allow_empty:
+                return ""
+            self.print("Please enter a value.")
+
+    def confirm(self, prompt: str, default_yes: bool = True) -> bool:
+        return bool(self._confirm.ask(prompt, default=default_yes))
+
+    def choice(self, title: str, options: Sequence[dict[str, str]], default: int = 1, *, allow_back: bool = True) -> str:
+        self.title(title, "Select an option. Use q to quit; use b to go back where available.")
+        table = self._table(show_header=True, header_style="bold")
+        table.add_column("#", justify="right")
+        table.add_column("Option")
+        table.add_column("When to use it")
+        for index, option in enumerate(options, start=1):
+            table.add_row(str(index), option["label"], option.get("hint", ""))
+        if allow_back:
+            table.add_row("b", "Back", "Return to the previous menu.")
+        table.add_row("q", "Quit", "Close guided mode.")
+        self.print(table)
+        while True:
+            answer = self.prompt("Choose an option", str(default), allow_back=allow_back).strip().lower()
+            if answer in {"q", "quit", "exit"}:
+                raise _QuitInteractive()
+            if answer.isdigit():
+                index = int(answer)
+                if 1 <= index <= len(options):
+                    option = options[index - 1]
+                    return str(option.get("value", option["key"]))
+            for option in options:
+                if answer == str(option["key"]).lower():
+                    return str(option.get("value", option["key"]))
+            self.print("Please choose one of the numbered options.")
+
+    def command_preview(self, title: str, argv: Sequence[str]) -> None:
+        self.print()
+        self.print(self._panel.fit(_format_command(argv), title=title))
+
+
+_ACTIVE_UI: PlainGuidedUI = PlainGuidedUI()
+
+
+def get_guided_ui() -> PlainGuidedUI:
+    return _ACTIVE_UI
+
+
+@contextmanager
+def use_guided_ui(ui: PlainGuidedUI | None = None) -> Iterator[None]:
+    global _ACTIVE_UI
+    previous = _ACTIVE_UI
+    if ui is not None:
+        _ACTIVE_UI = ui
+    try:
+        yield
+    finally:
+        _ACTIVE_UI = previous
+
+
 def _print_title(title: str, subtitle: str | None = None) -> None:
-    print()
-    print(title)
-    print("-" * len(title))
-    if subtitle:
-        print(subtitle)
+    get_guided_ui().title(title, subtitle)
 
 
 def _print_main_menu_banner() -> None:
-    print()
-    print(MAIN_MENU_BANNER)
-    print()
-    print("Made by Sarwin Chandran 2026")
+    get_guided_ui().banner()
 
 
 def _prompt(
@@ -53,18 +232,7 @@ def _prompt(
     allow_empty: bool = False,
     allow_back: bool = True,
 ) -> str:
-    shown = f" [{default}]" if default not in {None, ""} else ""
-    while True:
-        answer = input(f"{prompt}{shown}: ").strip()
-        if answer:
-            if allow_back and answer.lower() in {"b", "back"}:
-                raise _BackInteractive()
-            return answer
-        if default is not None:
-            return default
-        if allow_empty:
-            return ""
-        print("Please enter a value.")
+    return get_guided_ui().prompt(prompt, default, allow_empty=allow_empty, allow_back=allow_back)
 
 
 def _prompt_int(prompt: str, default: int) -> int:
@@ -72,7 +240,7 @@ def _prompt_int(prompt: str, default: int) -> int:
         try:
             return int(_prompt(prompt, str(default)))
         except ValueError:
-            print("Please enter a whole number.")
+            get_guided_ui().print("Please enter a whole number.")
 
 
 def _prompt_float(prompt: str, default: float) -> float:
@@ -80,42 +248,15 @@ def _prompt_float(prompt: str, default: float) -> float:
         try:
             return float(_prompt(prompt, str(default)))
         except ValueError:
-            print("Please enter a number.")
+            get_guided_ui().print("Please enter a number.")
 
 
 def _prompt_yes_no(prompt: str, default_yes: bool = True) -> bool:
-    default = "y" if default_yes else "n"
-    while True:
-        answer = _prompt(prompt, default).strip().lower()
-        if answer in {"y", "yes"}:
-            return True
-        if answer in {"n", "no"}:
-            return False
-        print("Please answer with y or n.")
+    return get_guided_ui().confirm(prompt, default_yes=default_yes)
 
 
 def _choice(title: str, options: Sequence[dict[str, str]], default: int = 1, *, allow_back: bool = True) -> str:
-    _print_title(title)
-    for index, option in enumerate(options, start=1):
-        print(f"{index}. {option['label']}")
-        if option.get("hint"):
-            print(f"   {option['hint']}")
-    if allow_back:
-        print("b. Back")
-    print("q. Quit interactive mode")
-    while True:
-        answer = _prompt("Choose an option", str(default), allow_back=allow_back).strip().lower()
-        if answer in {"q", "quit", "exit"}:
-            raise _QuitInteractive()
-        if answer.isdigit():
-            index = int(answer)
-            if 1 <= index <= len(options):
-                option = options[index - 1]
-                return str(option.get("value", option["key"]))
-        for option in options:
-            if answer == str(option["key"]).lower():
-                return str(option.get("value", option["key"]))
-        print("Please choose one of the numbered options.")
+    return get_guided_ui().choice(title, options, default=default, allow_back=allow_back)
 
 
 def _relative_display(path: Path) -> str:
@@ -151,22 +292,23 @@ def _prompt_path(
     allow_manual: bool = True,
 ) -> str:
     suggestions = _find_candidates(patterns, roots)
-    print()
-    print(label)
+    ui = get_guided_ui()
+    ui.print()
+    ui.print(label)
     if roots:
-        print("Search order: " + " -> ".join(str(root) for root in roots))
+        ui.print("Search order: " + " -> ".join(str(root) for root in roots))
     if suggestions:
-        print("Recent matches:")
+        ui.print("Recent matches:")
         for index, path in enumerate(suggestions, start=1):
-            print(f"  {index}. {_relative_display(path)}")
+            ui.print(f"  {index}. {_relative_display(path)}")
         if allow_manual:
-            print("  m. Type a different path")
-        print("  b. Back")
-        print("  q. Quit interactive mode")
+            ui.print("  m. Type a different path")
+        ui.print("  b. Back")
+        ui.print("  q. Quit interactive mode")
         default_value = "1"
     else:
-        print("No suggested files were found, so please type a path.")
-        print("Type b to go back or q to quit.")
+        ui.print("No suggested files were found, so please type a path.")
+        ui.print("Type b to go back or q to quit.")
         default_value = default
     while True:
         answer = _prompt("Selection", default_value, allow_empty=default is not None).strip()
@@ -185,7 +327,7 @@ def _prompt_path(
             return answer
         if default is not None:
             return default
-        print("Please choose a suggested file or type a path.")
+        ui.print("Please choose a suggested file or type a path.")
 
 
 def _prompt_csv(prompt: str, default: str) -> str:
@@ -197,7 +339,7 @@ def _prompt_int_range(prompt: str, default: int, minimum: int, maximum: int) -> 
         value = _prompt_int(prompt, default)
         if int(minimum) <= value <= int(maximum):
             return value
-        print(f"Please enter a value from {int(minimum)} to {int(maximum)}.")
+        get_guided_ui().print(f"Please enter a value from {int(minimum)} to {int(maximum)}.")
 
 
 def _parse_matrix_entries(text: str) -> list[int]:
@@ -244,33 +386,34 @@ def _site_options_from_report(site_report) -> list[dict[str, str]]:
 
 
 def _print_detected_sites(site_report) -> None:
-    print()
-    print("Detected adsorption sites in the selected substrate:")
+    ui = get_guided_ui()
+    ui.print()
+    ui.print("Detected adsorption sites in the selected substrate:")
     if not site_report.site_counts:
-        print("  none")
+        ui.print("  none")
         return
     for key in sorted(site_report.site_counts):
-        print(f"  {_SITE_LABELS.get(key, key)}: {int(site_report.site_counts[key])}")
+        ui.print(f"  {_SITE_LABELS.get(key, key)}: {int(site_report.site_counts[key])}")
 
 
 def _print_saved_moire_preview(results_file: str, limit: int = 15) -> None:
     try:
         preview = preview_moire_results_file(results_file, limit=int(limit))
     except Exception as exc:
-        print()
-        print(f"Candidate preview was skipped: {exc}")
+        get_guided_ui().print()
+        get_guided_ui().print(f"Candidate preview was skipped: {exc}")
         return
-    print()
-    print("Candidate options in the selected results file:")
-    print(preview)
+    get_guided_ui().print()
+    get_guided_ui().print("Candidate options in the selected results file:")
+    get_guided_ui().print(preview)
 
 
 def _print_site_index_options(site_report, site_type: str, limit: int = 30) -> None:
     sites = surface_backend.sorted_sites_for_type(site_report, site_type)
-    print()
-    print(format_adsorption_sites(sites, limit=int(limit), title=f"{_SITE_LABELS.get(site_type, site_type)} site positions"))
+    get_guided_ui().print()
+    get_guided_ui().print(format_adsorption_sites(sites, limit=int(limit), title=f"{_SITE_LABELS.get(site_type, site_type)} site positions"))
     if len(sites) > int(limit):
-        print("Use `cellstine surface sites` to export the full site table if you need every equivalent site.")
+        get_guided_ui().print("Use `cellstine surface sites` to export the full site table if you need every equivalent site.")
 
 
 def _format_command(argv: Sequence[str]) -> str:
@@ -281,6 +424,10 @@ def _format_command(argv: Sequence[str]) -> str:
         else:
             parts.append(value)
     return "cellstine " + " ".join(parts)
+
+
+def _print_command_preview(title: str, argv: Sequence[str]) -> None:
+    get_guided_ui().command_preview(title, argv)
 
 
 def _first_artifact(result, key: str) -> str | None:

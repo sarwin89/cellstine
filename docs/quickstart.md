@@ -27,7 +27,10 @@ cellstine --help
 cellstine --version
 ```
 
-Running `cellstine` without arguments starts the guided interface.
+Running `cellstine` without arguments starts the guided interface. From a source
+checkout, `python cellstine.py` starts the same maintained CLI without relying
+on console-script installation. Use `--plain` when you want to force the
+dependency-free prompt UI even if Rich/Typer are installed.
 
 ## First commands
 

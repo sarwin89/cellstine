@@ -23,6 +23,66 @@ ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_ROOT = ROOT / "src" / "cellstine"
 
 
+def _install_fake_rich_typer(monkeypatch):
+    fake_typer = types.ModuleType("typer")
+    fake_rich = types.ModuleType("rich")
+    fake_console = types.ModuleType("rich.console")
+    fake_panel = types.ModuleType("rich.panel")
+    fake_prompt = types.ModuleType("rich.prompt")
+    fake_table = types.ModuleType("rich.table")
+
+    class Console:
+        instances = []
+
+        def __init__(self, **kwargs):
+            self.kwargs = dict(kwargs)
+            self.printed = []
+            Console.instances.append(self)
+
+        def print(self, *args, **kwargs):
+            self.printed.append((args, kwargs))
+
+    class Panel:
+        @staticmethod
+        def fit(*args, **kwargs):
+            return {"kind": "panel", "args": args, "kwargs": kwargs}
+
+    class Prompt:
+        @staticmethod
+        def ask(_prompt, default=None, **_kwargs):
+            return default or ""
+
+    class Confirm:
+        @staticmethod
+        def ask(_prompt, default=True, **_kwargs):
+            return default
+
+    class Table:
+        def __init__(self, **kwargs):
+            self.kwargs = dict(kwargs)
+            self.columns = []
+            self.rows = []
+
+        def add_column(self, *args, **kwargs):
+            self.columns.append((args, kwargs))
+
+        def add_row(self, *args, **kwargs):
+            self.rows.append((args, kwargs))
+
+    fake_console.Console = Console
+    fake_panel.Panel = Panel
+    fake_prompt.Prompt = Prompt
+    fake_prompt.Confirm = Confirm
+    fake_table.Table = Table
+    monkeypatch.setitem(sys.modules, "typer", fake_typer)
+    monkeypatch.setitem(sys.modules, "rich", fake_rich)
+    monkeypatch.setitem(sys.modules, "rich.console", fake_console)
+    monkeypatch.setitem(sys.modules, "rich.panel", fake_panel)
+    monkeypatch.setitem(sys.modules, "rich.prompt", fake_prompt)
+    monkeypatch.setitem(sys.modules, "rich.table", fake_table)
+    return Console
+
+
 def test_simplified_commands_parse_to_workflow_targets():
     parser = build_parser()
 
@@ -119,29 +179,7 @@ def test_rich_frontend_help_renders_when_optional_dependencies_exist(capsys):
 
 
 def test_rich_frontend_delegates_without_typer_runtime_state(monkeypatch):
-    fake_typer = types.ModuleType("typer")
-    fake_rich = types.ModuleType("rich")
-    fake_console = types.ModuleType("rich.console")
-    fake_panel = types.ModuleType("rich.panel")
-
-    class Console:
-        def __init__(self, **_kwargs):
-            pass
-
-        def print(self, *_args, **_kwargs):
-            pass
-
-    class Panel:
-        @staticmethod
-        def fit(*_args, **_kwargs):
-            return "panel"
-
-    fake_console.Console = Console
-    fake_panel.Panel = Panel
-    monkeypatch.setitem(sys.modules, "typer", fake_typer)
-    monkeypatch.setitem(sys.modules, "rich", fake_rich)
-    monkeypatch.setitem(sys.modules, "rich.console", fake_console)
-    monkeypatch.setitem(sys.modules, "rich.panel", fake_panel)
+    _install_fake_rich_typer(monkeypatch)
 
     import cellstine.cli.plain as plain
     from cellstine.cli.rich_app import run
@@ -158,30 +196,68 @@ def test_rich_frontend_delegates_without_typer_runtime_state(monkeypatch):
     assert captured["argv"] == ["moire", "search"]
 
 
+def test_rich_frontend_uses_rich_guided_ui_for_no_args(monkeypatch):
+    _install_fake_rich_typer(monkeypatch)
+
+    import cellstine.cli.interactive.runner as runner
+    from cellstine.cli.rich_app import run
+
+    captured = {}
+
+    def fake_run_interactive(*, group=None, ui=None, show_banner=True):
+        captured["group"] = group
+        captured["ui_type"] = type(ui).__name__
+        captured["show_banner"] = show_banner
+        return 0
+
+    monkeypatch.setattr(runner, "run_interactive", fake_run_interactive)
+
+    assert run([]) == 0
+    assert captured == {"group": None, "ui_type": "RichGuidedUI", "show_banner": True}
+
+
+def test_rich_frontend_uses_rich_guided_ui_for_group_only(monkeypatch):
+    _install_fake_rich_typer(monkeypatch)
+
+    import cellstine.cli.interactive.runner as runner
+    from cellstine.cli.rich_app import run
+
+    captured = {}
+
+    def fake_run_interactive(*, group=None, ui=None, show_banner=True):
+        captured["group"] = group
+        captured["ui_type"] = type(ui).__name__
+        captured["show_banner"] = show_banner
+        return 0
+
+    monkeypatch.setattr(runner, "run_interactive", fake_run_interactive)
+
+    assert run(["moire"]) == 0
+    assert captured == {"group": "moire", "ui_type": "RichGuidedUI", "show_banner": True}
+
+
+def test_plain_flag_forces_plain_guided_mode_even_when_rich_exists(monkeypatch):
+    _install_fake_rich_typer(monkeypatch)
+
+    import cellstine.cli.interactive.runner as runner
+    from cellstine.cli.main import main
+
+    captured = {}
+
+    def fake_run_interactive(group=None, *, ui=None, show_banner=True):
+        captured["group"] = group
+        captured["ui"] = ui
+        captured["show_banner"] = show_banner
+        return 0
+
+    monkeypatch.setattr(runner, "run_interactive", fake_run_interactive)
+
+    assert main(["--plain"]) == 0
+    assert captured == {"group": None, "ui": None, "show_banner": True}
+
+
 def test_main_can_select_optional_frontend_without_typer_runtime_state(monkeypatch):
-    fake_typer = types.ModuleType("typer")
-    fake_rich = types.ModuleType("rich")
-    fake_console = types.ModuleType("rich.console")
-    fake_panel = types.ModuleType("rich.panel")
-
-    class Console:
-        def __init__(self, **_kwargs):
-            pass
-
-        def print(self, *_args, **_kwargs):
-            pass
-
-    class Panel:
-        @staticmethod
-        def fit(*_args, **_kwargs):
-            return "panel"
-
-    fake_console.Console = Console
-    fake_panel.Panel = Panel
-    monkeypatch.setitem(sys.modules, "typer", fake_typer)
-    monkeypatch.setitem(sys.modules, "rich", fake_rich)
-    monkeypatch.setitem(sys.modules, "rich.console", fake_console)
-    monkeypatch.setitem(sys.modules, "rich.panel", fake_panel)
+    _install_fake_rich_typer(monkeypatch)
 
     import cellstine.cli.plain as plain
     from cellstine.cli.main import main
@@ -196,6 +272,34 @@ def test_main_can_select_optional_frontend_without_typer_runtime_state(monkeypat
 
     assert main(["moire", "search"]) == 0
     assert captured["argv"] == ["moire", "search"]
+
+
+def test_root_cellstine_launcher_exists_and_uses_maintained_entrypoint():
+    launcher = ROOT / "cellstine.py"
+    assert launcher.exists()
+    text = launcher.read_text(encoding="utf-8")
+    assert "from cellstine.cli.main import main" in text
+    assert "build_parser" not in text
+
+    finished = subprocess.run(
+        [sys.executable, str(launcher), "--version"],
+        capture_output=True,
+        text=True,
+        timeout=300,
+    )
+    assert finished.returncode == 0, finished.stderr
+    assert "cellstine" in finished.stdout
+
+
+def test_stale_moire_only_launcher_was_removed():
+    assert not (ROOT / "moire_cli.py").exists()
+
+
+def test_pyproject_exposes_only_the_cellstine_console_script():
+    import tomllib
+
+    metadata = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    assert metadata["project"]["scripts"] == {"cellstine": "cellstine.cli.main:main"}
 
 
 def test_plain_frontend_imports_without_numpy_or_workflows():

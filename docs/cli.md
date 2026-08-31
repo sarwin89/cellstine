@@ -8,6 +8,21 @@ CELLSTINE has one command surface rendered by two frontends:
 
 Use `--plain` to force the stdlib frontend.
 
+The installed public command is only:
+
+```bash
+cellstine
+```
+
+When running directly from a repository checkout, use the local launcher:
+
+```bash
+python cellstine.py
+```
+
+There is no separate moiré-only command; moiré workflows live under
+`cellstine moire ...`.
+
 ## Guided mode
 
 ```bash
