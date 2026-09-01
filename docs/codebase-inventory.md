@@ -15,7 +15,7 @@ The snapshot was taken on 2026-09-02 from `dev`, with the worktree clean against
 
 | Area | Tracked files | Role |
 | --- | ---: | --- |
-| `src/` | 144 | Package source and source-adjacent mathematical notes. |
+| `src/` | 145 | Package source and source-adjacent mathematical notes. |
 | `tests/` | 88 | Regression, kernel, CLI, docs-contract, and end-to-end tests. |
 | `docs/` | 13 | User-facing workflow, CLI, architecture, migration, inventory, technical, and performance docs. |
 | `benchmarks/` | 3 | Reproducible moire search benchmark and oracle support. |
@@ -125,6 +125,6 @@ Use one commit per phase:
 2. Public contract decision: settle N-layer as either experimental or disabled.
 3. Mechanical test split: move tests into domain folders without changing test
    logic.
-4. Parser split: continue moving symmetry and view parser
+4. Parser split: move symmetry parser construction out of `cli/plain.py`.
    construction out of `cli/plain.py`.
 5. Large-module splits by domain, starting with files that see the most edits.

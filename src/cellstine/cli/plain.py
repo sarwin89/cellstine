@@ -7,13 +7,13 @@ import argparse
 # Only the dependency-free constants module is imported here: building the
 # parser must not drag in NumPy or a workflow package, so ``--help``, a
 # mistyped flag and the interactive menu all start immediately.
-from ..core.constants import DIRECTION_HELP
 from .spec import APP_EXPANSION, APP_NAME
 from .plain_adsorbate import add_adsorbate_group
 from .plain_defect import add_defect_group
 from .plain_interface import add_interface_group
 from .plain_moire import add_moire_group
 from .plain_surface import add_surface_group
+from .plain_view import add_view_group
 from .argtypes import (
     HelpFormatter,
     LEGACY_MOIRE_FIND_MESSAGE,
@@ -207,21 +207,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     add_defect_group(groups)
 
-    view = groups.add_parser(
-        "view",
-        formatter_class=HelpFormatter,
-        help="plot any structure POSCAR",
-        description=(
-            "Plot a structure. The default is a Matplotlib multi-view PNG; with --view-direction "
-            "the plan view is the picture an observer looking along that direction would see."
-        ),
-    )
-    view.add_argument("structure_path")
-    view.add_argument("--output", default=None, help="output PNG path by default, or HTML path with --plotly")
-    view.add_argument("--plotly", action="store_true", help="write the optional interactive 3D HTML viewer instead of the default Matplotlib PNG")
-    view.add_argument("--show", action="store_true", help="also open the Matplotlib window after saving when a GUI backend is available")
-    view.add_argument("--view-direction", default=None, help=DIRECTION_HELP)
-    view.set_defaults(stage="structure")
+    add_view_group(groups)
 
     return parser
 
