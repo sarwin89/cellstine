@@ -242,7 +242,7 @@ def _build_interface_match() -> list[str]:
         argv.extend(["--bottom-layers-list", *_prompt("Bottom layer counts separated by spaces", "4 6").split()])
         argv.extend(["--top-layers-list", *_prompt("Top layer counts separated by spaces", "4 6").split()])
     argv.extend(["--max-strain", str(_prompt_float("Strain budget for one slab as a fraction", 0.05))])
-    argv.extend(["--max-length", str(_prompt_float("Maximum matched supercell length in angstrom", 20.0))])
+    argv.extend(["--length", str(_prompt_float("Maximum matched supercell length in angstrom", 20.0))])
     mode = _choice(
         "How should the strain be shared?",
         [

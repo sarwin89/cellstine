@@ -16,7 +16,7 @@ The snapshot was taken on 2026-09-01 from `dev`, with the worktree clean against
 | Area | Tracked files | Role |
 | --- | ---: | --- |
 | `src/` | 139 | Package source and source-adjacent mathematical notes. |
-| `tests/` | 87 | Regression, kernel, CLI, and end-to-end tests. |
+| `tests/` | 88 | Regression, kernel, CLI, docs-contract, and end-to-end tests. |
 | `docs/` | 13 | User-facing workflow, CLI, architecture, migration, inventory, technical, and performance docs. |
 | `benchmarks/` | 3 | Reproducible moire search benchmark and oracle support. |
 | `input/` | 4 | Tracked example inputs only. |

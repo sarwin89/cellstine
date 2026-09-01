@@ -144,7 +144,7 @@ def _build_adsorbate_assemble() -> list[str]:
         "--a-length", str(a_length),
         "--b-length", str(b_length),
         "--angle", str(angle),
-        "--max-length", str(max_length),
+        "--length", str(max_length),
         "--top-strain", str(top_strain),
         "--bottom-strain", str(bottom_strain),
         "--preview-limit", str(preview_limit),

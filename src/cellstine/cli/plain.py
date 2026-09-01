@@ -136,11 +136,13 @@ def build_parser() -> argparse.ArgumentParser:
     moire_findn = moire_sub.add_parser(
         "stack-search",
         formatter_class=HelpFormatter,
-        help="search commensurate cells for three or more layers",
+        help="experimental search for commensurate cells across three or more layers",
         description=(
-            "Search commensurate cells for a rigid base layer with one or more upper layers. "
+            "Experimental N-layer search: search commensurate cells for a rigid base layer "
+            "with one or more upper layers. "
             "Every upper layer is matched against the unstrained base and the shared cell of the "
-            "stack is the exact integer intersection of the per-layer base supercells."
+            "stack is the exact integer intersection of the per-layer base supercells. "
+            "The public JSON contract is still being stabilized."
         ),
     )
     moire_findn.add_argument("base_poscar")
@@ -175,7 +177,11 @@ def build_parser() -> argparse.ArgumentParser:
     moire_maken = moire_sub.add_parser(
         "stack-build",
         formatter_class=HelpFormatter,
-        help="generate multi-layer supercells from saved stack-search results",
+        help="experimental build of multi-layer supercells from saved stack-search results",
+        description=(
+            "Experimental N-layer builder. It consumes stack-search results; the public JSON "
+            "contract is still being stabilized."
+        ),
     )
     moire_maken.add_argument("results_file")
     moire_maken.add_argument("--indexes", "--indices", dest="indexes", type=parse_index_spec, required=True, help="comma-separated indices or ranges, e.g. 1,3-5")
@@ -289,7 +295,7 @@ def build_parser() -> argparse.ArgumentParser:
     ads_assemble.add_argument("--a-length", type=float, required=True, help="target a length in angstrom")
     ads_assemble.add_argument("--b-length", type=float, default=None, help="target b length in angstrom; defaults to a")
     ads_assemble.add_argument("--angle", type=float, default=60.0, help="target in-plane angle in degrees")
-    ads_assemble.add_argument("--max-length", type=parse_positive_float, required=True, help="maximum in-plane supercell length in angstrom")
+    ads_assemble.add_argument("--length", dest="max_length", type=parse_positive_float, required=True, help="maximum in-plane supercell length in angstrom")
     ads_assemble.add_argument("--top-strain", type=parse_nonnegative_float, required=True, help="target molecular-lattice principal logarithmic strain budget as a fraction")
     ads_assemble.add_argument("--bottom-strain", type=parse_nonnegative_float, required=True, help="substrate principal logarithmic strain budget as a fraction")
     ads_assemble.add_argument("--preview-limit", type=int, default=10, help="number of lowest-strain candidates to print after the search; use 0 to hide")
@@ -481,10 +487,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="principal logarithmic strain budget for one slab, as a fraction",
     )
     int_match.add_argument(
-        "--max-length",
+        "--length",
+        dest="max_length",
         type=parse_positive_float,
         default=20.0,
         help="maximum in-plane length of the matched supercell in angstrom",
+    )
+    int_match.add_argument(
+        "--max-length",
+        dest="max_length",
+        type=parse_positive_float,
+        default=argparse.SUPPRESS,
+        help=argparse.SUPPRESS,
     )
     int_match.add_argument(
         "--strain-mode",
@@ -493,7 +507,8 @@ def build_parser() -> argparse.ArgumentParser:
         help="share the strain between both slabs, or keep the bottom slab rigid and strain only the film",
     )
     int_match.add_argument("--min-length", type=parse_positive_float, default=None, help="minimum in-plane supercell length in angstrom")
-    int_match.add_argument("--max-atoms", type=int, default=None, help="maximum atoms allowed in a matched interface cell")
+    int_match.add_argument("--atoms", dest="max_atoms", type=int, default=None, help="maximum atoms allowed in a matched interface cell")
+    int_match.add_argument("--max-atoms", dest="max_atoms", type=int, default=argparse.SUPPRESS, help=argparse.SUPPRESS)
     int_match.add_argument(
         "--max-matches",
         type=int,

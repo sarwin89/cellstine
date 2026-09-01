@@ -107,6 +107,66 @@ def test_simplified_commands_parse_to_workflow_targets():
         assert (namespace.group, namespace.stage) == expected
 
 
+def test_adsorbate_assemble_uses_simplified_length_option():
+    namespace = build_parser().parse_args(
+        [
+            "adsorbate",
+            "assemble",
+            "substrate.vasp",
+            "--a-length",
+            "12",
+            "--length",
+            "30",
+            "--top-strain",
+            "0.05",
+            "--bottom-strain",
+            "0.05",
+        ]
+    )
+
+    assert namespace.max_length == 30.0
+
+
+def test_experimental_nlayer_commands_say_experimental_in_help(capsys):
+    parser = build_parser()
+
+    for argv in (["moire", "stack-search", "--help"], ["moire", "stack-build", "--help"]):
+        with pytest.raises(SystemExit) as raised:
+            parser.parse_args(argv)
+        assert raised.value.code == 0
+        assert "experimental" in capsys.readouterr().out.lower()
+
+
+def test_interface_match_uses_simplified_length_and_atom_options():
+    namespace = build_parser().parse_args(
+        [
+            "interface",
+            "match",
+            "bottom.vasp",
+            "top.vasp",
+            "--length",
+            "24",
+            "--atoms",
+            "600",
+        ]
+    )
+
+    assert namespace.max_length == 24.0
+    assert namespace.max_atoms == 600
+
+
+def test_interface_match_help_exposes_simplified_bounds(capsys):
+    with pytest.raises(SystemExit) as raised:
+        build_parser().parse_args(["interface", "match", "--help"])
+
+    assert raised.value.code == 0
+    out = capsys.readouterr().out
+    assert "--length" in out
+    assert "--atoms" in out
+    assert "--max-length" not in out
+    assert "--max-atoms" not in out
+
+
 @pytest.mark.parametrize(
     "kwargs,expected",
     [

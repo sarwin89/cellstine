@@ -405,7 +405,7 @@ Behavior:
 Scan surface combinations from two bulks:
 
 ```bash
-cellstine interface match input/Au_Bulk.vasp input/Au_Bulk.vasp --bottom-millers 1,1,1 1,0,0 --top-millers 1,1,1 1,1,0 --bottom-layers-list 4 6 --top-layers-list 4 6 --max-strain 0.05
+cellstine interface match input/Au_Bulk.vasp input/Au_Bulk.vasp --bottom-millers 1,1,1 1,0,0 --top-millers 1,1,1 1,1,0 --bottom-layers-list 4 6 --top-layers-list 4 6 --max-strain 0.05 --length 20
 ```
 
 Ranking priority:
