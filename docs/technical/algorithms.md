@@ -380,6 +380,7 @@ Main code:
 - `src/cellstine/cli/plain_defect.py`
 - `src/cellstine/cli/plain_surface.py`
 - `src/cellstine/cli/plain_interface.py`
+- `src/cellstine/cli/plain_symmetry.py`
 - `src/cellstine/cli/plain_view.py`
 - `src/cellstine/cli/rich_app.py`
 - `src/cellstine/cli/main.py`
