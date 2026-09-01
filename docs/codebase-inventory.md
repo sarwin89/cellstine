@@ -15,7 +15,7 @@ The snapshot was taken on 2026-09-02 from `dev`, with the worktree clean against
 
 | Area | Tracked files | Role |
 | --- | ---: | --- |
-| `src/` | 147 | Package source and source-adjacent mathematical notes. |
+| `src/` | 148 | Package source and source-adjacent mathematical notes. |
 | `tests/` | 89 | Regression, kernel, CLI, docs-contract, and end-to-end tests. |
 | `docs/` | 13 | User-facing workflow, CLI, architecture, migration, inventory, technical, and performance docs. |
 | `benchmarks/` | 3 | Reproducible moire search benchmark and oracle support. |
@@ -48,10 +48,10 @@ Largest tracked source files, and the reason to watch them:
 | `core/geometry.py` | 781 | Central periodic-geometry kernels used by several workflows. |
 | `adsorbate/placement/operations.py` | 769 | Substrate preparation, molecule placement, and movement helpers. |
 | `interface/surface/surface_cell.py` | 768 | Miller-plane and slab-cell construction logic. |
-| `symmetry/symmetry.py` | 742 | Public symmetry workflow plus optional/backend logic. |
 | `core/kpath.py` | 737 | Brillouin-zone, special-point, and band-path derivation. |
 | `core/symmetry3d.py` | 729 | Native 3D symmetry operations, primitive cells, and planar gauges. |
 | `interface/workflow/interface.py` | 723 | Public interface workflow orchestration and result reporting. |
+| `symmetry/symmetry.py` | 718 | Public symmetry workflow plus optional/backend logic. |
 | `moire/search/nlayer.py` | 619 | Experimental N-layer stack-search composition and pruning. |
 | `defect/generation.py` | 591 | Point-defect mutation builders and defect-manifest generation. |
 | `defect/supercell.py` | 562 | Defect-supercell HNF enumeration and image-distance scoring. |

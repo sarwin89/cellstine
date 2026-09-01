@@ -345,6 +345,7 @@ Main code:
 - `src/cellstine/core/kpath.py`
 - `src/cellstine/core/strata.py`
 - `src/cellstine/symmetry/models.py`
+- `src/cellstine/symmetry/reporting.py`
 - `src/cellstine/symmetry/symmetry.py`
 - `src/cellstine/symmetry/kpath_stage.py`
 
