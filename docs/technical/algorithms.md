@@ -377,6 +377,7 @@ Main code:
 - `src/cellstine/cli/plain.py`
 - `src/cellstine/cli/plain_moire.py`
 - `src/cellstine/cli/plain_adsorbate.py`
+- `src/cellstine/cli/plain_defect.py`
 - `src/cellstine/cli/plain_surface.py`
 - `src/cellstine/cli/plain_interface.py`
 - `src/cellstine/cli/rich_app.py`

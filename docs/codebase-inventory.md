@@ -8,14 +8,14 @@ questions before future refactors start:
 2. Which areas are clean enough to keep stable, and which areas should be
    reorganized next?
 
-The snapshot was taken on 2026-09-01 from `dev`, with the worktree clean against
+The snapshot was taken on 2026-09-02 from `dev`, with the worktree clean against
 `origin/dev`.
 
 ## Tracked repository shape
 
 | Area | Tracked files | Role |
 | --- | ---: | --- |
-| `src/` | 143 | Package source and source-adjacent mathematical notes. |
+| `src/` | 144 | Package source and source-adjacent mathematical notes. |
 | `tests/` | 88 | Regression, kernel, CLI, docs-contract, and end-to-end tests. |
 | `docs/` | 13 | User-facing workflow, CLI, architecture, migration, inventory, technical, and performance docs. |
 | `benchmarks/` | 3 | Reproducible moire search benchmark and oracle support. |
@@ -45,16 +45,16 @@ Largest tracked source files, and the reason to watch them:
 
 | File | Approx. lines | Why it matters |
 | --- | ---: | --- |
-| `core/geometry.py` | 947 | Central periodic-geometry kernels used by several workflows. |
-| `symmetry/symmetry.py` | 887 | Public symmetry workflow plus optional/backend logic. |
-| `adsorbate/placement/operations.py` | 880 | Substrate preparation, molecule placement, and movement helpers. |
-| `interface/surface/surface_cell.py` | 866 | Miller-plane and slab-cell construction logic. |
-| `core/kpath.py` | 853 | Brillouin-zone, special-point, and band-path derivation. |
-| `core/symmetry3d.py` | 848 | Native 3D symmetry operations, primitive cells, and planar gauges. |
-| `interface/workflow/interface.py` | 769 | Public interface workflow orchestration and result reporting. |
-| `moire/search/nlayer.py` | 712 | Experimental N-layer stack-search composition and pruning. |
-| `defect/supercell.py` | 668 | Defect-supercell HNF enumeration and image-distance scoring. |
-| `cli/plain.py` | 435 | Remaining stdlib command grammar after moiré, adsorbate, surface, and interface parser splits. |
+| `symmetry/symmetry.py` | 808 | Public symmetry workflow plus optional/backend logic. |
+| `core/geometry.py` | 781 | Central periodic-geometry kernels used by several workflows. |
+| `adsorbate/placement/operations.py` | 769 | Substrate preparation, molecule placement, and movement helpers. |
+| `interface/surface/surface_cell.py` | 768 | Miller-plane and slab-cell construction logic. |
+| `core/kpath.py` | 737 | Brillouin-zone, special-point, and band-path derivation. |
+| `core/symmetry3d.py` | 729 | Native 3D symmetry operations, primitive cells, and planar gauges. |
+| `interface/workflow/interface.py` | 723 | Public interface workflow orchestration and result reporting. |
+| `moire/search/nlayer.py` | 619 | Experimental N-layer stack-search composition and pruning. |
+| `defect/generation.py` | 591 | Point-defect mutation builders and defect-manifest generation. |
+| `defect/supercell.py` | 562 | Defect-supercell HNF enumeration and image-distance scoring. |
 
 These files are not inherently wrong, but each combines enough concerns that
 future edits should be isolated and heavily tested.
@@ -125,6 +125,6 @@ Use one commit per phase:
 2. Public contract decision: settle N-layer as either experimental or disabled.
 3. Mechanical test split: move tests into domain folders without changing test
    logic.
-4. Parser split: continue moving defect, symmetry, and view parser
+4. Parser split: continue moving symmetry and view parser
    construction out of `cli/plain.py`.
 5. Large-module splits by domain, starting with files that see the most edits.
