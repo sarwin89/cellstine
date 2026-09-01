@@ -15,7 +15,7 @@ The snapshot was taken on 2026-09-01 from `dev`, with the worktree clean against
 
 | Area | Tracked files | Role |
 | --- | ---: | --- |
-| `src/` | 142 | Package source and source-adjacent mathematical notes. |
+| `src/` | 143 | Package source and source-adjacent mathematical notes. |
 | `tests/` | 88 | Regression, kernel, CLI, docs-contract, and end-to-end tests. |
 | `docs/` | 13 | User-facing workflow, CLI, architecture, migration, inventory, technical, and performance docs. |
 | `benchmarks/` | 3 | Reproducible moire search benchmark and oracle support. |
@@ -54,7 +54,7 @@ Largest tracked source files, and the reason to watch them:
 | `interface/workflow/interface.py` | 769 | Public interface workflow orchestration and result reporting. |
 | `moire/search/nlayer.py` | 712 | Experimental N-layer stack-search composition and pruning. |
 | `defect/supercell.py` | 668 | Defect-supercell HNF enumeration and image-distance scoring. |
-| `cli/plain.py` | 525 | Remaining stdlib command grammar after moiré, surface, and interface parser splits. |
+| `cli/plain.py` | 435 | Remaining stdlib command grammar after moiré, adsorbate, surface, and interface parser splits. |
 
 These files are not inherently wrong, but each combines enough concerns that
 future edits should be isolated and heavily tested.
@@ -125,6 +125,6 @@ Use one commit per phase:
 2. Public contract decision: settle N-layer as either experimental or disabled.
 3. Mechanical test split: move tests into domain folders without changing test
    logic.
-4. Parser split: continue moving adsorbate, defect, symmetry, and view parser
+4. Parser split: continue moving defect, symmetry, and view parser
    construction out of `cli/plain.py`.
 5. Large-module splits by domain, starting with files that see the most edits.
