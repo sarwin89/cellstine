@@ -344,6 +344,7 @@ Main code:
 - `src/cellstine/core/brillouin.py`
 - `src/cellstine/core/kpath.py`
 - `src/cellstine/core/strata.py`
+- `src/cellstine/symmetry/models.py`
 - `src/cellstine/symmetry/symmetry.py`
 - `src/cellstine/symmetry/kpath_stage.py`
 
@@ -364,7 +365,8 @@ Key functions and objects:
 | `special_points`, `band_path`, `segment_strata` | Special-point naming, path derivation, and segment classification. |
 | `Symmetry.analyse`, `Symmetry.reduce`, `Symmetry.kpoints`, `Symmetry.kpath` | Public symmetry workflow methods. |
 
-Primary tests include `tests/test_symmetry_workflow.py`,
+Primary tests include `tests/test_symmetry_models.py`,
+`tests/test_symmetry_workflow.py`,
 `tests/test_symmetry2d.py`, `tests/test_symmetry3d.py`,
 `tests/test_reciprocal.py`, `tests/test_kpoints_layout.py`, and
 `tests/test_kpath.py`.
