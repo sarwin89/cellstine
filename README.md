@@ -98,9 +98,11 @@ by the sum of the top and bottom strain budgets and is shared optimally between
 the layers for each candidate. This name is deliberate: it is scientifically
 precise while keeping the CLI readable. `--symmetric` requests a restricted
 square/hexagonal symmetry-preserving family and falls back to the general search
-when inapplicable. N-layer moire workflows are not supported in this release.
-See the [moire search note](src/cellstine/moire/MOIRE_SEARCH.md) for the algorithm,
-JSON fields, external Aristotle/Lean reference, and reproducibility details.
+when inapplicable. Experimental N-layer commands are exposed separately as `moire stack-search`
+and `moire stack-build`; their public contract is still being stabilized. See
+the [moire search note](src/cellstine/moire/MOIRE_SEARCH.md) for the bilayer
+algorithm, JSON fields, external Aristotle/Lean reference, and reproducibility
+details.
 
 ## Documentation
 
@@ -113,6 +115,8 @@ JSON fields, external Aristotle/Lean reference, and reproducibility details.
 - [Defect workflow](docs/workflows/defect.md)
 - [Symmetry workflow](docs/workflows/symmetry.md)
 - [Architecture notes](docs/architecture.md)
+- [Codebase inventory](docs/codebase-inventory.md)
+- [Technical algorithms map](docs/technical/algorithms.md)
 - [Moire search performance](docs/moire-performance.md)
 - [Full usage guide](USAGE_GUIDE.md)
 - [Roadmap](ROADMAP.md)

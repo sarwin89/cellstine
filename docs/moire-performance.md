@@ -17,7 +17,9 @@ cellstine moire build runs/moire/<run-id>/results.json --indexes 1 --interlayer-
 
 The finder writes schema-versioned `results.json`. `--symmetric` requests a
 restricted square/hexagonal family and falls back to the general search when it
-is inapplicable. N-layer moire workflows are not supported in this release.
+is inapplicable. Experimental N-layer commands are exposed as
+`moire stack-search` and `moire stack-build`, but performance claims here are
+only for the native bilayer Gram-form search.
 
 ## Reproducible benchmark
 

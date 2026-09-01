@@ -3,15 +3,16 @@
 This guide covers the current grouped CELLSTINE package and CLI in more detail than the README.
 For a shorter public documentation map, see [docs/README.md](docs/README.md).
 
-The package is organized around five top-level workflows:
+The package is organized around six top-level workflows:
 
 - `moire`
 - `adsorbate`
+- `surface`
 - `interface`
 - `symmetry`
 - `defect`
 
-Examples below use the installed command `cellstine`. Public example files live in `input/examples/` and `output/examples/`; normal local inputs, generated outputs, and run manifests stay in `input/`, `output/`, and `runs/`. Inside the repository, `python moire_cli.py ...` is also available as a repository-local convenience entrypoint that forwards into the same package CLI.
+Examples below use the installed command `cellstine`. Public example files live in `input/examples/` and `output/examples/`; normal local inputs, generated outputs, and run manifests stay in `input/`, `output/`, and `runs/`. Inside the repository, `python cellstine.py ...` is also available as a repository-local convenience entrypoint that forwards into the same package CLI.
 
 Import workflow classes and helpers from `cellstine...` modules.
 
@@ -30,6 +31,7 @@ pip install -e ".[pymatgen]"
 pip install -e ".[symmetry]"
 pip install -e ".[viz]"
 pip install -e ".[plotly]"
+pip install -e ".[cli]"
 pip install -e ".[all]"
 ```
 
@@ -38,7 +40,7 @@ Main entry points:
 ```bash
 cellstine --help
 cellstine --version
-python moire_cli.py --help
+python cellstine.py --help
 ```
 
 ## 2. Standard Working Layout
@@ -100,45 +102,53 @@ It is meant to be a guided launcher over the same backend classes used by the CL
 ```bash
 cellstine --help
 cellstine moire --help
-cellstine moire find --help
-cellstine moire make --help
-cellstine moire translate --help
-cellstine moire visualize --help
+cellstine moire search --help
+cellstine moire build --help
+cellstine moire shift --help
+cellstine moire view --help
+cellstine moire stack-search --help
+cellstine moire stack-build --help
 cellstine adsorbate --help
 cellstine adsorbate place --help
 cellstine adsorbate move --help
 cellstine adsorbate assemble --help
+cellstine surface --help
+cellstine surface build --help
+cellstine surface sites --help
 cellstine interface --help
-cellstine interface surface --help
-cellstine interface sites --help
 cellstine interface build --help
 cellstine interface match --help
-cellstine interface visualize --help
+cellstine interface registries --help
 cellstine symmetry --help
 cellstine symmetry analyse --help
 cellstine symmetry reduce --help
 cellstine symmetry lattice-reduce --help
+cellstine symmetry kpoints --help
+cellstine symmetry kpath --help
 cellstine defect --help
 cellstine defect analyse --help
 cellstine defect generate --help
 cellstine defect preview --help
+cellstine view --help
 ```
 
 ## 5. `moire` Workflow
 
 ### 5.1 Native Bilayer Search
 
-Run `moire find` with physical length and layer strain budgets:
+Run `moire search` with physical length and layer strain budgets:
 
 ```bash
-cellstine moire find input/top.vasp input/bottom.vasp --max-length 20 --top-strain 0.01 --bottom-strain 0.01
+cellstine moire search input/top.vasp input/bottom.vasp --length 20 --strain 0.01
 ```
 
-Useful optional controls include `--min-length`, `--max-atoms`,
+Useful optional controls include `--min-length`, `--atoms`, `--twist`,
 `--max-cell-aspect-ratio`, `--min-cell-angle`, `--max-cell-angle`,
 `--symmetric`, `--progress`, and `--preview-limit`. Twist angles are
-reported in degrees; they are search results rather than input angles. Lengths
-are in angstrom and strain budgets are fractions, so `0.01` means a
+filtered in degrees with ranges such as `--twist 9:14`. Use `--rigid` for zero
+strain, `--strain E` for equal layer budgets, or `--top-strain` with
+`--bottom-strain` for asymmetric expert searches. Lengths are in angstrom and
+strain budgets are fractions, so `0.01` means a
 logarithmic-strain budget of 0.01.
 
 Here **strain** means the principal logarithmic strain
@@ -152,7 +162,7 @@ keeping the CLI readable; it does not mean engineering strain.
 family. When that family is inapplicable, CELLSTINE records why and falls back
 to the general search.
 
-### 5.2 JSON Results And `moire make`
+### 5.2 JSON Results And `moire build`
 
 Every successful search writes schema-versioned
 `cellstine.moire.gram` JSON v1:
@@ -166,14 +176,14 @@ The JSON carries the candidate matrices, angle in degrees, relative principal
 strain, top and bottom strain budgets, atom counts, rank/Pareto status, Löwner
 certification, shared lattice, affine maps, and search metadata. It is the
 single handoff format for previews, visualization, and construction. Legacy
-positional `.dat` files are rejected; rerun native `moire find` to create
+positional `.dat` files are rejected; rerun native `moire search` to create
 `results.json`.
 
 Build one or several selected candidates:
 
 ```bash
-cellstine moire make runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
-cellstine moire make runs/moire/<run-id>/results.json --indexes 1,2,5-7 --interlayer-distance 3.35 --workers 4
+cellstine moire build runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
+cellstine moire build runs/moire/<run-id>/results.json --indexes 1,2,5-7 --interlayer-distance 3.35 --workers 4
 ```
 
 A manifest containing the `results_json` artifact can be passed instead of
@@ -184,14 +194,14 @@ the raw JSON path.
 Shift the upper layer of an existing bilayer:
 
 ```bash
-cellstine moire translate output/stacked.vasp --shift-direct 0.333,0.667
+cellstine moire shift output/stacked.vasp --shift-direct 0.333,0.667
 ```
 
 Create a labelled static summary or the optional interactive Plotly viewer:
 
 ```bash
-cellstine moire visualize runs/moire/<run-id>/results.json --indices 1,2,3
-cellstine moire visualize runs/moire/<run-id>/results.json --indices 1,2,3 --plotly
+cellstine moire view runs/moire/<run-id>/results.json --indices 1,2,3
+cellstine moire view runs/moire/<run-id>/results.json --indices 1,2,3 --plotly
 ```
 
 Both paths use the validated JSON reader. They label top strain, bottom strain,
@@ -199,8 +209,10 @@ and relative principal strain explicitly and expose candidate provenance rather
 than interpreting positional columns. The guided interface is a simple launcher
 over these same commands and data.
 
-N-layer moire workflows are not supported in this release. This release
-supports the bilayer `moire find` and JSON `moire make` sequence only.
+Experimental N-layer workflows are exposed as `moire stack-search` and
+`moire stack-build`. Treat them as contract-in-progress until their native JSON
+schema, oracle tests, and construction guarantees are documented to the same
+standard as the bilayer `moire search` and JSON `moire build` sequence.
 
 ### 5.4 Mathematical Reference And Benchmark
 
@@ -232,7 +244,7 @@ The substrate input can be:
 - `slab`
 - `bulk`
 
-If you pass `bulk`, CELLSTINE first generates a surface slab through the `interface surface` machinery.
+If you pass `bulk`, CELLSTINE first generates a surface slab through the `surface build` machinery.
 For bulk-derived substrates, the primitive surface is generated first; then optional `--substrate-repeat-a`, `--substrate-repeat-b`, or `--substrate-supercell-matrix` expansion is applied before site detection and placement.
 
 Place on an existing slab:
@@ -289,7 +301,7 @@ cellstine adsorbate move output/stacked.vasp --target-cart 12.0,8.0,10.5 --rotat
 This mode uses an experimental target lattice to search for a commensurate substrate supercell beneath it.
 
 ```bash
-cellstine adsorbate assemble input/Au_1x1.vasp --a-length 12.0 --b-length 12.0 --angle 60 --max-length 30 --top-strain 0.05 --bottom-strain 0.05
+cellstine adsorbate assemble input/Au_1x1.vasp --a-length 12.0 --b-length 12.0 --angle 60 --length 30 --top-strain 0.05 --bottom-strain 0.05
 ```
 
 `--top-strain` bounds the synthetic molecular lattice and `--bottom-strain`
@@ -299,19 +311,19 @@ native bilayer moire search. The command writes schema-versioned `results.json`.
 ### 6.4 Adsorbate Visualization
 
 ```bash
-cellstine adsorbate visualize output/stacked.vasp
+cellstine view output/stacked.vasp
 ```
 
 This writes a labelled Matplotlib multi-view PNG by default: top view `x-y`, side view `x-z`, side view `y-z`, and a 3D overview. Add `--plotly` only when you want an optional interactive 3D HTML viewer.
 
 ## 7. `interface` Workflow
 
-### 7.1 Surface Generation With `interface surface`
+### 7.1 Surface Generation With `surface build`
 
 Build an `Au(111)`-style slab:
 
 ```bash
-cellstine interface surface input/Au_Bulk.vasp --miller 111 --layers 6 --vacuum 15
+cellstine surface build input/Au_Bulk.vasp --miller 111 --layers 6 --vacuum 15
 ```
 
 CELLSTINE first builds the primitive surface cell for the requested direction, then applies any requested repeats or supercell matrix. For conventional fcc metals such as Au, Au(111) with four layers gives one atom per layer and `ABCA` stacking; Au(001) with four layers gives `ABAB`. Use `--repeat-a`, `--repeat-b`, or `--supercell-matrix` when you intentionally want a larger surface patch.
@@ -323,38 +335,38 @@ In guided interactive mode, the surface workflow previews the primitive cell fir
 Miller notation can be compact or comma-separated:
 
 ```bash
-cellstine interface surface input/Au_Bulk.vasp --miller 001 --layers 4
-cellstine interface surface input/Au_Bulk.vasp --miller 111x --layers 4
-cellstine interface surface input/Au_Bulk.vasp --miller 1,1,2x --layers 6
+cellstine surface build input/Au_Bulk.vasp --miller 001 --layers 4
+cellstine surface build input/Au_Bulk.vasp --miller 111x --layers 4
+cellstine surface build input/Au_Bulk.vasp --miller 1,1,2x --layers 6
 ```
 
 Repeat in plane:
 
 ```bash
-cellstine interface surface input/Au_Bulk.vasp --miller 110 --layers 4 --repeat-a 2 --repeat-b 2
+cellstine surface build input/Au_Bulk.vasp --miller 110 --layers 4 --repeat-a 2 --repeat-b 2
 ```
 
 Apply an explicit in-plane `2x2` supercell matrix:
 
 ```bash
-cellstine interface surface input/Au_Bulk.vasp --miller 100 --layers 6 --supercell-matrix 2,0,0,3
+cellstine surface build input/Au_Bulk.vasp --miller 100 --layers 6 --supercell-matrix 2,0,0,3
 ```
 
 Also write the adsorption-site report:
 
 ```bash
-cellstine interface surface input/Au_Bulk.vasp --miller 111 --layers 6 --vacuum 15 --analyse-sites
+cellstine surface build input/Au_Bulk.vasp --miller 111 --layers 6 --vacuum 15 --analyse-sites
 ```
 
 Native surface generation detects primitive, body-centred, face-centred, and base-centred translational lattices from the input structure before cutting the surface slab.
 
-### 7.2 Site Analysis With `interface sites`
+### 7.2 Site Analysis With `surface sites`
 
 Analyse an existing slab:
 
 ```bash
-cellstine interface sites output/surface_Au_Bulk_111_layers4.vasp
-cellstine interface sites output/surface_Au_Bulk_111_layers4.vasp --surface-side bottom
+cellstine surface sites output/surface_Au_Bulk_111_layers4.vasp
+cellstine surface sites output/surface_Au_Bulk_111_layers4.vasp --surface-side bottom
 ```
 
 The site finder reports:
@@ -407,7 +419,7 @@ This means smaller commensurate cells are preferred when strain is otherwise com
 ### 7.5 Interface Visualization
 
 ```bash
-cellstine interface visualize output/interface.vasp
+cellstine view output/interface.vasp
 ```
 
 This uses the same labelled Matplotlib multi-view format as adsorbate visualization, which is usually more useful for checking slab orientation, vacuum, adsorption height, and layer separation than a free-rotating viewer alone.
@@ -668,8 +680,8 @@ python -m pytest -q tests
 If a moire search returns too many candidates:
 
 - lower the top or bottom strain budget
-- lower `--max-length`
-- lower `--max-atoms`
+- lower `--length`
+- lower `--atoms`
 - tighten the cell-shape limits
 
 If slab generation fails:

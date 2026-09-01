@@ -7,6 +7,8 @@ This folder contains the public documentation for CELLSTINE. Start with the quic
 - [Quickstart](quickstart.md)
 - [CLI and interactive mode](cli.md)
 - [Architecture](architecture.md)
+- [Codebase inventory](codebase-inventory.md)
+- [Technical algorithms map](technical/algorithms.md)
 - [Moire search performance](moire-performance.md)
 
 ## Workflows

@@ -27,8 +27,10 @@ engine shares accepted strain optimally between the two layers.
 family. When that family does not apply to the inputs or bounds, the search
 records the reason and falls back to the general search.
 
-N-layer moire workflows are not supported in this release. Use native bilayer
-`moire search` followed by JSON `moire build`.
+Experimental N-layer commands are exposed as `moire stack-search` and
+`moire stack-build`. Treat them as contract-in-progress until their native JSON
+schema, oracle tests, and construction guarantees are documented to the same
+standard as the bilayer workflow.
 
 ## Related commands
 

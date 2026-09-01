@@ -46,8 +46,9 @@ Here moire **strain** is principal logarithmic strain, `h = log(lambda)`, for
 principal stretch `lambda`. The accepted relative strain is bounded by the sum
 of the two layer budgets and shared optimally between the layers. `--symmetric`
 requests the restricted square/hexagonal family and falls back to the general
-search when it is inapplicable. N-layer moire workflows are not supported in
-this release. See the [moire workflow](workflows/moire.md) for details and the
+search when it is inapplicable. Experimental N-layer commands are exposed as
+`moire stack-search` and `moire stack-build`, but their public result contract
+is still being stabilized. See the [moire workflow](workflows/moire.md) for details and the
 [performance note](moire-performance.md) for the reproducible benchmark.
 
 Generate an Au(111) slab:

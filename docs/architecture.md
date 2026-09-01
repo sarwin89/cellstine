@@ -4,7 +4,7 @@ CELLSTINE uses a `src/` package layout.
 
 ```text
 src/cellstine/
-  cli/          argparse entrypoints plus interactive command-building flows
+  cli/          shared command spec, plain CLI, optional Rich/Typer frontend, guided flows
   core/         shared models, manifests, lattice helpers, transforms, validation
   io/           VASP I/O, conversion, orientation, and registry code
   moire/        moire workflows, search engines, builders, and transforms
@@ -41,3 +41,7 @@ Top-level imports expose workflow classes and public records:
 ```python
 from cellstine import Moire, Adsorbate, Molecule, Interface, Surface, Defect, Symmetry, Visualize
 ```
+
+For a fuller current inventory, see [codebase-inventory.md](codebase-inventory.md).
+For the function-level algorithm map, see
+[technical/algorithms.md](technical/algorithms.md).
