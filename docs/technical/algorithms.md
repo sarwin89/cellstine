@@ -375,6 +375,7 @@ Main code:
 
 - `src/cellstine/cli/spec.py`
 - `src/cellstine/cli/plain.py`
+- `src/cellstine/cli/plain_moire.py`
 - `src/cellstine/cli/rich_app.py`
 - `src/cellstine/cli/main.py`
 - `src/cellstine/cli/interactive/`
@@ -407,4 +408,3 @@ Primary tests include `tests/test_cli_rework.py`,
 3. Move tests into domain subfolders as a pure file move.
 4. Keep all generated scientific output ignored; track only curated examples.
 5. Replace stale command references whenever the CLI public contract changes.
-
