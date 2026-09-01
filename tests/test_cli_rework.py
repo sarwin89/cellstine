@@ -459,6 +459,47 @@ def test_moire_plain_parser_group_imports_without_numpy_or_workflows():
     assert "cellstine.interface.workflow.interface" not in modules
 
 
+def test_surface_and_interface_plain_parser_groups_are_split_from_plain_frontend():
+    import inspect
+
+    import cellstine.cli.plain as plain
+    from cellstine.cli.plain_interface import add_interface_group
+    from cellstine.cli.plain_surface import add_surface_group
+
+    source = inspect.getsource(plain.build_parser)
+    assert callable(add_surface_group)
+    assert callable(add_interface_group)
+    assert "add_surface_group(groups)" in source
+    assert "add_interface_group(groups)" in source
+
+
+@pytest.mark.parametrize("module_name", ["plain_surface", "plain_interface"])
+def test_split_plain_parser_groups_import_without_numpy_or_workflows(module_name):
+    script = textwrap.dedent(
+        f"""
+        import importlib.util, sys
+        from pathlib import Path
+        root = Path({str(PACKAGE_ROOT)!r})
+        spec = importlib.util.spec_from_file_location(
+            "cellstine", root / "__init__.py", submodule_search_locations=[str(root)]
+        )
+        module = importlib.util.module_from_spec(spec)
+        sys.modules["cellstine"] = module
+        spec.loader.exec_module(module)
+        __import__("cellstine.cli.{module_name}")
+        print("numpy" in sys.modules)
+        print(",".join(sorted(name for name in sys.modules if name.startswith("cellstine."))))
+        """
+    )
+    finished = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, timeout=300)
+    assert finished.returncode == 0, finished.stderr
+    loaded = finished.stdout.strip().splitlines()
+    assert loaded[0] == "False"
+    modules = set(loaded[1].split(",")) if len(loaded) > 1 and loaded[1] else set()
+    assert "cellstine.moire.moire" not in modules
+    assert "cellstine.interface.workflow.interface" not in modules
+
+
 def test_plain_help_uses_the_new_groups(capsys):
     with pytest.raises(SystemExit) as raised:
         build_parser().parse_args(["--help"])
