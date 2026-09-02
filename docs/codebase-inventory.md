@@ -15,8 +15,8 @@ The snapshot was taken on 2026-09-02 from `dev`, with the worktree clean against
 
 | Area | Tracked files | Role |
 | --- | ---: | --- |
-| `src/` | 148 | Package source and source-adjacent mathematical notes. |
-| `tests/` | 89 | Regression, kernel, CLI, docs-contract, and end-to-end tests. |
+| `src/` | 149 | Package source and source-adjacent mathematical notes. |
+| `tests/` | 90 | Regression, kernel, CLI, docs-contract, and end-to-end tests. |
 | `docs/` | 13 | User-facing workflow, CLI, architecture, migration, inventory, technical, and performance docs. |
 | `benchmarks/` | 3 | Reproducible moire search benchmark and oracle support. |
 | `input/` | 4 | Tracked example inputs only. |
@@ -51,9 +51,10 @@ Largest tracked source files, and the reason to watch them:
 | `core/kpath.py` | 737 | Brillouin-zone, special-point, and band-path derivation. |
 | `core/symmetry3d.py` | 729 | Native 3D symmetry operations, primitive cells, and planar gauges. |
 | `interface/workflow/interface.py` | 723 | Public interface workflow orchestration and result reporting. |
-| `symmetry/symmetry.py` | 718 | Public symmetry workflow plus optional/backend logic. |
+| `symmetry/symmetry.py` | 647 | Public symmetry workflow plus optional/backend logic. |
 | `moire/search/nlayer.py` | 619 | Experimental N-layer stack-search composition and pruning. |
 | `defect/generation.py` | 591 | Point-defect mutation builders and defect-manifest generation. |
+| `moire/search/gram_report.py` | 585 | Gram-search finalization, ranking, and report assembly. |
 | `defect/supercell.py` | 562 | Defect-supercell HNF enumeration and image-distance scoring. |
 
 These files are not inherently wrong, but each combines enough concerns that

@@ -346,6 +346,7 @@ Main code:
 - `src/cellstine/core/strata.py`
 - `src/cellstine/symmetry/models.py`
 - `src/cellstine/symmetry/reporting.py`
+- `src/cellstine/symmetry/records.py`
 - `src/cellstine/symmetry/symmetry.py`
 - `src/cellstine/symmetry/kpath_stage.py`
 
@@ -367,6 +368,7 @@ Key functions and objects:
 | `Symmetry.analyse`, `Symmetry.reduce`, `Symmetry.kpoints`, `Symmetry.kpath` | Public symmetry workflow methods. |
 
 Primary tests include `tests/test_symmetry_models.py`,
+`tests/test_symmetry_records.py`,
 `tests/test_symmetry_workflow.py`,
 `tests/test_symmetry2d.py`, `tests/test_symmetry3d.py`,
 `tests/test_reciprocal.py`, `tests/test_kpoints_layout.py`, and

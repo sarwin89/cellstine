@@ -5,12 +5,11 @@ from __future__ import annotations
 import json
 from dataclasses import replace
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 import numpy as np
 
 from ..core.species import expand_species
-from ..core.lattice import vector_angle_deg
 from ..core.base import Base, run_output_suffix
 from ..core.models import CommandResult
 from ..io.converters import StructureConverter
@@ -21,77 +20,13 @@ from ..core.idealisation import symmetrise_basis
 from ..io import kpoints as kpoints_io
 from .kpath_stage import BandPathMixin
 from .models import EquivalentAtomGroup, SymmetryAnalysis, SymmetryOperation
+from .records import (
+    lattice_parameters as _lattice_parameters,
+    record_from_atoms as _record_from_atoms,
+    record_from_spglib_cell as _record_from_spglib_cell,
+    species_type_map as _species_type_map,
+)
 from .reporting import format_symmetry_analysis
-
-
-def _species_type_map(species_by_atom: Sequence[str]) -> tuple[list[int], dict[int, str]]:
-    order: list[str] = []
-    numbers: list[int] = []
-    mapping: dict[int, str] = {}
-    for symbol in species_by_atom:
-        if str(symbol) not in order:
-            order.append(str(symbol))
-            mapping[len(order)] = str(symbol)
-        numbers.append(order.index(str(symbol)) + 1)
-    return numbers, mapping
-
-
-def _record_from_spglib_cell(
-    source: StructureRecord,
-    cell: tuple[Any, Any, Any],
-    species_map: dict[int, str],
-    *,
-    comment: str,
-) -> StructureRecord:
-    lattice, positions, numbers = cell
-    atom_species = [species_map.get(int(number), f"X{int(number)}") for number in list(numbers)]
-    return _record_from_atoms(source, lattice, positions, atom_species, comment=comment)
-
-
-def _record_from_atoms(
-    source: StructureRecord,
-    lattice: Any,
-    positions: Any,
-    atom_species: Sequence[str],
-    *,
-    comment: str,
-) -> StructureRecord:
-    """Return a species-grouped record from a per-atom species list."""
-
-    lattice_array = np.asarray(lattice, dtype=float)
-    direct = np.mod(np.asarray(positions, dtype=float).reshape(-1, 3), 1.0)
-    atom_species = [str(value) for value in atom_species]
-
-    ordered_species: list[str] = []
-    for symbol in source.species:
-        if symbol in atom_species and symbol not in ordered_species:
-            ordered_species.append(str(symbol))
-    for symbol in atom_species:
-        if symbol not in ordered_species:
-            ordered_species.append(str(symbol))
-
-    grouped_positions: list[np.ndarray] = []
-    counts: list[int] = []
-    for symbol in ordered_species:
-        indices = [index for index, atom_symbol in enumerate(atom_species) if atom_symbol == symbol]
-        counts.append(len(indices))
-        grouped_positions.extend(np.asarray(direct[index], dtype=float) for index in indices)
-
-    output_direct = np.asarray(grouped_positions, dtype=float) if grouped_positions else np.zeros((0, 3), dtype=float)
-    return StructureRecord(
-        comment=comment,
-        lattice=lattice_array,
-        species=ordered_species,
-        counts=counts,
-        positions_direct=output_direct,
-        positions_cartesian=output_direct @ lattice_array,
-        coordinate_mode="Direct",
-        selective_dynamics=False,
-        selective_flags=None,
-        source_path=source.source_path,
-        source_format=source.source_format,
-        metadata=dict(source.metadata),
-    )
 
 
 def _dataset_value(dataset: Any, key: str, default: Any = None) -> Any:
@@ -103,24 +38,6 @@ def _dataset_value(dataset: Any, key: str, default: Any = None) -> Any:
         return dataset[key]
     except Exception:
         return default
-
-
-def _lattice_parameters(lattice: np.ndarray) -> dict[str, float]:
-    matrix = np.asarray(lattice, dtype=float)
-    lengths = [float(np.linalg.norm(matrix[index])) for index in range(3)]
-    angles = [
-        vector_angle_deg(matrix[first], matrix[second])
-        for first, second in ((1, 2), (0, 2), (0, 1))
-    ]
-    return {
-        "a": lengths[0],
-        "b": lengths[1],
-        "c": lengths[2],
-        "alpha": angles[0],
-        "beta": angles[1],
-        "gamma": angles[2],
-        "volume": abs(float(np.linalg.det(matrix))),
-    }
 
 
 def _crystal_system(number: int | None) -> str | None:
