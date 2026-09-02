@@ -210,6 +210,24 @@ def test_layer_strains_share_the_relative_strain(graphene_result):
     assert np.all(np.abs(result.bottom_layer_strains) <= 0.01 + 1e-9)
 
 
+def test_wide_search_drops_numerical_join_rows_outside_the_strain_budget():
+    basis = hexagonal_basis(2.46)
+    config = gram.SearchConfig(
+        top_basis=basis,
+        bottom_basis=basis,
+        max_length=90.0,
+        top_strain=0.002,
+        bottom_strain=0.002,
+        top_atoms=2,
+        bottom_atoms=2,
+    )
+
+    result = gram.search(config)
+
+    assert np.all(np.abs(result.top_layer_strains) <= config.top_strain + 1e-9)
+    assert np.all(np.abs(result.bottom_layer_strains) <= config.bottom_strain + 1e-9)
+
+
 def test_every_reported_cell_is_a_primitive_coincidence_cell(graphene_result):
     _, result = graphene_result
     assert np.all(result.coincidence_indices == 1)

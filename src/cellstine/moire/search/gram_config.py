@@ -21,6 +21,7 @@ _SLACK = 1e-9
 _SHELL_RATIO = 1.6
 _JOIN_CHUNK = 2048
 _CERTIFICATION_MARGIN = 1e-10
+_STRAIN_BUDGET_TOLERANCE = 1e-9
 # Width of the acceptance window when both strain budgets are zero.  A rigid
 # search asks for Gram forms that are *equal*; the window is only there to
 # absorb the rounding of the Cartesian bases, and it is wide enough for the

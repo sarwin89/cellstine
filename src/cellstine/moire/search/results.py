@@ -14,6 +14,7 @@ import numpy as np
 from ...core.symmetry2d import proper_subgroup as _proper_subgroup
 from ...core.lattice import vector_angle_deg
 from .gram import SearchConfig, SearchResult
+from .gram_config import _STRAIN_BUDGET_TOLERANCE
 
 SCHEMA = "cellstine.moire.gram"
 VERSION = 2
@@ -338,7 +339,10 @@ def _validate_candidate(candidate: dict[str, Any], expected_index: int, search: 
         (top_layer, "top_layer_strain", "top_strain"),
         (bottom_layer, "bottom_layer_strain", "bottom_strain"),
     ):
-        if max(abs(entry) for entry in entries) > float(search[budget]) + 1e-9:
+        if (
+            max(abs(entry) for entry in entries)
+            > float(search[budget]) + _STRAIN_BUDGET_TOLERANCE
+        ):
             raise ValueError(f"candidate {expected_index}.{name} exceeds the {budget} budget")
     top_count = _positive_integer(
         candidate["top_atom_count"], f"candidate {expected_index}.top_atom_count"

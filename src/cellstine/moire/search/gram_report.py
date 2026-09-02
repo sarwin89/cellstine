@@ -14,7 +14,14 @@ from typing import Any
 import numpy as np
 
 from ...core.symmetry2d import cartesian_mirror_angles, cartesian_rotation_angles
-from .gram_config import SearchConfig, SearchResult, _CERTIFICATION_MARGIN, _REL, _TWO_PI
+from .gram_config import (
+    SearchConfig,
+    SearchResult,
+    _CERTIFICATION_MARGIN,
+    _REL,
+    _STRAIN_BUDGET_TOLERANCE,
+    _TWO_PI,
+)
 from .gram_lattice import _first_per_key
 from .gram_pairs import (
     _canonical_pair_keys,
@@ -488,6 +495,37 @@ def _finalize(
     )
     principal_strains = np.stack([first_strain, second_strain], axis=1)
     sharing = np.full(len(top_matrices), config._sharing)
+    within_budget = (
+        np.max(np.abs(principal_strains * sharing[:, None]), axis=1)
+        <= config.top_strain + _STRAIN_BUDGET_TOLERANCE
+    ) & (
+        np.max(np.abs(principal_strains * (sharing - 1.0)[:, None]), axis=1)
+        <= config.bottom_strain + _STRAIN_BUDGET_TOLERANCE
+    )
+    stats["n_strain_budget_dropped"] = int(
+        len(within_budget) - np.count_nonzero(within_budget)
+    )
+    if not np.all(within_budget):
+        top_matrices, bottom_matrices = (
+            top_matrices[within_budget],
+            bottom_matrices[within_budget],
+        )
+        top_gram, bottom_gram = top_gram[within_budget], bottom_gram[within_budget]
+        top_multiplicity, bottom_multiplicity = (
+            top_multiplicity[within_budget],
+            bottom_multiplicity[within_budget],
+        )
+        twist, raw_twist, indices = (
+            twist[within_budget],
+            raw_twist[within_budget],
+            indices[within_budget],
+        )
+        first_stretch, second_stretch = (
+            first_stretch[within_budget],
+            second_stretch[within_budget],
+        )
+        principal_strains = principal_strains[within_budget]
+        sharing = sharing[within_budget]
     lower, upper = config._band
     certified = _loewner_mask(
         top_gram[:, 0],
