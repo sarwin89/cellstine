@@ -1,10 +1,12 @@
-"""Guards on the machine-checked half of the repository.
+"""Guards on the external machine-checked reference project.
 
 Every numerical convention the Python code relies on is backed by a proof in
 ``aristotle-lean-reference/RequestProject/``.  These tests do not re-run Lean --
-that is what ``lake build`` is for -- but they do pin the two things that
-silently rot: a proof left unfinished, and a file that stops being built because
-nothing imports it.
+that is what ``lake build`` is for -- and the Lean sources are intentionally
+untracked.  When the local reference checkout is present, these tests pin the
+two things that silently rot: a proof left unfinished, and a file that stops
+being built because nothing imports it.  CI does not require the external Lean
+folder.
 """
 
 from __future__ import annotations
@@ -36,6 +38,8 @@ def strip_comments(text: str) -> str:
 
 
 def test_the_lean_sources_are_where_they_are_expected():
+    if not LEAN_ROOT.exists():
+        pytest.skip("external Aristotle Lean reference folder is not present")
     assert LEAN_ROOT.is_dir()
     assert MAIN.is_file()
     assert len(lean_files()) > 1
