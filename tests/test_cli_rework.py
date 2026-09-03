@@ -391,10 +391,15 @@ def test_stale_moire_only_launcher_was_removed():
 
 
 def test_pyproject_exposes_only_the_cellstine_console_script():
-    import tomllib
-
-    metadata = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-    assert metadata["project"]["scripts"] == {"cellstine": "cellstine.cli.main:main"}
+    text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    section = text.split("[project.scripts]", 1)[1].split("\n[", 1)[0]
+    scripts = {}
+    for line in section.splitlines():
+        if "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        scripts[key.strip()] = value.strip().strip('"')
+    assert scripts == {"cellstine": "cellstine.cli.main:main"}
 
 
 def test_plain_frontend_imports_without_numpy_or_workflows():

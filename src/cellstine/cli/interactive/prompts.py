@@ -25,6 +25,23 @@ MAIN_MENU_BANNER = r"""
  ╚═════╝╚══════╝╚══════╝╚══════╝╚══════╝   ╚═╝   ╚═╝╚═╝  ╚═══╝╚══════╝
 """.strip("\n")
 
+ASCII_MAIN_MENU_BANNER = r"""
+  CCCCC  EEEEEEE L       L       SSSSSSS TTTTTTT III N   N EEEEEEE
+ C       E       L       L       S          T     I  NN  N E
+ C       EEEEE   L       L       SSSSSSS    T     I  N N N EEEEE
+ C       E       L       L             S    T     I  N  NN E
+  CCCCC  EEEEEEE LLLLLLL LLLLLLL SSSSSSS    T    III N   N EEEEEEE
+""".strip("\n")
+
+
+def _stream_supports_unicode() -> bool:
+    encoding = getattr(sys.stdout, "encoding", None) or "utf-8"
+    try:
+        (MAIN_MENU_BANNER + "╭─╮│╰─╯").encode(encoding)
+    except UnicodeEncodeError:
+        return False
+    return True
+
 
 class _QuitInteractive(Exception):
     """Internal signal for a graceful interactive-mode exit."""
@@ -134,23 +151,42 @@ class RichGuidedUI(PlainGuidedUI):
         from rich.prompt import Confirm, Prompt
         from rich.table import Table
 
-        self.console = Console(no_color=bool(os.environ.get("NO_COLOR")) or not sys.stdout.isatty())
+        try:
+            from rich import box
+        except ImportError:
+            box = None
+
+        self._unicode = _stream_supports_unicode()
+        self.console = Console(
+            legacy_windows=False,
+            no_color=bool(os.environ.get("NO_COLOR")) or not sys.stdout.isatty(),
+        )
+        self._box = None if box is None else (box.ROUNDED if self._unicode else box.ASCII)
         self._panel = Panel
         self._prompt = Prompt
         self._confirm = Confirm
         self._table = Table
 
+    def _box_kwargs(self) -> dict[str, object]:
+        if self._box is None:
+            return {}
+        return {"box": self._box}
+
     def print(self, *args, **kwargs) -> None:
-        self.console.print(*args, **kwargs)
+        try:
+            self.console.print(*args, **kwargs)
+        except UnicodeEncodeError:
+            PlainGuidedUI.print(self, *args, **kwargs)
 
     def title(self, title: str, subtitle: str | None = None) -> None:
         body = subtitle or "Choose the workflow settings below."
         self.print()
-        self.print(self._panel.fit(body, title=title))
+        self.print(self._panel.fit(body, title=title, **self._box_kwargs()))
 
     def banner(self) -> None:
+        banner = MAIN_MENU_BANNER if self._unicode else ASCII_MAIN_MENU_BANNER
         self.print()
-        self.print(self._panel.fit(f"{MAIN_MENU_BANNER}\n\nMade by Sarwin Chandran 2026", title="CELLSTINE"))
+        self.print(self._panel.fit(f"{banner}\n\nMade by Sarwin Chandran 2026", title="CELLSTINE", **self._box_kwargs()))
 
     def prompt(
         self,
@@ -177,7 +213,7 @@ class RichGuidedUI(PlainGuidedUI):
 
     def choice(self, title: str, options: Sequence[dict[str, str]], default: int = 1, *, allow_back: bool = True) -> str:
         self.title(title, "Select an option. Use q to quit; use b to go back where available.")
-        table = self._table(show_header=True, header_style="bold")
+        table = self._table(show_header=True, header_style="bold", **self._box_kwargs())
         table.add_column("#", justify="right")
         table.add_column("Option")
         table.add_column("When to use it")
@@ -203,7 +239,7 @@ class RichGuidedUI(PlainGuidedUI):
 
     def command_preview(self, title: str, argv: Sequence[str]) -> None:
         self.print()
-        self.print(self._panel.fit(_format_command(argv), title=title))
+        self.print(self._panel.fit(_format_command(argv), title=title, **self._box_kwargs()))
 
 
 _ACTIVE_UI: PlainGuidedUI = PlainGuidedUI()

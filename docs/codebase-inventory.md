@@ -8,8 +8,8 @@ questions before future refactors start:
 2. Which areas are clean enough to keep stable, and which areas should be
    reorganized next?
 
-The snapshot was taken on 2026-09-02 from `dev`, with the worktree clean against
-`origin/dev`.
+The snapshot was refreshed on 2026-09-04 from `main`, after the 3.x release
+merge and release-hardening pass.
 
 ## Tracked repository shape
 
@@ -17,9 +17,10 @@ The snapshot was taken on 2026-09-02 from `dev`, with the worktree clean against
 | --- | ---: | --- |
 | `src/` | 150 | Package source and source-adjacent mathematical notes. |
 | `tests/` | 91 | Regression, kernel, CLI, docs-contract, and end-to-end tests. |
-| `docs/` | 13 | User-facing workflow, CLI, architecture, migration, inventory, technical, and performance docs. |
+| `docs/` | 14 | User-facing workflow, CLI, architecture, migration, inventory, release, technical, and performance docs. |
 | `benchmarks/` | 3 | Reproducible moire search benchmark and oracle support. |
 | `input/` | 4 | Tracked example inputs only. |
+| `.github/` | 1 | Windows CI matrix and package-build verification. |
 | root files | 8 | Project metadata, launch script, README, roadmap, license. |
 
 The package uses a `src/` layout. The root [cellstine.py](../cellstine.py) is a
@@ -100,6 +101,8 @@ These directories are intentionally ignored and should not be committed:
 | `aristotle-lean-reference/` | 62 | 0.6 MB | External Lean proof/reference project; not package source. |
 | `cellstine-report/` | 23 | 1.4 MB | Local report/export material. |
 | `output/` | 0 | 0 MB | Generated structures/plots; ignored except curated examples elsewhere. |
+| `dist/` | generated | generated | Local release artifacts; upload only after package checks pass. |
+| `.matrix-*/`, `.release-*/` | generated | generated | Local Python matrix and package smoke-test environments. |
 
 Before deleting any of these, preserve anything the user wants to keep. The
 safe cleanup target is Python cache folders such as `__pycache__/`.
@@ -128,4 +131,7 @@ Use one commit per phase:
    logic.
 4. Parser split: complete; keep future command edits in the domain parser
    modules under `src/cellstine/cli/plain_*.py`.
+5. Release automation: started with `.github/workflows/ci.yml`; keep the local
+   release checklist and CI matrix aligned when supported Python versions or
+   optional extras change.
 5. Large-module splits by domain, starting with files that see the most edits.

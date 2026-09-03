@@ -20,6 +20,8 @@ pip-wheel-metadata/
 # Virtual environments
 .venv/
 .venv*/
+.matrix-*/
+.release-*/
 venv/
 env/
 

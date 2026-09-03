@@ -10,6 +10,7 @@ This folder contains the public documentation for CELLSTINE. Start with the quic
 - [Codebase inventory](codebase-inventory.md)
 - [Technical algorithms map](technical/algorithms.md)
 - [Moire search performance](moire-performance.md)
+- [Release checklist](release.md)
 
 ## Workflows
 
@@ -21,4 +22,6 @@ This folder contains the public documentation for CELLSTINE. Start with the quic
 
 ## Example Data
 
-Tracked examples live in `input/examples/` and `output/examples/`. Regular generated files stay in `output/` and `runs/` and are ignored by Git.
+Tracked examples live in `input/examples/`. Generated structures, plots,
+manifests, package builds, and local test artifacts stay in ignored directories
+such as `output/`, `runs/`, `dist/`, and `.pytest-*/`.
