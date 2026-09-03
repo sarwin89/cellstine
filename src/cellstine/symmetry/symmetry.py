@@ -27,45 +27,11 @@ from .records import (
     species_type_map as _species_type_map,
 )
 from .reporting import format_symmetry_analysis
-
-
-def _dataset_value(dataset: Any, key: str, default: Any = None) -> Any:
-    if dataset is None:
-        return default
-    if hasattr(dataset, key):
-        return getattr(dataset, key)
-    try:
-        return dataset[key]
-    except Exception:
-        return default
-
-
-def _crystal_system(number: int | None) -> str | None:
-    if number is None:
-        return None
-    value = int(number)
-    if 1 <= value <= 2:
-        return "triclinic"
-    if 3 <= value <= 15:
-        return "monoclinic"
-    if 16 <= value <= 74:
-        return "orthorhombic"
-    if 75 <= value <= 142:
-        return "tetragonal"
-    if 143 <= value <= 167:
-        return "trigonal"
-    if 168 <= value <= 194:
-        return "hexagonal"
-    if 195 <= value <= 230:
-        return "cubic"
-    return None
-
-
-def _has_inversion(rotations: np.ndarray | None) -> bool | None:
-    if rotations is None:
-        return None
-    inversion = -np.eye(3, dtype=int)
-    return any(np.array_equal(np.asarray(rotation, dtype=int), inversion) for rotation in rotations)
+from .spglib_adapter import (
+    crystal_system as _crystal_system,
+    dataset_value as _dataset_value,
+    has_inversion as _has_inversion,
+)
 
 
 def _write_analysis_file(path: Path, analysis: SymmetryAnalysis) -> Path:
