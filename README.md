@@ -4,7 +4,7 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](#installation)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Version 4.0.0](https://img.shields.io/badge/version-4.0.0-informational)](pyproject.toml)
+[![Version 3.0.0](https://img.shields.io/badge/version-3.0.0-informational)](pyproject.toml)
 
 CELLSTINE is a Python package and guided CLI for building VASP-style atomistic structures: moire supercells, molecule-on-substrate systems, surfaces, interfaces, defects, and symmetry-reduced cells.
 

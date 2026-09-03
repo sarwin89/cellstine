@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cellstine"
-version = "4.0.0"
+version = "3.0.0"
 description = "CELLSTINE: moire, adsorbate, interface, symmetry, and defect workflows for VASP structures."
 readme = "README.md"
 requires-python = ">=3.10"
