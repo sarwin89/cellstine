@@ -9,6 +9,7 @@ from typing import Any
 
 import numpy as np
 
+from ..core.lattice import vector_angle_deg
 from ..core.species import expand_species
 from ..core.base import Base, run_output_suffix
 from ..core.models import CommandResult
