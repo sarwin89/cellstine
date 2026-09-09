@@ -8,8 +8,8 @@ questions before future refactors start:
 2. Which areas are clean enough to keep stable, and which areas should be
    reorganized next?
 
-The snapshot was refreshed on 2026-09-04 from `main`, after the 3.x release
-merge and release-hardening pass.
+The snapshot was refreshed on 2026-09-09 from `main`, after the 3.0.2 release
+hardening pass and GitHub Release publication.
 
 ## Tracked repository shape
 

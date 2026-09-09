@@ -1,6 +1,6 @@
 # Native Gram-form moire search
 
-CELLSTINE 4 searches commensurate **bilayer** supercells directly in Gram form.
+CELLSTINE v3 searches commensurate **bilayer** supercells directly in Gram form.
 The twist angle is an output of each accepted pair of integer supercell
 matrices, not an angle swept by the user.
 

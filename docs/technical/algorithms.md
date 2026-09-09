@@ -142,10 +142,11 @@ Main code:
 - `src/cellstine/moire/supermoire.py`
 - `src/cellstine/moire/transform/translaten.py`
 
-Current status: the implementation and tests exist, but the public release
-contract still needs a decision. Earlier release notes describe N-layer as
-deferred, while the current CLI exposes `moire stack-search` and
-`moire stack-build`.
+Current status: this is exposed as an experimental public workflow through
+`moire stack-search` and `moire stack-build`. The bilayer Gram engine remains
+the authoritative stable path; N-layer support composes validated bilayer
+matches and should keep its experimental language until broader physical
+validation is complete.
 
 Algorithmic design:
 
@@ -170,8 +171,9 @@ Key functions and objects:
 | `run_findn`, `read_nlayer_results` | Search orchestration and JSON reading. |
 | `build_nlayer_supercell` | Construct a selected N-layer stack. |
 
-Decision needed: call this experimental and document it, or hide/reject it for
-the next public release.
+Release stance: keep this documented as experimental, keep the JSON-backed
+builder path, and avoid promising the same completeness guarantees as the
+bilayer Gram search until a wider independent oracle exists.
 
 ## 5. Surface generation and adsorption sites
 

@@ -49,7 +49,7 @@ the guided CLI has Windows console-encoding behavior that should remain tested.
 2. Run the full test matrix and package checks.
 3. Commit any release-only fixes.
 4. Push `main` and `dev`.
-5. Create an annotated tag, for example `v3.0.1`.
+5. Create an annotated tag, for example `v3.0.2`.
 6. Push the tag.
 7. Upload the checked files from `dist/` to PyPI.
 
