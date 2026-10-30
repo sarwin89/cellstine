@@ -21,7 +21,7 @@ The generator preserves evidence only when the normalized source module is uncha
 
 Passing tests or obtaining high coverage never automatically marks a function reviewed. Completion must also check external dependencies/callers and the actual reasoning in each part report.
 
-At the Part-01 checkpoint, the ledger contains **1,079 functions**: **28 reviewed unchanged**, **3 optimized and verified** (including the two prior contact optimizations), **1 investigated deferral**, and **1,047 pending reviews**. Thus **32 functions have inspection evidence**; the project-wide review is incomplete.
+At the Part-02a checkpoint, the ledger contains **1,085 functions**: **61 reviewed unchanged**, **10 optimized and verified** (including the two prior contact optimizations), **2 investigated deferrals**, and **1,012 pending reviews**. Thus **73 functions have inspection evidence**; the project-wide review is incomplete. Six new functions since Part 01 are the shared padding helper and five functions in the reproducible geometry benchmark; they are included in both inventory and review.
 
 ## Dependency order and evidence
 
@@ -31,7 +31,8 @@ The full sequence is in [the implementation plan](../superpowers/plans/2026-10-3
 | --- | --- | --- |
 | Prior scoped pass | Contact diameter and cross-group minimum search | [release-preparation report](../release-preparation-2026-10-30.md), commit `b749da1`, green supported-version CI |
 | 01 | Lattice helpers, reduction kernels, review tooling, coverage/CI setup | [part-01-lattice.md](part-01-lattice.md) |
-| 02 onward | Geometry then remaining shared code, I/O, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
+| 02a | Periodic geometry, site indexes, neighbor queries and comparative benchmark | [part-02a-geometry.md](part-02a-geometry.md) |
+| 02b onward | Remaining contacts/covering/voids, remaining shared code, I/O, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
 
 ## Coverage and release boundaries
 

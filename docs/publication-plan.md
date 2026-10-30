@@ -10,6 +10,8 @@ Status: planning only. No upload workflow, credential change, tag, release, or p
 4. Verify the actual existing PyPI/TestPyPI versions and maintainer access. A patch version is appropriate only if the final changes remain backward compatible; `3.0.3` is a proposal, not an assigned or reserved version. Defer the final version until the full review's scope is known.
 5. Update `pyproject.toml`, `cellstine.__version__`, README version badge and release notes together. Re-run all gates after version/metadata changes.
 
+Read-only public metadata check on 2026-10-30: `https://pypi.org/pypi/cellstine/json` returned HTTP 404. No public version history was read back. This does not establish project-name availability or maintainer access, and no account or publisher configuration was changed. If a new project is required, PyPI documents a [pending trusted publisher](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/); configuring one does not reserve the name, so availability must still be checked at the later authorized publication step.
+
 ## Artifact validation
 
 Build fresh wheel and source distribution from the frozen candidate; keep release artifacts separate from prior local builds:

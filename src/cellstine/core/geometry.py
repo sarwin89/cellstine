@@ -235,10 +235,13 @@ def plane_minimum_image(basis: np.ndarray, deltas_uv: np.ndarray) -> np.ndarray:
         return cartesian
     shifts = plane_shifts(reach) @ reduced
     rows = np.flatnonzero(~settled)
-    candidates = cartesian[rows][:, None, :] - shifts[None, :, :]
-    lengths = np.einsum("ijk,ijk->ij", candidates, candidates)
     best = cartesian.copy()
-    best[rows] = candidates[np.arange(rows.shape[0]), np.argmin(lengths, axis=1)]
+    step = max(1, 65536 // max(1, shifts.shape[0]))
+    for start in range(0, rows.shape[0], step):
+        chunk = rows[start : start + step]
+        candidates = cartesian[chunk][:, None, :] - shifts[None, :, :]
+        lengths = np.einsum("ijk,ijk->ij", candidates, candidates)
+        best[chunk] = candidates[np.arange(chunk.shape[0]), np.argmin(lengths, axis=1)]
     return best
 
 
@@ -531,6 +534,21 @@ def _bucket_slices(unique: np.ndarray, offsets: np.ndarray, query: np.ndarray) -
     return start, stop
 
 
+def _bucket_candidates(
+    entries: np.ndarray, start: np.ndarray, stop: np.ndarray
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Materialize padded candidates for only the requested bucket slices."""
+
+    lengths = stop - start
+    width = int(lengths.max(initial=0))
+    if width == 0:
+        return np.zeros((len(start), 0), dtype=np.int64), np.zeros((len(start), 0), dtype=bool)
+    columns = np.arange(width, dtype=np.int64)[None, :]
+    valid = columns < lengths[:, None]
+    indices = start[:, None] + np.where(valid, columns, 0)
+    return entries[indices], valid
+
+
 class PeriodicSiteIndex:
     """Bucketed lookup of fractional sites under periodic boundary conditions.
 
@@ -625,24 +643,29 @@ class PeriodicSiteIndex:
         if width == 0:
             return result
 
-        columns = np.arange(width, dtype=np.int64)
-        indices = start[:, None] + columns[None, :]
-        valid = columns[None, :] < (stop - start)[:, None]
-        candidates = self._entries[np.where(valid, indices, 0)]
-
-        deltas = (points[:, None, :] - self.positions[candidates]).reshape(-1, 3)
-        # Padding entries point at an arbitrary site; zeroing them keeps them out
-        # of the exhaustive branch below, and ``valid`` masks them out anyway.
-        deltas[~valid.reshape(-1)] = 0.0
-        squared = bounded_minimum_image_squared(self.lattice, deltas, self.tolerance).reshape(
-            queries, width
-        )
-        ok = valid & (squared <= self.tolerance**2) & (self.labels[candidates] == wanted[:, None])
-        score = np.where(ok, candidates.astype(float), np.inf) if prefer_lowest else np.where(ok, squared, np.inf)
-        best = np.argmin(score, axis=1)
-        rows = np.arange(queries)
-        found = np.isfinite(score[rows, best])
-        result[found] = candidates[rows, best][found]
+        step = max(1, 65536 // width)
+        for offset in range(0, queries, step):
+            section = slice(offset, offset + step)
+            candidates, valid = _bucket_candidates(self._entries, start[section], stop[section])
+            if candidates.shape[1] == 0:
+                continue
+            # Fancy indexing owns this buffer, so direct points-sites subtraction
+            # can reuse it without a second full displacement allocation.
+            deltas = self.positions[candidates]
+            np.subtract(points[section, None, :], deltas, out=deltas)
+            deltas = deltas.reshape(-1, 3)
+            # Zero padding before the exact kernel; it is masked out below.
+            deltas[~valid.reshape(-1)] = 0.0
+            squared = bounded_minimum_image_squared(self.lattice, deltas, self.tolerance).reshape(
+                candidates.shape
+            )
+            ok = valid & (squared <= self.tolerance**2) & (self.labels[candidates] == wanted[section, None])
+            score = np.where(ok, candidates.astype(float), np.inf) if prefer_lowest else np.where(ok, squared, np.inf)
+            best = np.argmin(score, axis=1)
+            rows = np.arange(candidates.shape[0])
+            found = np.isfinite(score[rows, best])
+            result[offset + rows[found]] = candidates[rows, best][found]
+            del candidates, valid, deltas, squared, ok, score, best, rows, found
         return result
 
     def find(self, point: Sequence[float], label: int = 0) -> int:
@@ -686,9 +709,9 @@ class CartesianGrid:
         return np.floor((np.asarray(points, dtype=float) - self.origin) / self.pitch).astype(np.int64)
 
     def _encode(self, cells: np.ndarray) -> np.ndarray:
-        # Cells outside the occupied range are clamped onto the border, which
-        # holds no point they could be near, so a distant query reads an empty
-        # bucket instead of colliding with an unrelated one.
+        # Clamp distant queries to border buckets to bound integer encodings.
+        # Border buckets may contribute extra candidates; callers still apply
+        # exact distances/radius checks before accepting any result.
         clamped = np.clip(np.asarray(cells, dtype=np.int64), -1, self._extent[None, :] - 4) + 1
         strides = np.array([self._extent[1] * self._extent[2], self._extent[2], 1], dtype=np.int64)
         return (clamped * strides).sum(axis=1)
@@ -706,14 +729,7 @@ class CartesianGrid:
             return np.zeros((count, 0), dtype=np.int64), np.zeros((count, 0), dtype=bool)
         keys = self._encode(self._cells(query_points))
         start, stop = _bucket_slices(self._unique, self._offsets, keys)
-        lengths = stop - start
-        width = int(lengths.max(initial=0))
-        if width == 0:
-            return np.zeros((count, 0), dtype=np.int64), np.zeros((count, 0), dtype=bool)
-        columns = np.arange(width, dtype=np.int64)[None, :]
-        valid = columns < lengths[:, None]
-        indices = start[:, None] + np.where(valid, columns, 0)
-        return self._entries[indices], valid
+        return _bucket_candidates(self._entries, start, stop)
 
 
 def _occupancy_pitch(points: np.ndarray) -> float:
@@ -723,14 +739,19 @@ def _occupancy_pitch(points: np.ndarray) -> float:
     images of a skewed cell fill a small part of their box, and taking the box
     volume then overestimates the spacing several times over, which leaves the
     occupied buckets crowded and the neighbour scan quadratic in that crowd.
-    Starting from the box estimate and dividing by the cube root of the measured
-    occupancy fixes that in one or two passes, and costs one sort of the points.
+    Starting from the box estimate and dividing by the active-axis-count root
+    of the measured occupancy fixes that in one or two passes, and costs one
+    sort of the points.
     """
 
     count = points.shape[0]
     extents = points.max(axis=0) - points.min(axis=0)
-    volume = float(np.prod(np.maximum(extents, 1e-9)))
-    guess = max((volume / count) ** (1.0 / 3.0), 1e-9)
+    # Flat point sets have an area/line density, not a volume density. Treating
+    # their zero axes as tiny volumes builds many unnecessary cached grids.
+    active = extents[extents > 1e-9]
+    dimension = max(1, active.size)
+    volume = float(np.prod(active)) if active.size else 0.0
+    guess = max((volume / count) ** (1.0 / dimension), 1e-9)
     origin = points.min(axis=0)
     for _ in range(2):
         cells = np.floor((points - origin) / guess).astype(np.int64)
@@ -740,7 +761,7 @@ def _occupancy_pitch(points: np.ndarray) -> float:
         occupancy = count / max(occupied, 1)
         if occupancy <= 1.5:
             break
-        guess /= occupancy ** (1.0 / 3.0)
+        guess /= occupancy ** (1.0 / dimension)
     return guess
 
 
@@ -789,7 +810,10 @@ class NearestPointQuery:
         return self._grids[level]
 
     def distances(self, queries: np.ndarray) -> np.ndarray:
-        """Return the distance from every query point to the closest stored point."""
+        """Return exact nearest distances, bounding candidate tables before allocation.
+
+        A bucket wider than ``block`` still needs one query's linear storage.
+        """
 
         query_points = np.asarray(queries, dtype=float).reshape(-1, 3)
         result = np.full(query_points.shape[0], np.inf, dtype=float)
@@ -803,24 +827,40 @@ class NearestPointQuery:
         while pending.size:
             grid = self._grid(level)
             current = grid.pitch
-            indices, valid = grid.candidates(query_points[pending])
-            width = indices.shape[1]
+            # Look up bucket ranges once, with only linear storage, before
+            # materializing bounded blocks of padded indices and masks.
+            first, last = _bucket_slices(
+                grid._unique, grid._offsets, grid._encode(grid._cells(query_points[pending]))
+            )
+            width = int((last - first).max(initial=0))
             if width:
                 step = max(1, self.block // width)
                 for start in range(0, pending.shape[0], step):
-                    rows = slice(start, start + step)
-                    chunk = indices[rows]
-                    deltas = self.points[chunk] - query_points[pending[rows]][:, None, :]
+                    section = slice(start, start + step)
+                    rows = pending[section]
+                    indices, valid = _bucket_candidates(grid._entries, first[section], last[section])
+                    if indices.shape[1] == 0:
+                        continue
+                    # Fancy indexing owns this buffer, so subtraction in place
+                    # avoids a second full displacement allocation safely.
+                    deltas = self.points[indices]
+                    deltas -= query_points[rows][:, None, :]
                     squared = np.einsum("ijk,ijk->ij", deltas, deltas)
-                    closest = np.min(squared, axis=1, where=valid[rows], initial=np.inf)
-                    result[pending[rows]] = np.sqrt(closest)
+                    closest = np.min(squared, axis=1, where=valid, initial=np.inf)
+                    result[rows] = np.sqrt(closest)
+                    del indices, valid, deltas, squared, closest
             pending = pending[result[pending] > current]
             if current > diagonal + 2.0 * self.pitch:  # pragma: no cover - defensive
                 break
             level += 1
-        if pending.size:  # pragma: no cover - only for degenerate inputs
-            deltas = query_points[pending][:, None, :] - self.points[None, :, :]
-            result[pending] = np.sqrt(np.einsum("ijk,ijk->ij", deltas, deltas)).min(axis=1)
+        if pending.size:
+            # Widely separated query clouds can reach the guard before a grid
+            # covers the gap. Keep that exact fallback blocked as well.
+            step = max(1, self.block // self.points.shape[0])
+            for start in range(0, pending.shape[0], step):
+                rows = pending[start : start + step]
+                deltas = query_points[rows][:, None, :] - self.points[None, :, :]
+                result[rows] = np.sqrt(np.einsum("ijk,ijk->ij", deltas, deltas)).min(axis=1)
         return result
 
 
@@ -933,8 +973,10 @@ def shortest_interatomic_distance(
         return float(lattice_shortest)
 
     volume = abs(float(np.linalg.det(array)))
-    radius = max((volume / count) ** (1.0 / 3.0), 1e-6)
     ceiling = float(lattice_shortest)
+    # The result is capped by the shortest self-image distance, so larger
+    # radii cannot improve it and can explode image counts in vacuum cells.
+    radius = min(max((volume / count) ** (1.0 / 3.0), 1e-6), ceiling)
     while True:
         first, second = periodic_neighbour_pairs(array, points, radius)
         if first.size:

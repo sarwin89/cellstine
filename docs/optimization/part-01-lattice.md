@@ -45,7 +45,7 @@ The ordinary angle microbenchmark (two fixed 3D vectors, minimum of three 5,000-
 
 Wheel/sdist builds, Twine metadata checks, wheel source byte comparisons, and installed core-only/CLI-extra/source-distribution numerical/version/help smokes pass. The source archive now includes maintained docs, benchmark helpers, tracked examples, launcher and review tooling required by its tests; extracted inventory/docs tests pass (6 tests). Generated run/output/temp files remain excluded. Ruff F checks, whitespace checks and ledger drift checks pass.
 
-The authoritative supported-version CI gate is the run on this part's pushed commit. It must be inspected before Part 02 begins; local Python 3.14 validation alone does not establish the expanded matrix.
+The authoritative supported-version CI gate passed on commit `9f59701`: [run 41050772517](https://github.com/sarwin89/cellstine/actions/runs/41050772517) succeeded for Python 3.10/3.11/3.12/3.13/3.14 and package builds. The nonexpired `python-3.12-coverage` artifact was read back as artifact `12974319031`, associated with this exact commit. This gate was verified before Part 02 began.
 
 ## Limits
 
