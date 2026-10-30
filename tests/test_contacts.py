@@ -12,6 +12,7 @@ deliberately skewed.  The bounds the restrictions rest on are proved in
 from __future__ import annotations
 
 import math
+import tracemalloc
 
 import numpy as np
 import pytest
@@ -28,6 +29,88 @@ from conftest import write_poscar
 HEXAGONAL_SLAB_CELL = np.array(
     [[6.0, 0.0, 0.0], [-3.0, 3.0 * math.sqrt(3.0), 0.0], [0.0, 0.0, 18.0]]
 )
+
+
+def test_group_diameter_bounds_temporary_memory_for_large_groups():
+    # Every atom lies on a short line: no periodic ambiguity, diameter = 2 A.
+    points = np.zeros((1600, 3))
+    points[:, 0] = np.linspace(0.0, 0.2, len(points))
+    tracemalloc.start()
+    try:
+        diameter = contacts.group_diameter(np.diag([10.0] * 3), points)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert diameter == pytest.approx(2.0)
+    # A full (n, n, 3) displacement tensor alone requires over 58 MiB.
+    assert peak < 16 * 1024 * 1024
+
+
+def test_closest_contact_avoids_a_full_distance_matrix_for_large_groups():
+    first = np.tile([0.1, 0.1, 0.1], (1600, 1))
+    second = np.tile([0.4, 0.4, 0.4], (1600, 1))
+    first[-1] = [0.98, 0.5, 0.5]
+    second[-1] = [0.02, 0.5, 0.5]
+    tracemalloc.start()
+    try:
+        found = contacts.closest_contact(np.diag([10.0] * 3), first, second)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert found is not None
+    assert found.distance == pytest.approx(0.4)
+    assert (found.first_index, found.second_index) == (1599, 1599)
+    assert peak < 16 * 1024 * 1024
+
+
+def test_closest_contact_preserves_the_first_pair_when_distances_tie():
+    first = np.tile([0.1, 0.1, 0.1], (513, 1))
+    second = np.tile([0.4, 0.4, 0.4], (513, 1))
+    first[200] = first[400] = [0.5, 0.5, 0.5]
+    second[300] = second[500] = [0.5, 0.5, 0.5]
+    found = contacts.closest_contact(np.diag([10.0] * 3), first, second)
+    assert found is not None
+    assert found.distance == 0.0
+    assert (found.first_index, found.second_index) == (200, 300)
+
+
+@pytest.mark.parametrize("lattice", [
+    np.diag([10.0, 11.0, 12.0]),
+    HEXAGONAL_SLAB_CELL,
+    np.array([[10.0, 0.0, 0.0], [23.0, 4.0, 0.0], [3.0, 2.0, 12.0]]),
+])
+def test_closest_contact_matches_exact_reference_across_strips(lattice):
+    rng = np.random.default_rng(53)
+    first = rng.random((521, 3))
+    second = rng.random((131, 3))
+    # Ensure the winning pair lies beyond the first strip, across a cell face.
+    second[-1] = first[-1] + [1.0, 0.0, 0.0]
+    reference = contacts.geometry.pairwise_minimum_image_distances(
+        lattice, first, other_direct=second
+    )
+    expected_pair = divmod(int(np.argmin(reference)), len(second))
+    found = contacts.closest_contact(
+        lattice, first, second,
+        first_species=["C"] * len(first), second_species=["O"] * len(second),
+    )
+    assert found is not None
+    assert found.distance == reference[expected_pair]
+    assert (found.first_index, found.second_index) == expected_pair
+    assert (found.first_species, found.second_species) == ("C", "O")
+
+
+@pytest.mark.parametrize("count", [0, 1, 17, 513])
+def test_group_diameter_matches_cartesian_reference(count):
+    rng = np.random.default_rng(42)
+    points = rng.uniform(0.45, 0.55, size=(count, 3))
+    lattice = HEXAGONAL_SLAB_CELL
+    cartesian = points @ lattice
+    expected = max(
+        (float(np.linalg.norm(first - second)) for i, first in enumerate(cartesian)
+         for second in cartesian[i + 1:]),
+        default=0.0,
+    )
+    assert contacts.group_diameter(lattice, points) == pytest.approx(expected)
 
 
 def _brute_force_cross(lattice, first, second, reach: int = 3) -> float:

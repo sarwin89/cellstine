@@ -129,13 +129,36 @@ def closest_contact(
     if first.shape[0] == 0 or second.shape[0] == 0:
         return None
 
-    distances = geometry.pairwise_minimum_image_distances(cell, first, other_direct=second)
-    flat = int(np.argmin(distances))
-    row, column = divmod(flat, distances.shape[1])
+    # Reduce one strip at a time: the full pair-distance matrix is never used
+    # by callers. Keep strips in row order so equal minima retain np.argmin's
+    # first-pair convention. One very wide row still needs linear storage.
+    step = max(1, 65536 // second.shape[0])
+    best = np.inf
+    best_pair = None
+    for start in range(0, first.shape[0], step):
+        chunk = first[start : start + step]
+        if np.isfinite(best):
+            # Once a contact is known, only pairs at least as close can win.
+            # The bounded kernel is exact within that radius; every other
+            # returned distance is guaranteed to remain outside it.
+            deltas = (chunk[:, None, :] - second[None, :, :]).reshape(-1, 3)
+            squared = geometry.bounded_minimum_image_squared(cell, deltas, best)
+            distances = np.sqrt(squared).reshape(chunk.shape[0], second.shape[0])
+        else:
+            distances = geometry.pairwise_minimum_image_distances(
+                cell, chunk, other_direct=second
+            )
+        flat = int(np.argmin(distances))
+        row, column = divmod(flat, distances.shape[1])
+        distance = float(distances[row, column])
+        if best_pair is None or distance < best or (np.isnan(distance) and not np.isnan(best)):
+            best = distance
+            best_pair = (start + row, column)
+    row, column = best_pair
     first_labels = _labels(first_species, first.shape[0])
     second_labels = _labels(second_species, second.shape[0])
     return Contact(
-        distance=float(distances[row, column]),
+        distance=float(best),
         first_index=int(row),
         second_index=int(column),
         first_species=first_labels[row],
@@ -234,8 +257,18 @@ def group_diameter(lattice: np.ndarray, positions_direct: np.ndarray) -> float:
     points = unwrap_group(cell, positions_direct) @ cell
     if points.shape[0] < 2:
         return 0.0
-    deltas = points[:, None, :] - points[None, :, :]
-    return float(np.sqrt(np.einsum("ijk,ijk->ij", deltas, deltas)).max())
+    # Only the maximum is needed. Tile the upper triangle to bound temporary
+    # memory and avoid evaluating both (i, j) and (j, i) for separate tiles.
+    best_squared = 0.0
+    block = 256
+    for start in range(0, points.shape[0], block):
+        first = points[start : start + block]
+        for other in range(start, points.shape[0], block):
+            second = points[other : other + block]
+            deltas = first[:, None, :] - second[None, :, :]
+            squared = np.einsum("ijk,ijk->ij", deltas, deltas)
+            best_squared = float(np.maximum(best_squared, squared.max()))
+    return float(np.sqrt(best_squared))
 
 
 def self_image_contact(

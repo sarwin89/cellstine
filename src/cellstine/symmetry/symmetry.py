@@ -5,11 +5,11 @@ from __future__ import annotations
 import json
 from dataclasses import replace
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 import numpy as np
 
-from ..core.lattice import vector_angle_deg
+from ..core.lattice import vector_angle_deg as vector_angle_deg
 from ..core.species import expand_species
 from ..core.base import Base, run_output_suffix
 from ..core.models import CommandResult

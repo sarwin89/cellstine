@@ -5,8 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Sequence
 
-import numpy as np
-
 from ...core.base import run_output_suffix
 from ...core.layers import LAYER_TOLERANCE
 from ...core.models import CommandResult

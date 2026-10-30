@@ -28,7 +28,6 @@ from .build_interface import (
     _build_interface_registries,
     _build_interface_sites,
     _build_interface_surface,
-    _build_interface_visualize,
 )
 from .build_moire import (
     _build_moire_find,
@@ -38,6 +37,7 @@ from .build_moire import (
     _build_moire_translate,
     _build_moire_visualize,
 )
+from .build_path import _build_migration_path
 from .prompts import (
     PlainGuidedUI,
     _BackInteractive,

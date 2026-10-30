@@ -48,6 +48,20 @@ def test_the_guided_defect_path_builds_a_command_that_parses(monkeypatch, tmp_pa
     assert namespace.images == 5
 
 
+@pytest.mark.parametrize("group,menu_choice", [("defect", "4"), ("adsorbate", "4")])
+def test_migration_path_is_reachable_from_the_workflow_menu(monkeypatch, tmp_path, group, menu_choice):
+    from cellstine.cli.interactive.runner import _workflow_command
+
+    monkeypatch.chdir(tmp_path)
+    answers = iter([menu_choice, "start.vasp", "end.vasp", "5", "1"])
+    monkeypatch.setattr("builtins.input", lambda _prompt: next(answers))
+    argv = _workflow_command(group)
+    assert argv[:4] == [group, "path", "start.vasp", "end.vasp"]
+    assert build_parser().parse_args(argv).images == 5
+    with pytest.raises(StopIteration):
+        next(answers)
+
+
 def test_the_guided_adsorbate_path_can_keep_the_file_order(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     argv = _drive(
