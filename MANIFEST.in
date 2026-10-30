@@ -1,0 +1,5 @@
+include cellstine.py ROADMAP.md USAGE_GUIDE.md
+include tools/review_inventory.py
+recursive-include docs *.md *.json
+recursive-include input/examples *.vasp
+recursive-include benchmarks *.py

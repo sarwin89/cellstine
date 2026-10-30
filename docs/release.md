@@ -38,9 +38,18 @@ python -m venv .release-sdist-venv
 .release-sdist-venv\Scripts\cellstine.exe --version
 ```
 
-For supported Python versions, run the full test suite on Python 3.10, 3.11,
-and 3.12. The GitHub Actions workflow mirrors that matrix on Windows because
+For supported Python versions, run the full test suite on Python 3.10 through
+3.14. The GitHub Actions workflow mirrors that matrix on Windows because
 the guided CLI has Windows console-encoding behavior that should remain tested.
+
+The Python 3.12 CI job also records line/branch test coverage and retains
+`coverage.xml` as the `python-3.12-coverage` workflow artifact. Review progress
+is tracked separately in [optimization/README.md](optimization/README.md):
+coverage percentages do not prove that a function has been reviewed.
+
+The publication plan is in [publication-plan.md](publication-plan.md). It is
+planning only; do not upload packages or create release tags without a separate
+maintainer instruction.
 
 ## Publication sequence
 

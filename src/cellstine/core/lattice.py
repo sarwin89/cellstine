@@ -6,6 +6,8 @@ import math
 
 import numpy as np
 
+_MIN_NORMAL_NORM = math.sqrt(float(np.finfo(float).tiny))
+
 
 def build_target_lattice(
     a_length: float, b_length: float, angle_deg: float, c_length: float = 30.0
@@ -49,8 +51,21 @@ def vector_angle_deg(first: np.ndarray, second: np.ndarray) -> float:
 
     left = np.asarray(first, dtype=float).ravel()
     right = np.asarray(second, dtype=float).ravel()
-    left_norm = float(np.linalg.norm(left))
-    right_norm = float(np.linalg.norm(right))
+    with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+        left_norm = float(np.linalg.norm(left))
+        right_norm = float(np.linalg.norm(right))
+    # Keep ordinary arithmetic unchanged. Rescale only finite nonzero vectors
+    # whose squared norm is subnormal, underflows, or overflows the range.
+    if left_norm < _MIN_NORMAL_NORM or not math.isfinite(left_norm):
+        scale = float(np.max(np.abs(left), initial=0.0))
+        if scale > 0.0 and math.isfinite(scale):
+            left = left / scale
+            left_norm = float(np.linalg.norm(left))
+    if right_norm < _MIN_NORMAL_NORM or not math.isfinite(right_norm):
+        scale = float(np.max(np.abs(right), initial=0.0))
+        if scale > 0.0 and math.isfinite(scale):
+            right = right / scale
+            right_norm = float(np.linalg.norm(right))
     if left_norm <= 0.0 or right_norm <= 0.0:
         raise ValueError("the angle between vectors needs two nonzero vectors")
     unit_left = left / left_norm
