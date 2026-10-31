@@ -42,6 +42,7 @@ and are re-exported from here unchanged.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 from typing import Dict, List, Sequence, Tuple
 
 import numpy as np
@@ -126,6 +127,50 @@ def _shortest_vector_length(reduced: np.ndarray) -> float:
     nonzero = grid[np.any(grid != 0.0, axis=1)]
     lengths = np.linalg.norm(nonzero @ reduced, axis=1)
     return float(np.min(lengths))
+
+
+def _unreduced_shortest_vector_length(lattice: np.ndarray) -> float:
+    """Find a shortest translation without assuming the basis was reduced.
+
+    A basis row supplies an upper bound U. Reciprocal Cauchy-Schwarz bounds
+    every coefficient of a shorter vector by U times its reciprocal row norm.
+    Enumerate that complete box in bounded chunks, tightening it as candidates
+    improve. Only this exceptional path pays for a potentially large box.
+    """
+
+    best = float(np.linalg.norm(lattice, axis=1).min())
+    reciprocal = reciprocal_norms(lattice)
+    limits = best * reciprocal
+    if not 0.0 < best < math.inf or not np.all(np.isfinite(limits)):
+        raise ArithmeticError("exact fallback requires finite nonzero vector bounds")
+    if np.any(limits >= 2**53 - 2):
+        raise ArithmeticError("exact fallback exceeds the float64 integer coefficient range")
+    reach = np.ceil(limits).astype(np.int64) + 1
+    if math.prod(2 * int(value) + 1 for value in reach) <= 65536:
+        shifts = lattice_shifts(reach)
+        vectors = shifts[np.any(shifts != 0.0, axis=1)] @ lattice
+        return min(best, float(np.linalg.norm(vectors, axis=1).min()))
+
+    first_axis, second_axis, inner_axis = (int(axis) for axis in np.argsort(reach))
+    for first_abs in range(int(reach[first_axis]) + 1):
+        if first_abs > best * reciprocal[first_axis] + 1.0:
+            break
+        for first_sign in ((1,) if first_abs == 0 else (1, -1)):
+            for second_abs in range(int(reach[second_axis]) + 1):
+                if second_abs > best * reciprocal[second_axis] + 1.0:
+                    break
+                for second_sign in ((1,) if second_abs == 0 else (1, -1)):
+                    inner_reach = min(int(reach[inner_axis]), math.ceil(best * reciprocal[inner_axis]) + 1)
+                    for start in range(-inner_reach, inner_reach + 1, 65536):
+                        stop = min(start + 65536, inner_reach + 1)
+                        shifts = np.zeros((stop - start, 3), dtype=float)
+                        shifts[:, first_axis] = first_abs * first_sign
+                        shifts[:, second_axis] = second_abs * second_sign
+                        shifts[:, inner_axis] = np.arange(start, stop, dtype=float)
+                        vectors = shifts[np.any(shifts != 0.0, axis=1)] @ lattice
+                        if vectors.shape[0]:
+                            best = min(best, float(np.linalg.norm(vectors, axis=1).min()))
+    return best
 
 
 def shortest_plane_vector_length(basis: np.ndarray) -> float:
@@ -296,15 +341,18 @@ def _reduced_cell(lattice: np.ndarray) -> _ReducedCell:
         return cached
     try:
         reduced, transform = delaunay_reduce(array)
-    except (RuntimeError, ValueError):  # pragma: no cover - defensive
+    except (RuntimeError, ValueError):
         reduced, transform = array, np.eye(3, dtype=np.int64)
+        shortest = _unreduced_shortest_vector_length(array)
+    else:
+        shortest = _shortest_vector_length(reduced)
     # A row of fractional coordinates f in the input basis is f @ inv(transform)
     # in the reduced basis, because reduced == transform @ lattice.
     entry = _ReducedCell(
         lattice=reduced,
         to_reduced=np.linalg.inv(transform.astype(float)),
         reciprocal_norms=reciprocal_norms(reduced),
-        shortest=_shortest_vector_length(reduced),
+        shortest=shortest,
     )
     if len(_REDUCED_CACHE) >= _REDUCED_CACHE_LIMIT:  # pragma: no cover - cache hygiene
         _REDUCED_CACHE.clear()

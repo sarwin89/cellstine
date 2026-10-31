@@ -121,7 +121,10 @@ def _planar_covering_radius_bound(basis: np.ndarray, points: np.ndarray, spacing
         # space and the same bucket grid answers for it.
         return query.distances(np.mod(np.asarray(fractional, dtype=float).reshape(-1, 2), 1.0) @ basis)
 
-    counts = np.maximum(np.ceil(lengths / max(2.0 * spacing, 1e-9)).astype(int), 2)
+    # Refinement supplies accuracy. As in the bulk bound, start with at most
+    # twelve boxes per axis so a close pair cannot allocate a huge uniform grid
+    # before the adaptive probe budget has any opportunity to stop the search.
+    counts = np.clip(np.ceil(lengths / max(2.0 * spacing, 1e-9)), 2, 12).astype(int)
     step = 1.0 / counts.astype(float)
     axes = [(np.arange(int(count), dtype=float) + 0.5) / float(count) for count in counts]
     centres = np.stack(np.meshgrid(*axes, indexing="ij"), axis=-1).reshape(-1, 2)

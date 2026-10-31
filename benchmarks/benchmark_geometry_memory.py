@@ -26,18 +26,18 @@ sys.path.insert(0, str(ROOT / "src"))
 from cellstine.core import geometry  # noqa: E402
 
 
-def _baseline(ref):
+def _baseline(ref, module_name="geometry"):
     commit = subprocess.check_output(
         ["git", "rev-parse", "--verify", "--end-of-options", ref + "^{commit}"],
         cwd=ROOT, text=True,
     ).strip()
     source = subprocess.check_output(
-        ["git", "show", commit + ":src/cellstine/core/geometry.py"], cwd=ROOT, text=True,
+        ["git", "show", commit + ":src/cellstine/core/" + module_name + ".py"], cwd=ROOT, text=True,
     )
-    module = types.ModuleType("cellstine.core._geometry_baseline")
+    module = types.ModuleType("cellstine.core._" + module_name + "_baseline")
     module.__package__ = "cellstine.core"
     sys.modules[module.__name__] = module
-    exec(compile(source, commit + ":geometry.py", "exec"), module.__dict__)
+    exec(compile(source, commit + ":" + module_name + ".py", "exec"), module.__dict__)
     return commit, module
 
 

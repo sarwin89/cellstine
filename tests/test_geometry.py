@@ -117,6 +117,48 @@ def test_site_matching_bounds_padded_memory_and_preserves_label_ties(prefer_lowe
     assert peak < 16 * 1024 * 1024
 
 
+@pytest.mark.parametrize("failure", [RuntimeError, ValueError])
+def test_reduction_failure_preserves_exact_shortest_vectors_and_images(monkeypatch, failure):
+    def unavailable(_lattice):
+        raise failure("simulated reduction failure")
+
+    monkeypatch.setattr(geometry, "delaunay_reduce", unavailable)
+    monkeypatch.setattr(geometry, "_REDUCED_CACHE", {})
+    lattice = np.array([[10.0, 0.0, 0.0], [94.0, 1.0, 0.0], [0.0, 0.0, 10.0]])
+    # (-19, 2, 0) maps to (-2, 2, 0), the shortest translation.
+    assert geometry.shortest_lattice_vector_length(lattice) == pytest.approx(math.sqrt(8.0))
+    # (0.3, 0, 0) is (3, 0, 0); subtracting (4, 1, 0) gives (-1, -1, 0).
+    assert geometry.minimum_image_distances(lattice, [[0.3, 0.0, 0.0]])[0] == pytest.approx(math.sqrt(2.0))
+
+
+def test_reduction_failure_exact_search_bounds_temporary_memory(monkeypatch):
+    def unavailable(_lattice):
+        raise RuntimeError("simulated reduction failure")
+
+    monkeypatch.setattr(geometry, "delaunay_reduce", unavailable)
+    monkeypatch.setattr(geometry, "_REDUCED_CACHE", {})
+    lattice = np.array([[10.0, 0.0, 0.0], [100004.0, 1.0, 0.0], [0.0, 0.0, 10.0]])
+    tracemalloc.start()
+    try:
+        shortest = geometry.shortest_lattice_vector_length(lattice)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert shortest == pytest.approx(math.sqrt(8.0))
+    assert peak < 16 * 1024 * 1024
+
+
+def test_reduction_failure_refuses_unrepresentable_integer_bounds(monkeypatch):
+    def unavailable(_lattice):
+        raise RuntimeError("simulated reduction failure")
+
+    monkeypatch.setattr(geometry, "delaunay_reduce", unavailable)
+    monkeypatch.setattr(geometry, "_REDUCED_CACHE", {})
+    lattice = np.array([[10.0, 0.0, 0.0], [1e20, 1.0, 0.0], [0.0, 0.0, 10.0]])
+    with pytest.raises(ArithmeticError, match="integer coefficient"):
+        geometry.shortest_lattice_vector_length(lattice)
+
+
 def brute_force_minimum_image(lattice: np.ndarray, deltas: np.ndarray, reach: int = 5) -> np.ndarray:
     """Return the shortest image length of each row by explicit enumeration."""
 

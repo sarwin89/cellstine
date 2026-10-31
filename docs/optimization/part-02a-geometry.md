@@ -67,3 +67,8 @@ Coverage includes normal paths and the newly exercised distant-query fallback; i
 ## Remaining limits
 
 The pitch improvement counts active Cartesian axes; it is not an intrinsic-rank calculation, so rotated planes/lines with three nonzero extents keep the prior 3D density heuristic. Required public candidate/image/matrix outputs may still be large. Negative/nonfinite-coordinate policy, extreme integer encodings, and exceptional reduction fallback behavior were not broadened by this patch. The `_reduced_cell` failure-regime guarantee is recorded as an investigated deferral for Part 02b; no formal Lean proof was executed in the isolated checkout.
+
+
+## Subsequent checkpoint readback
+
+Commit `be43f269cabfd25079a7c41492d1156fb0c96afb` passed all five Python 3.10–3.14 jobs and package checks in [CI run 41056032389](https://github.com/sarwin89/cellstine/actions/runs/41056032389). Coverage artifact `12976848250` was retained and its head SHA verified. The exceptional reduction fallback investigation above is resolved in [Part 02b](part-02b-contacts-covering.md); the earlier limitation remains a historical statement about this checkpoint.

@@ -139,10 +139,10 @@
       "qualified_name": "_baseline",
       "line": 29,
       "end_line": 41,
-      "module_sha256": "b1ccc58eddc049bcc141b122d4f3afdee05081cda1252e2e10b192403d2de457",
+      "module_sha256": "a2d0da044cd09a6241fcfa21261236ed56727ec9fb51ab0db38228e9f1f47cb4",
       "status": "reviewed—unchanged",
-      "reason": "Inspected deterministic checkout-only benchmark driver, trusted Git baseline loading, exact result assertions, measurement/provenance and read-only side effects",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Retained previously reviewed benchmark behavior; generalized trusted component loader revalidated with geometry, contact and covering comparisons",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "benchmarks/benchmark_geometry_memory.py::_measure",
@@ -150,10 +150,10 @@
       "qualified_name": "_measure",
       "line": 44,
       "end_line": 56,
-      "module_sha256": "b1ccc58eddc049bcc141b122d4f3afdee05081cda1252e2e10b192403d2de457",
+      "module_sha256": "a2d0da044cd09a6241fcfa21261236ed56727ec9fb51ab0db38228e9f1f47cb4",
       "status": "reviewed—unchanged",
-      "reason": "Inspected deterministic checkout-only benchmark driver, trusted Git baseline loading, exact result assertions, measurement/provenance and read-only side effects",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Retained previously reviewed benchmark behavior; generalized trusted component loader revalidated with geometry, contact and covering comparisons",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "benchmarks/benchmark_geometry_memory.py::_nearest",
@@ -161,10 +161,10 @@
       "qualified_name": "_nearest",
       "line": 59,
       "end_line": 60,
-      "module_sha256": "b1ccc58eddc049bcc141b122d4f3afdee05081cda1252e2e10b192403d2de457",
+      "module_sha256": "a2d0da044cd09a6241fcfa21261236ed56727ec9fb51ab0db38228e9f1f47cb4",
       "status": "reviewed—unchanged",
-      "reason": "Inspected deterministic checkout-only benchmark driver, trusted Git baseline loading, exact result assertions, measurement/provenance and read-only side effects",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Retained previously reviewed benchmark behavior; generalized trusted component loader revalidated with geometry, contact and covering comparisons",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "benchmarks/benchmark_geometry_memory.py::_site_matches",
@@ -172,10 +172,10 @@
       "qualified_name": "_site_matches",
       "line": 63,
       "end_line": 64,
-      "module_sha256": "b1ccc58eddc049bcc141b122d4f3afdee05081cda1252e2e10b192403d2de457",
+      "module_sha256": "a2d0da044cd09a6241fcfa21261236ed56727ec9fb51ab0db38228e9f1f47cb4",
       "status": "reviewed—unchanged",
-      "reason": "Inspected deterministic checkout-only benchmark driver, trusted Git baseline loading, exact result assertions, measurement/provenance and read-only side effects",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Retained previously reviewed benchmark behavior; generalized trusted component loader revalidated with geometry, contact and covering comparisons",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "benchmarks/benchmark_geometry_memory.py::main",
@@ -183,10 +183,10 @@
       "qualified_name": "main",
       "line": 67,
       "end_line": 117,
-      "module_sha256": "b1ccc58eddc049bcc141b122d4f3afdee05081cda1252e2e10b192403d2de457",
+      "module_sha256": "a2d0da044cd09a6241fcfa21261236ed56727ec9fb51ab0db38228e9f1f47cb4",
       "status": "reviewed—unchanged",
-      "reason": "Inspected deterministic checkout-only benchmark driver, trusted Git baseline loading, exact result assertions, measurement/provenance and read-only side effects",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Retained previously reviewed benchmark behavior; generalized trusted component loader revalidated with geometry, contact and covering comparisons",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "benchmarks/benchmark_gram_search.py::_load_cellstine",
@@ -2504,10 +2504,10 @@
       "qualified_name": "Contact.ratio",
       "line": 80,
       "end_line": 85,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/contacts.py::Contact.as_dict",
@@ -2515,10 +2515,10 @@
       "qualified_name": "Contact.as_dict",
       "line": 87,
       "end_line": 94,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/contacts.py::_labels",
@@ -2526,10 +2526,10 @@
       "qualified_name": "_labels",
       "line": 97,
       "end_line": 103,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/contacts.py::_covalent_sum",
@@ -2537,10 +2537,10 @@
       "qualified_name": "_covalent_sum",
       "line": 106,
       "end_line": 108,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/contacts.py::closest_contact",
@@ -2548,10 +2548,10 @@
       "qualified_name": "closest_contact",
       "line": 111,
       "end_line": 167,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
       "status": "optimized—verified",
-      "reason": "Previously inspected and verified bounded-memory exact contact reduction; commit b749da1 passed full tests and supported-version CI",
-      "evidence": "docs/release-preparation-2026-10-30.md"
+      "reason": "Retained prior verified exact contact reduction and diameter tiling; this module review revalidated existing contracts and reports",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/contacts.py::closest_contact_cartesian",
@@ -2559,10 +2559,10 @@
       "qualified_name": "closest_contact_cartesian",
       "line": 170,
       "end_line": 188,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/contacts.py::layer_contact_report",
@@ -2570,10 +2570,10 @@
       "qualified_name": "layer_contact_report",
       "line": 191,
       "end_line": 225,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/contacts.py::unwrap_group",
@@ -2581,10 +2581,10 @@
       "qualified_name": "unwrap_group",
       "line": 228,
       "end_line": 244,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/contacts.py::group_diameter",
@@ -2592,76 +2592,76 @@
       "qualified_name": "group_diameter",
       "line": 247,
       "end_line": 271,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
       "status": "optimized—verified",
-      "reason": "Previously inspected and verified bounded-memory exact contact reduction; commit b749da1 passed full tests and supported-version CI",
-      "evidence": "docs/release-preparation-2026-10-30.md"
+      "reason": "Retained prior verified exact contact reduction and diameter tiling; this module review revalidated existing contracts and reports",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/contacts.py::self_image_contact",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "self_image_contact",
       "line": 274,
-      "end_line": 328,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 330,
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "status": "optimized—verified",
+      "reason": "Verified bounded pair/child allocations or coarse-grid setup with regressions, full-suite coverage, independent review and comparative measurements",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/contacts.py::structure_contact",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "structure_contact",
-      "line": 331,
-      "end_line": 396,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 333,
+      "end_line": 398,
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/contacts.py::structure_contact_report",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "structure_contact_report",
-      "line": 399,
-      "end_line": 431,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 401,
+      "end_line": 433,
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/contacts.py::contact_notes",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "contact_notes",
-      "line": 434,
-      "end_line": 472,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 436,
+      "end_line": 474,
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/contacts.py::contact_report",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "contact_report",
-      "line": 475,
-      "end_line": 514,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 477,
+      "end_line": 516,
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/contacts.py::merge_notes",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "merge_notes",
-      "line": 517,
-      "end_line": 524,
-      "module_sha256": "add9b4dafcc8d12c8ae9ad2b81efafa1e3f7d5ecc5faf5cbb2f5f6722ac057cd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 519,
+      "end_line": 526,
+      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/covering.py::grid_box_reach",
@@ -2669,65 +2669,65 @@
       "qualified_name": "grid_box_reach",
       "line": 43,
       "end_line": 57,
-      "module_sha256": "e479b8c1289890e6c70177e7d9582b5ce8982a8baeedfc411f0d6f8cf27c91f1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "1e0d0c3a9ba0bbc4f17c1f8b2a83587a238d4b118272f8cb0964ba670c779970",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/covering.py::branch_and_bound_maximum",
       "path": "src/cellstine/core/covering.py",
       "qualified_name": "branch_and_bound_maximum",
       "line": 60,
-      "end_line": 126,
-      "module_sha256": "e479b8c1289890e6c70177e7d9582b5ce8982a8baeedfc411f0d6f8cf27c91f1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 127,
+      "module_sha256": "1e0d0c3a9ba0bbc4f17c1f8b2a83587a238d4b118272f8cb0964ba670c779970",
+      "status": "optimized—verified",
+      "reason": "Verified bounded pair/child allocations or coarse-grid setup with regressions, full-suite coverage, independent review and comparative measurements",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/covering.py::NearestAtomDistance.__init__",
       "path": "src/cellstine/core/covering.py",
       "qualified_name": "NearestAtomDistance.__init__",
-      "line": 143,
-      "end_line": 150,
-      "module_sha256": "e479b8c1289890e6c70177e7d9582b5ce8982a8baeedfc411f0d6f8cf27c91f1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 144,
+      "end_line": 151,
+      "module_sha256": "1e0d0c3a9ba0bbc4f17c1f8b2a83587a238d4b118272f8cb0964ba670c779970",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/covering.py::NearestAtomDistance._rebuild",
       "path": "src/cellstine/core/covering.py",
       "qualified_name": "NearestAtomDistance._rebuild",
-      "line": 152,
-      "end_line": 154,
-      "module_sha256": "e479b8c1289890e6c70177e7d9582b5ce8982a8baeedfc411f0d6f8cf27c91f1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 153,
+      "end_line": 155,
+      "module_sha256": "1e0d0c3a9ba0bbc4f17c1f8b2a83587a238d4b118272f8cb0964ba670c779970",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/covering.py::NearestAtomDistance.__call__",
       "path": "src/cellstine/core/covering.py",
       "qualified_name": "NearestAtomDistance.__call__",
-      "line": 156,
-      "end_line": 167,
-      "module_sha256": "e479b8c1289890e6c70177e7d9582b5ce8982a8baeedfc411f0d6f8cf27c91f1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 157,
+      "end_line": 168,
+      "module_sha256": "1e0d0c3a9ba0bbc4f17c1f8b2a83587a238d4b118272f8cb0964ba670c779970",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/covering.py::bulk_covering_radius_bound",
       "path": "src/cellstine/core/covering.py",
       "qualified_name": "bulk_covering_radius_bound",
-      "line": 184,
-      "end_line": 234,
-      "module_sha256": "e479b8c1289890e6c70177e7d9582b5ce8982a8baeedfc411f0d6f8cf27c91f1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 185,
+      "end_line": 235,
+      "module_sha256": "1e0d0c3a9ba0bbc4f17c1f8b2a83587a238d4b118272f8cb0964ba670c779970",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/dependencies.py::DependencyManager.__init__",
@@ -3008,397 +3008,408 @@
       "id": "src/cellstine/core/geometry.py::shortest_lattice_vector_length",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "shortest_lattice_vector_length",
-      "line": 107,
-      "end_line": 118,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 108,
+      "end_line": 119,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::_shortest_vector_length",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "_shortest_vector_length",
-      "line": 121,
-      "end_line": 128,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 122,
+      "end_line": 129,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+    },
+    {
+      "id": "src/cellstine/core/geometry.py::_unreduced_shortest_vector_length",
+      "path": "src/cellstine/core/geometry.py",
+      "qualified_name": "_unreduced_shortest_vector_length",
+      "line": 132,
+      "end_line": 173,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "status": "optimized—verified",
+      "reason": "Verified complete coefficient-box shortest-vector fallback on reduction failure; ordinary reduced path unchanged; bounded allocation and explicit representability limits",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::shortest_plane_vector_length",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "shortest_plane_vector_length",
-      "line": 131,
-      "end_line": 139,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 176,
+      "end_line": 184,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::image_shift_reach",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "image_shift_reach",
-      "line": 142,
-      "end_line": 152,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 187,
+      "end_line": 197,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::lattice_shifts",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "lattice_shifts",
-      "line": 155,
-      "end_line": 160,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 200,
+      "end_line": 205,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::plane_shift_reach",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "plane_shift_reach",
-      "line": 163,
-      "end_line": 188,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 208,
+      "end_line": 233,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::plane_shifts",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "plane_shifts",
-      "line": 191,
-      "end_line": 196,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 236,
+      "end_line": 241,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::plane_minimum_image",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "plane_minimum_image",
-      "line": 199,
-      "end_line": 245,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 244,
+      "end_line": 290,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "optimized—verified",
-      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::plane_minimum_image_distances",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "plane_minimum_image_distances",
-      "line": 248,
-      "end_line": 252,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 293,
+      "end_line": 297,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::atom_images",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "atom_images",
-      "line": 255,
-      "end_line": 267,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 300,
+      "end_line": 312,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::_reduced_cell",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "_reduced_cell",
-      "line": 289,
-      "end_line": 312,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
-      "status": "deferred—with reason",
-      "reason": "Inspected normal cached-reduction path; exceptional unreduced fallback shortest-vector guarantees require a dedicated numerical-domain audit before broader claims",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "line": 334,
+      "end_line": 360,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "status": "optimized—verified",
+      "reason": "Verified complete coefficient-box shortest-vector fallback on reduction failure; ordinary reduced path unchanged; bounded allocation and explicit representability limits",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::minimum_image_displacements",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "minimum_image_displacements",
-      "line": 315,
-      "end_line": 365,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 363,
+      "end_line": 413,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::minimum_image_distances",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "minimum_image_distances",
-      "line": 368,
-      "end_line": 377,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 416,
+      "end_line": 425,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::minimum_image_fractional",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "minimum_image_fractional",
-      "line": 380,
-      "end_line": 395,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 428,
+      "end_line": 443,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::bounded_minimum_image_squared",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "bounded_minimum_image_squared",
-      "line": 398,
-      "end_line": 452,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 446,
+      "end_line": 500,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::periodic_midpoints",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "periodic_midpoints",
-      "line": 455,
-      "end_line": 476,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 503,
+      "end_line": 524,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::pairwise_minimum_image_distances",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "pairwise_minimum_image_distances",
-      "line": 479,
-      "end_line": 506,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 527,
+      "end_line": 554,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::_bucket_table",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "_bucket_table",
-      "line": 514,
-      "end_line": 521,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 562,
+      "end_line": 569,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::_bucket_slices",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "_bucket_slices",
-      "line": 524,
-      "end_line": 534,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 572,
+      "end_line": 582,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::_bucket_candidates",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "_bucket_candidates",
-      "line": 537,
-      "end_line": 549,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 585,
+      "end_line": 597,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "optimized—verified",
-      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::PeriodicSiteIndex.__init__",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "PeriodicSiteIndex.__init__",
-      "line": 564,
-      "end_line": 604,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 612,
+      "end_line": 652,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::PeriodicSiteIndex._encode",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "PeriodicSiteIndex._encode",
-      "line": 606,
-      "end_line": 608,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 654,
+      "end_line": 656,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::PeriodicSiteIndex.match",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "PeriodicSiteIndex.match",
-      "line": 610,
-      "end_line": 669,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 658,
+      "end_line": 717,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "optimized—verified",
-      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::PeriodicSiteIndex.find",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "PeriodicSiteIndex.find",
-      "line": 671,
-      "end_line": 674,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 719,
+      "end_line": 722,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::CartesianGrid.__init__",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "CartesianGrid.__init__",
-      "line": 687,
-      "end_line": 706,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 735,
+      "end_line": 754,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::CartesianGrid._cells",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "CartesianGrid._cells",
-      "line": 708,
-      "end_line": 709,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 756,
+      "end_line": 757,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::CartesianGrid._encode",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "CartesianGrid._encode",
-      "line": 711,
-      "end_line": 717,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 759,
+      "end_line": 765,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::CartesianGrid.candidates",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "CartesianGrid.candidates",
-      "line": 719,
-      "end_line": 732,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 767,
+      "end_line": 780,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "optimized—verified",
-      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::_occupancy_pitch",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "_occupancy_pitch",
-      "line": 735,
-      "end_line": 765,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 783,
+      "end_line": 813,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "optimized—verified",
-      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::NearestPointQuery.__init__",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "NearestPointQuery.__init__",
-      "line": 786,
-      "end_line": 805,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 834,
+      "end_line": 853,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::NearestPointQuery._grid",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "NearestPointQuery._grid",
-      "line": 807,
-      "end_line": 810,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 855,
+      "end_line": 858,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::NearestPointQuery.distances",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "NearestPointQuery.distances",
-      "line": 812,
-      "end_line": 864,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 860,
+      "end_line": 912,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "optimized—verified",
-      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::nearest_point_distances",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "nearest_point_distances",
-      "line": 867,
-      "end_line": 880,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 915,
+      "end_line": 928,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::neighbour_images",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "neighbour_images",
-      "line": 883,
-      "end_line": 910,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 931,
+      "end_line": 958,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::periodic_neighbour_pairs",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "periodic_neighbour_pairs",
-      "line": 913,
-      "end_line": 953,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 961,
+      "end_line": 1001,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::shortest_interatomic_distance",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "shortest_interatomic_distance",
-      "line": 956,
-      "end_line": 989,
-      "module_sha256": "8603767edebea5b71db773cf210aa5af269ed1824cab96551019a2ce752489a0",
+      "line": 1004,
+      "end_line": 1037,
+      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
       "status": "optimized—verified",
-      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark",
-      "evidence": "docs/optimization/part-02a-geometry.md"
+      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
+      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/idealisation.py::close_matrix_group",
@@ -4198,10 +4209,10 @@
       "qualified_name": "_plane_frame",
       "line": 39,
       "end_line": 51,
-      "module_sha256": "b881102a9912b4bf2ddbddbc914581dee865583d0fc86124d74be6d12fed9c71",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "07198c06ceaa19cfcfa8d8073393171cf8bae572e5fc44edcc0f7de57526b2a9",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/planar_voids.py::_plane_images",
@@ -4209,10 +4220,10 @@
       "qualified_name": "_plane_images",
       "line": 54,
       "end_line": 74,
-      "module_sha256": "b881102a9912b4bf2ddbddbc914581dee865583d0fc86124d74be6d12fed9c71",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "07198c06ceaa19cfcfa8d8073393171cf8bae572e5fc44edcc0f7de57526b2a9",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/planar_voids.py::_planar_nearest_neighbour",
@@ -4220,21 +4231,21 @@
       "qualified_name": "_planar_nearest_neighbour",
       "line": 77,
       "end_line": 99,
-      "module_sha256": "b881102a9912b4bf2ddbddbc914581dee865583d0fc86124d74be6d12fed9c71",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "07198c06ceaa19cfcfa8d8073393171cf8bae572e5fc44edcc0f7de57526b2a9",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/planar_voids.py::_planar_covering_radius_bound",
       "path": "src/cellstine/core/planar_voids.py",
       "qualified_name": "_planar_covering_radius_bound",
       "line": 102,
-      "end_line": 135,
-      "module_sha256": "b881102a9912b4bf2ddbddbc914581dee865583d0fc86124d74be6d12fed9c71",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 138,
+      "module_sha256": "07198c06ceaa19cfcfa8d8073393171cf8bae572e5fc44edcc0f7de57526b2a9",
+      "status": "optimized—verified",
+      "reason": "Verified bounded pair/child allocations or coarse-grid setup with regressions, full-suite coverage, independent review and comparative measurements",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/planar_voids.py::_planar_covering_radius_bound.evaluate",
@@ -4242,65 +4253,65 @@
       "qualified_name": "_planar_covering_radius_bound.evaluate",
       "line": 119,
       "end_line": 122,
-      "module_sha256": "b881102a9912b4bf2ddbddbc914581dee865583d0fc86124d74be6d12fed9c71",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "07198c06ceaa19cfcfa8d8073393171cf8bae572e5fc44edcc0f7de57526b2a9",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/planar_voids.py::_planar_circumcentres",
       "path": "src/cellstine/core/planar_voids.py",
       "qualified_name": "_planar_circumcentres",
-      "line": 138,
-      "end_line": 163,
-      "module_sha256": "b881102a9912b4bf2ddbddbc914581dee865583d0fc86124d74be6d12fed9c71",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 141,
+      "end_line": 166,
+      "module_sha256": "07198c06ceaa19cfcfa8d8073393171cf8bae572e5fc44edcc0f7de57526b2a9",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/planar_voids.py::_is_local_maximum",
       "path": "src/cellstine/core/planar_voids.py",
       "qualified_name": "_is_local_maximum",
-      "line": 166,
-      "end_line": 181,
-      "module_sha256": "b881102a9912b4bf2ddbddbc914581dee865583d0fc86124d74be6d12fed9c71",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 169,
+      "end_line": 184,
+      "module_sha256": "07198c06ceaa19cfcfa8d8073393171cf8bae572e5fc44edcc0f7de57526b2a9",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/planar_voids.py::_reduced_planar_voids",
       "path": "src/cellstine/core/planar_voids.py",
       "qualified_name": "_reduced_planar_voids",
-      "line": 184,
-      "end_line": 269,
-      "module_sha256": "b881102a9912b4bf2ddbddbc914581dee865583d0fc86124d74be6d12fed9c71",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 187,
+      "end_line": 272,
+      "module_sha256": "07198c06ceaa19cfcfa8d8073393171cf8bae572e5fc44edcc0f7de57526b2a9",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
-      "id": "src/cellstine/core/planar_voids.py::_reduced_planar_voids.<lambda>@268:21",
+      "id": "src/cellstine/core/planar_voids.py::_reduced_planar_voids.<lambda>@271:21",
       "path": "src/cellstine/core/planar_voids.py",
-      "qualified_name": "_reduced_planar_voids.<lambda>@268:21",
-      "line": 268,
-      "end_line": 268,
-      "module_sha256": "b881102a9912b4bf2ddbddbc914581dee865583d0fc86124d74be6d12fed9c71",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "qualified_name": "_reduced_planar_voids.<lambda>@271:21",
+      "line": 271,
+      "end_line": 271,
+      "module_sha256": "07198c06ceaa19cfcfa8d8073393171cf8bae572e5fc44edcc0f7de57526b2a9",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/planar_voids.py::find_planar_voids",
       "path": "src/cellstine/core/planar_voids.py",
       "qualified_name": "find_planar_voids",
-      "line": 272,
-      "end_line": 322,
-      "module_sha256": "b881102a9912b4bf2ddbddbc914581dee865583d0fc86124d74be6d12fed9c71",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 275,
+      "end_line": 325,
+      "module_sha256": "07198c06ceaa19cfcfa8d8073393171cf8bae572e5fc44edcc0f7de57526b2a9",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/pointgroup3d.py::_integer_vectors_within",
@@ -6036,9 +6047,9 @@
       "line": 76,
       "end_line": 111,
       "module_sha256": "8149295680f988d0157d4177f15e63e970c380186201e81fdfcf1db7ceb95ce7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/voids.py::_origin_in_flat_hull",
@@ -6047,9 +6058,9 @@
       "line": 114,
       "end_line": 122,
       "module_sha256": "8149295680f988d0157d4177f15e63e970c380186201e81fdfcf1db7ceb95ce7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/voids.py::_classify_contact_directions",
@@ -6058,9 +6069,9 @@
       "line": 125,
       "end_line": 180,
       "module_sha256": "8149295680f988d0157d4177f15e63e970c380186201e81fdfcf1db7ceb95ce7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/voids.py::_critical_point_classes",
@@ -6069,9 +6080,9 @@
       "line": 183,
       "end_line": 226,
       "module_sha256": "8149295680f988d0157d4177f15e63e970c380186201e81fdfcf1db7ceb95ce7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/voids.py::_atom_images",
@@ -6080,9 +6091,9 @@
       "line": 229,
       "end_line": 232,
       "module_sha256": "8149295680f988d0157d4177f15e63e970c380186201e81fdfcf1db7ceb95ce7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/voids.py::_circumcentres",
@@ -6091,9 +6102,9 @@
       "line": 235,
       "end_line": 254,
       "module_sha256": "8149295680f988d0157d4177f15e63e970c380186201e81fdfcf1db7ceb95ce7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/voids.py::_triple_indices",
@@ -6102,9 +6113,9 @@
       "line": 265,
       "end_line": 272,
       "module_sha256": "8149295680f988d0157d4177f15e63e970c380186201e81fdfcf1db7ceb95ce7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/voids.py::_triangle_circumcentres",
@@ -6113,9 +6124,9 @@
       "line": 275,
       "end_line": 290,
       "module_sha256": "8149295680f988d0157d4177f15e63e970c380186201e81fdfcf1db7ceb95ce7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/voids.py::_empty_sphere_centres",
@@ -6125,8 +6136,8 @@
       "end_line": 403,
       "module_sha256": "8149295680f988d0157d4177f15e63e970c380186201e81fdfcf1db7ceb95ce7",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Inspected; existing 200-neighbor truncation prevents a universal completeness guarantee beyond the cap; dedicated Part02c will investigate a complete resource-safe replacement",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/voids.py::_merge_void_centres",
@@ -6135,9 +6146,9 @@
       "line": 413,
       "end_line": 458,
       "module_sha256": "8149295680f988d0157d4177f15e63e970c380186201e81fdfcf1db7ceb95ce7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/voids.py::_merge_void_centres.<lambda>@428:47",
@@ -6146,9 +6157,9 @@
       "line": 428,
       "end_line": 428,
       "module_sha256": "8149295680f988d0157d4177f15e63e970c380186201e81fdfcf1db7ceb95ce7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/voids.py::find_void_sites",
@@ -6157,9 +6168,9 @@
       "line": 461,
       "end_line": 577,
       "module_sha256": "8149295680f988d0157d4177f15e63e970c380186201e81fdfcf1db7ceb95ce7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/voids.py::find_void_sites.<lambda>@559:21",
@@ -6168,9 +6179,9 @@
       "line": 559,
       "end_line": 559,
       "module_sha256": "8149295680f988d0157d4177f15e63e970c380186201e81fdfcf1db7ceb95ce7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/core/voids.py::_shortest_interatomic_distance",
@@ -6179,9 +6190,9 @@
       "line": 580,
       "end_line": 587,
       "module_sha256": "8149295680f988d0157d4177f15e63e970c380186201e81fdfcf1db7ceb95ce7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
+      "evidence": "docs/optimization/part-02b-contacts-covering.md"
     },
     {
       "id": "src/cellstine/defect/analysis.py::_normal_from_lattice",

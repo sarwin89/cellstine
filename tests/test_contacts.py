@@ -46,6 +46,23 @@ def test_group_diameter_bounds_temporary_memory_for_large_groups():
     assert peak < 16 * 1024 * 1024
 
 
+def test_self_image_contact_bounds_pair_memory_and_retains_first_tie():
+    points = np.zeros((1200, 3))
+    points[:, 0] = np.linspace(0.0, 0.2, len(points))
+    labels = ["C"] * (len(points) - 1) + ["O"]
+    tracemalloc.start()
+    try:
+        found = contacts.self_image_contact(np.diag([10.0] * 3), points, species=labels)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert found is not None
+    assert found.distance == pytest.approx(8.0)
+    assert (found.first_index, found.second_index) == (0, 1199)
+    assert (found.first_species, found.second_species) == ("C", "O")
+    assert peak < 16 * 1024 * 1024
+
+
 def test_closest_contact_avoids_a_full_distance_matrix_for_large_groups():
     first = np.tile([0.1, 0.1, 0.1], (1600, 1))
     second = np.tile([0.4, 0.4, 0.4], (1600, 1))

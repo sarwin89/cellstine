@@ -24,8 +24,9 @@ Extreme valid numerical scales, skew/near-boundary cells, deterministic selectio
 
 - [x] 01: Inventory/tooling, lattice helpers and reduction kernels; add Python 3.13/3.14 CI and line/branch coverage; write publication plan. Commit `9f59701`; all five Python jobs, package checks and retained coverage artifact verified in CI run `41050772517`.
 - [ ] 02: Periodic geometry, site indexes, neighbor kernels, contacts and covering/void kernels.
-  - [ ] 02a: Complete function review of `core/geometry.py`, bounded query/image allocations, sparse-grid heuristics and exact comparative benchmark.
-  - [ ] 02b: Remaining contact functions, covering/void kernels and exceptional reduction-fallback guarantee investigation.
+  - [x] 02a: Complete function review of `core/geometry.py`, bounded query/image allocations, sparse-grid heuristics and exact comparative benchmark. Commit `be43f26`; all five Python jobs and package checks green in run `41056032389`; coverage artifact `12976848250` retained.
+  - [ ] 02b: Remaining contact functions, covering/void kernels and exceptional reduction-fallback guarantee investigation. Local full suite passed 3,175 tests; wheel/sdist/Twine and installed smokes pass; pushed CI gate pending.
+  - [ ] 02c: Investigate void-search neighbour truncation and candidate/triple enumeration; reproduce completeness defects and develop a complete resource-safe strategy.
 - [ ] 03: Remaining shared models, validation, species, transforms, lattice/symmetry primitives, provenance/reporting.
 - [ ] 04: I/O registry, VASP/native/conversion/orientation and KPOINTS writers.
 - [ ] 05: Moire search, ranking/results, builders, transforms and public workflows.

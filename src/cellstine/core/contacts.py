@@ -307,14 +307,16 @@ def self_image_contact(
     cartesian = points @ cell
     best = np.inf
     best_pair = (0, 0)
+    step = max(1, 65536 // cartesian.shape[0])
     for vector in vectors:
-        deltas = cartesian[:, None, :] - (cartesian[None, :, :] + vector[None, None, :])
-        distances = np.sqrt(np.einsum("ijk,ijk->ij", deltas, deltas))
-        flat = int(np.argmin(distances))
-        row, column = divmod(flat, distances.shape[1])
-        if float(distances[row, column]) < best:
-            best = float(distances[row, column])
-            best_pair = (int(row), int(column))
+        for start in range(0, cartesian.shape[0], step):
+            deltas = cartesian[start : start + step, None, :] - (cartesian[None, :, :] + vector[None, None, :])
+            distances = np.sqrt(np.einsum("ijk,ijk->ij", deltas, deltas))
+            flat = int(np.argmin(distances))
+            row, column = divmod(flat, distances.shape[1])
+            if float(distances[row, column]) < best:
+                best = float(distances[row, column])
+                best_pair = (start + int(row), int(column))
 
     labels = _labels(species, points.shape[0])
     first, second = best_pair
