@@ -42,7 +42,7 @@ DEFAULT_MATCH_LIMIT = 200
 
 DIRECTION_HELP = (
     "direction of observation: auto (the a-b surface normal), a/b/c, a*/b*/c*, "
-    "x/y/z, a Miller plane normal such as 111, (1,1,1) or 1x1, a real-space "
+    "x/y/z, a Miller plane normal such as 111, (1,1,1) or 11x1, a real-space "
     "direction such as [1,1,0], or cart:x,y,z; prefix with '-' to look the "
     "other way"
 )

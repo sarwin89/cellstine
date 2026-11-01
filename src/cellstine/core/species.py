@@ -19,7 +19,8 @@ def expand_species(
     line.  When ``natoms`` is given the result is forced to that length, padded
     with ``padding`` and truncated if need be, which is what a renderer wants:
     it must label every atom it draws and cannot fail on a malformed header.
-    Leave ``natoms`` unset where a mismatch is an error worth raising.
+    Leave ``natoms`` unset for full expansion. Callers that reject mismatched
+    headers must validate the species, counts and positions separately.
     """
 
     if species:
@@ -29,13 +30,16 @@ def expand_species(
     else:
         raise ValueError("POSCAR species labels are required")
 
+    total = None if natoms is None else int(natoms)
     expanded: List[str] = []
     for symbol, count in zip(labels, counts):
-        expanded.extend([symbol] * int(count))
+        size = int(count)
+        if total is not None and total >= 0:
+            size = min(size, max(total - len(expanded), 0))
+        expanded.extend([symbol] * size)
 
-    if natoms is None:
+    if total is None:
         return expanded
-    total = int(natoms)
     if len(expanded) < total:
         expanded.extend([str(padding)] * (total - len(expanded)))
     return expanded[:total]

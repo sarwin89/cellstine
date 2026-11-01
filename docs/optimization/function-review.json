@@ -288,6 +288,28 @@
       "evidence": ""
     },
     {
+      "id": "benchmarks/benchmark_structure_helpers.py::_repeat_call",
+      "path": "benchmarks/benchmark_structure_helpers.py",
+      "qualified_name": "_repeat_call",
+      "line": 22,
+      "end_line": 26,
+      "module_sha256": "6ea7213f744d1ee2264dc7cb344581a299a2e43850760581ca7ab14077a3f451",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected trusted baseline loading, exact output checks, isolated allocation measurement, microbatch timing, positive arguments and source/environment metadata; reproduced all nine cases and independent review pass",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
+    },
+    {
+      "id": "benchmarks/benchmark_structure_helpers.py::main",
+      "path": "benchmarks/benchmark_structure_helpers.py",
+      "qualified_name": "main",
+      "line": 29,
+      "end_line": 67,
+      "module_sha256": "6ea7213f744d1ee2264dc7cb344581a299a2e43850760581ca7ab14077a3f451",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected trusted baseline loading, exact output checks, isolated allocation measurement, microbatch timing, positive arguments and source/environment metadata; reproduced all nine cases and independent review pass",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
+    },
+    {
       "id": "benchmarks/benchmark_voids_memory.py::_cold_triples",
       "path": "benchmarks/benchmark_voids_memory.py",
       "qualified_name": "_cold_triples",
@@ -2834,10 +2856,10 @@
       "qualified_name": "ViewDirection.is_lattice_plane_normal",
       "line": 97,
       "end_line": 100,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected explicit miller-is-not-None contract; unchanged executable AST and direction/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::ViewDirection.project",
@@ -2845,10 +2867,10 @@
       "qualified_name": "ViewDirection.project",
       "line": 102,
       "end_line": 105,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected projection delegation and Cartesian row convention; unchanged executable AST and projection/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::ViewDirection.frame",
@@ -2856,10 +2878,10 @@
       "qualified_name": "ViewDirection.frame",
       "line": 107,
       "end_line": 115,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected direction/lattice delegation and frame row convention; unchanged executable AST and frame/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::ViewDirection.describe",
@@ -2867,10 +2889,10 @@
       "qualified_name": "ViewDirection.describe",
       "line": 117,
       "end_line": 130,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected label, spacing branch and existing output formatting; unchanged executable AST and direction/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::ViewDirection.as_dict",
@@ -2878,10 +2900,10 @@
       "qualified_name": "ViewDirection.as_dict",
       "line": 132,
       "end_line": 139,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected serialized keys, primitive conversions and optional family/spacing; unchanged executable AST and direction/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::project_along",
@@ -2889,109 +2911,109 @@
       "qualified_name": "project_along",
       "line": 142,
       "end_line": 147,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected input shapes and matrix projection convention; unchanged executable AST and projection/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::orthonormal_frame",
       "path": "src/cellstine/core/directions.py",
       "qualified_name": "orthonormal_frame",
       "line": 150,
-      "end_line": 173,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 183,
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "optimized—verified",
+      "reason": "Preserves first eligible lattice candidate, right handedness and relative threshold; scales only overflowed candidates before projection; extreme-scale and ordinary exact comparisons pass",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::_reciprocal_rows",
       "path": "src/cellstine/core/directions.py",
       "qualified_name": "_reciprocal_rows",
-      "line": 176,
-      "end_line": 182,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 186,
+      "end_line": 192,
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected inverse-transpose reciprocal row convention and exception behavior; unchanged executable AST and direction/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::_unit",
       "path": "src/cellstine/core/directions.py",
       "qualified_name": "_unit",
-      "line": 185,
-      "end_line": 190,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 195,
+      "end_line": 205,
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "optimized—verified",
+      "reason": "Retains absolute zero threshold and ordinary division; normalizes overflowed finite vectors after largest-component scaling and rejects nonfinite inputs; resolved direction and exact baseline checks pass",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::_parse_triple",
       "path": "src/cellstine/core/directions.py",
       "qualified_name": "_parse_triple",
-      "line": 193,
-      "end_line": 238,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 208,
+      "end_line": 253,
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected separated/compact signs and trailing-x convention; executable AST unchanged, corrected invalid doc example only; parser and caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::_parse_floats",
       "path": "src/cellstine/core/directions.py",
       "qualified_name": "_parse_floats",
-      "line": 241,
-      "end_line": 249,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 256,
+      "end_line": 264,
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected three-component parsing, length checks and float ndarray result; unchanged executable AST and direction/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::_reduce_indices",
       "path": "src/cellstine/core/directions.py",
       "qualified_name": "_reduce_indices",
-      "line": 252,
-      "end_line": 260,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 267,
+      "end_line": 275,
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected gcd reduction and signed divisor convention including zero family; unchanged executable AST and direction/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::_plane_family",
       "path": "src/cellstine/core/directions.py",
       "qualified_name": "_plane_family",
-      "line": 263,
-      "end_line": 306,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 278,
+      "end_line": 321,
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected rational approximation, denominator/size/tolerance limits, Miller sign and spacing; unchanged executable AST and resolved-direction/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::_reads_as_signed_triple",
       "path": "src/cellstine/core/directions.py",
       "qualified_name": "_reads_as_signed_triple",
-      "line": 309,
-      "end_line": 321,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 324,
+      "end_line": 336,
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected prefix disambiguation between signed triples and direction reversal; unchanged executable AST and direction/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::resolve_direction",
       "path": "src/cellstine/core/directions.py",
       "qualified_name": "resolve_direction",
-      "line": 324,
-      "end_line": 409,
-      "module_sha256": "dffceb93870c6d41f07b94de9c3ccde751424890a03613d18dcc515218f4ed58",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 339,
+      "end_line": 424,
+      "module_sha256": "5c26f54a27c9121b7b1d578aa21dd1da45753a9811ee61ed6562d5e33daac48d",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected all normal/lattice/reciprocal/Cartesian/Miller/vector branches, reversal and family metadata; unchanged executable AST and parser/layer/render caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/elements.py::element_symbol",
@@ -3000,9 +3022,9 @@
       "line": 234,
       "end_line": 263,
       "module_sha256": "2fdd6035b951929cf2b22763d26443a5073159dbee1c6cf7393edfba5d03f54a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected regex, strict mode, decorated labels, canonical casing and unknown-element policy against tables; unchanged executable AST and direct/caller review",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/elements.py::species_masses",
@@ -3011,9 +3033,9 @@
       "line": 266,
       "end_line": 269,
       "module_sha256": "2fdd6035b951929cf2b22763d26443a5073159dbee1c6cf7393edfba5d03f54a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected normalized mass lookup, unknown policy and atom order; unchanged executable AST and table/caller review",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/elements.py::covalent_radius",
@@ -3022,9 +3044,9 @@
       "line": 272,
       "end_line": 278,
       "module_sha256": "2fdd6035b951929cf2b22763d26443a5073159dbee1c6cf7393edfba5d03f54a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected normalized lookup and established unknown-element fallback; unchanged executable AST and table/caller review",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/elements.py::covalent_radii",
@@ -3033,9 +3055,9 @@
       "line": 281,
       "end_line": 284,
       "module_sha256": "2fdd6035b951929cf2b22763d26443a5073159dbee1c6cf7393edfba5d03f54a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected vector order, per-label delegation and float array result; unchanged executable AST and direct/caller review",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/geometry.py::shortest_lattice_vector_length",
@@ -5275,22 +5297,22 @@
       "path": "src/cellstine/core/species.py",
       "qualified_name": "expand_species",
       "line": 8,
-      "end_line": 41,
-      "module_sha256": "6d6b08746b75b9c5c2d743a0a486b63cdfb96f711a5711219b1dc593aef91f34",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 45,
+      "module_sha256": "cfa3abfb4e42b02f7232e05066cb7b136d4857837e5b54d10b01531991e90d54",
+      "status": "optimized—verified",
+      "reason": "Caps discarded label allocation for nonnegative requested size while retaining all count conversions, full/negative expansion, padding and order; allocation regression and 2000 exact baseline comparisons pass",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/species.py::group_species",
       "path": "src/cellstine/core/species.py",
       "qualified_name": "group_species",
-      "line": 44,
-      "end_line": 70,
-      "module_sha256": "6d6b08746b75b9c5c2d743a0a486b63cdfb96f711a5711219b1dc593aef91f34",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 48,
+      "end_line": 74,
+      "module_sha256": "cfa3abfb4e42b02f7232e05066cb7b136d4857837e5b54d10b01531991e90d54",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected stable first-occurrence species order, counts and atom permutation; unchanged executable AST and species/I/O plus installed smoke checks",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/strata.py::_as_row_matrices",
@@ -5835,188 +5857,199 @@
       "id": "src/cellstine/core/transforms.py::rotation_matrix_about_axis",
       "path": "src/cellstine/core/transforms.py",
       "qualified_name": "rotation_matrix_about_axis",
-      "line": 14,
-      "end_line": 32,
-      "module_sha256": "6f1c16f8ada4ae0c025a52f7a9aebca0475015d784dc3c2f0fbce48a42f5d2fe",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 15,
+      "end_line": 39,
+      "module_sha256": "84fd120d765f92f5112fb3b816b1686034737be32f3c579746da7fe11441d756",
+      "status": "optimized—verified",
+      "reason": "Preserves ordinary Rodrigues arithmetic and absolute zero threshold; finite overflow axes use bounded normalization; axis/orthogonality/handedness regressions and exact baselines pass",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/transforms.py::rotation_matrix_z",
       "path": "src/cellstine/core/transforms.py",
       "qualified_name": "rotation_matrix_z",
-      "line": 35,
-      "end_line": 46,
-      "module_sha256": "6f1c16f8ada4ae0c025a52f7a9aebca0475015d784dc3c2f0fbce48a42f5d2fe",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 42,
+      "end_line": 53,
+      "module_sha256": "84fd120d765f92f5112fb3b816b1686034737be32f3c579746da7fe11441d756",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected z-axis sign convention, ndarray result and zero/negative/full-turn behavior; unchanged executable AST and rotation/caller suite",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/transforms.py::rotation_matrix_x",
       "path": "src/cellstine/core/transforms.py",
       "qualified_name": "rotation_matrix_x",
-      "line": 49,
-      "end_line": 60,
-      "module_sha256": "6f1c16f8ada4ae0c025a52f7a9aebca0475015d784dc3c2f0fbce48a42f5d2fe",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 56,
+      "end_line": 67,
+      "module_sha256": "84fd120d765f92f5112fb3b816b1686034737be32f3c579746da7fe11441d756",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected x-axis sign convention and ndarray result; unchanged executable AST and rotation/caller suite",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/transforms.py::rotation_matrix_y",
       "path": "src/cellstine/core/transforms.py",
       "qualified_name": "rotation_matrix_y",
-      "line": 63,
-      "end_line": 74,
-      "module_sha256": "6f1c16f8ada4ae0c025a52f7a9aebca0475015d784dc3c2f0fbce48a42f5d2fe",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 70,
+      "end_line": 81,
+      "module_sha256": "84fd120d765f92f5112fb3b816b1686034737be32f3c579746da7fe11441d756",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected y-axis sign convention and ndarray result; unchanged executable AST and rotation/caller suite",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/transforms.py::yaw_pitch_roll_matrix",
       "path": "src/cellstine/core/transforms.py",
       "qualified_name": "yaw_pitch_roll_matrix",
-      "line": 77,
-      "end_line": 80,
-      "module_sha256": "6f1c16f8ada4ae0c025a52f7a9aebca0475015d784dc3c2f0fbce48a42f5d2fe",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 84,
+      "end_line": 87,
+      "module_sha256": "84fd120d765f92f5112fb3b816b1686034737be32f3c579746da7fe11441d756",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected x-roll @ y-pitch @ z-yaw order and caller convention; unchanged executable AST and rotation/caller suite",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/transforms.py::right_handed_lattice",
       "path": "src/cellstine/core/transforms.py",
       "qualified_name": "right_handed_lattice",
-      "line": 83,
-      "end_line": 89,
-      "module_sha256": "6f1c16f8ada4ae0c025a52f7a9aebca0475015d784dc3c2f0fbce48a42f5d2fe",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 90,
+      "end_line": 96,
+      "module_sha256": "84fd120d765f92f5112fb3b816b1686034737be32f3c579746da7fe11441d756",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected determinant sign, synchronized lattice/direct column swap and array copies; unchanged executable AST and structure/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/transforms.py::strained_copy",
       "path": "src/cellstine/core/transforms.py",
       "qualified_name": "strained_copy",
-      "line": 92,
-      "end_line": 102,
-      "module_sha256": "6f1c16f8ada4ae0c025a52f7a9aebca0475015d784dc3c2f0fbce48a42f5d2fe",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 99,
+      "end_line": 109,
+      "module_sha256": "84fd120d765f92f5112fb3b816b1686034737be32f3c579746da7fe11441d756",
+      "status": "optimized—verified",
+      "reason": "Uses NumPy1.26-compatible np.array copy API while preserving ownership and shallow metadata; dependency-boundary, read-only source and installed smoke checks pass",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/transforms.py::integer_supercell_matrix",
       "path": "src/cellstine/core/transforms.py",
       "qualified_name": "integer_supercell_matrix",
-      "line": 105,
-      "end_line": 125,
-      "module_sha256": "6f1c16f8ada4ae0c025a52f7a9aebca0475015d784dc3c2f0fbce48a42f5d2fe",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 112,
+      "end_line": 132,
+      "module_sha256": "84fd120d765f92f5112fb3b816b1686034737be32f3c579746da7fe11441d756",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected flat/row size, existing allclose integer tolerance, int64 conversion and floating determinant policy; unchanged executable AST; limits documented rather than silently tightened",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
+    },
+    {
+      "id": "src/cellstine/core/transforms.py::_cosets_by_residues",
+      "path": "src/cellstine/core/transforms.py",
+      "qualified_name": "_cosets_by_residues",
+      "line": 138,
+      "end_line": 172,
+      "module_sha256": "84fd120d765f92f5112fb3b816b1686034737be32f3c579746da7fe11441d756",
+      "status": "optimized—verified",
+      "reason": "Inspected quotient generators, signed modulus, complete closure/cardinality, exact canonical division and lexicographic order; 100 independent box references and signed shear regressions pass",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/transforms.py::supercell_cosets",
       "path": "src/cellstine/core/transforms.py",
       "qualified_name": "supercell_cosets",
-      "line": 128,
-      "end_line": 160,
-      "module_sha256": "6f1c16f8ada4ae0c025a52f7a9aebca0475015d784dc3c2f0fbce48a42f5d2fe",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 175,
+      "end_line": 212,
+      "module_sha256": "84fd120d765f92f5112fb3b816b1686034737be32f3c579746da7fe11441d756",
+      "status": "optimized—verified",
+      "reason": "Keeps validated integer acceptance and small-box path; bounds shear amplification through complete quotient enumeration and lexicographic canonical order; signed allocation/reference/structure regressions pass",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/transforms.py::supercell_structure",
       "path": "src/cellstine/core/transforms.py",
       "qualified_name": "supercell_structure",
-      "line": 163,
-      "end_line": 200,
-      "module_sha256": "6f1c16f8ada4ae0c025a52f7a9aebca0475015d784dc3c2f0fbce48a42f5d2fe",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 215,
+      "end_line": 252,
+      "module_sha256": "84fd120d765f92f5112fb3b816b1686034737be32f3c579746da7fe11441d756",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected row matrix convention, image/species blocks, flags, counts, metadata and folded Cartesian geometry; unchanged executable AST and signed sheared integration regression",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/transforms.py::repeat_structure",
       "path": "src/cellstine/core/transforms.py",
       "qualified_name": "repeat_structure",
-      "line": 203,
-      "end_line": 239,
-      "module_sha256": "6f1c16f8ada4ae0c025a52f7a9aebca0475015d784dc3c2f0fbce48a42f5d2fe",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 255,
+      "end_line": 291,
+      "module_sha256": "84fd120d765f92f5112fb3b816b1686034737be32f3c579746da7fe11441d756",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected repeat validation and diagonal-supercell delegation, metadata and ownership; unchanged executable AST and existing defect/caller tests",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/vacuum.py::surface_normal",
       "path": "src/cellstine/core/vacuum.py",
       "qualified_name": "surface_normal",
-      "line": 43,
-      "end_line": 54,
-      "module_sha256": "2eb7fc88768b50b2e02650ed44906a4460639ba0bed5520d667373583c899b2e",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 47,
+      "end_line": 97,
+      "module_sha256": "cb841e7a07fab12a483aef39ac6211ed18a5b2002482481a803015c7c04714d1",
+      "status": "optimized—verified",
+      "reason": "Preserves ordinary cross/norm and c orientation; recomputes tiny cross directions from scaled rows with exact supplied-float ratios at extreme anisotropy; signed gap, tilted/subnormal and independent rational references pass",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/vacuum.py::cell_height",
       "path": "src/cellstine/core/vacuum.py",
       "qualified_name": "cell_height",
-      "line": 57,
-      "end_line": 61,
-      "module_sha256": "2eb7fc88768b50b2e02650ed44906a4460639ba0bed5520d667373583c899b2e",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 100,
+      "end_line": 104,
+      "module_sha256": "cb841e7a07fab12a483aef39ac6211ed18a5b2002482481a803015c7c04714d1",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected absolute c projection onto oriented unit normal; unchanged executable AST and signed scale/height/vacuum regressions",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/vacuum.py::normal_heights",
       "path": "src/cellstine/core/vacuum.py",
       "qualified_name": "normal_heights",
-      "line": 64,
-      "end_line": 79,
-      "module_sha256": "2eb7fc88768b50b2e02650ed44906a4460639ba0bed5520d667373583c899b2e",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 107,
+      "end_line": 122,
+      "module_sha256": "cb841e7a07fab12a483aef39ac6211ed18a5b2002482481a803015c7c04714d1",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected position reshape and normal projection; unchanged executable AST and layer/vacuum caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/vacuum.py::occupied_span",
       "path": "src/cellstine/core/vacuum.py",
       "qualified_name": "occupied_span",
-      "line": 82,
-      "end_line": 89,
-      "module_sha256": "2eb7fc88768b50b2e02650ed44906a4460639ba0bed5520d667373583c899b2e",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 125,
+      "end_line": 132,
+      "module_sha256": "cb841e7a07fab12a483aef39ac6211ed18a5b2002482481a803015c7c04714d1",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected empty case and min/max projected heights; unchanged executable AST and vacuum/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/vacuum.py::vacuum_gap",
       "path": "src/cellstine/core/vacuum.py",
       "qualified_name": "vacuum_gap",
-      "line": 92,
-      "end_line": 96,
-      "module_sha256": "2eb7fc88768b50b2e02650ed44906a4460639ba0bed5520d667373583c899b2e",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 135,
+      "end_line": 139,
+      "module_sha256": "cb841e7a07fab12a483aef39ac6211ed18a5b2002482481a803015c7c04714d1",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected nonnegative height-minus-span clamp; unchanged executable AST and signed scale/fitted-gap regressions",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/vacuum.py::fit_cell_to_vacuum",
       "path": "src/cellstine/core/vacuum.py",
       "qualified_name": "fit_cell_to_vacuum",
-      "line": 99,
-      "end_line": 135,
-      "module_sha256": "2eb7fc88768b50b2e02650ed44906a4460639ba0bed5520d667373583c899b2e",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 142,
+      "end_line": 178,
+      "module_sha256": "cb841e7a07fab12a483aef39ac6211ed18a5b2002482481a803015c7c04714d1",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected nonshrinking target gap, c direction, rigid shift, input ownership and degenerate height policy; unchanged executable AST and scale/geometry/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/core/validation.py::ensure_existing_file",
@@ -9281,9 +9314,9 @@
       "line": 30,
       "end_line": 31,
       "module_sha256": "e94156c3e54217cc5f08c48302a5c1649540722eb2d381e3ba6d6f765bd258d0",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected integer conversion and header count summation; unchanged executable AST and direct/model/I/O verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/io/models.py::StructureRecord.copy",
@@ -9292,9 +9325,9 @@
       "line": 33,
       "end_line": 47,
       "module_sha256": "e94156c3e54217cc5f08c48302a5c1649540722eb2d381e3ba6d6f765bd258d0",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected owned arrays/lists, flags/path conversion and deliberately shallow metadata copy; unchanged executable AST and direct ownership/caller verification",
+      "evidence": "docs/optimization/part-03a-shared-structure.md"
     },
     {
       "id": "src/cellstine/io/native.py::PoscarData.natoms",

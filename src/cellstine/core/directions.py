@@ -22,7 +22,7 @@ that direction means for a periodic crystal:
     a Cartesian axis of the file, whatever the cell is doing.
 ``(hkl)`` or ``hkl`` or ``h,k,l``
     the normal of the ``(h k l)`` lattice planes.  Compact notation follows the
-    rest of the package: ``1x1`` means ``(1 -1 1)``.
+    rest of the package: ``11x1`` means ``(1 -1 1)``.
 ``[uvw]``
     the real-space direction ``u a + v b + w c``.
 ``cart:x,y,z``
@@ -51,7 +51,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from fractions import Fraction
-from math import gcd
+from math import gcd, isfinite
 from typing import Sequence
 
 import numpy as np
@@ -166,7 +166,17 @@ def orthonormal_frame(unit: np.ndarray, lattice: np.ndarray | None = None) -> np
     for candidate in candidates:
         residual = candidate - float(np.dot(candidate, normal)) * normal
         length = float(np.linalg.norm(residual))
-        if length > 1e-8 * max(1.0, float(np.linalg.norm(candidate))):
+        candidate_length = float(np.linalg.norm(candidate))
+        threshold = 1e-8 * max(1.0, candidate_length)
+        if not isfinite(length) or not isfinite(candidate_length):
+            scale = float(np.max(np.abs(candidate)))
+            if not isfinite(scale) or scale <= 0.0:
+                continue
+            scaled = candidate / scale
+            residual = scaled - float(np.dot(scaled, normal)) * normal
+            length = float(np.linalg.norm(residual))
+            threshold = 1e-8 * max(1.0 / scale, float(np.linalg.norm(scaled)))
+        if length > threshold:
             first = residual / length
             second = np.cross(normal, first)
             return np.vstack([first, second, normal])
@@ -187,11 +197,16 @@ def _unit(vector: np.ndarray, *, what: str) -> np.ndarray:
     length = float(np.linalg.norm(values))
     if length <= _TOLERANCE:
         raise ValueError(f"{what} has zero length")
+    if not isfinite(length):
+        if not np.all(np.isfinite(values)):
+            raise ValueError(f"{what} must have finite components")
+        scaled = values / np.max(np.abs(values))
+        return scaled / np.linalg.norm(scaled)
     return values / length
 
 
 def _parse_triple(text: str) -> tuple[int, int, int]:
-    """Parse ``1,1,1``, ``111`` or ``1x1`` into three integers.
+    """Parse ``1,1,1``, ``111`` or ``11x1`` into three integers.
 
     A trailing ``x`` negates the digit it follows, which is the compact
     notation the surface and interface stages already accept.

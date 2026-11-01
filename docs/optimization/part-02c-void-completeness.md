@@ -1,6 +1,6 @@
 # Part 02c: complete void support and bounded candidate processing
 
-Local verification passed. This checkpoint resolves the neighbour-count truncation investigated in Part 02b, within the documented radius and numerical limits. The pushed supported-version CI gate remains pending; the project-wide systematic review is incomplete.
+Local verification passed. This checkpoint resolves the neighbour-count truncation investigated in Part 02b, within the documented radius and numerical limits. The pushed supported-version CI gate passed; the project-wide systematic review is incomplete.
 
 ## Reproduced omission
 
@@ -70,3 +70,8 @@ Wheel/sdist builds and Twine checks pass. All 140 packaged Python modules match 
 ## Pushed CI gate
 
 The scoped commit must pass all five Python 3.10–3.14 jobs and package checks, with the retained coverage artifact's head SHA verified, before Part 03 starts. This checkpoint does not authorize publication or assert that the remaining 969 source functions have been reviewed.
+
+
+## Supported-version CI readback
+
+Commit `1db9be4159c413b45adf7f8fa0c5376c7fdb5966` passed all Python 3.10–3.14 jobs and package checks in [CI run 41283962742](https://github.com/sarwin89/cellstine/actions/runs/41283962742). The retained, nonexpired coverage artifact `13074945312` records this exact head SHA. This gate was checked before Part 03 began.
