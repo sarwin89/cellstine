@@ -115,3 +115,8 @@ Coverage is diagnostic, not a completeness proof. Wheel and source archives buil
 ## Investigated deferral and next part
 
 `_empty_sphere_centres` retains the existing `_MAX_NEIGHBOURS = 200` truncation. Inspection established a completeness boundary, not a concrete missed-void reproduction. It cannot inherit a universal completeness claim from passing finite tests. Part 02c must investigate the cap and candidate/triple enumeration, reproduce any defect and develop a complete resource-safe strategy before closing this row. The cap is not silently relaxed, replaced with a narrower workflow, or declared resolved here. The other investigated deferral remains the rational lattice basis issue from Part 01.
+
+
+## Pushed CI checkpoint
+
+Commit `a455f81447167791230d4c1811ac54a0e2040023` passed all five Python 3.10–3.14 jobs and the package build in [CI run 41175668140](https://github.com/sarwin89/cellstine/actions/runs/41175668140). The retained coverage artifact `13033086742` is non-expired and its recorded head SHA matches this commit.

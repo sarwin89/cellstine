@@ -24,6 +24,7 @@ actually contains material.
 from __future__ import annotations
 
 import itertools
+import math
 from dataclasses import dataclass
 from typing import Any, List, Sequence, Tuple
 
@@ -167,7 +168,10 @@ def _classify_contact_directions(units: np.ndarray, tolerance: float = 1e-6) -> 
     lengths = np.linalg.norm(rays, axis=1)
     rays = rays[lengths > 1e-9] / lengths[lengths > 1e-9, None]
     rays = np.concatenate([rays, -rays], axis=0)
-    inside = np.all(rays @ units.T <= tolerance, axis=1)
+    inside = np.empty(len(rays), dtype=bool)
+    step = max(1, 65536 // len(units))
+    for start in range(0, len(rays), step):
+        inside[start:start + step] = np.all(rays[start:start + step] @ units.T <= tolerance, axis=1)
     if not np.any(inside):
         return "maximum"
     # A sum of rays of a pointed cone lies in its relative interior, so it moves
@@ -254,22 +258,206 @@ def _circumcentres(anchor: np.ndarray, triples: np.ndarray) -> Tuple[np.ndarray,
     return centres, radii
 
 
-#: Guard against a pathological cutoff making the triple enumeration explode.
-#: The face test below normally keeps the surviving neighbour count far under
-#: this, so the cap is a safety valve rather than part of the mathematics.
-_MAX_NEIGHBOURS = 200
-
+# Large neighbourhoods use conservative support pruning and streamed candidates.
+# This selects an algorithm; no neighbour is discarded merely by count.
+_STREAM_NEIGHBOURS = 200
+_TRIPLE_CACHE_BYTES = 8 * 1024 * 1024
 _TRIPLE_INDEX_CACHE: dict[int, np.ndarray] = {}
 
 
 def _triple_indices(count: int) -> np.ndarray:
-    """Return every unordered triple of ``range(count)``, cached by size."""
+    """Return lexicographic unordered triples with bounded aggregate caching."""
 
-    cached = _TRIPLE_INDEX_CACHE.get(int(count))
-    if cached is None:
-        cached = np.array(list(itertools.combinations(range(int(count)), 3)), dtype=int).reshape(-1, 3)
-        _TRIPLE_INDEX_CACHE[int(count)] = cached
+    count = int(count)
+    cached = _TRIPLE_INDEX_CACHE.get(count)
+    if cached is not None:
+        return cached
+    size = math.comb(count, 3) if count >= 3 else 0
+    cached = np.fromiter(
+        itertools.chain.from_iterable(itertools.combinations(range(count), 3)),
+        dtype=int, count=3 * size,
+    ).reshape(-1, 3)
+    if cached.nbytes <= _TRIPLE_CACHE_BYTES:
+        while _TRIPLE_INDEX_CACHE and sum(value.nbytes for value in _TRIPLE_INDEX_CACHE.values()) + cached.nbytes > _TRIPLE_CACHE_BYTES:
+            del _TRIPLE_INDEX_CACHE[next(iter(_TRIPLE_INDEX_CACHE))]
+        _TRIPLE_INDEX_CACHE[count] = cached
     return cached
+
+
+def _void_support_bounds(edges: np.ndarray, radius_cap: float, coordinate_guard: float = 0.0):
+    """Retain every contact plane that can meet an accepted sphere centre.
+
+    Expanded Voronoi halfspaces enclose even centres accepted by the existing
+    1e-6 emptiness tolerance. Interval contraction only shrinks an outer box;
+    a finite sweep limit weakens pruning, never limits the candidate count.
+    """
+
+    keep = np.ones(len(edges), dtype=bool)
+    radius = float(radius_cap)
+    squared = np.einsum("ij,ij->i", edges, edges)
+    lengths = np.sqrt(squared)
+    outer_radius = radius + coordinate_guard
+    guard = 128.0 * np.finfo(float).eps * (1.0 + squared + outer_radius * lengths)
+    rhs = 0.5 * squared
+    # Absolute-coordinate subtraction/addition can move a computed centre away
+    # from its solved offset. Enlarge both the radius box and halfspaces.
+    expanded = rhs + outer_radius * (1e-6 + coordinate_guard) + guard
+    padding = 128.0 * np.finfo(float).eps * max(1.0, outer_radius)
+    lower = np.full(3, -outer_radius - padding)
+    upper = np.full(3, outer_radius + padding)
+    if radius < 0.0 or not np.all(np.isfinite(expanded)) or not np.all(np.isfinite(upper)):
+        return keep, np.full(3, -np.inf), np.full(3, np.inf)
+    for _ in range(32):
+        old_lower, old_upper = lower.copy(), upper.copy()
+        for axis in range(3):
+            other = [value for value in range(3) if value != axis]
+            minimum = np.minimum(edges[:, other] * lower[other], edges[:, other] * upper[other]).sum(axis=1)
+            coefficient = edges[:, axis]
+            positive = coefficient > 1e-12
+            negative = coefficient < -1e-12
+            if np.any(positive):
+                bound = np.min((expanded[positive] - minimum[positive]) / coefficient[positive])
+                upper[axis] = min(upper[axis], np.nextafter(bound + padding, np.inf))
+            if np.any(negative):
+                bound = np.max((expanded[negative] - minimum[negative]) / coefficient[negative])
+                lower[axis] = max(lower[axis], np.nextafter(bound - padding, -np.inf))
+        if not np.all(np.isfinite(lower)) or not np.all(np.isfinite(upper)) or np.any(lower > upper):
+            return keep, np.full(3, -np.inf), np.full(3, np.inf)
+        if np.array_equal(lower, old_lower) and np.array_equal(upper, old_upper):
+            break
+    maximum = np.maximum(edges * lower, edges * upper).sum(axis=1)
+    return maximum >= rhs - guard, lower, upper
+
+
+def _compatible_void_faces(first: np.ndarray, others: np.ndarray, radius_cap: float) -> np.ndarray:
+    """Test the same triangle circumradius bound as the small-neighbour path."""
+
+    area = np.linalg.norm(np.cross(first, others), axis=1)
+    opposite = np.linalg.norm(first - others, axis=1)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        radius = np.where(
+            area > 1e-12,
+            np.linalg.norm(first) * np.linalg.norm(others, axis=1) * opposite / (2.0 * area),
+            np.inf,
+        )
+    return radius <= radius_cap
+
+
+def _void_triple_batches(edges: np.ndarray, radius_cap: float, batch: int = 4096):
+    """Yield compatible triples in lexicographic order with linear workspace."""
+
+    if len(edges) <= _STREAM_NEIGHBOURS:
+        close = np.array([_compatible_void_faces(edge, edges, radius_cap) for edge in edges], dtype=bool)
+        triples = itertools.combinations(range(len(edges)), 3)
+        while True:
+            rows = np.array(list(itertools.islice(triples, batch)), dtype=int).reshape(-1, 3)
+            if not len(rows):
+                return
+            compatible = close[rows[:, 0], rows[:, 1]] & close[rows[:, 0], rows[:, 2]] & close[rows[:, 1], rows[:, 2]]
+            if np.any(compatible):
+                yield rows[compatible]
+    pending = np.empty((0, 3), dtype=int)
+    for first in range(len(edges) - 2):
+        following = np.flatnonzero(_compatible_void_faces(edges[first], edges[first + 1 :], radius_cap)) + first + 1
+        for position, second in enumerate(following[:-1]):
+            possible = following[position + 1 :]
+            third = possible[_compatible_void_faces(edges[second], edges[possible], radius_cap)]
+            if not len(third):
+                continue
+            rows = np.column_stack((np.full(len(third), first), np.full(len(third), second), third))
+            combined = np.concatenate((pending, rows), axis=0)
+            end = len(combined) // batch * batch
+            for start in range(0, end, batch):
+                yield combined[start : start + batch]
+            pending = combined[end:].copy()
+    if len(pending):
+        yield pending
+
+
+def _empty_void_candidates(centres: np.ndarray, radii: np.ndarray, neighbours: np.ndarray) -> np.ndarray:
+    """Check all blockers with at most 65,536 centre/atom pairs per strip."""
+
+    unique, inverse = np.unique(centres, axis=0, return_inverse=True)
+    nearest_all = np.full(len(unique), np.inf)
+    for start in range(0, len(unique), 4096):
+        stop = min(start + 4096, len(unique))
+        nearest = nearest_all[start:stop]
+        step = max(1, 65536 // (stop - start))
+        for atom_start in range(0, len(neighbours), step):
+            delta = unique[start:stop, None, :] - neighbours[None, atom_start:atom_start + step, :]
+            distances = np.sqrt(np.einsum("ijk,ijk->ij", delta, delta)).min(axis=1)
+            np.minimum(nearest, distances, out=nearest)
+    return nearest_all[inverse] >= radii - 1e-6
+
+
+def _streamed_void_centres(anchor: np.ndarray, neighbours: np.ndarray, radius_cap: float, include_saddles: bool):
+    """Enumerate all potentially empty spheres without a neighbour-count cap."""
+
+    edges = neighbours - anchor[None, :]
+    query_guard = 128.0 * np.finfo(float).eps * max(
+        1.0, float(np.max(np.abs(neighbours), initial=0.0)), float(np.max(np.abs(anchor))),
+    )
+    support, lower, upper = _void_support_bounds(edges, radius_cap, query_guard)
+    candidates = neighbours[support]
+    edges = edges[support]
+    centres, radii = [], []
+    nearest = geometry.NearestPointQuery(neighbours, pitch=max(float(radius_cap), 1e-6), block=65536)
+    query_cache = {}
+    quantum = max(1.0, float(radius_cap)) * 1e-9
+
+    def retain(centre: np.ndarray, radius: np.ndarray):
+        relative = centre - anchor[None, :]
+        within = (radius <= radius_cap) & np.all((relative >= lower) & (relative <= upper), axis=1)
+        centre, radius = centre[within], radius[within]
+        if not len(radius):
+            return
+        unique, inverse = np.unique(centre, axis=0, return_inverse=True)
+        # Reuse only certified verdicts: nearest distance is 1-Lipschitz.
+        # Near a decision boundary, query the original point exactly instead.
+        scaled = np.rint((unique - anchor[None, :]) / quantum)
+        keys = [tuple(row) for row in scaled]
+        missing = {}
+        for row, key in enumerate(keys):
+            if key not in query_cache and key not in missing:
+                missing[key] = row
+        if missing:
+            rows = np.fromiter(missing.values(), dtype=int)
+            distances = nearest.distances(unique[rows])
+            for key, row, distance in zip(missing, rows, distances):
+                query_cache[key] = (unique[row].copy(), float(distance))
+        reference = np.array([query_cache[key][0] for key in keys])
+        distance = np.array([query_cache[key][1] for key in keys])
+        error = np.linalg.norm(unique - reference, axis=1) + query_guard
+        threshold = radius - 1e-6
+        empty = (distance - error)[inverse] >= threshold
+        uncertain = ~empty & ((distance + error)[inverse] >= threshold)
+        if np.any(uncertain):
+            points, positions = np.unique(centre[uncertain], axis=0, return_inverse=True)
+            empty[uncertain] = nearest.distances(points)[positions] >= threshold[uncertain]
+        if len(query_cache) > 4096:
+            query_cache.clear()
+        if np.any(empty):
+            centres.append(centre[empty])
+            radii.append(radius[empty])
+
+    for triples in _void_triple_batches(edges, radius_cap):
+        centre, radius = _circumcentres(anchor, candidates[triples])
+        retain(centre, radius)
+    if include_saddles:
+        for start in range(0, len(edges), 4096):
+            part = edges[start:start + 4096]
+            retain(anchor[None, :] + 0.5 * part, 0.5 * np.linalg.norm(part, axis=1))
+        for first in range(len(edges) - 1):
+            for start in range(first + 1, len(edges), 4096):
+                part = edges[start:start + 4096]
+                close = _compatible_void_faces(edges[first], part, radius_cap)
+                if np.any(close):
+                    selected = part[close]
+                    centre = _triangle_circumcentres(anchor, np.broadcast_to(edges[first], selected.shape), selected)
+                    retain(centre, np.linalg.norm(centre - anchor[None, :], axis=1))
+    if not centres:
+        return np.empty((0, 3)), np.empty(0)
+    return np.concatenate(centres, axis=0), np.concatenate(radii)
 
 
 def _triangle_circumcentres(anchor: np.ndarray, first: np.ndarray, second: np.ndarray) -> np.ndarray:
@@ -327,10 +515,12 @@ def _empty_sphere_centres(
         lengths = np.linalg.norm(neighbours - anchor[None, :], axis=1)
         neighbours = neighbours[lengths > 1e-8]
         count = neighbours.shape[0]
-        if count > _MAX_NEIGHBOURS:  # pragma: no cover - only for extreme cutoffs
-            order = np.argsort(np.linalg.norm(neighbours - anchor[None, :], axis=1))
-            neighbours = neighbours[order[:_MAX_NEIGHBOURS]]
-            count = neighbours.shape[0]
+        if count > _STREAM_NEIGHBOURS:
+            centre, radius = _streamed_void_centres(anchor, neighbours, radius_cap, include_saddles)
+            if len(radius):
+                centres.append(centre)
+                radii.append(radius)
+            continue
         if count < (2 if include_saddles else 3):
             continue
         # A face of a tetrahedron is a circle on its circumsphere, so its
@@ -390,9 +580,7 @@ def _empty_sphere_centres(
             continue
         centre = centre[within]
         radius = radius[within]
-        delta = centre[:, None, :] - neighbours[None, :, :]
-        nearest = np.sqrt(np.einsum("ijk,ijk->ij", delta, delta)).min(axis=1)
-        empty = nearest >= radius - 1e-6
+        empty = _empty_void_candidates(centre, radius, neighbours)
         if not np.any(empty):
             continue
         centres.append(centre[empty])
@@ -456,6 +644,59 @@ def _merge_void_centres(
         for neighbour in close[position]:
             suppressed[neighbour] = True
     return kept
+
+
+def _maxima_before_merge(
+    lattice: np.ndarray,
+    fractional: np.ndarray,
+    radii: np.ndarray,
+    images: np.ndarray,
+    merge: float,
+) -> List[Tuple[np.ndarray, float, str, int]]:
+    """Classify only maxima not suppressed by an already accepted larger one.
+
+    The final merge is greedy in stable descending-radius order. Saddles need
+    separate suppression by kind, so their searches retain batch classification.
+    """
+
+    order = np.argsort(-radii, kind="stable")
+    accepted: List[Tuple[np.ndarray, float, str, int]] = []
+    for start in range(0, len(order), 128):
+        rows = order[start:start + 128]
+        count = len(rows)
+        previous = len(accepted)
+        points = np.array([entry[0] for entry in accepted] + list(fractional[rows]))
+        first, second = geometry.periodic_neighbour_pairs(lattice, points, merge)
+        blocked = np.zeros(count, dtype=bool)
+        crossing = (first < previous) & (second >= previous)
+        blocked[second[crossing] - previous] = True
+        local = first >= previous
+        close = np.zeros((count, count), dtype=bool)
+        left, right = first[local] - previous, second[local] - previous
+        close[left, right] = close[right, left] = True
+        pending = ~blocked
+        retained = {}
+        while np.any(pending):
+            # A point without an earlier pending neighbour cannot be suppressed
+            # by an undecided predecessor. Such points are mutually nonadjacent
+            # and can be classified together without changing greedy winners.
+            candidates = np.flatnonzero(pending)
+            earlier = np.tril(close[np.ix_(candidates, candidates)], k=-1)
+            frontier = candidates[~np.any(earlier, axis=1)]
+            selected = rows[frontier]
+            critical, kinds, coordination = _critical_point_classes(
+                lattice, fractional[selected], radii[selected], images,
+            )
+            pending[frontier] = False
+            for position, index in enumerate(frontier):
+                if critical[position] and kinds[position] == "maximum":
+                    source = rows[index]
+                    retained[int(index)] = (
+                        fractional[source], float(radii[source]), kinds[position], int(coordination[position]),
+                    )
+                    pending[close[index]] = False
+        accepted.extend(retained[index] for index in sorted(retained))
+    return accepted
 
 
 def find_void_sites(
@@ -540,14 +781,17 @@ def find_void_sites(
         # radius, so one image list built for the largest radius serves every
         # candidate instead of being rebuilt per candidate.
         contact_images = _atom_images(lattice, atoms, 2.0 * float(np.max(radii)))
-        critical, kinds, coordination = _critical_point_classes(
-            lattice, fractional[chosen], radii[chosen], contact_images
-        )
-        accepted = [
-            (fractional[index], float(radii[index]), kinds[position], int(coordination[position]))
-            for position, index in enumerate(chosen)
-            if critical[position] and (include_saddles or kinds[position] == "maximum")
-        ]
+        if not include_saddles and merge > 0.0 and len(chosen) >= 64:
+            accepted = _maxima_before_merge(lattice, fractional[chosen], radii[chosen], contact_images, merge)
+        else:
+            critical, kinds, coordination = _critical_point_classes(
+                lattice, fractional[chosen], radii[chosen], contact_images
+            )
+            accepted = [
+                (fractional[index], float(radii[index]), kinds[position], int(coordination[position]))
+                for position, index in enumerate(chosen)
+                if critical[position] and (include_saddles or kinds[position] == "maximum")
+            ]
 
     # Two critical points of different kind are different sites even when they
     # sit close together, so each kind is thinned on its own.

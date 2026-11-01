@@ -21,7 +21,7 @@ The generator preserves evidence only when the normalized source module is uncha
 
 Passing tests or obtaining high coverage never automatically marks a function reviewed. Completion must also check external dependencies/callers and the actual reasoning in each part report.
 
-At the Part-02b local checkpoint, the ledger contains **1,086 functions**: **100 reviewed unchanged**, **15 optimized and verified**, **2 investigated deferrals**, and **969 pending reviews**. Thus **117 functions have inspection evidence**; the project-wide review is incomplete. The new exact fallback helper is included in the denominator. The void-search neighbour cap is an explicit investigated deferral for Part 02c.
+At the Part-02c local checkpoint, the ledger contains **1,096 functions**: **100 reviewed unchanged**, **26 optimized and verified**, **1 investigated deferral**, and **969 pending reviews**. Thus **127 functions have inspection evidence**; the project-wide review is incomplete. Seven void helper/nested functions and three benchmark functions are included in the denominator. The neighbour-count truncation investigated in Part 02b is resolved within the radius and numerical limits documented in Part 02c; the rational-lattice-basis investigation remains deferred.
 
 ## Dependency order and evidence
 
@@ -33,7 +33,8 @@ The full sequence is in [the implementation plan](../superpowers/plans/2026-10-3
 | 01 | Lattice helpers, reduction kernels, review tooling, coverage/CI setup | [part-01-lattice.md](part-01-lattice.md) |
 | 02a | Periodic geometry, site indexes, neighbor queries and comparative benchmark | [part-02a-geometry.md](part-02a-geometry.md) |
 | 02b | Contacts, covering, void review and exact reduction fallback | [part-02b-contacts-covering.md](part-02b-contacts-covering.md) |
-| 02c onward | Void completeness investigation, remaining shared code, I/O, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
+| 02c | Complete void support, bounded enumeration and priority-preserving classification | [part-02c-void-completeness.md](part-02c-void-completeness.md) |
+| 03 onward | Remaining shared code, I/O, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
 
 ## Coverage and release boundaries
 
