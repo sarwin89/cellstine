@@ -19,3 +19,7 @@ Initial spacing probe: `mesh_divisions_for_spacing(np.eye(3), 1e-20)` emits a ca
 - `KpointMesh` properties/summary and diagonal supercell divisions. Keep unsupported general-supercell policy explicit rather than implementing a new scientific feature.
 
 Prepare focused regressions only for actual findings, benchmark time/peak allocation against the next committed dev checkpoint, obtain one whole-batch independent review, then one frozen full/package checkpoint. Preserve scientific data and APIs; do not integrate root files wholesale. Do not mark a row verified from source reading or coverage alone. No publication.
+
+## Execution checkpoint
+
+Implemented exact large keys, finite/range errors, preallocated numerator grids, exact integral rotations/inverses and checked group/modular products. All nine initial regressions failed first; the completed15-regression/caller selection passed85 tests. One independent reviewer read all26 originals, two helpers and benchmark and checked independent boundary/orbit probes; no findings. Three-sample resource measurements assert ordinary exact baseline equality; the public million-point identity case now retains all points with weight1. The one frozen full gate passed3,331 tests; wheel/source distribution/Twine and three installed environments passed.255 frozen Python hashes and the file set match. See the [part report](../../optimization/part-03d-reciprocal.md) for final gate evidence; pushed exact-head CI remains pending.

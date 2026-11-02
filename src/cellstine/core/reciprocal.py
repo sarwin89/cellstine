@@ -128,7 +128,11 @@ def mesh_divisions_for_spacing(
     floors = np.broadcast_to(np.asarray(minimum, dtype=np.int64).ravel(), (3,))
     if np.any(floors < 1):
         raise ValueError("every mesh division must be at least one")
-    divisions = np.maximum(np.ceil(lengths / value - 1e-12).astype(np.int64), floors)
+    with np.errstate(over="ignore", invalid="ignore"):
+        requested = np.ceil(lengths / value - 1e-12)
+    if not np.all(np.isfinite(requested)) or np.any(requested >= 2**63):
+        raise ValueError("the requested mesh divisions exceed the supported integer range")
+    divisions = np.maximum(requested.astype(np.int64), floors)
     return tuple(int(item) for item in divisions)
 
 
@@ -183,7 +187,12 @@ def _shift_numerators(shift: Sequence[float]) -> tuple[int, int, int]:
     values = np.asarray(shift, dtype=float).ravel()
     if values.shape != (3,):
         raise ValueError("a mesh shift needs three components")
-    doubled = 2.0 * values
+    if not np.all(np.isfinite(values)):
+        raise ValueError("a mesh shift must be finite")
+    with np.errstate(over="ignore"):
+        doubled = 2.0 * values
+    if not np.all(np.isfinite(doubled)):
+        raise ValueError("the mesh shift exceeds the supported numeric range")
     rounded = np.rint(doubled)
     if not np.allclose(doubled, rounded, atol=1e-9):
         raise ValueError("a mesh shift must be a whole or half grid step")
@@ -203,45 +212,102 @@ def _mesh_numerators(
     denominator = 1
     for count in divisions:
         denominator = math.lcm(denominator, 2 * count)
-    axes = []
-    for count, doubled, in zip(divisions, shift_doubled):
+    if denominator > np.iinfo(np.int64).max:
+        raise ValueError("the mesh denominator exceeds the supported integer range")
+    if math.prod(int(count) for count in divisions) > np.iinfo(np.intp).max // (3 * np.dtype(np.int64).itemsize):
+        raise ValueError("the mesh array exceeds the supported addressable range")
+    grid = np.empty((*divisions, 3), dtype=np.int64)
+    for axis, (count, doubled) in enumerate(zip(divisions, shift_doubled)):
         step = denominator // (2 * count)
         raw = (2 * np.arange(count, dtype=np.int64) + int(doubled)) * step
-        axes.append(_wrap_numerators(raw, denominator))
-    grid = np.meshgrid(*axes, indexing="ij")
-    points = np.stack([axis.ravel() for axis in grid], axis=1)
-    return points, denominator
+        values = _wrap_numerators(raw, denominator)
+        shape = [1, 1, 1]
+        shape[axis] = count
+        grid[..., axis] = values.reshape(shape)
+        del raw, values
+    return grid.reshape(-1, 3), denominator
 
 
 def _wrap_numerators(values: np.ndarray, denominator: int) -> np.ndarray:
     """Wrap integer numerators over ``denominator`` into ``[-D/2, D/2)``."""
 
     wrapped = np.mod(np.asarray(values, dtype=np.int64), denominator)
-    return np.where(2 * wrapped >= denominator, wrapped - denominator, wrapped)
+    return np.where(wrapped >= (denominator + 1) // 2, wrapped - denominator, wrapped)
 
 
 def _encode(points: np.ndarray, denominator: int) -> np.ndarray:
-    """Return a collision-free integer key for wrapped numerators."""
+    """Return collision-free sortable keys for wrapped numerators.
 
-    shifted = points.astype(np.int64) + denominator  # non-negative, < 2 D
-    base = np.int64(2 * denominator)
-    return (shifted[:, 0] * base + shifted[:, 1]) * base + shifted[:, 2]
+    Small denominators fit the original mixed-radix key in int64. Beyond that
+    range, structured integer triples retain exact numeric lexicographic order
+    without a packed-key overflow or one Python integer object per point.
+    """
+
+    if denominator <= 2**20:
+        base = np.int64(2 * denominator)
+        keys = points[:, 0].astype(np.int64)
+        keys += denominator
+        keys *= base
+        keys += points[:, 1]
+        keys += denominator
+        keys *= base
+        keys += points[:, 2]
+        keys += denominator
+        return keys
+    triples = np.ascontiguousarray(points, dtype=np.int64)
+    dtype = np.dtype([("x", np.int64), ("y", np.int64), ("z", np.int64)])
+    return triples.view(dtype).reshape(-1).copy()
+
+
+def _as_rotation(rotation: Sequence[Sequence[int]]) -> np.ndarray:
+    """Preserve exact integer input; retain existing float-rounding tolerance."""
+
+    array = np.asarray(rotation)
+    if array.shape != (3, 3):
+        raise ValueError("a rotation must be a 3x3 integer matrix")
+    integral = array.dtype.kind in "biu" or (
+        array.dtype.kind == "O" and all(isinstance(value, (int, np.integer)) for value in array.flat)
+    )
+    if integral:
+        low = min(int(value) for value in array.flat)
+        high = max(int(value) for value in array.flat)
+        if low < -(2**63) or high >= 2**63:
+            raise ValueError("a rotation exceeds the supported integer range")
+        return array.astype(np.int64)
+    values = np.asarray(array, dtype=float)
+    if not np.all(np.isfinite(values)):
+        raise ValueError("a crystallographic rotation must be finite")
+    rounded = np.rint(values)
+    if np.any(rounded < -(2**63)) or np.any(rounded >= 2**63):
+        raise ValueError("a rotation exceeds the supported integer range")
+    if not np.allclose(values, rounded, atol=1e-8):
+        raise ValueError("a crystallographic rotation must be an integer matrix")
+    return rounded.astype(np.int64)
+
+
+def _integer_product(left: np.ndarray, right: np.ndarray) -> np.ndarray:
+    """Multiply small integer matrices, checking an exceptional large product."""
+
+    bound = 3 * max(abs(int(value)) for value in left.flat) * max(abs(int(value)) for value in right.flat)
+    if bound <= np.iinfo(np.int64).max:
+        return left @ right
+    return _as_rotation(left.astype(object) @ right.astype(object))
 
 
 def _integer_inverse(rotation: np.ndarray) -> np.ndarray:
     """Return the inverse of a unimodular integer matrix, exactly."""
 
-    matrix = np.asarray(rotation, dtype=np.int64)
-    if matrix.shape != (3, 3):
-        raise ValueError("a rotation must be a 3x3 integer matrix")
-    determinant = int(round(float(np.linalg.det(matrix.astype(float)))))
+    matrix = _as_rotation(rotation)
+    (a, b, c), (d, e, f), (g, h, i) = [[int(value) for value in row] for row in matrix]
+    adjugate = [
+        [e*i - f*h, c*h - b*i, b*f - c*e],
+        [f*g - d*i, a*i - c*g, c*d - a*f],
+        [d*h - e*g, b*g - a*h, a*e - b*d],
+    ]
+    determinant = a * adjugate[0][0] + b * adjugate[1][0] + c * adjugate[2][0]
     if determinant not in (1, -1):
         raise ValueError("a crystallographic rotation must have determinant +-1")
-    adjugate = np.rint(np.linalg.inv(matrix.astype(float)) * determinant).astype(np.int64)
-    inverse = adjugate * determinant
-    if not np.array_equal(inverse @ matrix, np.eye(3, dtype=np.int64)):
-        raise ValueError("a rotation must be an invertible integer matrix")
-    return inverse
+    return _as_rotation(np.asarray(adjugate, dtype=object) * determinant)
 
 
 def _mesh_images(
@@ -249,8 +315,19 @@ def _mesh_images(
 ) -> np.ndarray:
     """Return the wrapped numerators of ``k W^-1`` for every mesh point."""
 
-    images = points @ rotation_inverse.astype(np.int64)
-    return _wrap_numerators(images, denominator)
+    bound = 3 * denominator * max(abs(int(value)) for value in rotation_inverse.flat)
+    if bound <= np.iinfo(np.int64).max:
+        images = points @ rotation_inverse.astype(np.int64)
+        return _wrap_numerators(images, denominator)
+    # Only exceptional large operations need Python integers. Tile their work
+    # so the temporary object arrays do not grow with the complete mesh.
+    result = np.empty_like(points, dtype=np.int64)
+    rotation = rotation_inverse.astype(object)
+    for start in range(0, len(points), 8192):
+        raw = points[start : start + 8192].astype(object) @ rotation
+        reduced = np.asarray(raw % denominator, dtype=np.int64)
+        result[start : start + 8192] = _wrap_numerators(reduced, denominator)
+    return result
 
 
 @dataclass(frozen=True)
@@ -344,15 +421,19 @@ def _close_group(matrices: Sequence[np.ndarray], *, limit: int = 96) -> list[np.
     elements: dict[bytes, np.ndarray] = {identity.tobytes(): identity}
     frontier = [identity]
     for matrix in matrices:
+        matrix = _as_rotation(matrix)
+        _integer_inverse(matrix)
         key = matrix.tobytes()
         if key not in elements:
+            if len(elements) >= limit:
+                raise ValueError("the supplied rotations do not generate a point group")
             elements[key] = matrix
             frontier.append(matrix)
     generators = list(elements.values())
     while frontier:
         current = frontier.pop()
         for generator in generators:
-            product = current @ generator
+            product = _integer_product(current, generator)
             key = product.tobytes()
             if key in elements:
                 continue
@@ -379,10 +460,7 @@ def _usable_operations(
     sorted_keys = np.sort(keys)
     integer_rotations: list[np.ndarray] = []
     for rotation in rotations:
-        matrix = np.rint(np.asarray(rotation, dtype=float)).astype(np.int64)
-        if not np.allclose(np.asarray(rotation, dtype=float), matrix, atol=1e-8):
-            raise ValueError("a crystallographic rotation must be an integer matrix")
-        integer_rotations.append(matrix)
+        integer_rotations.append(_as_rotation(rotation))
     group = _close_group(integer_rotations)
     given = len(group)
     usable: list[np.ndarray] = []
