@@ -5,8 +5,27 @@ from __future__ import annotations
 import numpy as np
 
 from ..core.transforms import right_handed_lattice
+from ..core.vacuum import surface_normal
 from . import native as native_vasp
 from .models import StructureRecord
+
+
+def _projected_axis(candidate: np.ndarray, normal: np.ndarray) -> tuple[np.ndarray, float, float]:
+    """Keep ordinary projection arithmetic, scaling only an overflowed trial."""
+
+    with np.errstate(over="ignore", invalid="ignore"):
+        trial = candidate - np.dot(candidate, normal) * normal
+        length = float(np.linalg.norm(trial))
+    minimum = 1e-12
+    if not np.isfinite(length):
+        if not np.all(np.isfinite(candidate)):
+            raise ValueError("lattice vectors must be finite")
+        scale = float(np.max(np.abs(candidate)))
+        scaled = candidate / scale
+        trial = scaled - np.dot(scaled, normal) * normal
+        length = float(np.linalg.norm(trial))
+        minimum /= scale
+    return trial, length, minimum
 
 
 class OrientationNormalizer:
@@ -48,13 +67,18 @@ class OrientationNormalizer:
         updated = self.ensure_right_handed(record)
         lattice = np.asarray(updated.lattice, dtype=float)
         cartesian = np.asarray(updated.positions_cartesian, dtype=float)
-        normal = np.cross(lattice[0], lattice[1])
-        normal_length = float(np.linalg.norm(normal))
-        first_length = float(np.linalg.norm(lattice[0]))
+        with np.errstate(over="ignore", invalid="ignore"):
+            normal = np.cross(lattice[0], lattice[1])
+            normal_length = float(np.linalg.norm(normal))
+            first_length = float(np.linalg.norm(lattice[0]))
         if normal_length <= 1e-12 or first_length <= 1e-12:
             raise ValueError("the a and b lattice vectors must span a plane")
-        z_hat = normal / normal_length
-        x_hat = lattice[0] / first_length
+        z_hat = normal / normal_length if np.isfinite(normal_length) else surface_normal(lattice)
+        if np.isfinite(first_length):
+            x_hat = lattice[0] / first_length
+        else:
+            first = lattice[0] / np.max(np.abs(lattice[0]))
+            x_hat = first / np.linalg.norm(first)
         y_hat = np.cross(z_hat, x_hat)
         rotation = np.column_stack((x_hat, y_hat, z_hat))
         rotated_lattice = lattice @ rotation
@@ -76,11 +100,17 @@ class OrientationNormalizer:
         c_norm = float(np.linalg.norm(c_vec))
         if c_norm <= 1e-15:
             return updated
-        z_hat = c_vec / c_norm
-        x_trial = lattice[0] - np.dot(lattice[0], z_hat) * z_hat
-        if float(np.linalg.norm(x_trial)) <= 1e-12:
-            x_trial = lattice[1] - np.dot(lattice[1], z_hat) * z_hat
-        x_hat = x_trial / max(float(np.linalg.norm(x_trial)), 1e-12)
+        if np.isfinite(c_norm):
+            z_hat = c_vec / c_norm
+        else:
+            if not np.all(np.isfinite(c_vec)):
+                raise ValueError("lattice vectors must be finite")
+            scaled_c = c_vec / np.max(np.abs(c_vec))
+            z_hat = scaled_c / np.linalg.norm(scaled_c)
+        x_trial, x_length, minimum = _projected_axis(lattice[0], z_hat)
+        if x_length <= minimum:
+            x_trial, x_length, minimum = _projected_axis(lattice[1], z_hat)
+        x_hat = x_trial / max(x_length, minimum)
         y_hat = np.cross(z_hat, x_hat)
         y_hat /= max(float(np.linalg.norm(y_hat)), 1e-12)
         rotation = np.column_stack((x_hat, y_hat, z_hat))

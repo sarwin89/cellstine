@@ -40,6 +40,7 @@ came from.  The statements behind this are in ``aristotle-lean-reference/Request
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Sequence
 
@@ -111,8 +112,12 @@ class KpointsFile:
         count = int(self.line_divisions)
         ends = np.asarray(self.endpoints, dtype=float).reshape(-1, 2, 3)
         fractions = np.linspace(0.0, 1.0, count)[:, None]
-        pieces = [start + fractions * (end - start) for start, end in ends]
-        return np.concatenate(pieces, axis=0)
+        if not len(ends):
+            raise ValueError("a line-mode file needs at least one segment")
+        points = np.empty((len(ends) * count, 3), dtype=float)
+        for index, (start, end) in enumerate(ends):
+            points[index * count : (index + 1) * count] = start + fractions * (end - start)
+        return points
 
     def mesh_points(self) -> np.ndarray:
         """Return the points this file stands for, in fractional reciprocal coordinates.
@@ -155,6 +160,8 @@ def write_automatic_kpoints(
     offsets = [float(item) for item in np.asarray(shift, dtype=float).ravel()]
     if len(offsets) != 3:
         raise ValueError("a mesh shift needs three components")
+    if not np.all(np.isfinite(offsets)):
+        raise ValueError("a mesh shift must be finite")
     output = Path(path).resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
     lines = [
@@ -184,7 +191,9 @@ def write_explicit_kpoints(
         raise ValueError("an explicit KPOINTS file needs at least one point")
     if len(values) != len(array):
         raise ValueError("every k-point needs exactly one weight")
-    if np.any(values <= 0.0):
+    if not np.all(np.isfinite(array)):
+        raise ValueError("k-point coordinates must be finite")
+    if not np.all(np.isfinite(values)) or np.any(values <= 0.0):
         raise ValueError("every k-point weight must be positive")
     name = str(coordinate_mode).lower()
     if name.startswith("r"):
@@ -239,6 +248,8 @@ def write_line_mode_kpoints(
     for index, ((start_label, start), (end_label, end)) in enumerate(segments):
         first = np.asarray(start, dtype=float).reshape(3)
         second = np.asarray(end, dtype=float).reshape(3)
+        if not np.all(np.isfinite(first)) or not np.all(np.isfinite(second)):
+            raise ValueError("line-mode endpoints must be finite")
         if float(np.linalg.norm(second - first)) <= 1e-12:
             raise ValueError(
                 f"segment {index + 1} runs from {start_label} to {end_label}, which is the same point"
@@ -330,79 +341,101 @@ def _tokens(line: str) -> list[str]:
     return line.replace(",", " ").split()
 
 
+def _integer_token(token: str, *, name: str) -> int:
+    """Retain integral decimal/exponent spellings without truncating fractions."""
+
+    try:
+        number = Decimal(token)
+    except InvalidOperation as error:
+        raise ValueError(f"{name} must be a finite integer") from error
+    if (not number.is_finite() or not np.isfinite(float(number))
+            or number != number.to_integral_value()):
+        raise ValueError(f"{name} must be a finite integer")
+    return int(number)
+
+
 def read_kpoints(path: str | Path) -> KpointsFile:
     """Read a KPOINTS file written in either supported layout."""
 
-    text = Path(path).read_text(encoding="utf-8").splitlines()
-    if len(text) < 3:
-        raise ValueError("a KPOINTS file needs at least a comment, a count, and a mode")
-    comment = text[0].strip()
-    tokens = _tokens(text[1])
-    if not tokens:
-        raise ValueError("the second line of a KPOINTS file must hold the number of points")
-    count = int(float(tokens[0]))
-    mode_word = (text[2].strip() or "?")[0].lower()
-    if count == 0:
-        if mode_word == "g":
-            mode = "gamma"
-        elif mode_word == "m":
-            mode = "monkhorst"
-        else:
-            raise ValueError("an automatic KPOINTS mesh must say 'Gamma' or 'Monkhorst'")
-        division_tokens = _tokens(text[3]) if len(text) > 3 else []
-        if len(division_tokens) < 3:
-            raise ValueError("an automatic KPOINTS mesh needs three divisions")
-        divisions = tuple(int(float(item)) for item in division_tokens[:3])
-        shift = (0.0, 0.0, 0.0)
-        if len(text) > 4:
-            shift_tokens = _tokens(text[4])
-            if len(shift_tokens) >= 3:
+    with Path(path).open(encoding="utf-8") as handle:
+        header = [handle.readline() for _ in range(3)]
+        if not all(header):
+            raise ValueError("a KPOINTS file needs at least a comment, a count, and a mode")
+        comment = header[0].strip()
+        tokens = _tokens(header[1])
+        if not tokens:
+            raise ValueError("the second line of a KPOINTS file must hold the number of points")
+        count = _integer_token(tokens[0], name="the KPOINTS count")
+        if count < 0:
+            raise ValueError("the KPOINTS count may not be negative")
+        mode_word = (header[2].strip() or "?")[0].lower()
+        if count == 0:
+            if mode_word == "g":
+                mode = "gamma"
+            elif mode_word == "m":
+                mode = "monkhorst"
+            else:
+                raise ValueError("an automatic KPOINTS mesh must say 'Gamma' or 'Monkhorst'")
+            division_tokens = _tokens(handle.readline())
+            if len(division_tokens) < 3:
+                raise ValueError("an automatic KPOINTS mesh needs three divisions")
+            divisions = tuple(_integer_token(item, name="a mesh division") for item in division_tokens[:3])
+            if any(value < 1 for value in divisions):
+                raise ValueError("an automatic mesh needs three divisions of at least one")
+            shift = (0.0, 0.0, 0.0)
+            shift_line = handle.readline().partition("!")[0].partition("#")[0]
+            shift_tokens = _tokens(shift_line)
+            if shift_tokens:
+                if len(shift_tokens) < 3:
+                    raise ValueError("a mesh shift needs three components")
                 shift = tuple(float(item) for item in shift_tokens[:3])
-        return KpointsFile(comment=comment, mode=mode, divisions=divisions, shift=shift)
-    if mode_word == "l":
-        coordinate_word = (text[3].strip() or "?")[0].lower() if len(text) > 3 else "?"
-        if coordinate_word not in {"r", "c", "k"}:
-            raise ValueError("a line-mode KPOINTS file must say 'Reciprocal' or 'Cartesian'")
-        coordinate_mode = "reciprocal" if coordinate_word == "r" else "cartesian"
-        ends: list[list[float]] = []
-        names: list[str] = []
-        for line in text[4:]:
-            body, _, remark = line.partition("!")
-            entries = _tokens(body)
-            if len(entries) < 3:
-                continue
-            ends.append([float(value) for value in entries[:3]])
-            names.append(remark.strip())
-        if len(ends) < 2 or len(ends) % 2:
-            raise ValueError("a line-mode KPOINTS file needs both ends of every segment")
-        return KpointsFile(
-            comment=comment,
-            mode="line",
-            coordinate_mode=coordinate_mode,
-            line_divisions=count,
-            endpoints=np.asarray(ends, dtype=float),
-            labels=tuple(names),
-        )
-    if mode_word in {"r", "c", "k"}:
+                if not np.all(np.isfinite(shift)):
+                    raise ValueError("a mesh shift must be finite")
+            return KpointsFile(comment=comment, mode=mode, divisions=divisions, shift=shift)
+        if mode_word == "l":
+            coordinate_word = (handle.readline().strip() or "?")[0].lower()
+            if coordinate_word not in {"r", "c", "k"}:
+                raise ValueError("a line-mode KPOINTS file must say 'Reciprocal' or 'Cartesian'")
+            coordinate_mode = "reciprocal" if coordinate_word == "r" else "cartesian"
+            ends: list[list[float]] = []
+            names: list[str] = []
+            for line in handle:
+                body, _, remark = line.partition("!")
+                entries = _tokens(body.partition("#")[0])
+                if not entries:
+                    continue
+                if len(entries) < 3:
+                    raise ValueError("a line-mode endpoint needs three coordinates")
+                point = [float(value) for value in entries[:3]]
+                if not np.all(np.isfinite(point)):
+                    raise ValueError("line-mode endpoints must be finite")
+                ends.append(point)
+                names.append(remark.strip())
+            if len(ends) < 2 or len(ends) % 2:
+                raise ValueError("a line-mode KPOINTS file needs both ends of every segment")
+            return KpointsFile(comment=comment, mode="line", coordinate_mode=coordinate_mode,
+                               line_divisions=count, endpoints=np.asarray(ends, dtype=float),
+                               labels=tuple(names))
+        if mode_word not in {"r", "c", "k"}:
+            raise ValueError("an explicit KPOINTS list must say 'Reciprocal' or 'Cartesian'")
         coordinate_mode = "reciprocal" if mode_word == "r" else "cartesian"
-    else:
-        raise ValueError("an explicit KPOINTS list must say 'Reciprocal' or 'Cartesian'")
-    points: list[list[float]] = []
-    weights: list[float] = []
-    for line in text[3:]:
-        entries = _tokens(line)
-        if len(entries) < 4:
-            continue
-        points.append([float(value) for value in entries[:3]])
-        weights.append(float(entries[3]))
-        if len(points) == count:
-            break
-    if len(points) != count:
-        raise ValueError("the KPOINTS file holds fewer points than it promises")
-    return KpointsFile(
-        comment=comment,
-        mode="explicit",
-        points=np.asarray(points, dtype=float),
-        weights=np.asarray(weights, dtype=float),
-        coordinate_mode=coordinate_mode,
-    )
+        points: list[list[float]] = []
+        weights: list[float] = []
+        for line in handle:
+            entries = _tokens(line.partition("!")[0].partition("#")[0])
+            if not entries:
+                continue
+            if len(entries) < 4:
+                raise ValueError("every explicit k-point needs three coordinates and a weight")
+            point = [float(value) for value in entries[:3]]
+            weight = float(entries[3])
+            if not np.all(np.isfinite(point)) or not np.isfinite(weight):
+                raise ValueError("explicit k-points and weights must be finite")
+            points.append(point)
+            weights.append(weight)
+            if len(points) == count:
+                break
+        if len(points) != count:
+            raise ValueError("the KPOINTS file holds fewer points than it promises")
+        return KpointsFile(comment=comment, mode="explicit", points=np.asarray(points, dtype=float),
+                           weights=np.asarray(weights, dtype=float), coordinate_mode=coordinate_mode)

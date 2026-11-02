@@ -21,7 +21,7 @@ The generator preserves evidence only when the normalized source module is uncha
 
 Passing tests or obtaining high coverage never automatically marks a function reviewed. Completion must also check external dependencies/callers and the actual reasoning in each part report.
 
-At the Part-03c local checkpoint, the ledger contains **1,103 functions**: **175 reviewed unchanged**, **66 optimized and verified**, **2 investigated deferrals**, and **860 pending reviews**. Thus **243 functions have inspection evidence**; the project-wide review is incomplete. Part03c adds25 original function reviews and two reservation helpers, and resolves the legacy output-suffix deferral through actual default-path reservation in its consumers. The remaining investigated deferrals are rational lattice basis and extreme-scale structure validation. Lower-level reusable search working-directory semantics are explicitly outside the default-reservation guarantee. The neighbour-count truncation investigated in Part02b is resolved within the radius and numerical limits documented in Part02c.
+At the Part-04 local checkpoint, the ledger contains **1,108 functions**: **199 reviewed unchanged**, **84 optimized and verified**, **2 investigated deferrals**, and **823 pending reviews**. Thus **285 functions have inspection evidence**; the project-wide review is incomplete. Part04 adds37 original I/O reviews, three source helpers and two benchmark functions. The remaining investigated deferrals are rational lattice basis and extreme-scale structure validation. Part03c resolved the legacy output-suffix deferral in its actual default-path consumers; lower-level reusable search working-directory semantics remain outside that guarantee. The neighbour-count truncation investigated in Part02b is resolved within the radius and numerical limits documented in Part02c.
 
 ## Dependency order and evidence
 
@@ -37,7 +37,8 @@ The full sequence is in [the implementation plan](../superpowers/plans/2026-10-3
 | 03a | Shared structure transforms, directions/vacuum, species/elements and canonical structure model | [part-03a-shared-structure.md](part-03a-shared-structure.md) |
 | 03b | Workflow base, dependency discovery, validation, reports, provenance and manifests | [part-03b-shared-infrastructure.md](part-03b-shared-infrastructure.md) |
 | 03c | Actual default-output reservations across workflow and direct API consumers | [part-03c-safe-default-outputs.md](part-03c-safe-default-outputs.md) |
-| Remaining | I/O integrity/format handling and numerical-domain follow-ups; remaining shared code, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
+| 04 | Native I/O, molecular temporary ownership, frame/format integrity and bounded allocations | [part-04-io-integrity.md](part-04-io-integrity.md) |
+| Remaining | Reciprocal mesh key/range findings and numerical-domain follow-ups; remaining shared code, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
 
 ## Coverage and release boundaries
 

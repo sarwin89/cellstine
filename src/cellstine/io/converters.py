@@ -13,6 +13,7 @@ whatever the shape of the molecule.
 
 from __future__ import annotations
 
+from itertools import chain, repeat
 from pathlib import Path
 
 import numpy as np
@@ -55,7 +56,7 @@ class StructureConverter:
         elif format_name == "xyz":
             record = self._read_xyz(source, vacuum=vacuum)
         else:
-            record = self._read_with_pymatgen(source)
+            record = self._read_with_pymatgen(source, vacuum=vacuum)
         if canonicalize:
             record = self.normalizer.align_c_to_z(record)
         return record
@@ -75,25 +76,39 @@ class StructureConverter:
         return self.write(record, target, canonicalize=canonicalize)
 
     def _read_xyz(self, path: Path, *, vacuum: float) -> StructureRecord:
+        padding = float(vacuum)
+        if not np.isfinite(padding) or padding < 0.0:
+            raise ValueError("XYZ vacuum padding must be finite and nonnegative")
         with path.open("r", encoding="utf-8") as handle:
-            lines = [line.rstrip("\n") for line in handle]
-        if len(lines) < 2:
-            raise ValueError(f"{path} is not a valid XYZ file")
-        atom_count = int(lines[0].strip())
-        comment = lines[1].strip() or f"Converted from {path.name}"
-        atoms = []
-        for line in lines[2 : 2 + atom_count]:
-            tokens = line.split()
-            atoms.append((tokens[0], [float(tokens[1]), float(tokens[2]), float(tokens[3])]))
+            header = handle.readline()
+            description = handle.readline()
+            if not header or not description:
+                raise ValueError(f"{path} is not a valid XYZ file")
+            atom_count = int(header.strip())
+            if atom_count < 1:
+                raise ValueError(f"{path}: an XYZ molecular frame needs at least one atom")
+            comment = description.strip() or f"Converted from {path.name}"
+            atoms = []
+            for index in range(atom_count):
+                tokens = handle.readline().split()
+                if len(tokens) < 4:
+                    raise ValueError(f"{path}: XYZ atom {index + 1} is missing coordinates")
+                coordinates = [float(value) for value in tokens[1:4]]
+                if not all(np.isfinite(value) for value in coordinates):
+                    raise ValueError(f"{path}: XYZ atom {index + 1} has a non-finite coordinate")
+                atoms.append((tokens[0], coordinates))
         # A POSCAR groups its atoms by species, so the atoms are reordered here
         # rather than merely counted: an XYZ may list them in any order.
         species_order, counts, atom_order = group_species([symbol for symbol, _ in atoms])
         cartesian = np.array([coords for _, coords in atoms], dtype=float)[atom_order]
         minima = cartesian.min(axis=0)
         maxima = cartesian.max(axis=0)
-        span = np.maximum(maxima - minima, 1.0)
-        box = np.diag(span + float(vacuum))
-        shifted = cartesian - minima + 0.5 * float(vacuum)
+        with np.errstate(over="ignore", invalid="ignore"):
+            span = np.maximum(maxima - minima, 1.0)
+            box = np.diag(span + padding)
+            shifted = cartesian - minima + 0.5 * padding
+        if not np.all(np.isfinite(box)) or not np.all(np.isfinite(shifted)):
+            raise ValueError(f"{path}: XYZ molecular box exceeds the finite coordinate range")
         direct = shifted @ np.linalg.inv(box)
         return StructureRecord(
             comment=comment,
@@ -107,22 +122,33 @@ class StructureConverter:
             selective_flags=None,
             source_path=str(path),
             source_format="xyz",
-            metadata={"vacuum_padding": float(vacuum)},
+            metadata={"vacuum_padding": padding},
         )
 
     def _write_xyz(self, record: StructureRecord, path: Path) -> Path:
+        counts = [int(value) for value in record.counts]
+        if len(record.species) != len(counts) or any(value < 0 for value in counts):
+            raise ValueError("XYZ species and nonnegative counts must agree")
+        atom_count = sum(counts)
+        positions = np.asarray(record.positions_cartesian, dtype=float)
+        if positions.shape != (atom_count, 3):
+            raise ValueError("XYZ positions shape does not match atom counts")
+        for start in range(0, atom_count, 8192):
+            if not np.all(np.isfinite(positions[start : start + 8192])):
+                raise ValueError("XYZ positions must be finite")
+        comment = str(record.comment)
+        if "\n" in comment or "\r" in comment:
+            raise ValueError("an XYZ comment must occupy one line")
+        species = chain.from_iterable(repeat(symbol, count) for symbol, count in zip(record.species, counts))
         path.parent.mkdir(parents=True, exist_ok=True)
-        species = []
-        for symbol, count in zip(record.species, record.counts):
-            species.extend([symbol] * int(count))
         with path.open("w", encoding="utf-8") as handle:
-            handle.write(f"{record.natoms}\n")
-            handle.write(f"{record.comment}\n")
-            for symbol, position in zip(species, np.asarray(record.positions_cartesian, dtype=float)):
+            handle.write(f"{atom_count}\n")
+            handle.write(f"{comment}\n")
+            for symbol, position in zip(species, positions):
                 handle.write(f"{symbol} {position[0]:.10f} {position[1]:.10f} {position[2]:.10f}\n")
         return path
 
-    def _read_with_pymatgen(self, path: Path) -> StructureRecord:
+    def _read_with_pymatgen(self, path: Path, *, vacuum: float = 20.0) -> StructureRecord:
         if not self.dependency_manager.has("pymatgen"):
             raise RuntimeError(f"reading '{path.suffix}' needs pymatgen; install cellstine[pymatgen]")
         from pymatgen.core import Molecule as PymatgenMolecule
@@ -148,14 +174,21 @@ class StructureConverter:
                 metadata={},
             )
         except Exception:
+            from tempfile import NamedTemporaryFile
+
             molecule = PymatgenMolecule.from_file(str(path))
-            tmp_xyz = path.with_suffix(".tmp.xyz")
-            molecule.to(fmt="xyz", filename=str(tmp_xyz))
+            with NamedTemporaryFile(prefix="cellstine-molecule-", suffix=".xyz", delete=False) as handle:
+                tmp_xyz = Path(handle.name)
             try:
-                return self._read_xyz(tmp_xyz, vacuum=20.0)
+                molecule.to(fmt="xyz", filename=str(tmp_xyz))
+                record = self._read_xyz(tmp_xyz, vacuum=vacuum)
+                if record.comment == f"Converted from {tmp_xyz.name}":
+                    record.comment = f"Converted from {path.name}"
+                record.source_path = str(path)
+                record.source_format = path.suffix.lstrip(".").lower()
+                return record
             finally:
-                if tmp_xyz.exists():
-                    tmp_xyz.unlink()
+                tmp_xyz.unlink(missing_ok=True)
 
     def _write_with_pymatgen(self, record: StructureRecord, path: Path) -> Path:
         if not self.dependency_manager.has("pymatgen"):

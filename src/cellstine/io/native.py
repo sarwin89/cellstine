@@ -60,7 +60,7 @@ def _apply_scaling_factor(lattice: np.ndarray, line: str) -> Tuple[np.ndarray, n
       so the cell is scaled by ``(|s| / V)^(1/3)`` and keeps its shape and its
       handedness -- reading it as a plain multiplier would turn the cell inside
       out and give it the wrong size;
-    * three numbers, which scale the three Cartesian components.
+    * three positive numbers, which scale the three Cartesian components.
 
     In every case the factor is a linear map of space, so it acts on Cartesian
     positions exactly as it acts on the cell and leaves fractional coordinates
@@ -77,11 +77,15 @@ def _apply_scaling_factor(lattice: np.ndarray, line: str) -> Tuple[np.ndarray, n
     tokens = line.split()
     if not tokens:
         raise ValueError("the POSCAR scaling factor line is empty")
-    values = [float(token) for token in tokens[:3]]
-    if len(values) >= 3:
-        factors = np.array(values[:3], dtype=float)
-        if np.any(factors == 0.0):
-            raise ValueError("a POSCAR scaling factor may not be zero")
+    if len(tokens) not in {1, 3}:
+        raise ValueError("a POSCAR needs one or three scaling factors")
+    values = [float(token) for token in tokens]
+    if not np.all(np.isfinite(values)):
+        raise ValueError("POSCAR scaling factors must be finite")
+    if len(values) == 3:
+        factors = np.array(values, dtype=float)
+        if np.any(factors <= 0.0):
+            raise ValueError("three POSCAR scaling factors must all be positive")
         return lattice * factors[None, :], factors
     scale = float(values[0])
     if scale == 0.0:
@@ -91,6 +95,8 @@ def _apply_scaling_factor(lattice: np.ndarray, line: str) -> Tuple[np.ndarray, n
         if volume <= 0.0:
             raise ValueError("a POSCAR that asks for a target volume needs a non-degenerate cell")
         scale = (abs(scale) / volume) ** (1.0 / 3.0)
+        if scale == 0.0 or not np.isfinite(scale):
+            raise ValueError("the POSCAR target-volume scale exceeds the finite coordinate range")
     factors = np.full(3, scale, dtype=float)
     return lattice * scale, factors
 
@@ -99,48 +105,56 @@ def read_poscar(path: str) -> PoscarData:
     """Read a POSCAR/CONTCAR file."""
 
     with open(path, "r", encoding="utf-8") as handle:
-        lines = handle.read().splitlines()
+        def next_line(section: str) -> str:
+            line = handle.readline()
+            if not line:
+                raise ValueError(f"{path}: POSCAR is missing {section}")
+            return line.rstrip("\n")
 
-    if len(lines) < 8:
-        raise ValueError(f"{path} does not look like a POSCAR/CONTCAR file")
+        comment = next_line("the comment")
+        scaling = next_line("scaling factors")
+        lattice = np.array(
+            [list(map(float, next_line("a lattice vector").split()[:3])) for _ in range(3)],
+            dtype=float,
+        )
+        if lattice.shape != (3, 3) or not np.all(np.isfinite(lattice)):
+            raise ValueError(f"{path}: POSCAR needs three finite lattice vectors")
+        lattice, coordinate_scale = _apply_scaling_factor(lattice, scaling)
+        if not np.all(np.isfinite(lattice)):
+            raise ValueError(f"{path}: scaled POSCAR lattice exceeds the finite coordinate range")
 
-    comment = lines[0].rstrip("\n")
-    lattice = np.array([list(map(float, lines[i].split()[:3])) for i in range(2, 5)], dtype=float)
-    lattice, coordinate_scale = _apply_scaling_factor(lattice, lines[1])
+        first_tokens = next_line("species or atom counts").split()
+        species: List[str]
+        counts: List[int]
+        try:
+            counts = [int(token) for token in first_tokens]
+            species = []
+        except ValueError:
+            species = first_tokens
+            counts = [int(token) for token in next_line("atom counts").split()]
+        if not counts or any(value < 0 for value in counts):
+            raise ValueError(f"{path}: POSCAR needs nonnegative atom counts")
 
-    line_index = 5
-    first_tokens = lines[line_index].split()
-    species: List[str]
-    counts: List[int]
-    try:
-        counts = [int(token) for token in first_tokens]
-        species = []
-        line_index += 1
-    except ValueError:
-        species = first_tokens
-        line_index += 1
-        counts = [int(token) for token in lines[line_index].split()]
-        line_index += 1
-
-    selective_dynamics = False
-    if lines[line_index].strip().lower().startswith("s"):
-        selective_dynamics = True
-        line_index += 1
-
-    coordinate_mode = lines[line_index].strip()
-    line_index += 1
-
-    natoms = int(sum(counts))
-    raw_positions = []
-    selective_flags: List[Tuple[str, str, str]] | None = [] if selective_dynamics else None
-    for offset in range(natoms):
-        tokens = lines[line_index + offset].split()
-        raw_positions.append([float(tokens[0]), float(tokens[1]), float(tokens[2])])
+        coordinate_mode = next_line("the coordinate mode").strip()
+        selective_dynamics = coordinate_mode.lower().startswith("s")
         if selective_dynamics:
-            selective_flags.append(tuple(tokens[3:6]))
+            coordinate_mode = next_line("the coordinate mode after Selective Dynamics").strip()
+        natoms = int(sum(counts))
+        raw_positions = []
+        selective_flags: List[Tuple[str, str, str]] | None = [] if selective_dynamics else None
+        for offset in range(natoms):
+            tokens = next_line(f"atom {offset + 1}").split()
+            if len(tokens) < 3:
+                raise ValueError(f"{path}: POSCAR atom {offset + 1} is missing coordinates")
+            raw_positions.append([float(value) for value in tokens[:3]])
+            if selective_dynamics:
+                selective_flags.append(tuple(tokens[3:6]))
 
-    raw_array = np.array(raw_positions, dtype=float)
-    if coordinate_mode.lower().startswith("d"):
+    raw_array = np.array(raw_positions, dtype=float).reshape(-1, 3)
+    if not np.all(np.isfinite(raw_array)):
+        raise ValueError(f"{path}: POSCAR positions must be finite")
+    # VASP recognizes C/c/K/k as Cartesian; every other initial means Direct.
+    if coordinate_mode[:1].lower() not in {"c", "k"}:
         positions_direct = raw_array
         positions_cartesian = direct_to_cartesian(raw_array, lattice)
     else:
@@ -186,25 +200,34 @@ def repeat_structure_along_c(structure: PoscarData, repeats: int) -> PoscarData:
     lattice = np.array(structure.lattice, dtype=float, copy=True)
     lattice[2] *= float(repeats)
 
-    direct_blocks = []
-    for repeat_index in range(repeats):
-        shifted = np.array(structure.positions_direct, dtype=float, copy=True)
-        shifted[:, 2] = (shifted[:, 2] + float(repeat_index)) / float(repeats)
-        direct_blocks.append(shifted)
-    positions_direct = np.vstack(direct_blocks) if direct_blocks else np.zeros((0, 3), dtype=float)
+    counts = [int(value) for value in structure.counts]
+    source_positions = np.asarray(structure.positions_direct, dtype=float)
+    natoms = sum(counts)
+    if any(value < 0 for value in counts) or source_positions.shape != (natoms, 3):
+        raise ValueError("positions shape does not match atom counts")
+    if structure.selective_flags is not None and len(structure.selective_flags) != natoms:
+        raise ValueError("selective_flags length does not match number of atoms")
+    positions_direct = np.empty((natoms * repeats, 3), dtype=float)
+    selective_flags = None if structure.selective_flags is None else []
+    source_offset = output_offset = 0
+    for count in counts:
+        block = source_positions[source_offset : source_offset + count]
+        for repeat_index in range(repeats):
+            selected = positions_direct[output_offset : output_offset + count]
+            selected[:] = block
+            selected[:, 2] = (block[:, 2] + float(repeat_index)) / float(repeats)
+            if selective_flags is not None:
+                selective_flags.extend(tuple(flags) for flags in
+                                       structure.selective_flags[source_offset : source_offset + count])
+            output_offset += count
+        source_offset += count
     positions_cartesian = direct_to_cartesian(positions_direct, lattice)
-
-    selective_flags = None
-    if structure.selective_flags is not None:
-        selective_flags = []
-        for _ in range(repeats):
-            selective_flags.extend(tuple(flags) for flags in structure.selective_flags)
 
     return PoscarData(
         comment=f"{structure.comment} | c-repeat x{repeats}",
         lattice=lattice,
         species=list(structure.species),
-        counts=[int(count) * repeats for count in structure.counts],
+        counts=[count * repeats for count in counts],
         positions_direct=positions_direct,
         positions_cartesian=positions_cartesian,
         coordinate_mode="Direct",
@@ -221,7 +244,12 @@ def _normalise_flags(
         return None
     if len(selective_flags) != natoms:
         raise ValueError("selective_flags length does not match number of atoms")
-    return [tuple(str(item) for item in flags[:3]) for flags in selective_flags]
+    normalised = [tuple(str(item) for item in flags[:3]) for flags in selective_flags]
+    if any(len(flags) != 3 for flags in normalised):
+        raise ValueError("each atom needs three selective-dynamics flags")
+    if any(flag.upper() not in {"T", "F"} for flags in normalised for flag in flags):
+        raise ValueError("selective-dynamics flags must be T or F")
+    return normalised
 
 
 def write_poscar(
