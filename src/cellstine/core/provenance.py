@@ -74,10 +74,12 @@ def comment_notes(comment: str) -> list[str]:
     """
 
     notes: list[str] = []
+    seen: set[str] = set()
     for field in _fields(comment):
         if not field or _is_signature(field) or _is_stage_field(field):
             continue
-        if field not in notes:
+        if field not in seen:
+            seen.add(field)
             notes.append(field)
     return notes
 
@@ -85,11 +87,15 @@ def comment_notes(comment: str) -> list[str]:
 def _assemble(stage: str, notes: Iterable[str]) -> str:
     kept = [str(note).strip() for note in notes if str(note).strip()]
     head = f"{STAGE_PREFIX} {str(stage).strip()} stage"
-    while True:
-        line = " | ".join([head, *kept, SIGNATURE])
-        if len(line) <= MAX_COMMENT_LENGTH or not kept:
-            return line
-        kept.pop(0)
+    remaining = MAX_COMMENT_LENGTH - len(head) - len(SIGNATURE) - len(" | ")
+    start = len(kept)
+    while start:
+        cost = len(kept[start - 1]) + len(" | ")
+        if cost > remaining:
+            break
+        remaining -= cost
+        start -= 1
+    return " | ".join([head, *kept[start:], SIGNATURE])
 
 
 def stage_comment(stage: str, *notes: str) -> str:
@@ -103,4 +109,5 @@ def restage_comment(previous: str, stage: str, *notes: str) -> str:
 
     existing = comment_notes(previous)
     appended = [str(note).strip() for note in notes if str(note).strip()]
-    return _assemble(stage, [*existing, *(note for note in appended if note not in existing)])
+    known = set(existing)
+    return _assemble(stage, [*existing, *(note for note in appended if note not in known)])

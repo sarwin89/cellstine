@@ -69,7 +69,11 @@ jobs:
           tests/test_species_bounds.py
           tests/test_supercell_coset_resources.py
           tests/test_structure_helper_scales.py
-          tests/test_transforms_rotations.py -q
+          tests/test_transforms_rotations.py
+          tests/test_core_infrastructure.py
+          tests/test_provenance_resources.py
+          tests/test_validation.py
+          tests/test_report.py -q
 
   package:
     name: Package build

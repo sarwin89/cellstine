@@ -79,12 +79,19 @@ class Base:
         run_id = f"{base_id}_{timestamp}"
         run_dir = self.runs_root / self.workflow_name / run_id
         suffix = 1
-        while run_dir.exists():
+        while True:
+            try:
+                run_dir.mkdir(parents=True, exist_ok=False)
+            except FileExistsError:
+                # Another workflow may reserve the same minute-based name.
+                # Do not retry a parent-path failure with no occupied target.
+                if not run_dir.exists():
+                    raise
+            else:
+                return run_id, run_dir
             suffix += 1
             run_id = f"{base_id}_{suffix:02d}_{timestamp}"
             run_dir = self.runs_root / self.workflow_name / run_id
-        run_dir.mkdir(parents=True, exist_ok=False)
-        return run_id, run_dir
 
     def write_manifest(
         self,

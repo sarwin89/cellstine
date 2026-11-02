@@ -288,6 +288,28 @@
       "evidence": ""
     },
     {
+      "id": "benchmarks/benchmark_infrastructure.py::_repeat_call",
+      "path": "benchmarks/benchmark_infrastructure.py",
+      "qualified_name": "_repeat_call",
+      "line": 21,
+      "end_line": 25,
+      "module_sha256": "b42919feae80e6fd547c39e9f9395606a3a87b43032cb606e41b926d889d797a",
+      "status": "reviewed—unchanged",
+      "reason": "Reviewed trusted Git baseline, six exact-output cases, inputs outside tracing, positive repeats/microcounts, allocation boundaries and environment/source metadata; final benchmark and independent review pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
+    },
+    {
+      "id": "benchmarks/benchmark_infrastructure.py::main",
+      "path": "benchmarks/benchmark_infrastructure.py",
+      "qualified_name": "main",
+      "line": 28,
+      "end_line": 67,
+      "module_sha256": "b42919feae80e6fd547c39e9f9395606a3a87b43032cb606e41b926d889d797a",
+      "status": "reviewed—unchanged",
+      "reason": "Reviewed trusted Git baseline, six exact-output cases, inputs outside tracing, positive repeats/microcounts, allocation boundaries and environment/source metadata; final benchmark and independent review pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
+    },
+    {
       "id": "benchmarks/benchmark_structure_helpers.py::_repeat_call",
       "path": "benchmarks/benchmark_structure_helpers.py",
       "qualified_name": "_repeat_call",
@@ -2053,10 +2075,10 @@
       "qualified_name": "_slug",
       "line": 17,
       "end_line": 27,
-      "module_sha256": "25edb1861143fa6893aee920396702c749c463d4b0deb9b8d8bdd349b662e702",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "71b4725f7ce7579a587dc6694d815bf16a3e99bf72700cd0223ece5564427278",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected character sanitization, Unicode alphanumerics, trimming, length bound and fallback; unchanged executable AST and direct boundary tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/base.py::run_output_suffix",
@@ -2064,10 +2086,10 @@
       "qualified_name": "run_output_suffix",
       "line": 30,
       "end_line": 36,
-      "module_sha256": "25edb1861143fa6893aee920396702c749c463d4b0deb9b8d8bdd349b662e702",
+      "module_sha256": "71b4725f7ce7579a587dc6694d815bf16a3e99bf72700cd0223ece5564427278",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Inspected and independently reproduced run100/default flat-output overwrite and cross-label collision; pure parser cannot distinguish numeric labels such as Miller111 from counters. Defer to next end-to-end output allocation contract preserving ordinary noncolliding names; this is an unresolved release follow-up",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/base.py::_json_ready",
@@ -2075,10 +2097,10 @@
       "qualified_name": "_json_ready",
       "line": 39,
       "end_line": 50,
-      "module_sha256": "25edb1861143fa6893aee920396702c749c463d4b0deb9b8d8bdd349b662e702",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "71b4725f7ce7579a587dc6694d815bf16a3e99bf72700cd0223ece5564427278",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected recursive paths/arrays/dataclasses/dicts/sequences and asdict copying; retain unhandled-leaf and ownership semantics instead of a partial copy-elision optimization; unchanged AST and nested JSON/ownership tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/base.py::Base.__init__",
@@ -2086,10 +2108,10 @@
       "qualified_name": "Base.__init__",
       "line": 58,
       "end_line": 69,
-      "module_sha256": "25edb1861143fa6893aee920396702c749c463d4b0deb9b8d8bdd349b662e702",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "71b4725f7ce7579a587dc6694d815bf16a3e99bf72700cd0223ece5564427278",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected string backend, resolved roots and injected/default dependency manager ownership; unchanged AST and direct isolated workflow tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/base.py::Base.choose_backend",
@@ -2097,54 +2119,54 @@
       "qualified_name": "Base.choose_backend",
       "line": 71,
       "end_line": 72,
-      "module_sha256": "25edb1861143fa6893aee920396702c749c463d4b0deb9b8d8bdd349b662e702",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "71b4725f7ce7579a587dc6694d815bf16a3e99bf72700cd0223ece5564427278",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected delegation including feature context and native/optional priority; unchanged AST and backend/caller tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/base.py::Base.create_run_dir",
       "path": "src/cellstine/core/base.py",
       "qualified_name": "Base.create_run_dir",
       "line": 74,
-      "end_line": 87,
-      "module_sha256": "25edb1861143fa6893aee920396702c749c463d4b0deb9b8d8bdd349b662e702",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 94,
+      "module_sha256": "71b4725f7ce7579a587dc6694d815bf16a3e99bf72700cd0223ece5564427278",
+      "status": "optimized—verified",
+      "reason": "Atomically attempts mkdir and retries only confirmed occupied targets; retains timestamp/slug/counter convention and propagates parent/permission failures; deterministic/real concurrent reservations and installed smokes pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/base.py::Base.write_manifest",
       "path": "src/cellstine/core/base.py",
       "qualified_name": "Base.write_manifest",
-      "line": 89,
-      "end_line": 112,
-      "module_sha256": "25edb1861143fa6893aee920396702c749c463d4b0deb9b8d8bdd349b662e702",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 96,
+      "end_line": 119,
+      "module_sha256": "71b4725f7ce7579a587dc6694d815bf16a3e99bf72700cd0223ece5564427278",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected field plumbing, JSON-ready conversion and dependency versions; unchanged AST and actual manifest handoff/roundtrip tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/base.py::Base.result",
       "path": "src/cellstine/core/base.py",
       "qualified_name": "Base.result",
-      "line": 114,
-      "end_line": 129,
-      "module_sha256": "25edb1861143fa6893aee920396702c749c463d4b0deb9b8d8bdd349b662e702",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 121,
+      "end_line": 136,
+      "module_sha256": "71b4725f7ce7579a587dc6694d815bf16a3e99bf72700cd0223ece5564427278",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected resolved paths, recursive artifacts/summary/payload and CommandResult fields; unchanged AST and actual result/report/installed smoke tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/base.py::Base.resolve_results_file",
       "path": "src/cellstine/core/base.py",
       "qualified_name": "Base.resolve_results_file",
-      "line": 131,
-      "end_line": 139,
-      "module_sha256": "25edb1861143fa6893aee920396702c749c463d4b0deb9b8d8bdd349b662e702",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 138,
+      "end_line": 146,
+      "module_sha256": "71b4725f7ce7579a587dc6694d815bf16a3e99bf72700cd0223ece5564427278",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected manifest filename dispatch, ordered artifact selection, missing-key error and direct-path resolution; unchanged AST and direct handoff/error tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/bravais.py::ConventionalCell.parameters",
@@ -2791,9 +2813,9 @@
       "line": 30,
       "end_line": 31,
       "module_sha256": "8f6143d965afc11c6c8d3259d140c0d94c07dc8196d144117b863d4cecd62d49",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected instance-local empty cache; unchanged AST and independent-manager/cache tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/dependencies.py::DependencyManager.status",
@@ -2802,9 +2824,9 @@
       "line": 33,
       "end_line": 53,
       "module_sha256": "8f6143d965afc11c6c8d3259d140c0d94c07dc8196d144117b863d4cecd62d49",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected package mapping, find_spec availability, cached identity, lazy metadata import and missing distribution version; unchanged AST and cache/metadata/startup tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/dependencies.py::DependencyManager.has",
@@ -2813,9 +2835,9 @@
       "line": 55,
       "end_line": 56,
       "module_sha256": "8f6143d965afc11c6c8d3259d140c0d94c07dc8196d144117b863d4cecd62d49",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected bool availability delegation independent of version metadata; unchanged AST and installed/missing dependency tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/dependencies.py::DependencyManager.versions",
@@ -2824,9 +2846,9 @@
       "line": 58,
       "end_line": 64,
       "module_sha256": "8f6143d965afc11c6c8d3259d140c0d94c07dc8196d144117b863d4cecd62d49",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected package order and omission of absent/unknown versions; unchanged AST and stubbed versions plus manifest tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/dependencies.py::DependencyManager.choose_backend",
@@ -2835,9 +2857,9 @@
       "line": 66,
       "end_line": 77,
       "module_sha256": "8f6143d965afc11c6c8d3259d140c0d94c07dc8196d144117b863d4cecd62d49",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected supported values, case normalization, native shortcut, optional requirement/errors and auto preference; unchanged AST and direct branches pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/dependencies.py::DependencyManager.choose_symmetry_backend",
@@ -2846,9 +2868,9 @@
       "line": 79,
       "end_line": 97,
       "module_sha256": "8f6143d965afc11c6c8d3259d140c0d94c07dc8196d144117b863d4cecd62d49",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected distinct native/spglib policy and auto preference without routing symmetry through pymatgen; unchanged AST and direct branches pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/directions.py::ViewDirection.is_lattice_plane_normal",
@@ -3957,9 +3979,9 @@
       "line": 29,
       "end_line": 53,
       "module_sha256": "9ed846abf6446997af786077e366e98b47930cba5a79b66e0447a0a782bf0279",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected primitive string fields, UTC timestamp and shallow copied optional mappings; unchanged AST and direct ownership/time/default/handoff tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/manifests.py::RunManifest.to_dict",
@@ -3968,9 +3990,9 @@
       "line": 55,
       "end_line": 67,
       "module_sha256": "9ed846abf6446997af786077e366e98b47930cba5a79b66e0447a0a782bf0279",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected exact field set/order and shared mapping references without path field; unchanged AST and direct serialization/ownership tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/manifests.py::RunManifest.write",
@@ -3979,9 +4001,9 @@
       "line": 69,
       "end_line": 75,
       "module_sha256": "9ed846abf6446997af786077e366e98b47930cba5a79b66e0447a0a782bf0279",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected resolved parent creation, UTF8/indent2 output and path assignment after successful dump; retains direct-write contract; unchanged AST and actual written manifest/installed tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/manifests.py::RunManifest.load",
@@ -3990,9 +4012,9 @@
       "line": 78,
       "end_line": 94,
       "module_sha256": "9ed846abf6446997af786077e366e98b47930cba5a79b66e0447a0a782bf0279",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected required fields, optional defaults, string conversion, mapping copies and resolved source path; unchanged AST and direct default/roundtrip/handoff tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/naming.py::safe_token",
@@ -4605,10 +4627,10 @@
       "qualified_name": "_fields",
       "line": 45,
       "end_line": 46,
-      "module_sha256": "2acab426516585ebb0c7ba29d12cf6ad2afe4b37f9720767c68fe5dd843b8f3f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "95a85e4333d715ac0cb4008ea65d78dcff2c100d7bb3ac3f4756d3321ecfc29e",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected string conversion, pipe splitting, whitespace trimming and field order; unchanged AST and randomized baseline equivalence pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/provenance.py::_is_signature",
@@ -4616,10 +4638,10 @@
       "qualified_name": "_is_signature",
       "line": 49,
       "end_line": 50,
-      "module_sha256": "2acab426516585ebb0c7ba29d12cf6ad2afe4b37f9720767c68fe5dd843b8f3f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "95a85e4333d715ac0cb4008ea65d78dcff2c100d7bb3ac3f4756d3321ecfc29e",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected casefold equality against mandatory signature; unchanged AST and direct/randomized provenance cases pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/provenance.py::_is_stage_field",
@@ -4627,10 +4649,10 @@
       "qualified_name": "_is_stage_field",
       "line": 53,
       "end_line": 54,
-      "module_sha256": "2acab426516585ebb0c7ba29d12cf6ad2afe4b37f9720767c68fe5dd843b8f3f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "95a85e4333d715ac0cb4008ea65d78dcff2c100d7bb3ac3f4756d3321ecfc29e",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected CELLSTINE guard and existing regex policy; unchanged AST and direct/randomized provenance cases pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/provenance.py::stage_of",
@@ -4638,54 +4660,54 @@
       "qualified_name": "stage_of",
       "line": 57,
       "end_line": 65,
-      "module_sha256": "2acab426516585ebb0c7ba29d12cf6ad2afe4b37f9720767c68fe5dd843b8f3f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "95a85e4333d715ac0cb4008ea65d78dcff2c100d7bb3ac3f4756d3321ecfc29e",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected first matching stage field and missing/empty result; unchanged AST and direct/pipeline/randomized tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/provenance.py::comment_notes",
       "path": "src/cellstine/core/provenance.py",
       "qualified_name": "comment_notes",
       "line": 68,
-      "end_line": 82,
-      "module_sha256": "2acab426516585ebb0c7ba29d12cf6ad2afe4b37f9720767c68fe5dd843b8f3f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 84,
+      "module_sha256": "95a85e4333d715ac0cb4008ea65d78dcff2c100d7bb3ac3f4756d3321ecfc29e",
+      "status": "optimized—verified",
+      "reason": "Uses set membership alongside ordered notes to remove quadratic duplicate scans; preserves filtering and first exact-case occurrence; randomized baseline and long unique/repeated benchmarks pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/provenance.py::_assemble",
       "path": "src/cellstine/core/provenance.py",
       "qualified_name": "_assemble",
-      "line": 85,
-      "end_line": 92,
-      "module_sha256": "2acab426516585ebb0c7ba29d12cf6ad2afe4b37f9720767c68fe5dd843b8f3f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 87,
+      "end_line": 98,
+      "module_sha256": "95a85e4333d715ac0cb4008ea65d78dcff2c100d7bb3ac3f4756d3321ecfc29e",
+      "status": "optimized—verified",
+      "reason": "Computes exact newest fitting character-budget suffix and joins once; retains iterable normalization and overlong mandatory fields; allocation red/green, boundary/Unicode/generator tests and exact baselines pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/provenance.py::stage_comment",
       "path": "src/cellstine/core/provenance.py",
       "qualified_name": "stage_comment",
-      "line": 95,
-      "end_line": 98,
-      "module_sha256": "2acab426516585ebb0c7ba29d12cf6ad2afe4b37f9720767c68fe5dd843b8f3f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 101,
+      "end_line": 104,
+      "module_sha256": "95a85e4333d715ac0cb4008ea65d78dcff2c100d7bb3ac3f4756d3321ecfc29e",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected fresh-comment assembly delegation and note ordering; unchanged AST and provenance/builder/pipeline plus ordinary baseline benchmark pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/provenance.py::restage_comment",
       "path": "src/cellstine/core/provenance.py",
       "qualified_name": "restage_comment",
-      "line": 101,
-      "end_line": 106,
-      "module_sha256": "2acab426516585ebb0c7ba29d12cf6ad2afe4b37f9720767c68fe5dd843b8f3f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 107,
+      "end_line": 113,
+      "module_sha256": "95a85e4333d715ac0cb4008ea65d78dcff2c100d7bb3ac3f4756d3321ecfc29e",
+      "status": "optimized—verified",
+      "reason": "Uses membership set of existing notes only, retaining repeated newly appended notes and existing stage/signature rules; exact randomized baselines, duplicate tests and long-history benchmark pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/reciprocal.py::_as_lattice",
@@ -5167,9 +5189,9 @@
       "line": 69,
       "end_line": 76,
       "module_sha256": "273b2e5cc314e40ea24737bdb913f0f9c4f47ad19eb351ba69841e7b594233e0",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected PurePath handling and conservative string whitespace/newline/platform-separator policy; unchanged AST and direct report branch review",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/report.py::format_path",
@@ -5178,9 +5200,9 @@
       "line": 79,
       "end_line": 87,
       "module_sha256": "273b2e5cc314e40ea24737bdb913f0f9c4f47ad19eb351ba69841e7b594233e0",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected relative-inside/base default and ValueError/OSError fallback; unchanged AST and path/report caller tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/report.py::format_number",
@@ -5189,9 +5211,9 @@
       "line": 90,
       "end_line": 103,
       "module_sha256": "273b2e5cc314e40ea24737bdb913f0f9c4f47ad19eb351ba69841e7b594233e0",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected six significant digits, integer-looking floats, signed zero, NaN/infinities and scientific notation; unchanged AST and direct report tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/report.py::_unit_for",
@@ -5200,9 +5222,9 @@
       "line": 106,
       "end_line": 111,
       "module_sha256": "273b2e5cc314e40ea24737bdb913f0f9c4f47ad19eb351ba69841e7b594233e0",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected established angstrom/degree keys and no-unit fallback; unchanged AST and scalar/result tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/report.py::format_scalar",
@@ -5211,9 +5233,9 @@
       "line": 114,
       "end_line": 127,
       "module_sha256": "273b2e5cc314e40ea24737bdb913f0f9c4f47ad19eb351ba69841e7b594233e0",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected None/bool-before-int/float/path/string dispatch and unit application; unchanged AST and direct scalar/report tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/report.py::_is_scalar",
@@ -5222,9 +5244,9 @@
       "line": 130,
       "end_line": 131,
       "module_sha256": "273b2e5cc314e40ea24737bdb913f0f9c4f47ad19eb351ba69841e7b594233e0",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected Mapping/list/tuple/set exclusion for sequence formatting; unchanged AST and direct report branch review",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/report.py::format_label",
@@ -5233,9 +5255,9 @@
       "line": 134,
       "end_line": 137,
       "module_sha256": "273b2e5cc314e40ea24737bdb913f0f9c4f47ad19eb351ba69841e7b594233e0",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected string conversion, underscore replacement and trim; unchanged AST and nested report tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/report.py::_render_sequence",
@@ -5244,9 +5266,9 @@
       "line": 140,
       "end_line": 170,
       "module_sha256": "273b2e5cc314e40ea24737bdb913f0f9c4f47ad19eb351ba69841e7b594233e0",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected empty/path/single-path/long-string/scalar/mapping branches and exact order/indentation; unchanged AST and direct branch exercise plus report tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/report.py::_wrap",
@@ -5255,9 +5277,9 @@
       "line": 173,
       "end_line": 182,
       "module_sha256": "273b2e5cc314e40ea24737bdb913f0f9c4f47ad19eb351ba69841e7b594233e0",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected width96, continuation indentation, unbroken long-word policy and empty fallback; unchanged AST and wrapping/branch tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/report.py::render_mapping",
@@ -5266,9 +5288,9 @@
       "line": 185,
       "end_line": 205,
       "module_sha256": "273b2e5cc314e40ea24737bdb913f0f9c4f47ad19eb351ba69841e7b594233e0",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected mapping order, nested/empty containers, existing set-sort contract and scalar wrapping; unchanged AST and direct report tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/report.py::render_timings",
@@ -5277,9 +5299,9 @@
       "line": 220,
       "end_line": 232,
       "module_sha256": "273b2e5cc314e40ea24737bdb913f0f9c4f47ad19eb351ba69841e7b594233e0",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected fixed stage ordering, sorted unknown keys, suffix trimming and nonnumeric fallback; unchanged AST and independent direct branch exercise pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/report.py::format_result",
@@ -5288,9 +5310,9 @@
       "line": 235,
       "end_line": 302,
       "module_sha256": "273b2e5cc314e40ea24737bdb913f0f9c4f47ad19eb351ba69841e7b594233e0",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected artifact/result/timing/angle/preview blocks, nonmutation of source summary and warnings last; unchanged AST and all branches independently exercised with report/caller tests",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/species.py::expand_species",
@@ -6057,10 +6079,10 @@
       "qualified_name": "ensure_existing_file",
       "line": 37,
       "end_line": 41,
-      "module_sha256": "109a13ee1e96216140f22c816d175c1a51d45f3c5f0276522d7f72c15d7850a5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "c5a993de6b3e830950f718b8d8a2ff4c48ed7d6a95cf5bd1c29e7999fd310918",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected user expansion, resolution, existence-only policy and missing error; directory rejection would change existing compatibility contract; unchanged AST and direct/caller tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/validation.py::ensure_positive",
@@ -6068,10 +6090,10 @@
       "qualified_name": "ensure_positive",
       "line": 44,
       "end_line": 48,
-      "module_sha256": "109a13ee1e96216140f22c816d175c1a51d45f3c5f0276522d7f72c15d7850a5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "c5a993de6b3e830950f718b8d8a2ff4c48ed7d6a95cf5bd1c29e7999fd310918",
+      "status": "optimized—verified",
+      "reason": "Requires strict greater-than-zero comparison so NaN cannot pass; retains positive infinity, float conversion and named errors; red/green regressions and1007 unchanged baseline cases pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/validation.py::coincident_site_pairs",
@@ -6079,10 +6101,10 @@
       "qualified_name": "coincident_site_pairs",
       "line": 51,
       "end_line": 77,
-      "module_sha256": "109a13ee1e96216140f22c816d175c1a51d45f3c5f0276522d7f72c15d7850a5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "c5a993de6b3e830950f718b8d8a2ff4c48ed7d6a95cf5bd1c29e7999fd310918",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected periodic candidate selection, existing radius floor, exact final distance filter and ordered integer pairs; unchanged AST and skew/cell-face/duplicate/writer tests pass",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/validation.py::structure_errors",
@@ -6090,10 +6112,10 @@
       "qualified_name": "structure_errors",
       "line": 80,
       "end_line": 145,
-      "module_sha256": "109a13ee1e96216140f22c816d175c1a51d45f3c5f0276522d7f72c15d7850a5",
+      "module_sha256": "c5a993de6b3e830950f718b8d8a2ff4c48ed7d6a95cf5bd1c29e7999fd310918",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Inspected ordinary checks and reproduced finite1e103 cubic false degeneracy from determinant/product overflow; downstream minimum-image distances also overflow at1e155. Defer end-to-end representable-domain repair while preserving1e-8*max(scale,1) threshold; isolated acceptance expansion is unsafe",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/validation.py::validate_structure",
@@ -6101,10 +6123,10 @@
       "qualified_name": "validate_structure",
       "line": 148,
       "end_line": 167,
-      "module_sha256": "109a13ee1e96216140f22c816d175c1a51d45f3c5f0276522d7f72c15d7850a5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "c5a993de6b3e830950f718b8d8a2ff4c48ed7d6a95cf5bd1c29e7999fd310918",
+      "status": "reviewed—unchanged",
+      "reason": "Inspected keyword delegation and contextual joined errors; unchanged AST and valid/invalid writer/context tests pass; extreme-domain investigation remains attached to structure_errors",
+      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
     },
     {
       "id": "src/cellstine/core/voids.py::material_bounds",

@@ -37,7 +37,7 @@
 - [x] Independently review the full scoped implementation, including exact integer membership/order and numerical boundary behavior.
 - [x] Update the source-function ledger only with actual inspection evidence; include any new helper/benchmark functions. Distinguish pending reviews from investigated deferrals.
 - [x] Freeze source/tests; run focused then full coverage suite, check frozen hashes, build wheel/sdist/Twine and relevant installed smokes.
-- [ ] Commit scoped changes, push dev, and verify all required supported-version CI jobs and exact-head coverage artifact before Part03b.
+- [x] Commit scoped changes, push dev, and verify all required supported-version CI jobs and exact-head coverage artifact before Part03b.
 
 
 ## Current implementation rulings and focused evidence
@@ -52,7 +52,7 @@ Ruling: replace np.asarray(copy=True) in strained_copy with np.array(copy=True) 
 
 Corrected the invalid Miller example1x1in direction documentation/help to11x1, which already means(1,-1,1) under the existing trailing-x convention. No parser acceptance or sign convention changed.
 
-All 40 original functions, the new quotient helper and two benchmark functions have now been inspected. The final focused caller selection passed 400 tests with eight existing warnings. The reproducible final-source benchmark and independent review are recorded in docs/optimization/part-03a-shared-structure.md. Remaining before checkpoint: local full frozen suite, packaging/install checks, ledger update, scoped dev commit and all required CI jobs including the new minimum-NumPy lane.
+All 40 original functions, the new quotient helper and two benchmark functions have now been inspected. The final focused caller selection passed 400 tests with eight existing warnings. The reproducible final-source benchmark and independent review are recorded in docs/optimization/part-03a-shared-structure.md. All local/package/ledger gates pass; commit4d005c0 and all seven CI jobs are verified in run41289513562, with exact-head coverage artifact13076513125.
 
 
-Local checkpoint: 3230 passed,4 skipped,81 warnings in706.57s. All245 frozen hashes and final benchmark digests match. Ledger1099total/170inspected/929pending; canonical drift check passes. Wheel/sdist/Twine,140module bytes and all three installed structure-helper/CLI/dependency smokes pass. Final archive docs/ledger refresh and remote CI remain before the final integration checkbox.
+Local checkpoint: 3230 passed,4 skipped,81 warnings in706.57s. All245 frozen hashes and final benchmark digests match. Ledger1099total/170inspected/929pending; canonical drift check passes. Wheel/sdist/Twine,140module bytes and all three installed structure-helper/CLI/dependency smokes pass. Final archive support bytes match. Commit4d005c0, all seven jobs of CI41289513562 and exact-head coverage artifact13076513125 are verified; downloaded XML numerators match local coverage.

@@ -43,7 +43,7 @@ def ensure_existing_file(path: str | Path) -> Path:
 
 def ensure_positive(value: float, *, name: str) -> float:
     number = float(value)
-    if number <= 0.0:
+    if not (number > 0.0):
         raise ValueError(f"{name} must be positive")
     return number
 
