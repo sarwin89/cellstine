@@ -80,7 +80,8 @@ jobs:
           tests/test_io.py
           tests/test_io_scaling_factor.py
           tests/test_kpoints_layout.py
-          tests/test_reciprocal_integrity.py -q
+          tests/test_reciprocal_integrity.py
+          tests/test_conventional_resources.py -q
 
   package:
     name: Package build

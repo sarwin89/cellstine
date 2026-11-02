@@ -21,7 +21,7 @@ The generator preserves evidence only when the normalized source module is uncha
 
 Passing tests or obtaining high coverage never automatically marks a function reviewed. Completion must also check external dependencies/callers and the actual reasoning in each part report.
 
-At the Part-03d local checkpoint, the ledger contains **1,111 functions**: **217 reviewed unchanged**, **95 optimized and verified**, **2 investigated deferrals**, and **797 pending reviews**. Thus **314 functions have inspection evidence**; the project-wide review is incomplete. Part03d adds26 original reciprocal reviews, two source helpers and one benchmark function after the verified I/O checkpoint. The remaining investigated deferrals are rational lattice basis and extreme-scale structure validation. Part03c resolved the legacy output-suffix deferral in its actual default-path consumers; lower-level reusable search working-directory semantics remain outside that guarantee. The neighbour-count truncation investigated in Part02b is resolved within the radius and numerical limits documented in Part02c.
+At the Part-03e local checkpoint, the ledger contains **1,113 functions**: **233 reviewed unchanged**, **102 optimized and verified**, **2 investigated deferrals**, and **776 pending reviews**. Thus **337 functions have inspection evidence**; the project-wide review is incomplete. Part03e adds21 original conventional-cell/idealisation reviews and two benchmark functions. The remaining investigated deferrals are rational lattice basis and extreme-scale structure validation. Part03c resolved the legacy output-suffix deferral in its actual default-path consumers; lower-level reusable search working-directory semantics remain outside that guarantee. The neighbour-count truncation investigated in Part02b is resolved within the radius and numerical limits documented in Part02c.
 
 ## Dependency order and evidence
 
@@ -38,8 +38,9 @@ The full sequence is in [the implementation plan](../superpowers/plans/2026-10-3
 | 03b | Workflow base, dependency discovery, validation, reports, provenance and manifests | [part-03b-shared-infrastructure.md](part-03b-shared-infrastructure.md) |
 | 03c | Actual default-output reservations across workflow and direct API consumers | [part-03c-safe-default-outputs.md](part-03c-safe-default-outputs.md) |
 | 03d | Exact reciprocal keys, rotations/images, supported integer ranges and bounded grid allocations | [part-03d-reciprocal.md](part-03d-reciprocal.md) |
+| 03e | Shared conventional-axis clouds, prompt group caps and complete Bravais/idealisation review | [part-03e-conventional.md](part-03e-conventional.md) |
 | 04 | Native I/O, molecular temporary ownership, frame/format integrity and bounded allocations | [part-04-io-integrity.md](part-04-io-integrity.md) |
-| Remaining | Conventional-cell/idealisation repeated-work findings and numerical-domain follow-ups; remaining shared code, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
+| Remaining | Scoped Claude engine/results, JSON-writer and CLI integration; numerical-domain follow-ups and remaining shared code, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
 
 ## Coverage and release boundaries
 

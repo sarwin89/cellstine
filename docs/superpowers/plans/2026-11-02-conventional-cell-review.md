@@ -11,3 +11,7 @@ Initial read-only inspection during the frozen reciprocal checkpoint covered all
 Benchmark actual conventional-cell results and allocation against the next committed dev baseline. Test genuine repeated-work/cap findings, obtain whole-batch independent review, then one frozen full/package checkpoint. Leave sound functions unchanged with per-function reasons. Keep global floating-point representable-range limitations explicit, preserve concurrent root work/scientific data, and do not publish.
 
 Continue using the separate Claude integration plan after these shared dependencies; the proper/improper moiré equivalence boundary must remain explicit.
+
+## Execution checkpoint
+
+Shared deterministic clouds and insertion-time caps are implemented. Eight initial regressions failed first;456 affected tests passed afterward. Independent whole-function review and narrow cap/order/tie/ownership probes found no issues. The one full suite passed3,339 tests; package/install checks passed;257 frozen Python hashes and file set match. The ledger adds21 original functions and two benchmark entries. Pushed exact-head CI remains the next gate; see the [part report](../../optimization/part-03e-conventional.md).

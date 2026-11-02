@@ -67,6 +67,7 @@ def close_matrix_group(
     if dimension is not None and size != int(dimension):
         raise ValueError(f"{name} must be a (k, {int(dimension)}, {int(dimension)}) integer array")
 
+    limit = None if max_order is None else int(max_order)
     seen: dict[bytes, np.ndarray] = {}
 
     def _add(element: np.ndarray) -> bool:
@@ -74,6 +75,8 @@ def close_matrix_group(
         key = contiguous.tobytes()
         if key in seen:
             return False
+        if limit is not None and len(seen) >= limit:
+            raise ValueError(f"{name} closure exceeded {limit} elements")
         seen[key] = contiguous
         return True
 
@@ -88,8 +91,6 @@ def close_matrix_group(
             for right in current:
                 if _add(left @ right):
                     changed = True
-        if max_order is not None and len(seen) > int(max_order):
-            raise ValueError(f"{name} closure exceeded {int(max_order)} elements")
     closure = np.stack(list(seen.values()), axis=0).astype(np.int64)
     closure.setflags(write=False)
     return closure

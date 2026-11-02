@@ -1,6 +1,6 @@
 # Scoped Claude handoff integration
 
-User-authorized coordination uses `E:/moire-supercell/docs/agent-coordination.md`. Claude supplied three patches and a30-file manifest in `.tmp/claude-patches/`. The working root remains shared/dirty and is never reset or copied wholesale. Integrate after the reciprocal checkpoint as separately reviewed source-function batches, with current dev as the behavior baseline.
+User-authorized coordination uses `E:/moire-supercell/docs/agent-coordination.md`. Claude supplied three patches and a30-file manifest in `.tmp/claude-patches/`. The working root remains shared/dirty and is never reset or copied wholesale. The user confirmed its final handoff and Continue instruction:finish the active conventional-cell checkpoint, then integrate engine/results, JSON writer hunks manually, and CLI in that order as separately reviewed source-function batches, with current dev as the behavior baseline. Claude has stopped with no background jobs and reported3334 passed/two skipped on root; this is external evidence, not integrated-dev verification.
 
 ## Verified handoff inventory
 
@@ -15,3 +15,9 @@ The engine patch assumes the root's pre-existing proper-only equivalence policy.
 - Guided CLI: preserve current dev workflow/API fixes while incorporating recovery, validation and parsing changes. Treat these as explicit user-facing behavior fixes and inspect their complete function/caller contracts; do not claim a pure performance rewrite.
 
 Each integration updates module-hash review evidence only after actual complete inspection, independent review, focused regressions/comparative benchmarks as relevant, and one frozen full/package checkpoint. Preserve all unrelated root work and scientific data. Push scoped commits to dev and inspect exact-head CI. No package/release publication.
+
+## Scratch engine preparation
+
+`E:/moire-supercell/.tmp/claude-engine-prep-20261102/` contains verified bases, patched results, current-dev snapshots and a merge report. All seven engine export hashes were reproduced; the new test's LF ending was restored after repository attributes converted it in scratch. Four source files merged cleanly; two files had two conflict blocks each. Current scratch adaptations retain dev's mirror/fold-disabled policy and candidate JSON field set, omitting the pre-existing root-only identity/display fields. All six prepared sources parse and pass Ruff F; this is not runtime verification or an applied dev change.
+
+The early proper-rotation-only twist-window filter also requires paired-mirror handling before actual integration. Compare all supported policies and exact candidate arrays/JSON against current dev, not solely Claude's proper-only starting policy. The existing HNF route remains the correctness fallback for improper-group primitive orbits unless a signed fast formula is demonstrated. The user handoff's unstarted stabiliser keys, deferred geometry, columnar format and additional CLI features remain explicitly unimplemented.
