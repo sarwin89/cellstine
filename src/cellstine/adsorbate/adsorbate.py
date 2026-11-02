@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Sequence
 
 from ..core.base import Base, run_output_suffix
+from ..core.outputs import reserve_default_file
 from ..core.lattice import build_target_lattice
 from ..core.naming import safe_token
 from ..core.models import CommandResult
@@ -134,6 +135,8 @@ class Adsorbate(MigrationPathMixin, Base):
         target_dir = Path(run_dir) if run_dir is not None else self.output_root
         target_dir.mkdir(parents=True, exist_ok=True)
         expanded_path = target_dir / f"{safe_token(source.stem)}_substrate_expanded.vasp"
+        if run_dir is None:
+            expanded_path = reserve_default_file(expanded_path)
         io_mod.write_poscar(
             str(expanded_path),
             structure.lattice,
@@ -201,13 +204,13 @@ class Adsorbate(MigrationPathMixin, Base):
             supercell_matrix=substrate_supercell_matrix,
             run_dir=run_dir,
         )
-        resolved_output_path = output_path or str(
+        resolved_output_path = output_path or str(reserve_default_file(
             self.output_root
             / (
                 f"adsorbate_{safe_token(site_type)}{int(site_index):02d}_h{safe_token(f'{float(height):.2f}')}"
                 f"_rot{safe_token(f'{float(rotation_deg):.2f}')}_tilt{safe_token(f'{float(tilt_deg):.2f}')}_roll{safe_token(f'{float(roll_deg):.2f}')}_{output_suffix}.vasp"
             )
-        )
+        ))
         run = place_molecule_on_site(
             substrate_poscar=resolved_substrate,
             molecule_poscar=str(resolved_molecule_path),
@@ -297,12 +300,12 @@ class Adsorbate(MigrationPathMixin, Base):
             target_token = "cart_" + "_".join(safe_token(f"{float(value):.3f}") for value in target_cartesian)
         if target_direct is not None:
             target_token = "direct_" + "_".join(safe_token(f"{float(value):.3f}") for value in target_direct)
-        resolved_output_path = output_path or str(
+        resolved_output_path = output_path or str(reserve_default_file(
             self.output_root
             / (
                 f"move_{target_token}_rot{safe_token(f'{float(rotation_deg):.2f}')}_tilt{safe_token(f'{float(tilt_deg):.2f}')}_roll{safe_token(f'{float(roll_deg):.2f}')}_{output_suffix}.vasp"
             )
-        )
+        ))
         run = transform_top_molecule(
             poscar_path=str(Path(poscar_path).resolve()),
             output_path=resolved_output_path,

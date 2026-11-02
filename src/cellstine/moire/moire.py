@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Sequence
 
 from ..core.base import Base, run_output_suffix
+from ..core.outputs import reserve_default_directory, reserve_default_file
 from ..core.layers import shift_top_layer
 from ..core.models import CommandResult
 from ..core.naming import safe_token
@@ -235,6 +236,8 @@ class Moire(Base):
         run_id, run_dir = self.create_run_dir("make", Path(resolved_results).stem)
         output_suffix = run_output_suffix(run_id)
         resolved_output_dir = output_dir or str(self.output_root / run_id)
+        if output_path is None and not output_dir:
+            resolved_output_dir = str(reserve_default_directory(resolved_output_dir))
         runs = generate_many_from_results(
             resolved_results,
             indexes=[int(value) for value in indexes],
@@ -298,10 +301,10 @@ class Moire(Base):
         backend = self.choose_backend(feature="moire.translate")
         run_id, run_dir = self.create_run_dir("translate", Path(poscar_path).stem)
         output_suffix = run_output_suffix(run_id)
-        resolved_output_path = output_path or str(
+        resolved_output_path = output_path or str(reserve_default_file(
             self.output_root
             / f"{safe_token(Path(poscar_path).stem)}_upper_layer_shifted_{output_suffix}.vasp"
-        )
+        ))
         run = shift_top_layer(
             poscar_path=str(Path(poscar_path).resolve()),
             output_path=resolved_output_path,

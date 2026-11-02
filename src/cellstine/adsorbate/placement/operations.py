@@ -37,6 +37,7 @@ from ...core.contacts import contact_report
 from ...core.elements import ATOMIC_MASSES, species_masses
 from ...core.layers import LAYER_TOLERANCE, LayerShiftRun, resolve_shift_vectors
 from ...core.provenance import restage_comment
+from ...core.outputs import reserve_default_file
 from ...core.species import expand_species
 from ...core.transforms import yaw_pitch_roll_matrix
 from ...core.vacuum import fit_cell_to_vacuum, normal_heights, vacuum_gap
@@ -613,9 +614,9 @@ def transform_top_molecule(
     if output_path is None:
         input_path = Path(poscar_path).resolve()
         DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        output_path = str(
-            (DEFAULT_OUTPUT_DIR / f"{input_path.stem}_molecule_adjusted{input_path.suffix or '.vasp'}").resolve()
-        )
+        output_path = str(reserve_default_file(
+            DEFAULT_OUTPUT_DIR / f"{input_path.stem}_molecule_adjusted{input_path.suffix or '.vasp'}"
+        ).resolve())
     else:
         Path(output_path).resolve().parent.mkdir(parents=True, exist_ok=True)
 
@@ -760,12 +761,12 @@ def place_molecule_on_site(
         molecule_path = Path(molecule_poscar).resolve()
         DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
         canonical_site = surface_mod.canonical_site_type(site_type)
-        output_path = str(
+        output_path = str(reserve_default_file(
             (
                 DEFAULT_OUTPUT_DIR
                 / f"{substrate_path.stem}__{molecule_path.stem}_{canonical_site}{int(site_index):02d}{substrate_path.suffix or '.vasp'}"
-            ).resolve()
-        )
+            )
+        ).resolve())
     else:
         Path(output_path).resolve().parent.mkdir(parents=True, exist_ok=True)
 
@@ -836,9 +837,9 @@ def shift_top_layer(
     if output_path is None:
         input_path = Path(poscar_path).resolve()
         DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        output_path = str(
-            (DEFAULT_OUTPUT_DIR / f"{input_path.stem}_upper_layer_shifted{input_path.suffix or '.vasp'}").resolve()
-        )
+        output_path = str(reserve_default_file(
+            DEFAULT_OUTPUT_DIR / f"{input_path.stem}_upper_layer_shifted{input_path.suffix or '.vasp'}"
+        ).resolve())
     else:
         Path(output_path).resolve().parent.mkdir(parents=True, exist_ok=True)
 

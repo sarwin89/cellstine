@@ -55,10 +55,12 @@ Interfaces remain `comment_notes(comment) -> list[str]`, `_assemble(stage, notes
 - [x] Stage new benchmark before inventory regeneration. Reconcile source hashes from an executable AST comparison; mark only actually inspected functions. Check canonical ledger drift.
 - [x] Run focused caller tests, freeze all source/tests, then run the full coverage suite with project-local temporary files. Verify frozen hashes after terminal success.
 - [x] Build/check wheel and sdist, compare packaged/support bytes and run isolated core/CLI/sdist installation smokes and dependency/help checks.
-- [ ] Finalize evidence/counts, commit scoped files, push dev, verify all seven exact-head CI jobs and the retained coverage artifact before proceeding.
+- [x] Finalize evidence/counts, commit scoped files, push dev, verify all seven exact-head CI jobs and the retained coverage artifact before proceeding.
 
 Self-review: all active-goal gates map to Task3; each proposed change has reproduction/equivalence checks; all five review-focus cases map to a task. No implementation-agent delegation or publication is planned.
 
 Rulings: independent review inspected and directly exercised44/44original functions and reviewed both benchmark functions;49focusedtests pass. The coordinator selection passes62tests.30000provenance and1007positivity unchanged-output/error comparisons pass. Exactly five original executable bodies changed. No implementation finding remains. Defer run_output_suffix with proven run100/cross-label overwrite and numeric/Miller-label ambiguity; defer structure_errors with demonstrated determinant/scale overflow and downstream distance overflow. Track both as inspected deferrals in the ledger; next scoped reviews must address these release follow-ups without renaming ordinary noncolliding outputs or changing scientific tolerance. Full suite runs against248frozenPython files.
 
 Local verification checkpoint:3257passed,4skipped,81warnings in727.34s. All248frozenPython hashes and finalbenchmark digests match. Ledger1101total/216inspected/885pending with3investigated deferrals;39optimized/174unchanged. Package12412/14301statements and3229/4504branches. Wheel/sdist/Twine and140module bytes pass;all3installedcore/CLI/sdist smokes/help/dependency checks pass. ExpandedminimumNumPy lane collects257tests;independent49added tests pass withoptionalimportsblocked. Finalsupportarchive bytes,commit/push and seven-job CI/artifact readback remain.
+
+Remote checkpoint: a4a3a0e pushed;all seven jobs of CI41398913199 succeeded. Exact-head coverage artifact13120128556 retained;actualminimumNumPy1.26.4lane257passed. Part03b complete;scopedfollowups remain in the parent plan.

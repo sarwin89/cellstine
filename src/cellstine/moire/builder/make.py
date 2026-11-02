@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import List, Sequence
 
 from ...core.provenance import stage_comment
+from ...core.outputs import reserve_default_file
 from . import generator as generator_backend
 
 DEFAULT_OUTPUT_DIR = Path("output")
@@ -116,7 +117,7 @@ def generate_from_results(
             f"stack_idx{index:03d}_ang{angle_deg:.4f}_atoms{total_atoms}_"
             f"{_slug(Path(bottom_poscar).stem)}-below_{_slug(Path(top_poscar).stem)}-above.vasp"
         )
-        output_path = str(destination_dir / output_name)
+        output_path = str(reserve_default_file(destination_dir / output_name))
     else:
         Path(output_path).resolve().parent.mkdir(parents=True, exist_ok=True)
 

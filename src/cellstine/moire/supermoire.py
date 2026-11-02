@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Sequence
 
 from ..core.base import run_output_suffix
+from ..core.outputs import reserve_default_directory
 from ..core.models import CommandResult
 from ..core.previews import format_nlayer_candidates
 from .builder.nlayer import generate_many_from_results
@@ -124,6 +125,8 @@ class Supermoire(Moire):
         run_id, run_dir = self.create_run_dir("maken", Path(resolved_results).stem)
         output_suffix = run_output_suffix(run_id)
         resolved_output_dir = output_dir or str(self.output_root / run_id)
+        if not output_dir:
+            resolved_output_dir = str(reserve_default_directory(resolved_output_dir))
         runs = generate_many_from_results(
             resolved_results,
             indexes=[int(value) for value in indexes],

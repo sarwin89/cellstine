@@ -20,6 +20,7 @@ import numpy as np
 from ...core.layers import LAYER_TOLERANCE
 from ...core.planar_voids import find_planar_voids
 from ...core.provenance import stage_comment
+from ...core.outputs import reserve_default_file
 from ...io import native as io_mod
 from .surface_cell import (
     _build_native_primitive_surface_cell,
@@ -357,10 +358,10 @@ def build_surface(
 
     if output_path is None:
         DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        output_path = str(
+        output_path = str(reserve_default_file(
             DEFAULT_OUTPUT_DIR
             / f"surface_{Path(bulk_poscar).stem}_{int(miller[0])}{int(miller[1])}{int(miller[2])}_layers{int(layers)}.vasp"
-        )
+        ))
     write_surface_poscar(output_path, surfaced, miller)
 
     site_report_path: Path | None = None
@@ -368,7 +369,7 @@ def build_surface(
     if analyse_sites or sites_output_path is not None:
         if sites_output_path is None:
             site_file = Path(output_path).with_suffix("")
-            sites_output_path = str(site_file) + "_sites.json"
+            sites_output_path = str(reserve_default_file(str(site_file) + "_sites.json"))
         site_run = find_adsorption_sites(
             surfaced,
             surface_side=site_surface_side,

@@ -8,6 +8,7 @@ from typing import Sequence
 from ..core.base import Base, run_output_suffix
 from ..core.directions import resolve_direction
 from ..core.models import CommandResult
+from ..core.outputs import reserve_default_file
 from ..io.converters import StructureConverter
 from ..moire.search.results import read_results
 from .backends.matplotlib import plot_moire_summary, plot_structure_multiview
@@ -43,7 +44,7 @@ class Visualize(Base):
         )
         read_results(resolved_results)
         if plotly:
-            output = output_path or str(self.output_root / f"moire_viewer_{output_suffix}.html")
+            output = output_path or str(reserve_default_file(self.output_root / f"moire_viewer_{output_suffix}.html"))
             run = build_visualization(
                 resolved_results,
                 indices=indices,
@@ -56,7 +57,7 @@ class Visualize(Base):
             summary = {"frame_count": run.frame_count, "results_type": run.results_type, "visualization": "plotly_3d"}
             backend = "plotly"
         else:
-            output = output_path or str(self.output_root / f"moire_summary_{output_suffix}.png")
+            output = output_path or str(reserve_default_file(self.output_root / f"moire_summary_{output_suffix}.png"))
             run = plot_moire_summary(
                 resolved_results,
                 indices=indices,
@@ -116,13 +117,13 @@ class Visualize(Base):
             else resolve_direction(record.lattice, view_direction)
         )
         if plotly:
-            output = output_path or str(self.output_root / f"structure_viewer_{output_suffix}.html")
+            output = output_path or str(reserve_default_file(self.output_root / f"structure_viewer_{output_suffix}.html"))
             written = write_structure_html(record, output_path=output, title=title, direction=direction)
             artifacts = {"html": written}
             summary = {"atom_count": record.natoms, "visualization": "plotly_3d"}
             backend = "plotly"
         else:
-            output = output_path or str(self.output_root / f"structure_multiview_{output_suffix}.png")
+            output = output_path or str(reserve_default_file(self.output_root / f"structure_multiview_{output_suffix}.png"))
             run = plot_structure_multiview(
                 record, output_path=output, title=title, show=show, direction=direction
             )

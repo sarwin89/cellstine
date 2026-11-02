@@ -38,6 +38,7 @@ import numpy as np
 
 from ..io import native as io_mod
 from .constants import LAYER_TOLERANCE
+from .outputs import reserve_default_file
 from .vacuum import normal_heights
 
 __all__ = [
@@ -199,7 +200,7 @@ def shift_top_layer(
         input_path = Path(poscar_path).resolve()
         output_root = Path("output")
         output_root.mkdir(parents=True, exist_ok=True)
-        output_path = str((output_root / f"{input_path.stem}_upper_layer_shifted{input_path.suffix or '.vasp'}").resolve())
+        output_path = str(reserve_default_file(output_root / f"{input_path.stem}_upper_layer_shifted{input_path.suffix or '.vasp'}").resolve())
     else:
         Path(output_path).resolve().parent.mkdir(parents=True, exist_ok=True)
 

@@ -28,7 +28,11 @@ def _slug(value: str, max_length: int = 64) -> str:
 
 
 def run_output_suffix(run_id: str) -> str:
-    """Return the short unique suffix used at the end of generated filenames."""
+    """Return the legacy run-ID suffix used in preferred output filenames.
+
+    Actual default destinations are reserved separately: numeric labels and
+    counters share historical syntax, so the suffix alone is not an identity.
+    """
 
     parts = str(run_id).split("_")
     if len(parts) >= 2 and parts[-2].isdigit() and len(parts[-2]) == 2:

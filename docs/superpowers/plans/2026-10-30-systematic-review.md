@@ -13,7 +13,7 @@
 - Preserve APIs, scientific tolerances, file formats, ordering, and user-owned scientific data.
 - Include support/benchmark/tool functions; exclude tests from the review denominator.
 - Pending review is explicit deferral with a reason, never inferred completion from coverage.
-- Full tests and relevant package checks precede each commit; dev CI must pass before the next part.
+- Batch related code work into larger checkpoints. One full test/package pass precedes each checkpoint commit; exact-head dev CI is checked before the next code checkpoint. Use CI wait time for the next area's read-only inspection and avoid repeated passing checks without new changes or evidence, following the user's2026-11-02 instruction.
 - No package/release publication, tags, deployment, or credentials configuration.
 
 ## Review focus
@@ -29,10 +29,10 @@ Extreme valid numerical scales, skew/near-boundary cells, deterministic selectio
   - [x] 02c: Complete void support and bounded candidate processing. Commit `1db9be4`; all five Python jobs and package build pass in run `41283962742`; coverage artifact `13074945312` matches the exact head. Local suite: 3,190 passed; package/install and ledger checks pass.
 - [ ] 03: Remaining shared models, validation, species, transforms, lattice/symmetry primitives, provenance/reporting.
   - [x] 03a: Structure models, species/element helpers, transforms, observation directions and vacuum primitives (40 original functions). Commit `4d005c0`; all seven jobs pass in run `41289513562`, coverage artifact `13076513125` exact-head XML matches local12377/14290statements and3206/4502branches.
-  - [ ] 03b: Workflow base, dependency/validation utilities, reports, provenance and manifests (44 original functions); atomic directories, NaN positivity and bounded provenance processing. Two evidenced deferrals require follow-up.
-  - [ ] 03c: Default output allocation/naming across consumers: run100 and cross-label/concurrent overwrites, preserve ordinary noncolliding filenames and protect existing artifacts. Resolve the suffix ambiguity through an explicit end-to-end contract.
+  - [x] 03b: Workflow base, dependency/validation utilities, reports, provenance and manifests (44 original functions). Commit `a4a3a0e`, all seven CI jobs pass in run `41398913199`, exact-head coverage artifact `13120128556`; minimum NumPy lane257tests pass. Two evidenced deferrals were recorded for follow-up.
+  - [ ] 03c: Default output allocation/naming across consumers. Local code/full/package checkpoint verified:25 newly inspected original bodies, two helpers, legacy parser values retained; run100/cross-label/concurrent artifacts protected. Local suite3,270passed; commit/remote CI readback pending.
   - [ ] 03d onward: End-to-end validation/geometry representable-range investigation and remaining shared lattice/symmetry primitives. Preserve scientific tolerances; do not label overflowed arithmetic as resolved by an isolated predicate change.
-- [ ] 04: I/O registry, VASP/native/conversion/orientation and KPOINTS writers.
+- [ ] 04: Batch I/O registry, VASP/native/conversion/orientation and KPOINTS writers. Start with converter temporary-file ownership and declared XYZ count integrity while ordinary dependencies are already reviewed; retain the exceptional numerical-domain follow-up separately.
 - [ ] 05: Moire search, ranking/results, builders, transforms and public workflows.
 - [ ] 06: Surfaces and interface matching/building/registry workflows.
 - [ ] 07: Molecules, adsorbate placement/assembly/movement.

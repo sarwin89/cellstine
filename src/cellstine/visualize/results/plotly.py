@@ -12,6 +12,7 @@ import numpy as np
 
 from ...moire.builder import generator as generator_backend
 from ...moire.search.results import read_results
+from ...core.outputs import reserve_default_file
 
 DEFAULT_OUTPUT_DIR = Path("output")
 PLOTLY_CDN = "https://cdn.plot.ly/plotly-2.35.2.min.js"
@@ -375,7 +376,7 @@ def build_visualization(
 
     if output_path is None:
         DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        destination = DEFAULT_OUTPUT_DIR / f"{results_path.stem}_viewer.html"
+        destination = reserve_default_file(DEFAULT_OUTPUT_DIR / f"{results_path.stem}_viewer.html")
     else:
         destination = Path(output_path).resolve()
         destination.parent.mkdir(parents=True, exist_ok=True)

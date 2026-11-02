@@ -73,7 +73,8 @@ jobs:
           tests/test_core_infrastructure.py
           tests/test_provenance_resources.py
           tests/test_validation.py
-          tests/test_report.py -q
+          tests/test_report.py
+          tests/test_output_reservations.py -q
 
   package:
     name: Package build

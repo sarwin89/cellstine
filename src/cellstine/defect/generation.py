@@ -16,6 +16,7 @@ import numpy as np
 
 from ..core import geometry
 from ..core.base import run_output_suffix
+from ..core.outputs import reserve_default_file
 from ..core.contacts import Contact, closest_contact, contact_notes
 from ..core.layers import LAYER_TOLERANCE
 from ..core.models import CommandResult
@@ -543,7 +544,8 @@ class DefectGenerationMixin:
                 ):
                     closest_defect_contact = contact
                 filename = f"defect_{defect_type}_{site.site_id}_{species_token}_{suffix}.vasp"
-                output_path = self.vasp_io.write(new_record, str(destination / filename), positions_are_cartesian=False, wrap_positions=False)
+                reserved = reserve_default_file(destination / filename)
+                output_path = self.vasp_io.write(new_record, str(reserved), positions_are_cartesian=False, wrap_positions=False)
                 written.append(str(output_path))
                 generated_records.append(
                     {

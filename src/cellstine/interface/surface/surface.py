@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Sequence
 
 from ...core.base import run_output_suffix
+from ...core.outputs import reserve_default_file
 from ...core.layers import LAYER_TOLERANCE
 from ...core.models import CommandResult
 from ...core.naming import safe_token
@@ -97,8 +98,8 @@ class Surface(Interface):
             repeat_b=int(build.repeat_b),
             supercell_matrix=build.supercell_matrix,
         )
-        resolved_output_path = output_path or str(self.output_root / f"{descriptor}_surface_{output_suffix}.vasp")
-        resolved_sites_output_path = sites_output_path or (str(self.output_root / f"{descriptor}_sites_{output_suffix}.json") if analyse_sites else None)
+        resolved_output_path = output_path or str(reserve_default_file(self.output_root / f"{descriptor}_surface_{output_suffix}.vasp"))
+        resolved_sites_output_path = sites_output_path or (str(reserve_default_file(self.output_root / f"{descriptor}_sites_{output_suffix}.json")) if analyse_sites else None)
         written_path = surface_backend.write_surface_poscar(resolved_output_path, build.structure, miller_values)
 
         site_report_path = None
@@ -192,7 +193,7 @@ class Surface(Interface):
         slab_path = self.resolve_results_file(slab_poscar, artifact_keys=("slab_poscar",))
         run_id, run_dir = self.create_run_dir("sites", Path(slab_path).stem)
         output_suffix = run_output_suffix(run_id)
-        resolved_output_path = output_path or str(self.output_root / f"{safe_token(Path(slab_path).stem)}_sites_{output_suffix}.json")
+        resolved_output_path = output_path or str(reserve_default_file(self.output_root / f"{safe_token(Path(slab_path).stem)}_sites_{output_suffix}.json"))
         report = surface_backend.find_adsorption_sites(
             slab_path,
             surface_side=str(surface_side),

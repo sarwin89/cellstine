@@ -18,6 +18,7 @@ from typing import Any, List, Sequence, Tuple
 import numpy as np
 
 from ...core.provenance import stage_comment
+from ...core.outputs import reserve_default_file
 from ...core.species import expand_species
 from ...io import native as io_mod
 from ..search.nlayer import read_nlayer_results
@@ -193,7 +194,7 @@ def generate_from_results(
             f"stackn_idx{int(index):03d}_ang{angle_token}_atoms{total_atoms}_"
             f"{_slug(Path(document['search']['base_poscar']).stem)}-base.vasp"
         )
-        output_path = str(destination / name)
+        output_path = str(reserve_default_file(destination / name))
     else:
         Path(output_path).resolve().parent.mkdir(parents=True, exist_ok=True)
 
