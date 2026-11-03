@@ -28,6 +28,8 @@ from .gram_pairs import (
     _loewner_mask,
     _pair_orbit_keys,
     _pareto_front,
+    _primitive_orbit_keys,
+    _primitive_pair_keys,
     _stretches_from_gram,
 )
 
@@ -35,6 +37,71 @@ from .gram_pairs import (
 #: A commensurate angle is an exact arccosine of a rational, and asking for a
 #: window that ends on one must not miss it by a rounding of the bound itself.
 _ANGLE_WINDOW_TOLERANCE = 1e-7
+
+
+#: Slack of the early twist-window test, in radians.  It is a hundred times the
+#: tie tolerance of :func:`_canonical_twist`, so a representative chosen on a tie
+#: can never cross it, and the exact window applied after folding still decides
+#: every borderline candidate.
+_EARLY_WINDOW_SLACK = 1e-5
+
+
+def _folded_twist_magnitude(config: SearchConfig, twist: np.ndarray) -> np.ndarray:
+    """The magnitude the folded twist will have, from the raw twist alone.
+
+    Include proper rotations and paired mirrors, just as dev's final folding
+    does. The conservative early-window slack covers its representative tie
+    preference; final folding and the existing final window still decide rows.
+    """
+
+    angles = np.asarray(twist, dtype=float)
+    if not config.fold_symmetry:
+        return np.abs(angles)
+    top_group = np.asarray(config.top_group, dtype=np.int64)
+    bottom_group = np.asarray(config.bottom_group, dtype=np.int64)
+    top_proper = top_group[
+        top_group[:, 0, 0] * top_group[:, 1, 1] - top_group[:, 0, 1] * top_group[:, 1, 0] > 0
+    ]
+    bottom_proper = bottom_group[
+        bottom_group[:, 0, 0] * bottom_group[:, 1, 1]
+        - bottom_group[:, 0, 1] * bottom_group[:, 1, 0]
+        > 0
+    ]
+    top_angles = cartesian_rotation_angles(config.top_basis, top_proper)
+    bottom_angles = cartesian_rotation_angles(config.bottom_basis, bottom_proper)
+    offsets = {float(phi_bottom - phi_top) for phi_top in top_angles for phi_bottom in bottom_angles}
+    magnitude = np.full(angles.shape, np.inf)
+    for offset in offsets:
+        magnitude = np.minimum(magnitude, np.abs(_wrap_angle(angles + offset)))
+    top_improper = top_group[
+        top_group[:, 0, 0] * top_group[:, 1, 1] - top_group[:, 0, 1] * top_group[:, 1, 0] < 0
+    ]
+    bottom_improper = bottom_group[
+        bottom_group[:, 0, 0] * bottom_group[:, 1, 1]
+        - bottom_group[:, 0, 1] * bottom_group[:, 1, 0] < 0
+    ]
+    top_axes = cartesian_mirror_angles(config.top_basis, top_improper)
+    bottom_axes = cartesian_mirror_angles(config.bottom_basis, bottom_improper)
+    mirror_offsets = {float(psi_bottom - psi_top) for psi_top in top_axes for psi_bottom in bottom_axes}
+    for offset in mirror_offsets:
+        magnitude = np.minimum(magnitude, np.abs(_wrap_angle(-angles + offset)))
+    return magnitude
+
+
+def _twist_window_mask(config: SearchConfig, twist: np.ndarray) -> np.ndarray | None:
+    """Rows that can still land in the requested twist window, or ``None``.
+
+    Dropping the others before keys are formed is exact: every pair of an orbit
+    has the same folded magnitude, so an orbit is kept or dropped whole, and the
+    window itself is applied again, without slack, after folding.
+    """
+
+    window = config.twist_window_radians
+    if window is None or not len(twist):
+        return None
+    lower, upper = window
+    magnitude = _folded_twist_magnitude(config, twist)
+    return (magnitude >= lower - _EARLY_WINDOW_SLACK) & (magnitude <= upper + _EARLY_WINDOW_SLACK)
 
 
 def _divided_difference_power(
@@ -409,11 +476,30 @@ def _finalize(
     twist: np.ndarray,
     stats: dict[str, Any],
     length_scale: float,
+    coincidence: np.ndarray | None = None,
 ) -> SearchResult:
-    """Turn raw accepted pairs into canonical, reportable candidates."""
+    """Turn raw accepted pairs into canonical, reportable candidates.
+
+    ``coincidence`` may carry coincidence indices the caller already computed;
+    they are invariant under the unimodular gauges applied in between.
+    """
 
     finalize_started = time.perf_counter()
     stats = dict(stats)
+
+    # 0. Rows whose orbit cannot reach the twist window need no keys at all.
+    early = _twist_window_mask(config, twist)
+    stats["n_outside_twist_window_early"] = (
+        0 if early is None else int(len(early) - np.count_nonzero(early))
+    )
+    if early is not None and not np.all(early):
+        top_matrices, bottom_matrices = top_matrices[early], bottom_matrices[early]
+        top_gram, bottom_gram = top_gram[early], bottom_gram[early]
+        top_multiplicity = top_multiplicity[early]
+        bottom_multiplicity = bottom_multiplicity[early]
+        twist = twist[early]
+        if coincidence is not None:
+            coincidence = coincidence[early]
 
     # 1. Drop pairs that merely repeat a smaller commensurate cell, and
     # 2. report each bilayer once by folding the pair by the two layer symmetries.
@@ -423,7 +509,11 @@ def _finalize(
     # hundreds of megabytes and the gathers, not the arithmetic, dominate; a
     # stage that turns out to drop nothing now costs no copy at all.
     total = int(len(top_matrices))
-    indices = coincidence_index(top_matrices, bottom_matrices)
+    indices = (
+        coincidence_index(top_matrices, bottom_matrices)
+        if coincidence is None
+        else np.asarray(coincidence, dtype=np.int64)
+    )
     stats["n_before_primitive"] = total
     selection: np.ndarray | None = None
     if config.primitive_only and total:
@@ -438,11 +528,25 @@ def _finalize(
         folded_bottom = (
             bottom_matrices if selection is None else bottom_matrices[selection]
         )
-        unique = _first_per_key(
-            _pair_orbit_keys(
-                folded_top, folded_bottom, config.top_group, config.bottom_group
+        folded_indices = indices if selection is None else indices[selection]
+        if np.all(folded_indices == 1):
+            # Primitive pairs have an exact integer key needing no gcd at all.
+            keys = (
+                _primitive_orbit_keys(
+                    folded_top, folded_bottom, config.top_group, config.bottom_group
+                )
+                if config.fold_symmetry
+                else _primitive_pair_keys(folded_top, folded_bottom)
             )
-        )
+        else:
+            keys = (
+                _pair_orbit_keys(
+                    folded_top, folded_bottom, config.top_group, config.bottom_group
+                )
+                if config.fold_symmetry
+                else _canonical_pair_keys(folded_top, folded_bottom)
+            )
+        unique = _first_per_key(keys)
         if len(unique) != remaining:
             selection = unique if selection is None else selection[unique]
             remaining = int(len(unique))

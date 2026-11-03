@@ -21,7 +21,7 @@ The generator preserves evidence only when the normalized source module is uncha
 
 Passing tests or obtaining high coverage never automatically marks a function reviewed. Completion must also check external dependencies/callers and the actual reasoning in each part report.
 
-At the Part-03e local checkpoint, the ledger contains **1,113 functions**: **233 reviewed unchanged**, **102 optimized and verified**, **2 investigated deferrals**, and **776 pending reviews**. Thus **337 functions have inspection evidence**; the project-wide review is incomplete. Part03e adds21 original conventional-cell/idealisation reviews and two benchmark functions. The remaining investigated deferrals are rational lattice basis and extreme-scale structure validation. Part03c resolved the legacy output-suffix deferral in its actual default-path consumers; lower-level reusable search working-directory semantics remain outside that guarantee. The neighbour-count truncation investigated in Part02b is resolved within the radius and numerical limits documented in Part02c.
+At the Part-05a local checkpoint, the ledger contains **1,133 functions**: **326 reviewed unchanged**, **128 optimized and verified**, **2 investigated deferrals**, and **677 pending reviews**. Thus **456 functions have inspection evidence**; the project-wide review is incomplete. Part05a reviews101 affected engine/results functions,13 unchanged configuration dependencies and five benchmark functions, with3,374 full tests and package/install checks passed. Its exact-head CI follows the scoped push. The remaining investigated deferrals are rational lattice basis and extreme-scale structure validation. The existing unfolded-search persistence validation error is recorded for explicit follow-up in Part05a. Part03c resolved the legacy output-suffix deferral in its actual default-path consumers; lower-level reusable search working-directory semantics remain outside that guarantee. The neighbour-count truncation investigated in Part02b is resolved within the radius and numerical limits documented in Part02c.
 
 ## Dependency order and evidence
 
@@ -40,7 +40,8 @@ The full sequence is in [the implementation plan](../superpowers/plans/2026-10-3
 | 03d | Exact reciprocal keys, rotations/images, supported integer ranges and bounded grid allocations | [part-03d-reciprocal.md](part-03d-reciprocal.md) |
 | 03e | Shared conventional-axis clouds, prompt group caps and complete Bravais/idealisation review | [part-03e-conventional.md](part-03e-conventional.md) |
 | 04 | Native I/O, molecular temporary ownership, frame/format integrity and bounded allocations | [part-04-io-integrity.md](part-04-io-integrity.md) |
-| Remaining | Scoped Claude engine/results, JSON-writer and CLI integration; numerical-domain follow-ups and remaining shared code, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
+| 05a | Engine/results integration, exact signed primitive keys, early invariant filters and bounded JSON encoding | [part-05a-search-fast-paths.md](part-05a-search-fast-paths.md) |
+| Remaining | Scoped Claude JSON-writer and CLI integration; numerical-domain follow-ups and remaining shared code, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
 
 ## Coverage and release boundaries
 

@@ -320,7 +320,7 @@ def run_find(
         top_poscar_source=top_source,
         bottom_poscar_source=bottom_source,
     )
-    write_results(result_path, document)
+    write_results(result_path, document, validated=True)
     timings["write_results_s"] = time.perf_counter() - stage_start
     timings["total_s"] = time.perf_counter() - total_start
     recorded = len(document["candidates"])

@@ -354,6 +354,61 @@
       "evidence": "docs/optimization/part-04-io-integrity.md; independent source review and successful five-case three-sample benchmark with exact assertions."
     },
     {
+      "id": "benchmarks/benchmark_moire_fast_paths.py::_baseline",
+      "path": "benchmarks/benchmark_moire_fast_paths.py",
+      "qualified_name": "_baseline",
+      "line": 29,
+      "end_line": 51,
+      "module_sha256": "6730ab52a59bef1be391f650e7f7a9240089071eb9d10c2baa4a5cef39e9afcf",
+      "status": "reviewed—unchanged",
+      "reason": "Validate Git commit and reconstruct the entire search package in an owned temporary namespace for a coherent old implementation.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "benchmarks/benchmark_moire_fast_paths.py::_cases",
+      "path": "benchmarks/benchmark_moire_fast_paths.py",
+      "qualified_name": "_cases",
+      "line": 54,
+      "end_line": 89,
+      "module_sha256": "6730ab52a59bef1be391f650e7f7a9240089071eb9d10c2baa4a5cef39e9afcf",
+      "status": "reviewed—unchanged",
+      "reason": "Enumerate38 explicit lattice/policy/group/window/cap configurations, including paired mirrors and asymmetric groups.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "benchmarks/benchmark_moire_fast_paths.py::_document",
+      "path": "benchmarks/benchmark_moire_fast_paths.py",
+      "qualified_name": "_document",
+      "line": 92,
+      "end_line": 97,
+      "module_sha256": "6730ab52a59bef1be391f650e7f7a9240089071eb9d10c2baa4a5cef39e9afcf",
+      "status": "reviewed—unchanged",
+      "reason": "Use deterministic timestamp and equal source-path/workflow metadata for old/new JSON comparison.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "benchmarks/benchmark_moire_fast_paths.py::_assert_same_result",
+      "path": "benchmarks/benchmark_moire_fast_paths.py",
+      "qualified_name": "_assert_same_result",
+      "line": 100,
+      "end_line": 108,
+      "module_sha256": "6730ab52a59bef1be391f650e7f7a9240089071eb9d10c2baa4a5cef39e9afcf",
+      "status": "reviewed—unchanged",
+      "reason": "Compare every non-stats dataclass array exactly and retain every changed statistic for audit.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "benchmarks/benchmark_moire_fast_paths.py::main",
+      "path": "benchmarks/benchmark_moire_fast_paths.py",
+      "qualified_name": "main",
+      "line": 111,
+      "end_line": 166,
+      "module_sha256": "6730ab52a59bef1be391f650e7f7a9240089071eb9d10c2baa4a5cef39e9afcf",
+      "status": "reviewed—unchanged",
+      "reason": "Validate repeats, compare arrays/JSON or same baseline errors, manage owned scratch lifecycle and record bounded local measurements without CI thresholds.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
       "id": "benchmarks/benchmark_reciprocal_resources.py::main",
       "path": "benchmarks/benchmark_reciprocal_resources.py",
       "qualified_name": "main",
@@ -10116,10 +10171,10 @@
       "qualified_name": "FindRun.<lambda>@49:56",
       "line": 49,
       "end_line": 49,
-      "module_sha256": "47383ec564b5dd6030aaa28cd9a885e91274c9d588924e7244c208783d18d4db",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a3f28254b96acc429bc75bb0acbbb698a30195bbc813c03e18d594cca53addf6",
+      "status": "reviewed—unchanged",
+      "reason": "Keep a fresh independent top/bottom layer-index dictionary per run.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/find.py::_slug",
@@ -10127,10 +10182,10 @@
       "qualified_name": "_slug",
       "line": 52,
       "end_line": 54,
-      "module_sha256": "47383ec564b5dd6030aaa28cd9a885e91274c9d588924e7244c208783d18d4db",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a3f28254b96acc429bc75bb0acbbb698a30195bbc813c03e18d594cca53addf6",
+      "status": "reviewed—unchanged",
+      "reason": "Keep Unicode alphanumeric slug acceptance, replacement and empty-name fallback.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/find.py::_make_result_path",
@@ -10138,10 +10193,10 @@
       "qualified_name": "_make_result_path",
       "line": 57,
       "end_line": 65,
-      "module_sha256": "47383ec564b5dd6030aaa28cd9a885e91274c9d588924e7244c208783d18d4db",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a3f28254b96acc429bc75bb0acbbb698a30195bbc813c03e18d594cca53addf6",
+      "status": "reviewed—unchanged",
+      "reason": "Keep timestamp/run label and explicit results.json path under the resolved output root.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/find.py::_planar_column_basis",
@@ -10149,10 +10204,10 @@
       "qualified_name": "_planar_column_basis",
       "line": 68,
       "end_line": 71,
-      "module_sha256": "47383ec564b5dd6030aaa28cd9a885e91274c9d588924e7244c208783d18d4db",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a3f28254b96acc429bc75bb0acbbb698a30195bbc813c03e18d594cca53addf6",
+      "status": "reviewed—unchanged",
+      "reason": "Preserve validated POSCAR row-to-engine-column basis conversion and diagnostic name.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/find.py::_layer_group",
@@ -10160,10 +10215,10 @@
       "qualified_name": "_layer_group",
       "line": 74,
       "end_line": 92,
-      "module_sha256": "47383ec564b5dd6030aaa28cd9a885e91274c9d588924e7244c208783d18d4db",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a3f28254b96acc429bc75bb0acbbb698a30195bbc813c03e18d594cca53addf6",
+      "status": "reviewed—unchanged",
+      "reason": "Preserve decorated species/group semantics and caller tolerance instead of using the bare lattice group.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/find.py::primitive_layer_cell",
@@ -10171,10 +10226,10 @@
       "qualified_name": "primitive_layer_cell",
       "line": 95,
       "end_line": 141,
-      "module_sha256": "47383ec564b5dd6030aaa28cd9a885e91274c9d588924e7244c208783d18d4db",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a3f28254b96acc429bc75bb0acbbb698a30195bbc813c03e18d594cca53addf6",
+      "status": "reviewed—unchanged",
+      "reason": "Keep primitive in-plane detection, species ordering, source provenance and written POSCAR readback.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/find.py::_notify",
@@ -10182,10 +10237,10 @@
       "qualified_name": "_notify",
       "line": 144,
       "end_line": 150,
-      "module_sha256": "47383ec564b5dd6030aaa28cd9a885e91274c9d588924e7244c208783d18d4db",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a3f28254b96acc429bc75bb0acbbb698a30195bbc813c03e18d594cca53addf6",
+      "status": "reviewed—unchanged",
+      "reason": "Preserve optional synchronous progress callback and caller exceptions.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/find.py::run_find",
@@ -10193,10 +10248,10 @@
       "qualified_name": "run_find",
       "line": 153,
       "end_line": 342,
-      "module_sha256": "47383ec564b5dd6030aaa28cd9a885e91274c9d588924e7244c208783d18d4db",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a3f28254b96acc429bc75bb0acbbb698a30195bbc813c03e18d594cca53addf6",
+      "status": "optimized—verified",
+      "reason": "Pass validated=True only immediately after build_results_document; preserve workflow inputs, paths, progress events and symmetric fallback.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/find.py::find",
@@ -10204,87 +10259,131 @@
       "qualified_name": "find",
       "line": 345,
       "end_line": 346,
-      "module_sha256": "47383ec564b5dd6030aaa28cd9a885e91274c9d588924e7244c208783d18d4db",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a3f28254b96acc429bc75bb0acbbb698a30195bbc813c03e18d594cca53addf6",
+      "status": "reviewed—unchanged",
+      "reason": "Keep the public keyword-forwarding run_find facade.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "src/cellstine/moire/search/gram.py::_class_invariant_filter",
+      "path": "src/cellstine/moire/search/gram.py",
+      "qualified_name": "_class_invariant_filter",
+      "line": 79,
+      "end_line": 98,
+      "module_sha256": "502d2b083421c46725ae2bcee3638cdc520238f9cab5638ed03fe94510f84f1d",
+      "status": "optimized—verified",
+      "reason": "Filter only orbit-invariant primitive index and conservative folded-angle magnitude before key construction; retain counters and final exact checks.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "src/cellstine/moire/search/gram.py::_common_basis_keys",
+      "path": "src/cellstine/moire/search/gram.py",
+      "qualified_name": "_common_basis_keys",
+      "line": 101,
+      "end_line": 126,
+      "module_sha256": "502d2b083421c46725ae2bcee3638cdc520238f9cab5638ed03fe94510f84f1d",
+      "status": "optimized—verified",
+      "reason": "Use primitive numerator keys and disjoint tagged HNF keys for imprimitive pairs; preserve exact partitions and first representatives.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram.py::_general_search",
       "path": "src/cellstine/moire/search/gram.py",
       "qualified_name": "_general_search",
-      "line": 73,
-      "end_line": 248,
-      "module_sha256": "0b017dea8992f3d5847df21035f1f5d4f900c3be14b1820677f8ad8233d6b771",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 129,
+      "end_line": 318,
+      "module_sha256": "502d2b083421c46725ae2bcee3638cdc520238f9cab5638ed03fe94510f84f1d",
+      "status": "optimized—verified",
+      "reason": "Push invariant filters and atom caps earlier, transport precomputed coincidence indices, and preserve arrays, integer gauges, final geometry and ordering.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "src/cellstine/moire/search/gram.py::_general_search.<lambda>@166:25",
+      "path": "src/cellstine/moire/search/gram.py",
+      "qualified_name": "_general_search.<lambda>@166:25",
+      "line": 166,
+      "end_line": 166,
+      "module_sha256": "502d2b083421c46725ae2bcee3638cdc520238f9cab5638ed03fe94510f84f1d",
+      "status": "optimized—verified",
+      "reason": "Apply the same per-layer atom-weight bound during generation instead of retaining rejected rows in the full table.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "src/cellstine/moire/search/gram.py::_general_search.<lambda>@167:28",
+      "path": "src/cellstine/moire/search/gram.py",
+      "qualified_name": "_general_search.<lambda>@167:28",
+      "line": 167,
+      "end_line": 167,
+      "module_sha256": "502d2b083421c46725ae2bcee3638cdc520238f9cab5638ed03fe94510f84f1d",
+      "status": "optimized—verified",
+      "reason": "Apply the same per-layer atom-weight bound during generation instead of retaining rejected rows in the full table.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram.py::_right_handed_rotation",
       "path": "src/cellstine/moire/search/gram.py",
       "qualified_name": "_right_handed_rotation",
-      "line": 251,
-      "end_line": 261,
-      "module_sha256": "0b017dea8992f3d5847df21035f1f5d4f900c3be14b1820677f8ad8233d6b771",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 321,
+      "end_line": 331,
+      "module_sha256": "502d2b083421c46725ae2bcee3638cdc520238f9cab5638ed03fe94510f84f1d",
+      "status": "reviewed—unchanged",
+      "reason": "Keep integer trace/adjugate inversion that chooses the existing generator orientation from its lower-left sign.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram.py::_rotation_generator",
       "path": "src/cellstine/moire/search/gram.py",
       "qualified_name": "_rotation_generator",
-      "line": 264,
-      "end_line": 274,
-      "module_sha256": "0b017dea8992f3d5847df21035f1f5d4f900c3be14b1820677f8ad8233d6b771",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 334,
+      "end_line": 344,
+      "module_sha256": "502d2b083421c46725ae2bcee3638cdc520238f9cab5638ed03fe94510f84f1d",
+      "status": "reviewed—unchanged",
+      "reason": "Keep proper integer point-group trace selection for square/hexagonal generators and the (None,None) unavailable-family result.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram.py::symmetric_branch_applies",
       "path": "src/cellstine/moire/search/gram.py",
       "qualified_name": "symmetric_branch_applies",
-      "line": 277,
-      "end_line": 288,
-      "module_sha256": "0b017dea8992f3d5847df21035f1f5d4f900c3be14b1820677f8ad8233d6b771",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 347,
+      "end_line": 358,
+      "module_sha256": "502d2b083421c46725ae2bcee3638cdc520238f9cab5638ed03fe94510f84f1d",
+      "status": "reviewed—unchanged",
+      "reason": "Keep square/hexagonal metric/group eligibility and tolerance checks.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram.py::_invariant_table",
       "path": "src/cellstine/moire/search/gram.py",
       "qualified_name": "_invariant_table",
-      "line": 291,
-      "end_line": 311,
-      "module_sha256": "0b017dea8992f3d5847df21035f1f5d4f900c3be14b1820677f8ad8233d6b771",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 361,
+      "end_line": 381,
+      "module_sha256": "502d2b083421c46725ae2bcee3638cdc520238f9cab5638ed03fe94510f84f1d",
+      "status": "reviewed—unchanged",
+      "reason": "Keep restricted symmetry invariant-cell enumeration and integer multiplicities.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram.py::_symmetric_search",
       "path": "src/cellstine/moire/search/gram.py",
       "qualified_name": "_symmetric_search",
-      "line": 314,
-      "end_line": 443,
-      "module_sha256": "0b017dea8992f3d5847df21035f1f5d4f900c3be14b1820677f8ad8233d6b771",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 384,
+      "end_line": 513,
+      "module_sha256": "502d2b083421c46725ae2bcee3638cdc520238f9cab5638ed03fe94510f84f1d",
+      "status": "optimized—verified",
+      "reason": "Reuse exact primitive/mixed common-basis partition while preserving restricted branch generation, certification and report geometry.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram.py::search",
       "path": "src/cellstine/moire/search/gram.py",
       "qualified_name": "search",
-      "line": 446,
-      "end_line": 450,
-      "module_sha256": "0b017dea8992f3d5847df21035f1f5d4f900c3be14b1820677f8ad8233d6b771",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 516,
+      "end_line": 520,
+      "module_sha256": "502d2b083421c46725ae2bcee3638cdc520238f9cab5638ed03fe94510f84f1d",
+      "status": "reviewed—unchanged",
+      "reason": "Preserve public configuration dispatch and symmetric-branch failure behavior.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_config.py::_validated_basis",
@@ -10293,9 +10392,9 @@
       "line": 36,
       "end_line": 54,
       "module_sha256": "ea930ee84a939469a02664f34027b106381fe2f7494f970c7199bddd26f9be4c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Retain normalized determinant/column-scale checks, finite2x2 input, owned immutable float basis and existing conversion errors.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_config.py::_positive_integer",
@@ -10304,9 +10403,9 @@
       "line": 57,
       "end_line": 62,
       "module_sha256": "ea930ee84a939469a02664f34027b106381fe2f7494f970c7199bddd26f9be4c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Retain Python/NumPy integer acceptance, positive range, bool exclusion and Python-int normalization.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_config.py::_validated_group",
@@ -10315,9 +10414,9 @@
       "line": 65,
       "end_line": 96,
       "module_sha256": "ea930ee84a939469a02664f34027b106381fe2f7494f970c7199bddd26f9be4c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Retain current int64 coercion, metric-isometry/unimodularity checks, identity insertion and owned immutable group; no new group-closure or stricter input contract.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_config.py::SearchConfig.__post_init__",
@@ -10326,9 +10425,9 @@
       "line": 129,
       "end_line": 184,
       "module_sha256": "ea930ee84a939469a02664f34027b106381fe2f7494f970c7199bddd26f9be4c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Retain frozen configuration normalization, strain/length/shape/atom/window validation and existing error ordering.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_config.py::SearchConfig._budget",
@@ -10337,9 +10436,9 @@
       "line": 187,
       "end_line": 188,
       "module_sha256": "ea930ee84a939469a02664f34027b106381fe2f7494f970c7199bddd26f9be4c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Retain total principal logarithmic strain budget addition.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_config.py::SearchConfig.is_rigid",
@@ -10348,9 +10447,9 @@
       "line": 191,
       "end_line": 194,
       "module_sha256": "ea930ee84a939469a02664f34027b106381fe2f7494f970c7199bddd26f9be4c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Retain zero-total-budget rigid-search classification.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_config.py::SearchConfig._sharing",
@@ -10359,9 +10458,9 @@
       "line": 197,
       "end_line": 202,
       "module_sha256": "ea930ee84a939469a02664f34027b106381fe2f7494f970c7199bddd26f9be4c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Retain equal rigid sharing and otherwise top-budget fraction.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_config.py::SearchConfig.twist_window_radians",
@@ -10370,9 +10469,9 @@
       "line": 205,
       "end_line": 218,
       "module_sha256": "ea930ee84a939469a02664f34027b106381fe2f7494f970c7199bddd26f9be4c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Retain optional unrestricted window, degree-to-radian conversion and default0/180degree bounds.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_config.py::SearchConfig.angle_period_radians",
@@ -10381,9 +10480,9 @@
       "line": 221,
       "end_line": 226,
       "module_sha256": "ea930ee84a939469a02664f34027b106381fe2f7494f970c7199bddd26f9be4c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Retain physical rotation-symmetry period from LCM of proper subgroup orders; persistence fold-disabled validation limitation remains separately recorded.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_config.py::SearchConfig._band",
@@ -10392,9 +10491,9 @@
       "line": 229,
       "end_line": 236,
       "module_sha256": "ea930ee84a939469a02664f34027b106381fe2f7494f970c7199bddd26f9be4c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Retain exponential Loewner strain bounds and rigid minimum band; no new extreme-budget numerical-domain guarantee.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_config.py::SearchResult.top_layer_strains",
@@ -10403,9 +10502,9 @@
       "line": 272,
       "end_line": 275,
       "module_sha256": "ea930ee84a939469a02664f34027b106381fe2f7494f970c7199bddd26f9be4c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Retain principal relative strains times top sharing fraction and fresh result array.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_config.py::SearchResult.bottom_layer_strains",
@@ -10414,9 +10513,9 @@
       "line": 278,
       "end_line": 281,
       "module_sha256": "ea930ee84a939469a02664f34027b106381fe2f7494f970c7199bddd26f9be4c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Retain principal relative strains times sharing-minus-one for bottom deformation convention.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_config.py::SearchResult.__len__",
@@ -10425,9 +10524,9 @@
       "line": 283,
       "end_line": 284,
       "module_sha256": "ea930ee84a939469a02664f34027b106381fe2f7494f970c7199bddd26f9be4c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Retain candidate row count from top matrix leading dimension.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_gram_of_basis",
@@ -10435,10 +10534,10 @@
       "qualified_name": "_gram_of_basis",
       "line": 18,
       "end_line": 19,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep Cartesian column-basis Gram product and floating summation order.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_internal_length_scale",
@@ -10446,10 +10545,10 @@
       "qualified_name": "_internal_length_scale",
       "line": 22,
       "end_line": 30,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep the common power-of-two length scale protecting metric products.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_reduce_basis",
@@ -10457,10 +10556,10 @@
       "qualified_name": "_reduce_basis",
       "line": 37,
       "end_line": 60,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep Gauss shear/tie policy, finite iteration guard, unimodular gauge and right-handed output.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_lattice_vectors",
@@ -10468,10 +10567,10 @@
       "qualified_name": "_lattice_vectors",
       "line": 63,
       "end_line": 77,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep exact lattice-vector rectangle bounds, radius acceptance and stable norm order.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_gram_triples",
@@ -10479,10 +10578,10 @@
       "qualified_name": "_gram_triples",
       "line": 80,
       "end_line": 90,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep bilinear Gram arithmetic and operation ordering.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_gram_triples.bilinear",
@@ -10490,10 +10589,10 @@
       "qualified_name": "_gram_triples.bilinear",
       "line": 83,
       "end_line": 88,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep metric cross-term evaluation ordering for both self and mixed products.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_point_group",
@@ -10501,10 +10600,10 @@
       "qualified_name": "_point_group",
       "line": 93,
       "end_line": 112,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep metric-isometry enumeration, tolerance and identity fallback.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_proper_subgroup",
@@ -10512,10 +10611,10 @@
       "qualified_name": "_proper_subgroup",
       "line": 115,
       "end_line": 117,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep determinant-positive subgroup selection in original order.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_gauge_group",
@@ -10523,10 +10622,10 @@
       "qualified_name": "_gauge_group",
       "line": 120,
       "end_line": 132,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep integer unimodular inverse and conjugation into the reduced gauge.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_bezout",
@@ -10534,10 +10633,10 @@
       "qualified_name": "_bezout",
       "line": 135,
       "end_line": 165,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep shrinking-active-set extended Euclid and signed integer coefficients.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_hermite_normal_form",
@@ -10545,10 +10644,10 @@
       "qualified_name": "_hermite_normal_form",
       "line": 168,
       "end_line": 176,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep gcd/Bezout column-HNF convention and zero-denominator defensive handling.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_lexicographic_min_pair",
@@ -10556,10 +10655,10 @@
       "qualified_name": "_lexicographic_min_pair",
       "line": 179,
       "end_line": 189,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep exact per-column tie propagation and first minimum on equal keys.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_lexicographic_minimum",
@@ -10567,153 +10666,164 @@
       "qualified_name": "_lexicographic_minimum",
       "line": 192,
       "end_line": 196,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep first-image initialization and stable incremental lexicographic reduction.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_first_per_key",
       "path": "src/cellstine/moire/search/gram_lattice.py",
       "qualified_name": "_first_per_key",
       "line": 199,
-      "end_line": 205,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 211,
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "optimized—verified",
+      "reason": "Stable integer hash sort returns sorted first indices; exact row comparison detects collisions and restores the existing byte-sort path.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "src/cellstine/moire/search/gram_lattice.py::_first_per_hashed_key",
+      "path": "src/cellstine/moire/search/gram_lattice.py",
+      "qualified_name": "_first_per_hashed_key",
+      "line": 214,
+      "end_line": 237,
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "optimized—verified",
+      "reason": "Compare every row with its hash-group representative before accepting hashed uniqueness; stable sort preserves first occurrence.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_vector_orbit_representatives",
       "path": "src/cellstine/moire/search/gram_lattice.py",
       "qualified_name": "_vector_orbit_representatives",
-      "line": 208,
-      "end_line": 212,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 240,
+      "end_line": 244,
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep integer symmetry-image lexicographic representatives and empty/trivial-group behavior.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_fold_sublattices",
       "path": "src/cellstine/moire/search/gram_lattice.py",
       "qualified_name": "_fold_sublattices",
-      "line": 215,
-      "end_line": 221,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 247,
+      "end_line": 261,
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "optimized—verified",
+      "reason": "Incremental lexicographic HNF minimum bounds image-table memory; simultaneous sign-negated lattice symmetries have identical HNF.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_fold_bases",
       "path": "src/cellstine/moire/search/gram_lattice.py",
       "qualified_name": "_fold_bases",
-      "line": 224,
-      "end_line": 230,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 264,
+      "end_line": 271,
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "optimized—verified",
+      "reason": "Incremental exact lexicographic minimum retains the same ordered first representatives without stacked image tables.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_VectorTable.shell_count",
       "path": "src/cellstine/moire/search/gram_lattice.py",
       "qualified_name": "_VectorTable.shell_count",
-      "line": 244,
-      "end_line": 245,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 285,
+      "end_line": 286,
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep shell count derived from actual index partitions.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_vector_table",
       "path": "src/cellstine/moire/search/gram_lattice.py",
       "qualified_name": "_vector_table",
-      "line": 248,
-      "end_line": 288,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 289,
+      "end_line": 329,
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep squared-radius ordering, angular wrap duplication and shell bounds for joins.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_Table.__len__",
       "path": "src/cellstine/moire/search/gram_lattice.py",
       "qualified_name": "_Table.__len__",
-      "line": 300,
-      "end_line": 301,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 341,
+      "end_line": 342,
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep row count from the first-vector array.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_Table.take",
       "path": "src/cellstine/moire/search/gram_lattice.py",
       "qualified_name": "_Table.take",
-      "line": 303,
-      "end_line": 311,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 344,
+      "end_line": 352,
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep parallel selection of all six table columns in caller order.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_empty_table",
       "path": "src/cellstine/moire/search/gram_lattice.py",
       "qualified_name": "_empty_table",
-      "line": 314,
-      "end_line": 317,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 355,
+      "end_line": 358,
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep exact empty-array shapes and integer/floating dtypes.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_expand",
       "path": "src/cellstine/moire/search/gram_lattice.py",
       "qualified_name": "_expand",
-      "line": 320,
-      "end_line": 328,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 361,
+      "end_line": 369,
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep repeated query ranges and empty result ordering.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_basis_table",
       "path": "src/cellstine/moire/search/gram_lattice.py",
       "qualified_name": "_basis_table",
-      "line": 331,
-      "end_line": 427,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 372,
+      "end_line": 475,
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "optimized—verified",
+      "reason": "Apply invariant integer determinant predicates inside existing shell-local arcs; preserve candidate arithmetic and enumeration order.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_BottomIndex.__init__",
       "path": "src/cellstine/moire/search/gram_lattice.py",
       "qualified_name": "_BottomIndex.__init__",
-      "line": 433,
-      "end_line": 448,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 481,
+      "end_line": 496,
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep two-diagonal logarithmic buckets, stable off-diagonal sort and composite scale.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_lattice.py::_BottomIndex.composite",
       "path": "src/cellstine/moire/search/gram_lattice.py",
       "qualified_name": "_BottomIndex.composite",
-      "line": 450,
-      "end_line": 453,
-      "module_sha256": "f09db6f03cdd91ffed4321101b7603246a779737c319d4d2d86f455ad68d7b01",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 498,
+      "end_line": 501,
+      "module_sha256": "b0568b7ed83074136d61c0e3a3e43d4074011c4c2f3fbccc84065f77f6dc4a1c",
+      "status": "reviewed—unchanged",
+      "reason": "Keep existing float composite bucket mapping used by searchsorted.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_pairs.py::_loewner_mask",
@@ -10721,10 +10831,10 @@
       "qualified_name": "_loewner_mask",
       "line": 23,
       "end_line": 32,
-      "module_sha256": "636885880a279bf34c863c2c4837490d2796af34d71d81799f772ead84c35276",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "61e1a6e40ed27cd8a905c889b754634fd335f0aa58249e5afd1a5bcee6c27a52",
+      "status": "reviewed—unchanged",
+      "reason": "Keep four scientific Loewner inequalities and caller tolerance.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_pairs.py::_join_candidates",
@@ -10732,10 +10842,10 @@
       "qualified_name": "_join_candidates",
       "line": 35,
       "end_line": 123,
-      "module_sha256": "636885880a279bf34c863c2c4837490d2796af34d71d81799f772ead84c35276",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "61e1a6e40ed27cd8a905c889b754634fd335f0aa58249e5afd1a5bcee6c27a52",
+      "status": "reviewed—unchanged",
+      "reason": "Keep four-probe bucket traversal, padding, exact acceptance and emitted pair order.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_pairs.py::_stretches_from_gram",
@@ -10743,10 +10853,10 @@
       "qualified_name": "_stretches_from_gram",
       "line": 126,
       "end_line": 178,
-      "module_sha256": "636885880a279bf34c863c2c4837490d2796af34d71d81799f772ead84c35276",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "61e1a6e40ed27cd8a905c889b754634fd335f0aa58249e5afd1a5bcee6c27a52",
+      "status": "reviewed—unchanged",
+      "reason": "Keep long-double cross-difference formula avoiding isotropic cancellation and existing stretch clamp.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_pairs.py::_twist_angles",
@@ -10754,10 +10864,10 @@
       "qualified_name": "_twist_angles",
       "line": 181,
       "end_line": 216,
-      "module_sha256": "636885880a279bf34c863c2c4837490d2796af34d71d81799f772ead84c35276",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "61e1a6e40ed27cd8a905c889b754634fd335f0aa58249e5afd1a5bcee6c27a52",
+      "status": "reviewed—unchanged",
+      "reason": "Keep adjugate polar-rotation formula without changing floating arithmetic.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_pairs.py::_pareto_front",
@@ -10765,10 +10875,10 @@
       "qualified_name": "_pareto_front",
       "line": 219,
       "end_line": 236,
-      "module_sha256": "636885880a279bf34c863c2c4837490d2796af34d71d81799f772ead84c35276",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "61e1a6e40ed27cd8a905c889b754634fd335f0aa58249e5afd1a5bcee6c27a52",
+      "status": "reviewed—unchanged",
+      "reason": "Keep strict Pareto sweep, deterministic ties and original-index ordering.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_pairs.py::_canonical_pair_keys",
@@ -10776,219 +10886,263 @@
       "qualified_name": "_canonical_pair_keys",
       "line": 239,
       "end_line": 284,
-      "module_sha256": "636885880a279bf34c863c2c4837490d2796af34d71d81799f772ead84c35276",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "61e1a6e40ed27cd8a905c889b754634fd335f0aa58249e5afd1a5bcee6c27a52",
+      "status": "reviewed—unchanged",
+      "reason": "Keep exact HNF transform and integral-divisibility guard for imprimitive pairs and output identity.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "src/cellstine/moire/search/gram_pairs.py::_primitive_pair_keys",
+      "path": "src/cellstine/moire/search/gram_pairs.py",
+      "qualified_name": "_primitive_pair_keys",
+      "line": 287,
+      "end_line": 318,
+      "module_sha256": "61e1a6e40ed27cd8a905c889b754634fd335f0aa58249e5afd1a5bcee6c27a52",
+      "status": "optimized—verified",
+      "reason": "Primitive coincidence pairs are determined modulo common right action by sign-normalized N adj(M)/abs(det M); keep imprimitive HNF elsewhere.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "src/cellstine/moire/search/gram_pairs.py::_primitive_orbit_keys",
+      "path": "src/cellstine/moire/search/gram_pairs.py",
+      "qualified_name": "_primitive_orbit_keys",
+      "line": 321,
+      "end_line": 366,
+      "module_sha256": "61e1a6e40ed27cd8a905c889b754634fd335f0aa58249e5afd1a5bcee6c27a52",
+      "status": "optimized—verified",
+      "reason": "Transform sign-normalized numerator by Gb W inv(Gt), including determinant sign for paired mirrors; match HNF partitions for asymmetric groups.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_pairs.py::_symmetry_combinations",
       "path": "src/cellstine/moire/search/gram_pairs.py",
       "qualified_name": "_symmetry_combinations",
-      "line": 287,
-      "end_line": 309,
-      "module_sha256": "636885880a279bf34c863c2c4837490d2796af34d71d81799f772ead84c35276",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 369,
+      "end_line": 391,
+      "module_sha256": "61e1a6e40ed27cd8a905c889b754634fd335f0aa58249e5afd1a5bcee6c27a52",
+      "status": "reviewed—unchanged",
+      "reason": "Keep matched determinant signs, including dev paired-mirror policy.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_pairs.py::_reduced_symmetry_combinations",
       "path": "src/cellstine/moire/search/gram_pairs.py",
       "qualified_name": "_reduced_symmetry_combinations",
-      "line": 312,
-      "end_line": 339,
-      "module_sha256": "636885880a279bf34c863c2c4837490d2796af34d71d81799f772ead84c35276",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 394,
+      "end_line": 421,
+      "module_sha256": "61e1a6e40ed27cd8a905c889b754634fd335f0aa58249e5afd1a5bcee6c27a52",
+      "status": "reviewed—unchanged",
+      "reason": "Keep only proven simultaneous-negation redundancy removal and first combination ordering.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_pairs.py::_pair_orbit_keys",
       "path": "src/cellstine/moire/search/gram_pairs.py",
       "qualified_name": "_pair_orbit_keys",
-      "line": 342,
-      "end_line": 375,
-      "module_sha256": "636885880a279bf34c863c2c4837490d2796af34d71d81799f772ead84c35276",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 424,
+      "end_line": 457,
+      "module_sha256": "61e1a6e40ed27cd8a905c889b754634fd335f0aa58249e5afd1a5bcee6c27a52",
+      "status": "reviewed—unchanged",
+      "reason": "Keep exact HNF symmetry-orbit fallback and incremental minimum.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_pairs.py::_shape_mask",
       "path": "src/cellstine/moire/search/gram_pairs.py",
       "qualified_name": "_shape_mask",
-      "line": 378,
-      "end_line": 386,
-      "module_sha256": "636885880a279bf34c863c2c4837490d2796af34d71d81799f772ead84c35276",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 460,
+      "end_line": 468,
+      "module_sha256": "61e1a6e40ed27cd8a905c889b754634fd335f0aa58249e5afd1a5bcee6c27a52",
+      "status": "reviewed—unchanged",
+      "reason": "Keep aspect and cosine bounds with unchanged relative tolerance.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "src/cellstine/moire/search/gram_report.py::_folded_twist_magnitude",
+      "path": "src/cellstine/moire/search/gram_report.py",
+      "qualified_name": "_folded_twist_magnitude",
+      "line": 49,
+      "end_line": 88,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "optimized—verified",
+      "reason": "Mirror and proper-rotation offsets match final canonical folding; conservative slack preserves biased-tie boundary candidates.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "src/cellstine/moire/search/gram_report.py::_twist_window_mask",
+      "path": "src/cellstine/moire/search/gram_report.py",
+      "qualified_name": "_twist_window_mask",
+      "line": 91,
+      "end_line": 104,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "optimized—verified",
+      "reason": "Reject only orbit magnitudes outside the slackened window before exact final folding and window checks.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_report.py::_divided_difference_power",
       "path": "src/cellstine/moire/search/gram_report.py",
       "qualified_name": "_divided_difference_power",
-      "line": 40,
-      "end_line": 85,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 107,
+      "end_line": 152,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "reviewed—unchanged",
+      "reason": "Keep stable near-equal eigenvalue divided differences and limits.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_report.py::_matrix_power_spd",
       "path": "src/cellstine/moire/search/gram_report.py",
       "qualified_name": "_matrix_power_spd",
-      "line": 88,
-      "end_line": 100,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 155,
+      "end_line": 167,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "reviewed—unchanged",
+      "reason": "Keep established SPD matrix-power reconstruction and clamp policy.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_report.py::_cayley_hamilton",
       "path": "src/cellstine/moire/search/gram_report.py",
       "qualified_name": "_cayley_hamilton",
-      "line": 103,
-      "end_line": 109,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 170,
+      "end_line": 176,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "reviewed—unchanged",
+      "reason": "Keep closed-form two-eigenvalue matrix reconstruction.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_report.py::_consecutive_matrix_powers_spd",
       "path": "src/cellstine/moire/search/gram_report.py",
       "qualified_name": "_consecutive_matrix_powers_spd",
-      "line": 112,
-      "end_line": 130,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 179,
+      "end_line": 197,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "reviewed—unchanged",
+      "reason": "Keep shared consecutive-power evaluation and stable strain sharing.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_report.py::_affine_geometry",
       "path": "src/cellstine/moire/search/gram_report.py",
       "qualified_name": "_affine_geometry",
-      "line": 133,
-      "end_line": 164,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 200,
+      "end_line": 231,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "reviewed—unchanged",
+      "reason": "Keep layer affine conventions, shared lattice and floating operation order.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_report.py::coincidence_index",
       "path": "src/cellstine/moire/search/gram_report.py",
       "qualified_name": "coincidence_index",
-      "line": 167,
-      "end_line": 197,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 234,
+      "end_line": 264,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "reviewed—unchanged",
+      "reason": "Keep gcd of the six integer minors and empty result dtype.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_report.py::_reduce_common_basis",
       "path": "src/cellstine/moire/search/gram_report.py",
       "qualified_name": "_reduce_common_basis",
-      "line": 200,
-      "end_line": 257,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 267,
+      "end_line": 324,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "reviewed—unchanged",
+      "reason": "Keep common Gauss gauge, obtuse boundary convention and determinant sign correction.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_report.py::_matmul2",
       "path": "src/cellstine/moire/search/gram_report.py",
       "qualified_name": "_matmul2",
-      "line": 260,
-      "end_line": 281,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 327,
+      "end_line": 348,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "reviewed—unchanged",
+      "reason": "Keep integer-only expanded products; no floating reassociation.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_report.py::_apply_gram_transform",
       "path": "src/cellstine/moire/search/gram_report.py",
       "qualified_name": "_apply_gram_transform",
-      "line": 284,
-      "end_line": 295,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 351,
+      "end_line": 362,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "reviewed—unchanged",
+      "reason": "Keep exact transform coefficients and Gram cross-term ordering.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_report.py::_wrap_angle",
       "path": "src/cellstine/moire/search/gram_report.py",
       "qualified_name": "_wrap_angle",
-      "line": 298,
-      "end_line": 299,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 365,
+      "end_line": 366,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "reviewed—unchanged",
+      "reason": "Keep nearest-full-turn wrapping at existing boundaries.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_report.py::_canonical_half_turn",
       "path": "src/cellstine/moire/search/gram_report.py",
       "qualified_name": "_canonical_half_turn",
-      "line": 302,
-      "end_line": 315,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 369,
+      "end_line": 382,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "reviewed—unchanged",
+      "reason": "Keep positive half-turn representative with existing tolerance.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_report.py::_canonical_twist",
       "path": "src/cellstine/moire/search/gram_report.py",
       "qualified_name": "_canonical_twist",
-      "line": 318,
-      "end_line": 398,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 385,
+      "end_line": 465,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "reviewed—unchanged",
+      "reason": "Keep proper/mirror Cartesian offsets, biased tie score and matrix transformations.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_report.py::_canonical_twist._identity_first",
       "path": "src/cellstine/moire/search/gram_report.py",
       "qualified_name": "_canonical_twist._identity_first",
-      "line": 349,
-      "end_line": 355,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 416,
+      "end_line": 422,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "reviewed—unchanged",
+      "reason": "Keep identity-first stable ordering so untransformed matrices win ties.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
-      "id": "src/cellstine/moire/search/gram_report.py::_canonical_twist._identity_first.<lambda>@353:34",
+      "id": "src/cellstine/moire/search/gram_report.py::_canonical_twist._identity_first.<lambda>@420:34",
       "path": "src/cellstine/moire/search/gram_report.py",
-      "qualified_name": "_canonical_twist._identity_first.<lambda>@353:34",
-      "line": 353,
-      "end_line": 353,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "qualified_name": "_canonical_twist._identity_first.<lambda>@420:34",
+      "line": 420,
+      "end_line": 420,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "reviewed—unchanged",
+      "reason": "Keep exact identity classification and stable ordering of all other operations.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/gram_report.py::_finalize",
       "path": "src/cellstine/moire/search/gram_report.py",
       "qualified_name": "_finalize",
-      "line": 401,
-      "end_line": 654,
-      "module_sha256": "8fc0f9f4ef4f9866a7ad2a25e4bdb6f255e107b8da3341720ddd6dd993745abc",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 468,
+      "end_line": 758,
+      "module_sha256": "3a556c0a05fb46b80b9fdc59229a7a8a833a169fc14562e7c16846df9646bd0a",
+      "status": "optimized—verified",
+      "reason": "Reuse known coincidence indices and primitive symmetry keys while retaining dev fold-disabled behavior, representative tie rules, canonical keys and ordering.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::_integer_matrix",
@@ -11288,213 +11442,279 @@
       "evidence": ""
     },
     {
+      "id": "src/cellstine/moire/search/results.py::_collection_paused",
+      "path": "src/cellstine/moire/search/results.py",
+      "qualified_name": "_collection_paused",
+      "line": 85,
+      "end_line": 99,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "optimized—verified",
+      "reason": "Restore prior cyclic-GC enabled state on normal and exceptional exits while avoiding repeated large-document survivor scans.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
       "id": "src/cellstine/moire/search/results.py::_json_ready",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_json_ready",
-      "line": 82,
-      "end_line": 100,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 102,
+      "end_line": 120,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Retain existing implementation: Fast concrete scalar/container checks preserve recursive JSON conversion and fallback Mapping semantics.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_cell_angle_deg",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_cell_angle_deg",
-      "line": 103,
-      "end_line": 107,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 123,
+      "end_line": 127,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Keep the shared stable scalar vector-angle implementation.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "src/cellstine/moire/search/results.py::_cell_shapes",
+      "path": "src/cellstine/moire/search/results.py",
+      "qualified_name": "_cell_shapes",
+      "line": 130,
+      "end_line": 150,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "optimized—verified",
+      "reason": "Gather lengths and Kahan half-angle formula in arrays, retaining scalar atan2 and ordinary arithmetic ordering.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_mapping",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_mapping",
-      "line": 110,
-      "end_line": 113,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 153,
+      "end_line": 156,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Keep strict JSON object/dict requirement and field-specific error.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_boolean",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_boolean",
-      "line": 116,
-      "end_line": 119,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 159,
+      "end_line": 162,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Keep strict bool validation without integer coercion.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_finite_number",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_finite_number",
-      "line": 122,
-      "end_line": 128,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 165,
+      "end_line": 171,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Keep finite numeric validation and explicit bool rejection.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_positive_integer",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_positive_integer",
-      "line": 131,
-      "end_line": 134,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 174,
+      "end_line": 177,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Keep positive Python integer requirement and bool rejection.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_flat_scalars",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_flat_scalars",
-      "line": 137,
-      "end_line": 155,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 180,
+      "end_line": 198,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Retain existing implementation: Validate small fixed nested shapes without constructing NumPy arrays for each candidate field.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_finite_array",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_finite_array",
-      "line": 158,
-      "end_line": 176,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 201,
+      "end_line": 219,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Retain existing implementation: Flatten/check finite numeric values directly and preserve existing field-specific rejection messages.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_integer_matrix",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_integer_matrix",
-      "line": 179,
-      "end_line": 192,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 222,
+      "end_line": 235,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Retain existing implementation: Use Python-integer determinant for nonsingularity while preserving shape and integer/bool type checks.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_search",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_validate_search",
-      "line": 195,
-      "end_line": 234,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 238,
+      "end_line": 277,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Keep required fields, paths, physical bounds, period and symmetry metadata validation.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_twist_window",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_validate_twist_window",
-      "line": 237,
-      "end_line": 253,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 280,
+      "end_line": 296,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Keep optional older-document fields, range and bound-order errors.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_metadata",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_validate_metadata",
-      "line": 256,
-      "end_line": 297,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 299,
+      "end_line": 340,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Keep engine/provenance/count/tolerance validation and existing errors.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_candidate",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_validate_candidate",
-      "line": 300,
-      "end_line": 375,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 343,
+      "end_line": 418,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Retain existing implementation: Consume direct scalar lists instead of tiny NumPy arrays while preserving required fields, errors and numerical tolerance checks.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_document",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_validate_document",
-      "line": 378,
-      "end_line": 393,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 421,
+      "end_line": 436,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Retain existing implementation: Validate just-built or parsed owned documents in place; public validate_results remains explicitly detached.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::validate_results",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "validate_results",
-      "line": 396,
-      "end_line": 399,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 439,
+      "end_line": 442,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Keep detached public validation via deepcopy; only correct stale schema-version docstring.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::shortlist_offsets",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "shortlist_offsets",
-      "line": 402,
-      "end_line": 428,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 445,
+      "end_line": 471,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "reviewed—unchanged",
+      "reason": "Keep whole Pareto front and ranked budget fill without truncating scientifically dominant candidates.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::build_results_document",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "build_results_document",
-      "line": 431,
-      "end_line": 570,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 475,
+      "end_line": 630,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "optimized—verified",
+      "reason": "Gather candidate columns once, preserve v2 fields and shortlist ordering, validate arrays then invoke scalar first-error path when needed.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "src/cellstine/moire/search/results.py::_first_invalid_row",
+      "path": "src/cellstine/moire/search/results.py",
+      "qualified_name": "_first_invalid_row",
+      "line": 633,
+      "end_line": 711,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "optimized—verified",
+      "reason": "Vector checks mirror scalar candidate validation; report first invalid shortlisted row and preserve error diagnostics.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "src/cellstine/moire/search/results.py::_first_invalid_row.finite",
+      "path": "src/cellstine/moire/search/results.py",
+      "qualified_name": "_first_invalid_row.finite",
+      "line": 649,
+      "end_line": 653,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "optimized—verified",
+      "reason": "Check per-row finiteness over fixed candidate arrays without per-scalar NumPy calls.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "src/cellstine/moire/search/results.py::_first_invalid_row.nonsingular_integer",
+      "path": "src/cellstine/moire/search/results.py",
+      "qualified_name": "_first_invalid_row.nonsingular_integer",
+      "line": 655,
+      "end_line": 665,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "optimized—verified",
+      "reason": "Accept nonzero modular determinants; recompute wrapped-zero determinants with Python integers to distinguish overflow from singularity.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::read_results",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "read_results",
-      "line": 573,
-      "end_line": 587,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 714,
+      "end_line": 730,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "optimized—verified",
+      "reason": "Avoid copying an exclusively owned parsed document while preserving validation, legacy rejection and errors.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/search/results.py::write_results",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "write_results",
-      "line": 590,
-      "end_line": 599,
-      "module_sha256": "92ccdde446a6b9c1ae95fbd96f804af82e369a24315f1171ed480caabfec121a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 733,
+      "end_line": 752,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "optimized—verified",
+      "reason": "Use bounded encoder chunks and permit trusted just-built internal payloads to skip duplicate validation; default public input remains validated.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+    },
+    {
+      "id": "src/cellstine/moire/search/results.py::_write_indented_json",
+      "path": "src/cellstine/moire/search/results.py",
+      "qualified_name": "_write_indented_json",
+      "line": 759,
+      "end_line": 789,
+      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "status": "optimized—verified",
+      "reason": "Encode candidate chunks with C encoder and exact existing indentation/newline/allow_nan semantics; preserve fallback for other document orderings.",
+      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
     },
     {
       "id": "src/cellstine/moire/supermoire.py::Supermoire.findn",

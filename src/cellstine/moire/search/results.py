@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import copy
+import gc
 import json
 import math
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
@@ -79,6 +81,24 @@ __all__ = [
 ]
 
 
+@contextmanager
+def _collection_paused():
+    """Hold off the cyclic garbage collector while a large document is handled.
+
+    A wide search builds or parses millions of small dicts and lists at once,
+    none of them cyclic garbage, and every generation-0 overflow rescans the
+    survivors: writing 234k candidates took eight times as long as 56k.
+    """
+
+    enabled = gc.isenabled()
+    gc.disable()
+    try:
+        yield
+    finally:
+        if enabled:
+            gc.enable()
+
+
 def _json_ready(value: Any) -> Any:
     # The cheap concrete types are tested first: this runs once per scalar of a
     # search that can hold tens of thousands of candidates, and the abstract
@@ -105,6 +125,29 @@ def _cell_angle_deg(shared_lattice: np.ndarray) -> float:
 
     columns = np.asarray(shared_lattice, dtype=float)
     return vector_angle_deg(columns[:, 0], columns[:, 1])
+
+
+def _cell_shapes(shared_lattice: np.ndarray) -> tuple[list[float], list[float], list[float]]:
+    """Lengths and angle of every shared cell, as :func:`_cell_angle_deg` gives them.
+
+    The same Kahan half-angle formula as
+    :func:`cellstine.core.lattice.vector_angle_deg`, with the same operations,
+    written over all cells at once; ``atan2`` stays the scalar libm call.
+    """
+
+    columns = np.asarray(shared_lattice, dtype=float)
+    x0, y0 = columns[:, 0, 0], columns[:, 1, 0]
+    x1, y1 = columns[:, 0, 1], columns[:, 1, 1]
+    first = np.sqrt(x0 * x0 + y0 * y0)
+    second = np.sqrt(x1 * x1 + y1 * y1)
+    if np.any(first <= 0.0) or np.any(second <= 0.0):
+        raise ValueError("the angle between vectors needs two nonzero vectors")
+    ux, uy, vx, vy = x0 / first, y0 / first, x1 / second, y1 / second
+    dx, dy, sx, sy = ux - vx, uy - vy, ux + vx, uy + vy
+    chord = np.sqrt(dx * dx + dy * dy).tolist()
+    span = np.sqrt(sx * sx + sy * sy).tolist()
+    half_angles = np.array([math.atan2(left, right) for left, right in zip(chord, span)], dtype=float)
+    return first.tolist(), second.tolist(), np.degrees(2.0 * half_angles).tolist()
 
 
 def _mapping(value: Any, name: str) -> dict[str, Any]:
@@ -394,7 +437,7 @@ def _validate_document(document: dict[str, Any]) -> dict[str, Any]:
 
 
 def validate_results(payload: Any) -> dict[str, Any]:
-    """Validate and return a detached JSON-v1 document."""
+    """Validate and return a detached JSON-v2 document."""
 
     return _validate_document(copy.deepcopy(_mapping(payload, "results")))
 
@@ -428,6 +471,7 @@ def shortlist_offsets(result: SearchResult, max_candidates: int | None) -> list[
     return sorted(keep)
 
 
+@_collection_paused()
 def build_results_document(
     *,
     top_poscar: str | Path,
@@ -492,37 +536,44 @@ def build_results_document(
         "angle_period_deg": float(np.degrees(config.angle_period_radians)),
     }
     offsets = shortlist_offsets(result, max_candidates)
-    candidates: list[dict[str, Any]] = []
-    for position, offset in enumerate(offsets, start=1):
-        candidates.append(
-            {
-                "index": position,
-                "top_matrix": result.top_matrices[offset].T.astype(int).tolist(),
-                "bottom_matrix": result.bottom_matrices[offset].T.astype(int).tolist(),
-                "top_gram": result.top_gram[offset].astype(float).tolist(),
-                "bottom_gram": result.bottom_gram[offset].astype(float).tolist(),
-                "angle_deg": float(result.twist_degrees[offset]),
-                "raw_angle_deg": float(np.degrees(result.raw_twist_radians[offset])),
-                "strain": result.principal_strains[offset].astype(float).tolist(),
-                "top_layer_strain": top_layer_strains[offset].astype(float).tolist(),
-                "bottom_layer_strain": bottom_layer_strains[offset].astype(float).tolist(),
-                "sharing_fraction": float(result.sharing_fraction[offset]),
-                "top_atom_count": int(result.top_atom_counts[offset]),
-                "bottom_atom_count": int(result.bottom_atom_counts[offset]),
-                "atom_count": int(result.atom_counts[offset]),
-                "coincidence_index": int(result.coincidence_indices[offset]),
-                "moire_a": float(np.linalg.norm(result.shared_lattice[offset][:, 0])),
-                "moire_b": float(np.linalg.norm(result.shared_lattice[offset][:, 1])),
-                "moire_gamma_deg": _cell_angle_deg(result.shared_lattice[offset]),
-                "loewner_certified": bool(result.loewner_certified[offset]),
-                "loewner_borderline": bool(result.loewner_borderline[offset]),
-                "rank": int(result.rank[offset]),
-                "pareto_optimal": bool(result.pareto_optimal[offset]),
-                "top_affine": result.top_affine[offset].astype(float).tolist(),
-                "bottom_affine": result.bottom_affine[offset].astype(float).tolist(),
-                "shared_lattice": result.shared_lattice[offset].astype(float).tolist(),
-            }
-        )
+    rows = np.asarray(offsets, dtype=np.int64)
+    # Every field is gathered for all recorded rows at once and converted to
+    # Python values in one ``tolist`` per field; building them one candidate at
+    # a time cost microseconds per value, which a wide search multiplies by
+    # millions.  The values, and so the file, are the same.
+    shared = result.shared_lattice[rows].astype(float)
+    moire_a, moire_b, moire_gamma = _cell_shapes(shared)
+    columns = {
+        "top_matrix": np.swapaxes(result.top_matrices[rows], 1, 2).astype(int).tolist(),
+        "bottom_matrix": np.swapaxes(result.bottom_matrices[rows], 1, 2).astype(int).tolist(),
+        "top_gram": result.top_gram[rows].astype(float).tolist(),
+        "bottom_gram": result.bottom_gram[rows].astype(float).tolist(),
+        "angle_deg": result.twist_degrees[rows].astype(float).tolist(),
+        "raw_angle_deg": np.degrees(result.raw_twist_radians[rows]).astype(float).tolist(),
+        "strain": result.principal_strains[rows].astype(float).tolist(),
+        "top_layer_strain": top_layer_strains[rows].astype(float).tolist(),
+        "bottom_layer_strain": bottom_layer_strains[rows].astype(float).tolist(),
+        "sharing_fraction": result.sharing_fraction[rows].astype(float).tolist(),
+        "top_atom_count": result.top_atom_counts[rows].astype(int).tolist(),
+        "bottom_atom_count": result.bottom_atom_counts[rows].astype(int).tolist(),
+        "atom_count": result.atom_counts[rows].astype(int).tolist(),
+        "coincidence_index": result.coincidence_indices[rows].astype(int).tolist(),
+        "moire_a": moire_a,
+        "moire_b": moire_b,
+        "moire_gamma_deg": moire_gamma,
+        "loewner_certified": result.loewner_certified[rows].astype(bool).tolist(),
+        "loewner_borderline": result.loewner_borderline[rows].astype(bool).tolist(),
+        "rank": result.rank[rows].astype(int).tolist(),
+        "pareto_optimal": result.pareto_optimal[rows].astype(bool).tolist(),
+        "top_affine": result.top_affine[rows].astype(float).tolist(),
+        "bottom_affine": result.bottom_affine[rows].astype(float).tolist(),
+        "shared_lattice": shared.tolist(),
+    }
+    names = list(columns)
+    candidates: list[dict[str, Any]] = [
+        {"index": position, **dict(zip(names, values))}
+        for position, values in enumerate(zip(*columns.values()), start=1)
+    ]
     payload = {
         "schema": SCHEMA,
         "version": VERSION,
@@ -567,11 +618,101 @@ def build_results_document(
         "candidates": candidates,
     }
     # The payload was just built here, so there is nothing to detach it from.
-    return _validate_document(payload)
+    # Its candidates are checked as arrays: every value was converted from the
+    # arrays tested, so they pass or fail exactly as the per-candidate checks
+    # would, and a failure is re-raised by those checks with their message.
+    _validate_search(search_payload)
+    _validate_metadata(payload["metadata"])
+    failing = _first_invalid_row(result, rows, search_payload, (moire_a, moire_b, moire_gamma))
+    if failing is not None:
+        _validate_candidate(candidates[failing], failing + 1, search_payload)
+        raise AssertionError("array validation and candidate validation disagree")  # pragma: no cover
+    return payload
+
+
+def _first_invalid_row(
+    result: SearchResult,
+    rows: np.ndarray,
+    search: dict[str, Any],
+    shapes: tuple[list[float], list[float], list[float]],
+) -> int | None:
+    """Offset of the first recorded row :func:`_validate_candidate` would refuse.
+
+    Each test below is the scalar test of :func:`_validate_candidate`, with the
+    same operations in the same order, applied to all rows at once.  Types,
+    field names and the consecutive index are fixed by construction.
+    """
+
+    if not len(rows):
+        return None
+
+    def finite(*arrays: np.ndarray) -> np.ndarray:
+        good = np.ones(len(rows), dtype=bool)
+        for array in arrays:
+            good &= np.all(np.isfinite(array.reshape(len(rows), -1)), axis=1)
+        return good
+
+    def nonsingular_integer(matrices: np.ndarray) -> np.ndarray:
+        matrices = matrices.astype(np.int64)
+        determinant = matrices[:, 0, 0] * matrices[:, 1, 1] - matrices[:, 0, 1] * matrices[:, 1, 0]
+        good = determinant != 0
+        # Nonzero modulo 2**64 proves nonzero over the integers; zero may be
+        # overflow. Preserve the scalar validator's Python-integer arithmetic
+        # for just those exceptional rows, without an object array for all rows.
+        for row in np.flatnonzero(~good):
+            a, b, c, d = (int(value) for value in matrices[row].ravel())
+            good[row] = a * d - b * c != 0
+        return good
+
+    good = nonsingular_integer(result.top_matrices[rows]) & (
+        nonsingular_integer(result.bottom_matrices[rows])
+    )
+    for gram in (result.top_gram[rows].astype(float), result.bottom_gram[rows].astype(float)):
+        good &= finite(gram)
+        good &= ~(
+            (gram[:, 0] <= 0.0)
+            | (gram[:, 2] <= 0.0)
+            | (gram[:, 0] * gram[:, 2] - gram[:, 1] * gram[:, 1] <= 0.0)
+        )
+    angle = result.twist_degrees[rows].astype(float)
+    period = float(search["angle_period_deg"])
+    good &= finite(angle, np.degrees(result.raw_twist_radians[rows]).astype(float))
+    good &= ~(np.abs(angle) > 0.5 * period + 1e-6)
+    relative = result.principal_strains[rows].astype(float)
+    sharing = result.sharing_fraction[rows].astype(float)
+    top_layer = result.top_layer_strains[rows].astype(float)
+    bottom_layer = result.bottom_layer_strains[rows].astype(float)
+    good &= finite(relative, sharing, top_layer, bottom_layer)
+    good &= (sharing >= 0.0) & (sharing <= 1.0)
+    difference = top_layer - bottom_layer
+    good &= ~np.any(np.abs(difference - relative) > 1e-9 + 1e-7 * np.abs(relative), axis=1)
+    good &= ~(np.max(np.abs(top_layer), axis=1) > float(search["top_strain"]) + _STRAIN_BUDGET_TOLERANCE)
+    good &= ~(np.max(np.abs(bottom_layer), axis=1) > float(search["bottom_strain"]) + _STRAIN_BUDGET_TOLERANCE)
+    top_count = result.top_atom_counts[rows].astype(np.int64)
+    bottom_count = result.bottom_atom_counts[rows].astype(np.int64)
+    atom_count = result.atom_counts[rows].astype(np.int64)
+    coincidence = result.coincidence_indices[rows].astype(np.int64)
+    good &= (top_count > 0) & (bottom_count > 0) & (atom_count > 0) & (coincidence > 0)
+    good &= atom_count == top_count + bottom_count
+    if search["primitive_only"]:
+        good &= coincidence == 1
+    moire_a, moire_b, gamma = (np.asarray(values, dtype=float) for values in shapes)
+    good &= finite(moire_a, moire_b, gamma) & (moire_a > 0.0) & (moire_b > 0.0)
+    good &= (gamma > 0.0) & (gamma < 180.0)
+    good &= result.rank[rows].astype(np.int64) > 0
+    for matrices in (result.top_affine[rows], result.bottom_affine[rows], result.shared_lattice[rows]):
+        matrices = matrices.astype(float)
+        good &= finite(matrices)
+        good &= ~(
+            np.abs(matrices[:, 0, 0] * matrices[:, 1, 1] - matrices[:, 0, 1] * matrices[:, 1, 0])
+            <= _EPS
+        )
+    failing = np.flatnonzero(~good)
+    return None if not len(failing) else int(failing[0])
 
 
 def read_results(path: str | Path) -> dict[str, Any]:
-    """Read and validate JSON v1, rejecting positional legacy DAT results."""
+    """Read and validate JSON v2, rejecting positional legacy DAT results."""
 
     source = Path(path).resolve()
     if source.suffix.lower() == ".dat":
@@ -579,21 +720,70 @@ def read_results(path: str | Path) -> dict[str, Any]:
             "legacy positional .dat moire results are unsupported; rerun `moire search` "
             "to create schema-versioned results.json"
         )
-    try:
-        with source.open("r", encoding="utf-8") as handle:
-            payload = json.load(handle)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"{source} is not valid JSON v1; rerun `moire search`") from exc
-    return validate_results(payload)
+    with _collection_paused():
+        try:
+            with source.open("r", encoding="utf-8") as handle:
+                payload = json.load(handle)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"{source} is not valid JSON v1; rerun `moire search`") from exc
+        # Just parsed, so nothing else holds it: validate in place, no deep copy.
+        return _validate_document(_mapping(payload, "results"))
 
 
-def write_results(path: str | Path, payload: Any) -> Path:
-    """Validate and write one deterministic JSON-v1 results document."""
+def write_results(path: str | Path, payload: Any, *, validated: bool = False) -> Path:
+    """Validate and write one deterministic JSON-v2 results document.
 
-    document = _validate_document(_mapping(_json_ready(payload), "results"))
-    destination = Path(path).resolve()
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    with destination.open("w", encoding="utf-8", newline="\n") as handle:
-        json.dump(document, handle, indent=2, allow_nan=False)
-        handle.write("\n")
+    ``validated=True`` is for a document :func:`build_results_document` has just
+    returned, which is already JSON-ready and validated; checking it again costs
+    seconds on a wide search.  The file written is the same either way.
+    """
+
+    with _collection_paused():
+        document = (
+            payload
+            if validated
+            else _validate_document(_mapping(_json_ready(payload), "results"))
+        )
+        destination = Path(path).resolve()
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        with destination.open("w", encoding="utf-8", newline="\n") as handle:
+            _write_indented_json(handle, document)
+            handle.write("\n")
     return destination
+
+
+#: Candidates encoded per call by :func:`_write_indented_json`.
+_CANDIDATE_CHUNK = 2048
+
+
+def _write_indented_json(handle, document: dict[str, Any]) -> None:
+    """Write ``json.dumps(document, indent=2)`` without holding the whole text.
+
+    ``json.dump`` to a stream uses the pure-Python encoder and is several times
+    slower; ``json.dumps`` uses the C encoder but materialises the full text,
+    which for a wide search is hundreds of megabytes on top of the document.
+    The candidates are therefore encoded a chunk at a time by the C encoder and
+    re-indented into place.  JSON indentation depends only on nesting depth and
+    an encoded string never contains a raw newline, so the bytes are exactly
+    those of a single ``dumps`` call.
+    """
+
+    candidates = document.get("candidates")
+    keys = list(document)
+    if not isinstance(candidates, list) or not candidates or keys[-1] != "candidates":
+        handle.write(json.dumps(document, indent=2, allow_nan=False))
+        return
+    head = json.dumps({**document, "candidates": []}, indent=2, allow_nan=False)
+    closing = "[]\n}"
+    if not head.endswith(closing):  # pragma: no cover - the format above guarantees it
+        handle.write(json.dumps(document, indent=2, allow_nan=False))
+        return
+    handle.write(head[: -len(closing)])
+    handle.write("[\n")
+    for start in range(0, len(candidates), _CANDIDATE_CHUNK):
+        if start:
+            handle.write(",\n")
+        chunk = json.dumps(candidates[start : start + _CANDIDATE_CHUNK], indent=2, allow_nan=False)
+        # ``[\n  {...},\n  {...}\n]`` at depth zero; the list sits at depth one.
+        handle.write("  " + chunk[2:-2].replace("\n", "\n  "))
+    handle.write("\n  ]\n}")

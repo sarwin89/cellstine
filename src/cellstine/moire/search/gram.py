@@ -58,8 +58,14 @@ from .gram_lattice import (
     _vector_table,
 )
 from .gram_lattice import _hermite_normal_form
-from .gram_pairs import _canonical_pair_keys, _join_candidates, _shape_mask, _twist_angles
-from .gram_report import _finalize, coincidence_index
+from .gram_pairs import (
+    _canonical_pair_keys,
+    _join_candidates,
+    _primitive_pair_keys,
+    _shape_mask,
+    _twist_angles,
+)
+from .gram_report import _finalize, _twist_window_mask, coincidence_index
 
 __all__ = [
     "SearchConfig",
@@ -69,6 +75,56 @@ __all__ = [
     "search",
     "symmetric_branch_applies",
 ]
+
+def _class_invariant_filter(config: SearchConfig, twist: np.ndarray, indices: np.ndarray):
+    """Rows to keep before classes are formed, with how many each test dropped.
+
+    Both tests read a quantity shared by every pair of a class -- the folded
+    twist magnitude and the coincidence index -- so a class is kept or dropped
+    whole and the representatives chosen afterwards are the ones the full set
+    would give.  Imprimitive pairs are only reported when asked for, and keying
+    them is most of the work of a rigid search.
+    """
+
+    keep = _twist_window_mask(config, twist)
+    outside_window = 0 if keep is None else int(len(keep) - np.count_nonzero(keep))
+    imprimitive = 0
+    if config.primitive_only and len(indices):
+        primitive = indices == 1
+        imprimitive = int(len(primitive) - np.count_nonzero(primitive))
+        keep = primitive if keep is None else keep & primitive
+    if keep is not None and np.all(keep):
+        keep = None
+    return keep, outside_window, imprimitive
+
+
+def _common_basis_keys(
+    top_matrices: np.ndarray, bottom_matrices: np.ndarray, indices: np.ndarray | None = None
+) -> np.ndarray:
+    """Exact keys modulo the common relabelling ``(M, N) -> (M K, N K)``.
+
+    The coincidence index is unchanged by ``K``, so primitive and imprimitive
+    pairs never share a class and each gets its cheapest exact key: the
+    gcd-free :func:`_primitive_pair_keys` for the first, the column-HNF
+    :func:`_canonical_pair_keys` for the rest.  A leading column keeps the two
+    kinds of key apart.  ``indices`` may pass coincidence indices already known.
+    """
+
+    if indices is None:
+        indices = coincidence_index(top_matrices, bottom_matrices)
+    primitive = indices == 1
+    if np.all(primitive):
+        return _primitive_pair_keys(top_matrices, bottom_matrices)
+    keys = np.zeros((len(top_matrices), 9), dtype=np.int64)
+    keys[primitive, 1:6] = _primitive_pair_keys(
+        top_matrices[primitive], bottom_matrices[primitive]
+    )
+    keys[~primitive, 0] = 1
+    keys[~primitive, 1:] = _canonical_pair_keys(
+        top_matrices[~primitive], bottom_matrices[~primitive]
+    )
+    return keys
+
 
 def _general_search(config: SearchConfig) -> SearchResult:
     clock = time.perf_counter
@@ -95,11 +151,20 @@ def _general_search(config: SearchConfig) -> SearchResult:
     after_vectors = clock()
 
     area_squared_max = None
+    top_keep_index = bottom_keep_index = None
     if config.max_atoms is not None:
         multiplicity_cap = config.max_atoms / (
             config.top_atoms + config.bottom_atoms * lower * top_area / bottom_area
         )
         area_squared_max = (multiplicity_cap * top_area) ** 2
+        # The atom bound of a row depends on its index alone, and every image of a
+        # row under folding has the same index, so applying it while the tables
+        # are generated keeps exactly the rows the later filter used to keep
+        # without ever holding the rest.
+        top_weight = config.top_atoms + config.bottom_atoms * lower * top_area / bottom_area
+        bottom_weight = config.bottom_atoms + config.top_atoms * bottom_area / (upper * top_area)
+        top_keep_index = lambda index: index * top_weight <= config.max_atoms  # noqa: E731
+        bottom_keep_index = lambda index: index * bottom_weight <= config.max_atoms  # noqa: E731
     first_top = (
         np.nonzero(_vector_orbit_representatives(top_vectors.vectors, top_group))[0]
         if config.fold_symmetry
@@ -111,6 +176,7 @@ def _general_search(config: SearchConfig) -> SearchResult:
         partner=False,
         first_indices=first_top,
         area_squared_max=area_squared_max,
+        keep_index=top_keep_index,
     )
     top_unfolded = len(top)
     top = top.take(_first_per_key(_hermite_normal_form(top.first, top.second)))
@@ -120,11 +186,6 @@ def _general_search(config: SearchConfig) -> SearchResult:
     top = top.take(_shape_mask(top, config))
     if min_squared > 0.0:
         top = top.take(top.g11 >= min_squared * (1.0 - _REL))
-    if config.max_atoms is not None:
-        minimum_weight = (
-            config.top_atoms + config.bottom_atoms * lower * top_area / bottom_area
-        )
-        top = top.take(top.index * minimum_weight <= config.max_atoms)
     after_top = clock()
 
     first_bottom = (
@@ -139,6 +200,7 @@ def _general_search(config: SearchConfig) -> SearchResult:
         lower=lower,
         upper=upper,
         first_indices=first_bottom,
+        keep_index=bottom_keep_index,
     )
     bottom_unfolded = len(bottom)
     if config.fold_symmetry and len(bottom_group) > 1:
@@ -163,11 +225,6 @@ def _general_search(config: SearchConfig) -> SearchResult:
     if min_squared > 0.0:
         threshold = lower * min_squared * (1.0 - _REL)
         bottom = bottom.take((bottom.g11 >= threshold) & (bottom.g22 >= threshold))
-    if config.max_atoms is not None:
-        minimum_weight = (
-            config.bottom_atoms + config.top_atoms * bottom_area / (upper * top_area)
-        )
-        bottom = bottom.take(bottom.index * minimum_weight <= config.max_atoms)
     after_bottom = clock()
 
     if len(top) == 0 or len(bottom) == 0:
@@ -204,7 +261,17 @@ def _general_search(config: SearchConfig) -> SearchResult:
     )
     top_matrices_reduced = np.stack([top_first, top_second], axis=2)
     bottom_matrices_reduced = np.stack([bottom_first, bottom_second], axis=2)
-    pair_keys = _canonical_pair_keys(top_matrices_reduced, bottom_matrices_reduced)
+    indices = coincidence_index(top_matrices_reduced, bottom_matrices_reduced)
+    keep, outside_window, imprimitive = _class_invariant_filter(config, twist, indices)
+    if keep is not None:
+        top_matrices_reduced = top_matrices_reduced[keep]
+        bottom_matrices_reduced = bottom_matrices_reduced[keep]
+        p11, p12, p22 = p11[keep], p12[keep], p22[keep]
+        q11, q12, q22 = q11[keep], q12[keep], q22[keep]
+        top_multiplicity = top_multiplicity[keep]
+        bottom_multiplicity = bottom_multiplicity[keep]
+        twist, indices = twist[keep], indices[keep]
+    pair_keys = _common_basis_keys(top_matrices_reduced, bottom_matrices_reduced, indices)
     unique = _first_per_key(pair_keys)
     top_matrices_reduced = top_matrices_reduced[unique]
     bottom_matrices_reduced = bottom_matrices_reduced[unique]
@@ -212,7 +279,7 @@ def _general_search(config: SearchConfig) -> SearchResult:
     q11, q12, q22 = q11[unique], q12[unique], q22[unique]
     top_multiplicity = top_multiplicity[unique]
     bottom_multiplicity = bottom_multiplicity[unique]
-    twist = twist[unique]
+    twist, indices = twist[unique], indices[unique]
     top_matrices = top_gauge @ top_matrices_reduced
     bottom_matrices = bottom_gauge @ bottom_matrices_reduced
     stats = {
@@ -223,6 +290,8 @@ def _general_search(config: SearchConfig) -> SearchResult:
         "n_bottom_rows_unfolded": bottom_unfolded,
         "n_top_rows_after_fold": top_after_fold,
         "n_bottom_rows_after_fold": bottom_after_fold,
+        "n_outside_twist_window_join": outside_window,
+        "n_imprimitive_rows_join": imprimitive,
         "group_order_top": int(len(top_group)),
         "group_order_bottom": int(len(bottom_group)),
         "n_shells_top": top_vectors.shell_count,
@@ -245,6 +314,7 @@ def _general_search(config: SearchConfig) -> SearchResult:
         twist,
         stats,
         length_scale,
+        coincidence=indices,
     )
 
 
@@ -408,7 +478,7 @@ def _symmetric_search(config: SearchConfig) -> SearchResult:
     )
     top_reduced = np.stack([top_first_result, top_second_result], axis=2)
     bottom_reduced = np.stack([bottom_first_result, bottom_second_result], axis=2)
-    unique = _first_per_key(_canonical_pair_keys(top_reduced, bottom_reduced))
+    unique = _first_per_key(_common_basis_keys(top_reduced, bottom_reduced))
     top_reduced, bottom_reduced = top_reduced[unique], bottom_reduced[unique]
     p11, p12, p22 = p11[unique], p12[unique], p22[unique]
     q11, q12, q22 = q11[unique], q12[unique], q22[unique]
