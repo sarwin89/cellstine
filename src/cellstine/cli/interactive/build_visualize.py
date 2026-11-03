@@ -14,6 +14,7 @@ from .prompts import (
     INPUT_DIR,
     OUTPUT_DIR,
     RUNS_DIR,
+    STRUCTURE_PATTERNS,
     _choice,
     _print_title,
     _prompt,
@@ -59,16 +60,16 @@ def _prompt_view_direction() -> str:
     return _prompt("Axis (a, b, c, a*, b*, c*, x, y or z)", "c")
 
 
-def _build_structure_visualize(group: str, *, subject: str) -> list[str]:
+def _build_structure_visualize(group: str, *, subject: str, structure: str | None = None) -> list[str]:
     """Build one root ``view`` command line."""
 
     _print_title(
         "Structure Visualization",
         f"Create a labelled Matplotlib multi-view plot of {subject}.",
     )
-    structure = _prompt_path(
+    structure = structure or _prompt_path(
         "Choose the structure file",
-        patterns=("*.vasp", "POSCAR", "CONTCAR"),
+        patterns=STRUCTURE_PATTERNS,
         roots=(OUTPUT_DIR, INPUT_DIR, RUNS_DIR),
     )
     argv = ["view", structure]

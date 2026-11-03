@@ -2,6 +2,39 @@
   "schema_version": 1,
   "functions": [
     {
+      "id": "benchmarks/benchmark_cli_discovery.py::_baseline",
+      "path": "benchmarks/benchmark_cli_discovery.py",
+      "qualified_name": "_baseline",
+      "line": 23,
+      "end_line": 32,
+      "module_sha256": "b90e086fc220e87539789aa15d30465d7b74b38e9eab78f0467d277b63cfbfaa",
+      "status": "reviewed—unchanged",
+      "reason": "Load only exact discovery AST from explicitly UTF8-decoded verified Git; no checkout mutation or unrelated module execution.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "benchmarks/benchmark_cli_discovery.py::_populate",
+      "path": "benchmarks/benchmark_cli_discovery.py",
+      "qualified_name": "_populate",
+      "line": 35,
+      "end_line": 41,
+      "module_sha256": "b90e086fc220e87539789aa15d30465d7b74b38e9eab78f0467d277b63cfbfaa",
+      "status": "reviewed—unchanged",
+      "reason": "Create only owned benchmark paths with controlled modification-time ties outside measured operations; no scientific run tree access.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "benchmarks/benchmark_cli_discovery.py::main",
+      "path": "benchmarks/benchmark_cli_discovery.py",
+      "qualified_name": "main",
+      "line": 44,
+      "end_line": 74,
+      "module_sha256": "b90e086fc220e87539789aa15d30465d7b74b38e9eab78f0467d277b63cfbfaa",
+      "status": "reviewed—unchanged",
+      "reason": "Validate reference/arguments, assert exact selected paths/order for four root shapes, then measure medians and separate allocation peaks in owned temporary files.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
       "id": "benchmarks/benchmark_conventional_resources.py::_over_cap",
       "path": "benchmarks/benchmark_conventional_resources.py",
       "qualified_name": "_over_cap",
@@ -1041,10 +1074,10 @@
       "qualified_name": "LegacyMoireFindAction.__call__",
       "line": 36,
       "end_line": 37,
-      "module_sha256": "ce114992f75dffef3123f974a64c4586782d2dac517530e66f861acdd10aac1b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a83ba2051bdc2e5973e0f6f3ddca47cc8ccb0582e772733ab49d7601a0d588f9",
+      "status": "reviewed—unchanged",
+      "reason": "Preserves parser-owned rejection and the shared legacy migration message.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/argtypes.py::parse_positive_float",
@@ -1052,10 +1085,10 @@
       "qualified_name": "parse_positive_float",
       "line": 40,
       "end_line": 44,
-      "module_sha256": "ce114992f75dffef3123f974a64c4586782d2dac517530e66f861acdd10aac1b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a83ba2051bdc2e5973e0f6f3ddca47cc8ccb0582e772733ab49d7601a0d588f9",
+      "status": "reviewed—unchanged",
+      "reason": "Finite strictly positive restriction unchanged; argparse handles malformed numeric conversion.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/argtypes.py::parse_positive_int",
@@ -1063,10 +1096,10 @@
       "qualified_name": "parse_positive_int",
       "line": 47,
       "end_line": 54,
-      "module_sha256": "ce114992f75dffef3123f974a64c4586782d2dac517530e66f861acdd10aac1b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a83ba2051bdc2e5973e0f6f3ddca47cc8ccb0582e772733ab49d7601a0d588f9",
+      "status": "reviewed—unchanged",
+      "reason": "Whole-number conversion and positive restriction match the new shortlist option.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/argtypes.py::parse_nonnegative_float",
@@ -1074,10 +1107,10 @@
       "qualified_name": "parse_nonnegative_float",
       "line": 57,
       "end_line": 61,
-      "module_sha256": "ce114992f75dffef3123f974a64c4586782d2dac517530e66f861acdd10aac1b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a83ba2051bdc2e5973e0f6f3ddca47cc8ccb0582e772733ab49d7601a0d588f9",
+      "status": "reviewed—unchanged",
+      "reason": "Zero strain remains valid; finite nonnegative constraint unchanged.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/argtypes.py::add_legacy_moire_find_flag",
@@ -1085,10 +1118,10 @@
       "qualified_name": "add_legacy_moire_find_flag",
       "line": 64,
       "end_line": 70,
-      "module_sha256": "ce114992f75dffef3123f974a64c4586782d2dac517530e66f861acdd10aac1b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a83ba2051bdc2e5973e0f6f3ddca47cc8ccb0582e772733ab49d7601a0d588f9",
+      "status": "reviewed—unchanged",
+      "reason": "Hidden compatibility rejection preserves optional-value versus zero-value action semantics.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/argtypes.py::parse_index_spec",
@@ -1096,10 +1129,10 @@
       "qualified_name": "parse_index_spec",
       "line": 73,
       "end_line": 89,
-      "module_sha256": "ce114992f75dffef3123f974a64c4586782d2dac517530e66f861acdd10aac1b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a83ba2051bdc2e5973e0f6f3ddca47cc8ccb0582e772733ab49d7601a0d588f9",
+      "status": "reviewed—unchanged",
+      "reason": "Inclusive ascending and descending ranges and first-occurrence deduplication unchanged.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/argtypes.py::parse_float_vector",
@@ -1107,934 +1140,1363 @@
       "qualified_name": "parse_float_vector",
       "line": 92,
       "end_line": 96,
-      "module_sha256": "ce114992f75dffef3123f974a64c4586782d2dac517530e66f861acdd10aac1b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "a83ba2051bdc2e5973e0f6f3ddca47cc8ccb0582e772733ab49d7601a0d588f9",
+      "status": "reviewed—unchanged",
+      "reason": "Existing two or three component geometry parser unchanged; arbitrary lists do not weaken geometry flags.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/argtypes.py::parse_float_list",
+      "path": "src/cellstine/cli/argtypes.py",
+      "qualified_name": "parse_float_list",
+      "line": 99,
+      "end_line": 108,
+      "module_sha256": "a83ba2051bdc2e5973e0f6f3ddca47cc8ccb0582e772733ab49d7601a0d588f9",
+      "status": "optimized—verified",
+      "reason": "New parser accepts one or more finite floats and arbitrary layer counts with comma or semicolon delimiters; malformed, empty and nonfinite inputs raise ArgumentTypeError.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/argtypes.py::parse_supercell",
       "path": "src/cellstine/cli/argtypes.py",
       "qualified_name": "parse_supercell",
-      "line": 99,
-      "end_line": 113,
-      "module_sha256": "ce114992f75dffef3123f974a64c4586782d2dac517530e66f861acdd10aac1b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 111,
+      "end_line": 125,
+      "module_sha256": "a83ba2051bdc2e5973e0f6f3ddca47cc8ccb0582e772733ab49d7601a0d588f9",
+      "status": "reviewed—unchanged",
+      "reason": "Scalar broadcasting and positive three-repeat checks unchanged.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/argtypes.py::parse_mesh_shift",
       "path": "src/cellstine/cli/argtypes.py",
       "qualified_name": "parse_mesh_shift",
-      "line": 116,
-      "end_line": 128,
-      "module_sha256": "ce114992f75dffef3123f974a64c4586782d2dac517530e66f861acdd10aac1b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 128,
+      "end_line": 140,
+      "module_sha256": "a83ba2051bdc2e5973e0f6f3ddca47cc8ccb0582e772733ab49d7601a0d588f9",
+      "status": "reviewed—unchanged",
+      "reason": "Three-component half-grid validation unchanged.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/argtypes.py::parse_supercell_matrix",
       "path": "src/cellstine/cli/argtypes.py",
       "qualified_name": "parse_supercell_matrix",
-      "line": 131,
-      "end_line": 151,
-      "module_sha256": "ce114992f75dffef3123f974a64c4586782d2dac517530e66f861acdd10aac1b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 143,
+      "end_line": 163,
+      "module_sha256": "a83ba2051bdc2e5973e0f6f3ddca47cc8ccb0582e772733ab49d7601a0d588f9",
+      "status": "reviewed—unchanged",
+      "reason": "Nine integer entries, row ordering and exact integer nonsingularity unchanged.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/argtypes.py::parse_int_matrix",
       "path": "src/cellstine/cli/argtypes.py",
       "qualified_name": "parse_int_matrix",
-      "line": 154,
-      "end_line": 170,
-      "module_sha256": "ce114992f75dffef3123f974a64c4586782d2dac517530e66f861acdd10aac1b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 166,
+      "end_line": 182,
+      "module_sha256": "a83ba2051bdc2e5973e0f6f3ddca47cc8ccb0582e772733ab49d7601a0d588f9",
+      "status": "reviewed—unchanged",
+      "reason": "Four integer entries and exact nonsingularity unchanged.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/argtypes.py::parse_string_list",
       "path": "src/cellstine/cli/argtypes.py",
       "qualified_name": "parse_string_list",
-      "line": 173,
-      "end_line": 176,
-      "module_sha256": "ce114992f75dffef3123f974a64c4586782d2dac517530e66f861acdd10aac1b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 185,
+      "end_line": 188,
+      "module_sha256": "a83ba2051bdc2e5973e0f6f3ddca47cc8ccb0582e772733ab49d7601a0d588f9",
+      "status": "reviewed—unchanged",
+      "reason": "Optional None and empty-string handling and ordered trimming unchanged.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_adsorbate.py::_build_adsorbate_place",
       "path": "src/cellstine/cli/interactive/build_adsorbate.py",
       "qualified_name": "_build_adsorbate_place",
-      "line": 27,
-      "end_line": 106,
-      "module_sha256": "2abd79b354f0d7a5affb11492ba89e5cdffe3ff51ae19cec63b1699ff8b24c26",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 31,
+      "end_line": 118,
+      "module_sha256": "f0a9fd9db4926f18dce52d41d1c9aae2a2e719cfc27ed3a88b840367ab8041cd",
+      "status": "optimized—verified",
+      "reason": "Prefilled substrate follows existing-slab flow; bulk preview and emitted surface geometry arguments agree; detected family and index remain tied to the same report.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/build_adsorbate.py::_build_adsorbate_place.bulk_sites",
+      "path": "src/cellstine/cli/interactive/build_adsorbate.py",
+      "qualified_name": "_build_adsorbate_place.bulk_sites",
+      "line": 71,
+      "end_line": 86,
+      "module_sha256": "f0a9fd9db4926f18dce52d41d1c9aae2a2e719cfc27ed3a88b840367ab8041cd",
+      "status": "optimized—verified",
+      "reason": "Builds the surface and detects sites without persistence; remembered only after source and geometry answers; failure remains a clear builder error.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/build_adsorbate.py::_build_adsorbate_place.slab_sites",
+      "path": "src/cellstine/cli/interactive/build_adsorbate.py",
+      "qualified_name": "_build_adsorbate_place.slab_sites",
+      "line": 90,
+      "end_line": 96,
+      "module_sha256": "f0a9fd9db4926f18dce52d41d1c9aae2a2e719cfc27ed3a88b840367ab8041cd",
+      "status": "optimized—verified",
+      "reason": "Reads the selected slab and detects sites without persistence; cache is downstream of source selection.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_adsorbate.py::_build_adsorbate_move",
       "path": "src/cellstine/cli/interactive/build_adsorbate.py",
       "qualified_name": "_build_adsorbate_move",
-      "line": 109,
-      "end_line": 125,
-      "module_sha256": "2abd79b354f0d7a5affb11492ba89e5cdffe3ff51ae19cec63b1699ff8b24c26",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 121,
+      "end_line": 137,
+      "module_sha256": "f0a9fd9db4926f18dce52d41d1c9aae2a2e719cfc27ed3a88b840367ab8041cd",
+      "status": "optimized—verified",
+      "reason": "Preserves direct/Cartesian target flags and optional rotation; parsed vector text is passed intact.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_adsorbate.py::_build_adsorbate_assemble",
       "path": "src/cellstine/cli/interactive/build_adsorbate.py",
       "qualified_name": "_build_adsorbate_assemble",
-      "line": 128,
-      "end_line": 151,
-      "module_sha256": "2abd79b354f0d7a5affb11492ba89e5cdffe3ff51ae19cec63b1699ff8b24c26",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 140,
+      "end_line": 163,
+      "module_sha256": "f0a9fd9db4926f18dce52d41d1c9aae2a2e719cfc27ed3a88b840367ab8041cd",
+      "status": "optimized—verified",
+      "reason": "Preserves target lattice, separate strain budgets, maximum length and preview defaults while validating scalar inputs.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_adsorbate.py::_build_adsorbate_visualize",
       "path": "src/cellstine/cli/interactive/build_adsorbate.py",
       "qualified_name": "_build_adsorbate_visualize",
-      "line": 154,
-      "end_line": 155,
-      "module_sha256": "2abd79b354f0d7a5affb11492ba89e5cdffe3ff51ae19cec63b1699ff8b24c26",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 166,
+      "end_line": 167,
+      "module_sha256": "f0a9fd9db4926f18dce52d41d1c9aae2a2e719cfc27ed3a88b840367ab8041cd",
+      "status": "reviewed—unchanged",
+      "reason": "Delegates correctly to the shared root structure visualization builder.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_defect.py::_prompt_layers",
       "path": "src/cellstine/cli/interactive/build_defect.py",
       "qualified_name": "_prompt_layers",
-      "line": 24,
-      "end_line": 63,
-      "module_sha256": "999713b4d1a1c655592f60f36c3bd906bb63f1f33031d46d77c668384a54334f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 30,
+      "end_line": 69,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "optimized—verified",
+      "reason": "Preserves plane numbering, orbit-splitting choices and explicit plane selection text.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/build_defect.py::_prompt_defect_settings",
+      "path": "src/cellstine/cli/interactive/build_defect.py",
+      "qualified_name": "_prompt_defect_settings",
+      "line": 72,
+      "end_line": 131,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "optimized—verified",
+      "reason": "Recommended tuple matches prior defaults; custom route retains kind, backend, side, direction and saddle controls.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_defect.py::_build_defect_analyse",
       "path": "src/cellstine/cli/interactive/build_defect.py",
       "qualified_name": "_build_defect_analyse",
-      "line": 66,
-      "end_line": 128,
-      "module_sha256": "999713b4d1a1c655592f60f36c3bd906bb63f1f33031d46d77c668384a54334f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 134,
+      "end_line": 153,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "optimized—verified",
+      "reason": "Propagates all shared settings and conditionally emits surface-side and saddle options correctly.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_defect.py::_build_symmetry_analyse",
       "path": "src/cellstine/cli/interactive/build_defect.py",
       "qualified_name": "_build_symmetry_analyse",
-      "line": 131,
-      "end_line": 143,
-      "module_sha256": "999713b4d1a1c655592f60f36c3bd906bb63f1f33031d46d77c668384a54334f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 156,
+      "end_line": 168,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "optimized—verified",
+      "reason": "Preserves backend choices and the public symmetry analyse command.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_defect.py::_build_symmetry_reduce",
       "path": "src/cellstine/cli/interactive/build_defect.py",
       "qualified_name": "_build_symmetry_reduce",
-      "line": 146,
-      "end_line": 158,
-      "module_sha256": "999713b4d1a1c655592f60f36c3bd906bb63f1f33031d46d77c668384a54334f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 171,
+      "end_line": 183,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "optimized—verified",
+      "reason": "Preserves primitive, conventional and refined cell choices and their default.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_defect.py::_build_symmetry_lattice_reduce",
       "path": "src/cellstine/cli/interactive/build_defect.py",
       "qualified_name": "_build_symmetry_lattice_reduce",
-      "line": 161,
-      "end_line": 172,
-      "module_sha256": "999713b4d1a1c655592f60f36c3bd906bb63f1f33031d46d77c668384a54334f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 186,
+      "end_line": 197,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "optimized—verified",
+      "reason": "Preserves Niggli and Delaunay reduction choices and their default.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_defect.py::_build_symmetry_kpoints",
       "path": "src/cellstine/cli/interactive/build_defect.py",
       "qualified_name": "_build_symmetry_kpoints",
-      "line": 175,
-      "end_line": 221,
-      "module_sha256": "999713b4d1a1c655592f60f36c3bd906bb63f1f33031d46d77c668384a54334f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 200,
+      "end_line": 246,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "optimized—verified",
+      "reason": "Preserves spacing, mesh and surface defaults; positive spacing and repeat validation fit the public arguments.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/build_defect.py::_build_symmetry_kpath",
+      "path": "src/cellstine/cli/interactive/build_defect.py",
+      "qualified_name": "_build_symmetry_kpath",
+      "line": 249,
+      "end_line": 262,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "optimized—verified",
+      "reason": "Emits supported symmetry kpath arguments with positive spacing and the expected default.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_defect.py::_defect_analysis_from_preview",
       "path": "src/cellstine/cli/interactive/build_defect.py",
       "qualified_name": "_defect_analysis_from_preview",
-      "line": 224,
-      "end_line": 244,
-      "module_sha256": "999713b4d1a1c655592f60f36c3bd906bb63f1f33031d46d77c668384a54334f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 265,
+      "end_line": 289,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "optimized—verified",
+      "reason": "Calls pure _analysis_from_input with all guided settings and required default tolerances, formats DefectAnalysis and avoids public-preview persistence.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_defect.py::_defect_site_ids",
       "path": "src/cellstine/cli/interactive/build_defect.py",
       "qualified_name": "_defect_site_ids",
-      "line": 247,
-      "end_line": 248,
-      "module_sha256": "999713b4d1a1c655592f60f36c3bd906bb63f1f33031d46d77c668384a54334f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 292,
+      "end_line": 293,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "reviewed—unchanged",
+      "reason": "Filters dictionary sites by kind and returns string site IDs consistently.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_defect.py::_build_defect_generate",
       "path": "src/cellstine/cli/interactive/build_defect.py",
       "qualified_name": "_build_defect_generate",
-      "line": 251,
-      "end_line": 383,
-      "module_sha256": "999713b4d1a1c655592f60f36c3bd906bb63f1f33031d46d77c668384a54334f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 296,
+      "end_line": 384,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "optimized—verified",
+      "reason": "Preview and confirmed generation share original source and settings; families derive from detected sites; coverage, planes, species and supercell options route correctly.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/build_defect.py::_build_defect_generate.<lambda>@305:8",
+      "path": "src/cellstine/cli/interactive/build_defect.py",
+      "qualified_name": "_build_defect_generate.<lambda>@305:8",
+      "line": 305,
+      "end_line": 307,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "optimized—verified",
+      "reason": "Converts pure analysis to a cached dictionary; changing earlier source or settings discards downstream remembered analysis.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_defect.py::_prompt_supercell",
       "path": "src/cellstine/cli/interactive/build_defect.py",
       "qualified_name": "_prompt_supercell",
-      "line": 386,
-      "end_line": 440,
-      "module_sha256": "999713b4d1a1c655592f60f36c3bd906bb63f1f33031d46d77c668384a54334f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 387,
+      "end_line": 441,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "optimized—verified",
+      "reason": "Preserves saved-JSON and explicit-site safeguards plus mutually exclusive distance or validated repeat output.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_defect.py::_build_defect_supercell",
       "path": "src/cellstine/cli/interactive/build_defect.py",
       "qualified_name": "_build_defect_supercell",
-      "line": 443,
-      "end_line": 492,
-      "module_sha256": "999713b4d1a1c655592f60f36c3bd906bb63f1f33031d46d77c668384a54334f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 444,
+      "end_line": 493,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "optimized—verified",
+      "reason": "Preserves structure-kind, distance or cell-limit branches and optional table settings; validates positive image distance.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_defect.py::_build_defect_preview",
       "path": "src/cellstine/cli/interactive/build_defect.py",
       "qualified_name": "_build_defect_preview",
-      "line": 495,
-      "end_line": 511,
-      "module_sha256": "999713b4d1a1c655592f60f36c3bd906bb63f1f33031d46d77c668384a54334f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 496,
+      "end_line": 512,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "optimized—verified",
+      "reason": "Builds the explicit public preview command and retains its deliberate persisted-run behavior.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_defect.py::_build_defect_visualize",
       "path": "src/cellstine/cli/interactive/build_defect.py",
       "qualified_name": "_build_defect_visualize",
-      "line": 514,
-      "end_line": 515,
-      "module_sha256": "999713b4d1a1c655592f60f36c3bd906bb63f1f33031d46d77c668384a54334f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 515,
+      "end_line": 516,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "reviewed—unchanged",
+      "reason": "Delegates correctly to shared visualization for defective structures.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_defect.py::_build_symmetry_visualize",
       "path": "src/cellstine/cli/interactive/build_defect.py",
       "qualified_name": "_build_symmetry_visualize",
-      "line": 518,
-      "end_line": 519,
-      "module_sha256": "999713b4d1a1c655592f60f36c3bd906bb63f1f33031d46d77c668384a54334f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 519,
+      "end_line": 520,
+      "module_sha256": "d467d5b5a090efaa8ddc85b49f386b35e7a4c5249e25e6cdfd282358c87b6f8f",
+      "status": "reviewed—unchanged",
+      "reason": "Delegates correctly to shared visualization for reduced or refined cells.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_interface.py::_build_interface_surface",
       "path": "src/cellstine/cli/interactive/build_interface.py",
       "qualified_name": "_build_interface_surface",
-      "line": 23,
-      "end_line": 62,
-      "module_sha256": "058605d336946634e8bd545808cd0e65baa3d6b86a7ddc3452c894d1ccfa840c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 28,
+      "end_line": 71,
+      "module_sha256": "857415a3563496ec90cc86f48600061a48fec64fd0f7c6d4d718daae96834666",
+      "status": "optimized—verified",
+      "reason": "Preserves emitted surface geometry, enlargement, layer and vacuum defaults and optional site analysis.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/build_interface.py::_build_interface_surface.show_preview",
+      "path": "src/cellstine/cli/interactive/build_interface.py",
+      "qualified_name": "_build_interface_surface.show_preview",
+      "line": 33,
+      "end_line": 49,
+      "module_sha256": "857415a3563496ec90cc86f48600061a48fec64fd0f7c6d4d718daae96834666",
+      "status": "optimized—verified",
+      "reason": "Pure primitive-surface analysis is remembered after source and Miller answers; diagnostic failure does not change generation arguments.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_interface.py::_build_interface_sites",
       "path": "src/cellstine/cli/interactive/build_interface.py",
       "qualified_name": "_build_interface_sites",
-      "line": 65,
-      "end_line": 76,
-      "module_sha256": "058605d336946634e8bd545808cd0e65baa3d6b86a7ddc3452c894d1ccfa840c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 74,
+      "end_line": 85,
+      "module_sha256": "857415a3563496ec90cc86f48600061a48fec64fd0f7c6d4d718daae96834666",
+      "status": "optimized—verified",
+      "reason": "Prefilled slab follows the normal site-analysis builder and emits the chosen surface side.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_interface.py::_prompt_interface_side",
       "path": "src/cellstine/cli/interactive/build_interface.py",
       "qualified_name": "_prompt_interface_side",
-      "line": 79,
-      "end_line": 95,
-      "module_sha256": "058605d336946634e8bd545808cd0e65baa3d6b86a7ddc3452c894d1ccfa840c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 88,
+      "end_line": 104,
+      "module_sha256": "857415a3563496ec90cc86f48600061a48fec64fd0f7c6d4d718daae96834666",
+      "status": "optimized—verified",
+      "reason": "Maps each side source, kind, Miller indices, layer count and vacuum to the correct flags and root priorities.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_interface.py::_prompt_stacking_options",
       "path": "src/cellstine/cli/interactive/build_interface.py",
       "qualified_name": "_prompt_stacking_options",
-      "line": 98,
-      "end_line": 152,
-      "module_sha256": "058605d336946634e8bd545808cd0e65baa3d6b86a7ddc3452c894d1ccfa840c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 107,
+      "end_line": 161,
+      "module_sha256": "857415a3563496ec90cc86f48600061a48fec64fd0f7c6d4d718daae96834666",
+      "status": "reviewed—unchanged",
+      "reason": "Restricts relative stacking to direct builds and preserves mirror, registry and named-contact routing.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_interface.py::_build_interface_registries",
       "path": "src/cellstine/cli/interactive/build_interface.py",
       "qualified_name": "_build_interface_registries",
-      "line": 155,
-      "end_line": 169,
-      "module_sha256": "058605d336946634e8bd545808cd0e65baa3d6b86a7ddc3452c894d1ccfa840c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 164,
+      "end_line": 178,
+      "module_sha256": "857415a3563496ec90cc86f48600061a48fec64fd0f7c6d4d718daae96834666",
+      "status": "reviewed—unchanged",
+      "reason": "Preserves both input-side options and optional equivalent stacking combinations.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_interface.py::_build_interface_build",
       "path": "src/cellstine/cli/interactive/build_interface.py",
       "qualified_name": "_build_interface_build",
-      "line": 172,
-      "end_line": 214,
-      "module_sha256": "058605d336946634e8bd545808cd0e65baa3d6b86a7ddc3452c894d1ccfa840c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 181,
+      "end_line": 223,
+      "module_sha256": "857415a3563496ec90cc86f48600061a48fec64fd0f7c6d4d718daae96834666",
+      "status": "optimized—verified",
+      "reason": "Prefilled matches follow the normal match branch; direct build retains strain and relative stacking semantics; gap and vacuum defaults are preserved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_interface.py::_build_interface_match",
       "path": "src/cellstine/cli/interactive/build_interface.py",
       "qualified_name": "_build_interface_match",
-      "line": 217,
-      "end_line": 255,
-      "module_sha256": "058605d336946634e8bd545808cd0e65baa3d6b86a7ddc3452c894d1ccfa840c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 226,
+      "end_line": 264,
+      "module_sha256": "857415a3563496ec90cc86f48600061a48fec64fd0f7c6d4d718daae96834666",
+      "status": "optimized—verified",
+      "reason": "Preserves custom Miller and layer lists, length, strain budget and shared or film strain modes.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_interface.py::_build_interface_visualize",
       "path": "src/cellstine/cli/interactive/build_interface.py",
       "qualified_name": "_build_interface_visualize",
-      "line": 258,
-      "end_line": 259,
-      "module_sha256": "058605d336946634e8bd545808cd0e65baa3d6b86a7ddc3452c894d1ccfa840c",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 267,
+      "end_line": 268,
+      "module_sha256": "857415a3563496ec90cc86f48600061a48fec64fd0f7c6d4d718daae96834666",
+      "status": "reviewed—unchanged",
+      "reason": "Delegates correctly to shared visualization for slabs and interfaces.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_find",
       "path": "src/cellstine/cli/interactive/build_moire.py",
       "qualified_name": "_build_moire_find",
-      "line": 20,
-      "end_line": 60,
-      "module_sha256": "ed648874a9fb8a3ddedf591c10c628905f38dcc2eceb4f00e0377366fd67334e",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 27,
+      "end_line": 81,
+      "module_sha256": "8443cc3786acd42f88f81d4db157014cd791e89faf0a7abab20443560ea90bb4",
+      "status": "optimized—verified",
+      "reason": "Preserves common, separate and rigid strain semantics and opt-in shortlisting; reviewed fix restores --atoms 400 for rigid advanced-off while advanced explicit No remains uncapped.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_findn",
       "path": "src/cellstine/cli/interactive/build_moire.py",
       "qualified_name": "_build_moire_findn",
-      "line": 63,
-      "end_line": 91,
-      "module_sha256": "ed648874a9fb8a3ddedf591c10c628905f38dcc2eceb4f00e0377366fd67334e",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 84,
+      "end_line": 113,
+      "module_sha256": "8443cc3786acd42f88f81d4db157014cd791e89faf0a7abab20443560ea90bb4",
+      "status": "optimized—verified",
+      "reason": "Labels N-layer search experimental; preserves common or per-layer strain budgets, atom cap and candidate default 200.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_maken",
       "path": "src/cellstine/cli/interactive/build_moire.py",
       "qualified_name": "_build_moire_maken",
-      "line": 94,
-      "end_line": 109,
-      "module_sha256": "ed648874a9fb8a3ddedf591c10c628905f38dcc2eceb4f00e0377366fd67334e",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 116,
+      "end_line": 131,
+      "module_sha256": "8443cc3786acd42f88f81d4db157014cd791e89faf0a7abab20443560ea90bb4",
+      "status": "optimized—verified",
+      "reason": "Prefilled saved results or manifest follow normal stack build; ranges, common or per-gap distances and optional vacuum route correctly.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_make",
       "path": "src/cellstine/cli/interactive/build_moire.py",
       "qualified_name": "_build_moire_make",
-      "line": 112,
-      "end_line": 127,
-      "module_sha256": "ed648874a9fb8a3ddedf591c10c628905f38dcc2eceb4f00e0377366fd67334e",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 134,
+      "end_line": 149,
+      "module_sha256": "8443cc3786acd42f88f81d4db157014cd791e89faf0a7abab20443560ea90bb4",
+      "status": "optimized—verified",
+      "reason": "Reuses actual count returned by existing preview read for bounded index validation; preserves generation gap, vacuum and worker defaults.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_translate",
       "path": "src/cellstine/cli/interactive/build_moire.py",
       "qualified_name": "_build_moire_translate",
-      "line": 130,
-      "end_line": 143,
-      "module_sha256": "ed648874a9fb8a3ddedf591c10c628905f38dcc2eceb4f00e0377366fd67334e",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 152,
+      "end_line": 165,
+      "module_sha256": "8443cc3786acd42f88f81d4db157014cd791e89faf0a7abab20443560ea90bb4",
+      "status": "optimized—verified",
+      "reason": "Prefilled structure follows normal direct or Cartesian shift flow; parsed vector text and flags are preserved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_visualize",
       "path": "src/cellstine/cli/interactive/build_moire.py",
       "qualified_name": "_build_moire_visualize",
-      "line": 146,
-      "end_line": 159,
-      "module_sha256": "ed648874a9fb8a3ddedf591c10c628905f38dcc2eceb4f00e0377366fd67334e",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 168,
+      "end_line": 182,
+      "module_sha256": "8443cc3786acd42f88f81d4db157014cd791e89faf0a7abab20443560ea90bb4",
+      "status": "optimized—verified",
+      "reason": "Only selected-index visualization requests actual validated count; normal visualization avoids the additional read.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_visualize.<lambda>@178:26",
+      "path": "src/cellstine/cli/interactive/build_moire.py",
+      "qualified_name": "_build_moire_visualize.<lambda>@178:26",
+      "line": 178,
+      "end_line": 178,
+      "module_sha256": "8443cc3786acd42f88f81d4db157014cd791e89faf0a7abab20443560ea90bb4",
+      "status": "optimized—verified",
+      "reason": "Caches selected-file validated count across replay; changing earlier file or selection answers discards downstream cache.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_path.py::_build_migration_path",
       "path": "src/cellstine/cli/interactive/build_path.py",
       "qualified_name": "_build_migration_path",
-      "line": 17,
-      "end_line": 54,
-      "module_sha256": "1e62b6149634589d51d2912cf32797c1fbd20a0c115eda9dc89dd3587dd353c8",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 16,
+      "end_line": 53,
+      "module_sha256": "23e77edba8a90f13cd5d614d5bb230ae73f0843c7db0988f86f1d57976d8c20a",
+      "status": "reviewed—unchanged",
+      "reason": "Preserves structure formats, group-specific path command, image limits and atom-pairing defaults.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_visualize.py::_prompt_view_direction",
       "path": "src/cellstine/cli/interactive/build_visualize.py",
       "qualified_name": "_prompt_view_direction",
-      "line": 27,
-      "end_line": 59,
-      "module_sha256": "3ac26e5c220fce1f17e967437db2357c9ef2ef82dc67c98d74425983f5212f20",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 28,
+      "end_line": 60,
+      "module_sha256": "5068b4245776607043cfde18185b5d591470ce25e3af8c88fd93fb8e5ec0ccd9",
+      "status": "reviewed—unchanged",
+      "reason": "Preserves reciprocal-plane versus lattice-direction notation and axis choices.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/build_visualize.py::_build_structure_visualize",
       "path": "src/cellstine/cli/interactive/build_visualize.py",
       "qualified_name": "_build_structure_visualize",
-      "line": 62,
-      "end_line": 79,
-      "module_sha256": "3ac26e5c220fce1f17e967437db2357c9ef2ef82dc67c98d74425983f5212f20",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 63,
+      "end_line": 80,
+      "module_sha256": "5068b4245776607043cfde18185b5d591470ce25e3af8c88fd93fb8e5ec0ccd9",
+      "status": "optimized—verified",
+      "reason": "Prefilled structure bypasses only file selection; root view command, Plotly choice and optional observation direction follow normal builder flow.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_stream_supports_unicode",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_stream_supports_unicode",
-      "line": 37,
-      "end_line": 43,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 43,
+      "end_line": 49,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Checks actual stdout encoding before Unicode presentation selection.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_PromptHistory.__init__",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_PromptHistory.__init__",
+      "line": 65,
+      "end_line": 68,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Creates fresh answer cursor and nested-prompt depth state.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_Remembered.__init__",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_Remembered.__init__",
+      "line": 74,
+      "end_line": 75,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Tags cached preview values separately from editable answers.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::guided_history_active",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "guided_history_active",
+      "line": 78,
+      "end_line": 79,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Allows workflow dispatch to propagate Back into active history.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_replaying",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_replaying",
+      "line": 82,
+      "end_line": 85,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Mutes output precisely while retained history entries remain.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_remember",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_remember",
+      "line": 88,
+      "end_line": 106,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Caches read-only preview computations across replay; current callers preserve positional history structure.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_drop_last_answer",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_drop_last_answer",
+      "line": 109,
+      "end_line": 115,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Removes following previews and exactly one real answer when stepping Back.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::forget_confirmation",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "forget_confirmation",
+      "line": 118,
+      "end_line": 121,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Reopens the last confirmation after failed execution without erasing prior answers.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_guided_step",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_guided_step",
+      "line": 124,
+      "end_line": 143,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Builds prompt decorator and preserves wrapped metadata.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_guided_step.step",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_guided_step.step",
+      "line": 127,
+      "end_line": 142,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Records only successfully validated answers and restores depth on exceptions; nested prompts are atomic.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::run_guided_steps",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "run_guided_steps",
+      "line": 146,
+      "end_line": 166,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Rebuilds command construction only, trims answers on Back, restores previous global history in finally.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::PlainGuidedUI.print",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "PlainGuidedUI.print",
-      "line": 57,
-      "end_line": 66,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 172,
+      "end_line": 181,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Retains plain printing with replacement fallback for unsupported output characters.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::PlainGuidedUI.title",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "PlainGuidedUI.title",
-      "line": 68,
-      "end_line": 73,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 183,
+      "end_line": 188,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Retains plain title underline and optional subtitle presentation.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::PlainGuidedUI.banner",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "PlainGuidedUI.banner",
-      "line": 75,
-      "end_line": 79,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 190,
+      "end_line": 194,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Retains constant banner and attribution.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::PlainGuidedUI.prompt",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "PlainGuidedUI.prompt",
-      "line": 81,
-      "end_line": 100,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 196,
+      "end_line": 220,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Handles defaults, empty answers, Back and Quit; uppercase B remains available for boron.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::PlainGuidedUI.confirm",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "PlainGuidedUI.confirm",
-      "line": 102,
-      "end_line": 110,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 222,
+      "end_line": 230,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Validates yes/no through navigation-aware prompt so Back and Quit propagate.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::PlainGuidedUI.choice",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "PlainGuidedUI.choice",
-      "line": 112,
-      "end_line": 133,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 232,
+      "end_line": 253,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Validates menu numbers and keys while preserving configured values and retry semantics.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::PlainGuidedUI.command_preview",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "PlainGuidedUI.command_preview",
-      "line": 135,
-      "end_line": 138,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 255,
+      "end_line": 258,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Delegates command presentation to formatter; formatter reviewed separately.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::RichGuidedUI.__init__",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "RichGuidedUI.__init__",
-      "line": 148,
-      "end_line": 168,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 268,
+      "end_line": 291,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Keeps Rich imports optional and local; configures encoding-aware boxes, color and literal Text rendering.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::RichGuidedUI._box_kwargs",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "RichGuidedUI._box_kwargs",
-      "line": 170,
-      "end_line": 173,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 293,
+      "end_line": 296,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Returns box setting only when supported.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::RichGuidedUI.print",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "RichGuidedUI.print",
-      "line": 175,
-      "end_line": 179,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 298,
+      "end_line": 307,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Disables Rich markup/highlighting for data and cleans kwargs for plain fallback.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::RichGuidedUI.title",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "RichGuidedUI.title",
-      "line": 181,
-      "end_line": 184,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 309,
+      "end_line": 312,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Preserves bracketed title and body data through Text renderables.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::RichGuidedUI.banner",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "RichGuidedUI.banner",
-      "line": 186,
-      "end_line": 189,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 314,
+      "end_line": 317,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Selects encoding-compatible banner and retains attribution.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::RichGuidedUI.prompt",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "RichGuidedUI.prompt",
-      "line": 191,
-      "end_line": 209,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 319,
+      "end_line": 342,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Matches plain navigation/default/empty semantics through Rich Prompt.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::RichGuidedUI.confirm",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "RichGuidedUI.confirm",
-      "line": 211,
-      "end_line": 212,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 344,
+      "end_line": 347,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Uses shared confirmation validation so Back is not consumed by Rich Confirm.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::RichGuidedUI.choice",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "RichGuidedUI.choice",
-      "line": 214,
-      "end_line": 238,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 349,
+      "end_line": 373,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Preserves menu lookup parity and renders labels and hints literally.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::RichGuidedUI.command_preview",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "RichGuidedUI.command_preview",
-      "line": 240,
-      "end_line": 242,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 375,
+      "end_line": 377,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Uses literal Text renderables for formatted command and title.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_MutedGuidedUI.print",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_MutedGuidedUI.print",
+      "line": 383,
+      "end_line": 384,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Intentionally suppresses replay output without executing scientific work.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::get_guided_ui",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "get_guided_ui",
-      "line": 248,
-      "end_line": 249,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 391,
+      "end_line": 392,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Selects muted UI while answers remain to replay, active UI for new questions.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::use_guided_ui",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "use_guided_ui",
-      "line": 253,
-      "end_line": 261,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 396,
+      "end_line": 404,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Restores previous UI even when construction or navigation raises.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_print_title",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_print_title",
-      "line": 264,
-      "end_line": 265,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 407,
+      "end_line": 408,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Thin title delegation honors active or muted UI.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_print_main_menu_banner",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_print_main_menu_banner",
-      "line": 268,
-      "end_line": 269,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 411,
+      "end_line": 412,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Thin banner delegation honors active UI.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_prompt",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_prompt",
-      "line": 272,
-      "end_line": 279,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 416,
+      "end_line": 423,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Records primitive prompt result while preserving default and navigation flags.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_prompt_int",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_prompt_int",
-      "line": 282,
-      "end_line": 287,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 427,
+      "end_line": 436,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Validates integer conversion and optional lower bound within atomic prompt history.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_prompt_float",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_prompt_float",
-      "line": 290,
-      "end_line": 295,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 440,
+      "end_line": 461,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Rejects nonfinite values and applies positive or minimum bounds before recording.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_prompt_strain",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_prompt_strain",
+      "line": 465,
+      "end_line": 471,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Confirms unusually large fractional strain and retries declined values as one history step.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_prompt_parsed",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_prompt_parsed",
+      "line": 475,
+      "end_line": 485,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Retries public parser errors and preserves accepted text verbatim.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_prompt_yes_no",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_prompt_yes_no",
-      "line": 298,
-      "end_line": 299,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 489,
+      "end_line": 490,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Records shared yes/no confirmation as one answer.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_choice",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_choice",
-      "line": 302,
-      "end_line": 303,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 494,
+      "end_line": 495,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Records validated menu choice as one answer.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_relative_display",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_relative_display",
-      "line": 306,
-      "end_line": 310,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 498,
+      "end_line": 502,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Displays cwd-relative resolved paths with absolute fallback.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_find_candidates",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_find_candidates",
-      "line": 313,
-      "end_line": 327,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 505,
+      "end_line": 542,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Preserves root priority, resolved-path deduplication and stable ties with bounded shortlist; stops lower roots and retains legacy negative slicing.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
-      "id": "src/cellstine/cli/interactive/prompts.py::_find_candidates.<lambda>@326:19",
+      "id": "src/cellstine/cli/interactive/prompts.py::_find_candidates.unique_matches",
       "path": "src/cellstine/cli/interactive/prompts.py",
-      "qualified_name": "_find_candidates.<lambda>@326:19",
-      "line": 326,
-      "end_line": 326,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "qualified_name": "_find_candidates.unique_matches",
+      "line": 516,
+      "end_line": 523,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Deduplicates resolved paths before ranking in original pattern and traversal order.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_find_candidates.<lambda>@531:29",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_find_candidates.<lambda>@531:29",
+      "line": 531,
+      "end_line": 531,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Preserves historical negative-limit ordering by root then descending modification time.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_find_candidates.<lambda>@538:62",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_find_candidates.<lambda>@538:62",
+      "line": 538,
+      "end_line": 538,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Ranks positive-limit shortlist by descending modification time; nsmallest preserves encounter ties.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_find_in_working_folder",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_find_in_working_folder",
+      "line": 545,
+      "end_line": 549,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Adds shallow cwd fallback only after priority folders yield no files; equal-time set ordering unspecified for this new fallback.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_find_in_working_folder.<lambda>@549:29",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_find_in_working_folder.<lambda>@549:29",
+      "line": 549,
+      "end_line": 549,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Sorts shallow fallback by descending modification time.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_clean_path_text",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_clean_path_text",
+      "line": 552,
+      "end_line": 558,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Removes matching surrounding quotes and expands a leading home marker.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_path_problem",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_path_problem",
+      "line": 561,
+      "end_line": 567,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Checks existence and directory acceptance before returning manually entered path.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_prompt_path",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_prompt_path",
-      "line": 330,
-      "end_line": 374,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 571,
+      "end_line": 625,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Validates manual and default paths, retries bad shortlist indexes and returns manual Back to list; selected suggestions remain resolved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_prompt_csv",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_prompt_csv",
-      "line": 377,
-      "end_line": 378,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 629,
+      "end_line": 630,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Retains CSV text unchanged as a recorded compound step.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_prompt_int_range",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_prompt_int_range",
-      "line": 381,
-      "end_line": 386,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 634,
+      "end_line": 639,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Validates inclusive integer range within one recorded prompt.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_parse_matrix_entries",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_parse_matrix_entries",
-      "line": 389,
-      "end_line": 393,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 642,
+      "end_line": 646,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Requires exactly four integer matrix entries and retains comma/semicolon compatibility.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_site_options_from_report",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_site_options_from_report",
-      "line": 416,
-      "end_line": 429,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 669,
+      "end_line": 682,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Preserves fixed scientific site-family order and excludes nonpositive counts.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_print_detected_sites",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_print_detected_sites",
-      "line": 432,
-      "end_line": 440,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 685,
+      "end_line": 693,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Retains sorted count display and explicit empty-report presentation.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_print_saved_moire_preview",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_print_saved_moire_preview",
-      "line": 443,
-      "end_line": 452,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 696,
+      "end_line": 715,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Consumes cached preview text/error/count without retaining result document or executing commands.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_print_saved_moire_preview.read_preview",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_print_saved_moire_preview.read_preview",
+      "line": 697,
+      "end_line": 705,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Reads validated preview once, returns expected text/count or cached preview error; large-file progress is presentation only.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_saved_candidate_count",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_saved_candidate_count",
+      "line": 718,
+      "end_line": 728,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Derives selection bound from actual validated rows and returns None for expected unavailable-input errors; visualization caches caller result.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_index_parser",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_index_parser",
+      "line": 731,
+      "end_line": 744,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Closes over optional actual row bound while delegating syntax to public index parser.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/prompts.py::_index_parser.parse",
+      "path": "src/cellstine/cli/interactive/prompts.py",
+      "qualified_name": "_index_parser.parse",
+      "line": 736,
+      "end_line": 742,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Rejects empty candidate files and out-of-range bounded indexes; preserves parsed index order and public empty-spec rejection.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_print_site_index_options",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_print_site_index_options",
-      "line": 455,
-      "end_line": 460,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 747,
+      "end_line": 752,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Uses backend scientific site ordering, unchanged table formatting and truncation advice.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_format_command",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_format_command",
-      "line": 463,
-      "end_line": 470,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 759,
+      "end_line": 776,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Re-reviewed platform-aware quoting: POSIX shlex.join and PowerShell literal single quotes with doubled apostrophes preserve special arguments; @ and % removed from bareword whitelist to prevent splatting. Parent verified POSIX roundtrip and PowerShell 7 native subprocess roundtrip including @args. Documented copied-preview limits remain PowerShell reserved --% token and legacy native quote handling; actual direct argv execution unchanged.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_print_command_preview",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_print_command_preview",
-      "line": 473,
-      "end_line": 474,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 779,
+      "end_line": 780,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "reviewed—unchanged",
+      "reason": "Thin command-preview UI delegation.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/prompts.py::_first_artifact",
       "path": "src/cellstine/cli/interactive/prompts.py",
       "qualified_name": "_first_artifact",
-      "line": 477,
-      "end_line": 483,
-      "module_sha256": "77a51e3d8fa4cfc8885bb74e1a7f1b5702099788470b10c8405274e567e8bae5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 783,
+      "end_line": 789,
+      "module_sha256": "2502c2f937cc7e6d30907955b82098c0f54c83c8cb7de2bfd483a383550b9b87",
+      "status": "optimized—verified",
+      "reason": "Handles missing artifacts, scalar paths and first entry of nonempty artifact lists for follow-up callers.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/runner.py::_workflow_command",
       "path": "src/cellstine/cli/interactive/runner.py",
       "qualified_name": "_workflow_command",
-      "line": 58,
-      "end_line": 212,
-      "module_sha256": "094783cb2c538cfbd79c6ddb2d21fdf663e0e0614e019c7790e899f4ded5b0a5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 64,
+      "end_line": 233,
+      "module_sha256": "b7db890c6ae707535c67c576a70ef8b768527f486b97252cdc144438f2c85642",
+      "status": "optimized—verified",
+      "reason": "Dispatches all workflow groups and kpath correctly; guided Back propagates while direct calls retain submenu behavior.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/runner.py::_follow_up",
       "path": "src/cellstine/cli/interactive/runner.py",
       "qualified_name": "_follow_up",
-      "line": 215,
-      "end_line": 275,
-      "module_sha256": "094783cb2c538cfbd79c6ddb2d21fdf663e0e0614e019c7790e899f4ded5b0a5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 236,
+      "end_line": 321,
+      "module_sha256": "b7db890c6ae707535c67c576a70ef8b768527f486b97252cdc144438f2c85642",
+      "status": "optimized—verified",
+      "reason": "Routes successful stages through normal builders with prefilled artifact paths and skips zero-candidate search continuation.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/runner.py::_confirmed_command",
+      "path": "src/cellstine/cli/interactive/runner.py",
+      "qualified_name": "_confirmed_command",
+      "line": 328,
+      "end_line": 333,
+      "module_sha256": "b7db890c6ae707535c67c576a70ef8b768527f486b97252cdc144438f2c85642",
+      "status": "optimized—verified",
+      "reason": "Separates absent, declined and confirmed commands; displays command before asking and performs no execution.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/runner.py::_run_command",
+      "path": "src/cellstine/cli/interactive/runner.py",
+      "qualified_name": "_run_command",
+      "line": 336,
+      "end_line": 364,
+      "module_sha256": "b7db890c6ae707535c67c576a70ef8b768527f486b97252cdc144438f2c85642",
+      "status": "optimized—verified",
+      "reason": "Runs public parser and execution outside replay; reports parser stderr, cancellation and expected or unexpected execution failures.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/runner.py::_retry_failed_command",
+      "path": "src/cellstine/cli/interactive/runner.py",
+      "qualified_name": "_retry_failed_command",
+      "line": 367,
+      "end_line": 381,
+      "module_sha256": "b7db890c6ae707535c67c576a70ef8b768527f486b97252cdc144438f2c85642",
+      "status": "optimized—verified",
+      "reason": "Keeps primary or follow-up answers while reopening confirmation after choosing edit; menu choice discards history.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/runner.py::_retry_failed_command.<lambda>@370:30",
+      "path": "src/cellstine/cli/interactive/runner.py",
+      "qualified_name": "_retry_failed_command.<lambda>@370:30",
+      "line": 370,
+      "end_line": 377,
+      "module_sha256": "b7db890c6ae707535c67c576a70ef8b768527f486b97252cdc144438f2c85642",
+      "status": "optimized—verified",
+      "reason": "Builds isolated retry choice without replaying scientific execution.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/runner.py::_run_interactive",
       "path": "src/cellstine/cli/interactive/runner.py",
       "qualified_name": "_run_interactive",
-      "line": 278,
-      "end_line": 336,
-      "module_sha256": "094783cb2c538cfbd79c6ddb2d21fdf663e0e0614e019c7790e899f4ded5b0a5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 384,
+      "end_line": 477,
+      "module_sha256": "b7db890c6ae707535c67c576a70ef8b768527f486b97252cdc144438f2c85642",
+      "status": "optimized—verified",
+      "reason": "Re-reviewed fix: retains follow-up history through failed execution/edit, resets after success, handles builder ValueError/OSError and keeps completed primary outside replay.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/runner.py::_run_interactive.<lambda>@412:36",
+      "path": "src/cellstine/cli/interactive/runner.py",
+      "qualified_name": "_run_interactive.<lambda>@412:36",
+      "line": 412,
+      "end_line": 414,
+      "module_sha256": "b7db890c6ae707535c67c576a70ef8b768527f486b97252cdc144438f2c85642",
+      "status": "optimized—verified",
+      "reason": "Constructs confirmed primary command within retained history without executing it.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/runner.py::_run_interactive.<lambda>@412:36.<lambda>@413:16",
+      "path": "src/cellstine/cli/interactive/runner.py",
+      "qualified_name": "_run_interactive.<lambda>@412:36.<lambda>@413:16",
+      "line": 413,
+      "end_line": 413,
+      "module_sha256": "b7db890c6ae707535c67c576a70ef8b768527f486b97252cdc144438f2c85642",
+      "status": "optimized—verified",
+      "reason": "Synchronously constructs selected workflow only; captured active group is current.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/runner.py::_run_interactive.<lambda>@450:45",
+      "path": "src/cellstine/cli/interactive/runner.py",
+      "qualified_name": "_run_interactive.<lambda>@450:45",
+      "line": 450,
+      "end_line": 452,
+      "module_sha256": "b7db890c6ae707535c67c576a70ef8b768527f486b97252cdc144438f2c85642",
+      "status": "optimized—verified",
+      "reason": "Constructs confirmed follow-up within retained follow-up history without executing it.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/cli/interactive/runner.py::_run_interactive.<lambda>@450:45.<lambda>@451:20",
+      "path": "src/cellstine/cli/interactive/runner.py",
+      "qualified_name": "_run_interactive.<lambda>@450:45.<lambda>@451:20",
+      "line": 451,
+      "end_line": 451,
+      "module_sha256": "b7db890c6ae707535c67c576a70ef8b768527f486b97252cdc144438f2c85642",
+      "status": "optimized—verified",
+      "reason": "Synchronously builds continuation from current group, stage and completed result.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/interactive/runner.py::run_interactive",
       "path": "src/cellstine/cli/interactive/runner.py",
       "qualified_name": "run_interactive",
-      "line": 339,
-      "end_line": 346,
-      "module_sha256": "094783cb2c538cfbd79c6ddb2d21fdf663e0e0614e019c7790e899f4ded5b0a5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 480,
+      "end_line": 487,
+      "module_sha256": "b7db890c6ae707535c67c576a70ef8b768527f486b97252cdc144438f2c85642",
+      "status": "reviewed—unchanged",
+      "reason": "Restores UI context and closes gracefully on navigation, EOF and interruption; builder failures handled inside loop.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/main.py::_workflow",
@@ -2042,10 +2504,10 @@
       "qualified_name": "_workflow",
       "line": 27,
       "end_line": 33,
-      "module_sha256": "d7b6682f06ad8ae02528db974f7100d0d70cd62ef2b3f779887a3c6978065540",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "48f2e77ecae8c789b0770d56dab988751243b99961c1c69221fa55c97c19c643",
+      "status": "reviewed—unchanged",
+      "reason": "Relative lazy-import workflow mapping preserved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/main.py::__getattr__",
@@ -2053,10 +2515,10 @@
       "qualified_name": "__getattr__",
       "line": 36,
       "end_line": 43,
-      "module_sha256": "d7b6682f06ad8ae02528db974f7100d0d70cd62ef2b3f779887a3c6978065540",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "48f2e77ecae8c789b0770d56dab988751243b99961c1c69221fa55c97c19c643",
+      "status": "reviewed—unchanged",
+      "reason": "Lazy compatibility class exports and unknown-name errors preserved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/main.py::_print_versions",
@@ -2064,10 +2526,10 @@
       "qualified_name": "_print_versions",
       "line": 46,
       "end_line": 53,
-      "module_sha256": "d7b6682f06ad8ae02528db974f7100d0d70cd62ef2b3f779887a3c6978065540",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "48f2e77ecae8c789b0770d56dab988751243b99961c1c69221fa55c97c19c643",
+      "status": "reviewed—unchanged",
+      "reason": "Existing dependency version inventory formatting preserved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/main.py::_print_result",
@@ -2075,43 +2537,43 @@
       "qualified_name": "_print_result",
       "line": 56,
       "end_line": 63,
-      "module_sha256": "d7b6682f06ad8ae02528db974f7100d0d70cd62ef2b3f779887a3c6978065540",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "48f2e77ecae8c789b0770d56dab988751243b99961c1c69221fa55c97c19c643",
+      "status": "reviewed—unchanged",
+      "reason": "Shared report formatter and empty-output behavior unchanged.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/main.py::execute_namespace",
       "path": "src/cellstine/cli/main.py",
       "qualified_name": "execute_namespace",
       "line": 66,
-      "end_line": 472,
-      "module_sha256": "d7b6682f06ad8ae02528db974f7100d0d70cd62ef2b3f779887a3c6978065540",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 473,
+      "module_sha256": "48f2e77ecae8c789b0770d56dab988751243b99961c1c69221fa55c97c19c643",
+      "status": "optimized—verified",
+      "reason": "Every workflow branch reviewed. Sole change forwards parser-owned max_candidates to Moire.find; direct API default remains 500 while CLI None saves all accepted candidates. Static stdlib-only AST/signature probe checked 27 resolvable calls without unknown keywords or missing required parameters; all reachable parser stages supply referenced attributes. Unchanged dormant adsorbate/interface/defect kpath branches are absent from public parser; Molecule and Defect lack kpath. No new regression identified.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/main.py::dispatch_namespace",
       "path": "src/cellstine/cli/main.py",
       "qualified_name": "dispatch_namespace",
-      "line": 475,
-      "end_line": 493,
-      "module_sha256": "d7b6682f06ad8ae02528db974f7100d0d70cd62ef2b3f779887a3c6978065540",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 476,
+      "end_line": 494,
+      "module_sha256": "48f2e77ecae8c789b0770d56dab988751243b99961c1c69221fa55c97c19c643",
+      "status": "reviewed—unchanged",
+      "reason": "Version handling, root and group guided routing, execution and result printing preserved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/main.py::main",
       "path": "src/cellstine/cli/main.py",
       "qualified_name": "main",
-      "line": 496,
-      "end_line": 517,
-      "module_sha256": "d7b6682f06ad8ae02528db974f7100d0d70cd62ef2b3f779887a3c6978065540",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 497,
+      "end_line": 518,
+      "module_sha256": "48f2e77ecae8c789b0770d56dab988751243b99961c1c69221fa55c97c19c643",
+      "status": "reviewed—unchanged",
+      "reason": "Argument copying, plain flag filtering, legacy rejection, optional Rich fallback and exit conversion preserved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/plain.py::build_parser",
@@ -2172,12 +2634,12 @@
       "id": "src/cellstine/cli/plain_moire.py::add_moire_group",
       "path": "src/cellstine/cli/plain_moire.py",
       "qualified_name": "add_moire_group",
-      "line": 18,
-      "end_line": 185,
-      "module_sha256": "3ce201eb8a7db456b27d8dcf0cefeda18466a3457dad2af6f4cf3b4ba69e26cf",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 20,
+      "end_line": 188,
+      "module_sha256": "a72cfdc3dc23fa15bc702aa98d89fa61387e9f8829dbe0e9af48c30dbb5a644b",
+      "status": "optimized—verified",
+      "reason": "Reviewed every search, build, stack-search, stack-build, shift and view flag, destination, default, alias, legacy rejection and consumer. Only stack strain/gap lists switch to arbitrary finite lists. Bilayer shortlist has positive integer parsing and None default. No optional dependency introduced.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/cli/plain_surface.py::add_surface_group",
@@ -4693,10 +5155,10 @@
       "qualified_name": "_get",
       "line": 13,
       "end_line": 19,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Retains mapping or attribute alias lookup and default semantics.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/previews.py::_matrix",
@@ -4704,10 +5166,10 @@
       "qualified_name": "_matrix",
       "line": 22,
       "end_line": 33,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Retains scientific matrix display using layer vectors with legacy integer-field fallback.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/previews.py::_percent",
@@ -4715,10 +5177,10 @@
       "qualified_name": "_percent",
       "line": 36,
       "end_line": 37,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Retains fractional strain to percent conversion.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/previews.py::_format_matrix",
@@ -4726,10 +5188,10 @@
       "qualified_name": "_format_matrix",
       "line": 40,
       "end_line": 49,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Retains integer matrix formatting and requested fixed floating precision.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/previews.py::_largest_magnitude",
@@ -4737,10 +5199,10 @@
       "qualified_name": "_largest_magnitude",
       "line": 52,
       "end_line": 54,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Retains absolute maximum and empty-value fallback.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/previews.py::_format_gram_candidates",
@@ -4748,10 +5210,10 @@
       "qualified_name": "_format_gram_candidates",
       "line": 57,
       "end_line": 113,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Retains Gram rank/index ordering, strain percentages, matrices, certification and truncation without mutating candidate input.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/previews.py::_format_gram_candidates.<lambda>@62:12",
@@ -4759,10 +5221,10 @@
       "qualified_name": "_format_gram_candidates.<lambda>@62:12",
       "line": 62,
       "end_line": 65,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Preserves stable Gram ordering by rank then index.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/previews.py::format_bilayer_candidates",
@@ -4770,10 +5232,10 @@
       "qualified_name": "format_bilayer_candidates",
       "line": 116,
       "end_line": 159,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Retains Gram dispatch and legacy bilayer scientific table formats.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/previews.py::format_bilayer_candidates.<lambda>@123:12",
@@ -4781,10 +5243,10 @@
       "qualified_name": "format_bilayer_candidates.<lambda>@123:12",
       "line": 123,
       "end_line": 127,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Preserves legacy angle, strain and atom ordering.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/previews.py::format_nlayer_candidates",
@@ -4792,10 +5254,10 @@
       "qualified_name": "format_nlayer_candidates",
       "line": 162,
       "end_line": 204,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Retains N-layer atom-first ordering, per-layer strain/twist data, matrix formatting and truncation for Supermoire caller.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/previews.py::format_nlayer_candidates.<lambda>@167:12",
@@ -4803,10 +5265,10 @@
       "qualified_name": "format_nlayer_candidates.<lambda>@167:12",
       "line": 167,
       "end_line": 170,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Preserves N-layer atom count then maximum strain ordering.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/previews.py::_iter_manifest_result_paths",
@@ -4814,54 +5276,65 @@
       "qualified_name": "_iter_manifest_result_paths",
       "line": 207,
       "end_line": 218,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Retains manifest artifact priority followed by sorted matching keys and performs no persistence.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/previews.py::preview_moire_results_file",
       "path": "src/cellstine/core/previews.py",
       "qualified_name": "preview_moire_results_file",
       "line": 221,
-      "end_line": 246,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 224,
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "optimized—verified",
+      "reason": "Preserves public string-returning preview API through private tuple-text delegation.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
+    },
+    {
+      "id": "src/cellstine/core/previews.py::_preview_moire_results_with_count",
+      "path": "src/cellstine/core/previews.py",
+      "qualified_name": "_preview_moire_results_with_count",
+      "line": 227,
+      "end_line": 262,
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "optimized—verified",
+      "reason": "Reads each result once through validator; returns actual row count only for one result and None for ambiguous manifests; retains public text and no document cache.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/previews.py::format_adsorption_sites",
       "path": "src/cellstine/core/previews.py",
       "qualified_name": "format_adsorption_sites",
-      "line": 249,
-      "end_line": 277,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 265,
+      "end_line": 293,
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Retains direct-coordinate ordering, coordinate precision, indexing and truncation for guided and surface reports.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
-      "id": "src/cellstine/core/previews.py::format_adsorption_sites.<lambda>@253:18",
+      "id": "src/cellstine/core/previews.py::format_adsorption_sites.<lambda>@269:18",
       "path": "src/cellstine/core/previews.py",
-      "qualified_name": "format_adsorption_sites.<lambda>@253:18",
-      "line": 253,
-      "end_line": 253,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "qualified_name": "format_adsorption_sites.<lambda>@269:18",
+      "line": 269,
+      "end_line": 269,
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Preserves direct-coordinate tuple ordering.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/previews.py::format_site_report",
       "path": "src/cellstine/core/previews.py",
       "qualified_name": "format_site_report",
-      "line": 280,
-      "end_line": 297,
-      "module_sha256": "6ad53bb31ffa08517f23d66397e1006e317ac1fec82090cd9e79caf025a28594",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 296,
+      "end_line": 313,
+      "module_sha256": "64f14184b4330eb605f620c3115aa001c153848be98a0ea3d94fc8319987b63c",
+      "status": "reviewed—unchanged",
+      "reason": "Retains grouped site-type ordering and per-type table formatting for surface workflow.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/core/provenance.py::_fields",
@@ -11260,10 +11733,10 @@
       "qualified_name": "_integer_matrix",
       "line": 67,
       "end_line": 73,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Existing 2x2 int64 conversion and nonsingularity boundary unchanged. Existing limitation: casts fractional input and uses floating determinant screening; arbitrary integer precision is not established.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::_exact_determinant",
@@ -11271,10 +11744,10 @@
       "qualified_name": "_exact_determinant",
       "line": 76,
       "end_line": 78,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Python-object multiplication preserves exact determinant after input conversion.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::_exact_adjugate",
@@ -11282,10 +11755,10 @@
       "qualified_name": "_exact_adjugate",
       "line": 81,
       "end_line": 85,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Row-matrix adjugate signs and order correct and unchanged.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::integer_left_kernel",
@@ -11293,10 +11766,10 @@
       "qualified_name": "integer_left_kernel",
       "line": 88,
       "end_line": 122,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Integer row elimination tracks identical operations on the unimodular transform; zero rows select kernel generators. Existing returned int64 storage bounds remain.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::integer_left_kernel.<lambda>@106:29",
@@ -11304,10 +11777,10 @@
       "qualified_name": "integer_left_kernel.<lambda>@106:29",
       "line": 106,
       "end_line": 106,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Absolute pivot magnitude ordering retained for Euclidean reduction.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::sublattice_intersection",
@@ -11315,10 +11788,10 @@
       "qualified_name": "sublattice_intersection",
       "line": 125,
       "end_line": 147,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Kernel image and mirrored-image equality check and positive orientation retained.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::intersect_sublattices",
@@ -11326,10 +11799,10 @@
       "qualified_name": "intersect_sublattices",
       "line": 150,
       "end_line": 158,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Ordered repeated intersections and empty-input rejection retained.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::quotient_matrix",
@@ -11337,10 +11810,10 @@
       "qualified_name": "quotient_matrix",
       "line": 161,
       "end_line": 176,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Exact adjugate divisibility computes fine = C @ coarse; multiplication order unchanged.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::reduce_supercell",
@@ -11348,10 +11821,10 @@
       "qualified_name": "reduce_supercell",
       "line": 179,
       "end_line": 192,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Cartesian-column gauge transposed back onto row generators; orientation normalization preserved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::LayerMatch.base_multiplicity",
@@ -11359,10 +11832,10 @@
       "qualified_name": "LayerMatch.base_multiplicity",
       "line": 213,
       "end_line": 214,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Absolute determinant remains base repetition count.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::LayerMatch.max_abs_strain",
@@ -11370,10 +11843,10 @@
       "qualified_name": "LayerMatch.max_abs_strain",
       "line": 217,
       "end_line": 218,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Principal strain magnitude summary unchanged.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::NLayerCandidate.cell_lengths",
@@ -11381,10 +11854,10 @@
       "qualified_name": "NLayerCandidate.cell_lengths",
       "line": 233,
       "end_line": 237,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Ordered shared-row norms preserved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::NLayerCandidate.cell_angle_deg",
@@ -11392,10 +11865,10 @@
       "qualified_name": "NLayerCandidate.cell_angle_deg",
       "line": 240,
       "end_line": 242,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Established lattice angle helper retained.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::NLayerCandidate.max_abs_strain",
@@ -11403,10 +11876,10 @@
       "qualified_name": "NLayerCandidate.max_abs_strain",
       "line": 245,
       "end_line": 248,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Empty-layer zero and maximum layer strain preserved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::NLayerCandidate.to_dict",
@@ -11414,10 +11887,10 @@
       "qualified_name": "NLayerCandidate.to_dict",
       "line": 250,
       "end_line": 263,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "JSON keys, numeric conversions, row and layer order, coincidence index and atom counts preserved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::_affine_in_base_frame",
@@ -11425,10 +11898,10 @@
       "qualified_name": "_affine_in_base_frame",
       "line": 266,
       "end_line": 280,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Orthogonality check and transpose composition preserve current dev matching-sign improper policy; no root-engine policy imported.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::layer_matches_from_candidates",
@@ -11436,10 +11909,10 @@
       "qualified_name": "layer_matches_from_candidates",
       "line": 283,
       "end_line": 315,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Bottom and top matrix correspondence, affine conversion, strain order, source provenance and multiplicity preserved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::combine_layer_matches",
@@ -11447,10 +11920,10 @@
       "qualified_name": "combine_layer_matches",
       "line": 318,
       "end_line": 384,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Intersection, left quotient multiplication, affine association, atom accounting, reduced-cell size and shape checks, and layer order preserved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::viable_combinations",
@@ -11458,10 +11931,10 @@
       "qualified_name": "viable_combinations",
       "line": 387,
       "end_line": 463,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Depth-first product order retained. Only monotone atom and length bounds prune prefixes; shape remains a final check.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::viable_combinations.survives",
@@ -11469,10 +11942,10 @@
       "qualified_name": "viable_combinations.survives",
       "line": 430,
       "end_line": 444,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Prefix multiplicity and atom lower bounds and reduced longer-row length bound unchanged.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::viable_combinations.walk",
@@ -11480,10 +11953,10 @@
       "qualified_name": "viable_combinations.walk",
       "line": 448,
       "end_line": 461,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Append, recurse, pop discipline preserves positional layer order and product enumeration.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::_candidate_sort_key",
@@ -11491,10 +11964,10 @@
       "qualified_name": "_candidate_sort_key",
       "line": 466,
       "end_line": 467,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Atom count, strain, then first cell length ranking unchanged.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::_deduplicate",
@@ -11502,10 +11975,10 @@
       "qualified_name": "_deduplicate",
       "line": 470,
       "end_line": 488,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "First-seen order and existing base/layer matrix plus rounded-angle identity retained.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::_slug",
@@ -11513,43 +11986,43 @@
       "qualified_name": "_slug",
       "line": 502,
       "end_line": 504,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Safe label transformation and fallback preserved.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::run_findn",
       "path": "src/cellstine/moire/search/nlayer.py",
       "qualified_name": "run_findn",
       "line": 507,
-      "end_line": 698,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 700,
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "optimized—verified",
+      "reason": "Single-element sequence broadcasting now matches scalar strain semantics and parser help. Cardinality mismatch still fails before file reads. Folding, rigid-base searches, shortlist order, combination, indices, provenance, JSON schema and paths unchanged. Existing experimental shortlist limits mean enumeration is not exhaustive.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
-      "id": "src/cellstine/moire/search/nlayer.py::run_findn.<lambda>@622:25",
+      "id": "src/cellstine/moire/search/nlayer.py::run_findn.<lambda>@624:25",
       "path": "src/cellstine/moire/search/nlayer.py",
-      "qualified_name": "run_findn.<lambda>@622:25",
-      "line": 622,
-      "end_line": 622,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "qualified_name": "run_findn.<lambda>@624:25",
+      "line": 624,
+      "end_line": 624,
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Stable pair ranking by base multiplicity then strain preserved before per-layer truncation.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/nlayer.py::read_nlayer_results",
       "path": "src/cellstine/moire/search/nlayer.py",
       "qualified_name": "read_nlayer_results",
-      "line": 701,
-      "end_line": 712,
-      "module_sha256": "4939b2cafce47bdd8da1100787f451e52bc757bb199fcdf294f858b32ec543e7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 703,
+      "end_line": 714,
+      "module_sha256": "86a03dde443de343aa8b818d5233caa74a25da02dbd7e226a6cf01e750c8c89d",
+      "status": "reviewed—unchanged",
+      "reason": "Schema, version and required-section validation unchanged. Existing envelope-only validation does not validate every nested scientific field.",
+      "evidence": "docs/optimization/part-05c-guided-cli.md; independent whole-function/caller review;196affected CLI/consumer tests plus final3shellcases;3472full tests4skips;271Pythonfreeze;142wheel/sdistmodulebytes;3installedenvsmokeshelpdependencychecks; exact4case resource benchmark."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_collection_paused",

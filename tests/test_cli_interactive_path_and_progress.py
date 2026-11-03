@@ -17,6 +17,17 @@ from cellstine.cli.parsers import build_parser
 from cellstine.moire.moire import _progress_printer
 
 
+@pytest.fixture(autouse=True)
+def _two_structures(monkeypatch, tmp_path):
+    """Guided path prompts only accept files that exist."""
+
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "start.vasp").touch()
+    (tmp_path / "end.vasp").touch()
+    (tmp_path / "initial.vasp").touch()
+    (tmp_path / "final.vasp").touch()
+
+
 def _drive(monkeypatch, answers, group, subject):
     supplied = iter(answers)
     monkeypatch.setattr("builtins.input", lambda _prompt: next(supplied))

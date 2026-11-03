@@ -6,18 +6,24 @@ from pathlib import Path
 
 from ...defect.analysis import _normalise_supercell
 from ...defect.workflow import Defect
+from ...core.layers import LAYER_TOLERANCE
+from ..argtypes import parse_supercell
 from .build_visualize import _build_structure_visualize, _prompt_view_direction
 from .prompts import (
     INPUT_DIR,
     OUTPUT_DIR,
     RUNS_DIR,
+    STRUCTURE_PATTERNS,
     _choice,
     _print_title,
     _prompt,
     _prompt_float,
     _prompt_int_range,
+    _prompt_parsed,
     _prompt_path,
     _prompt_yes_no,
+    _remember,
+    get_guided_ui,
 )
 
 
@@ -32,13 +38,13 @@ def _prompt_layers(analysis: dict) -> str | None:
     layers = list(analysis.get("layers", []))
     if len(layers) < 2:
         return None
-    print()
-    print(f"The structure has {len(layers)} atomic plane(s) along the direction of observation:")
+    get_guided_ui().print()
+    get_guided_ui().print(f"The structure has {len(layers)} atomic plane(s) along the direction of observation:")
     for layer in layers:
         composition = " ".join(
             f"{species}{count}" for species, count in dict(layer.get("species_counts", {})).items()
         )
-        print(
+        get_guided_ui().print(
             f"  plane {int(layer['layer_id']):>3d}  height {float(layer['projection']):9.4f} A  "
             f"{int(layer['atom_count'])} atom(s)  {composition}"
         )
@@ -63,9 +69,19 @@ def _prompt_layers(analysis: dict) -> str | None:
     return choice
 
 
-def _build_defect_analyse() -> list[str]:
-    _print_title("Defect Site Analysis", "Find inequivalent atom, interstitial, and surface adatom sites.")
-    structure = _prompt_path("Choose the structure to analyse", patterns=("*.vasp", "POSCAR", "CONTCAR"), roots=(INPUT_DIR, OUTPUT_DIR))
+def _prompt_defect_settings() -> tuple[str, str, str, str, bool]:
+    """Return structure kind, backend, surface side, view direction and saddles.
+
+    Most structures need none of these answered, so the five questions sit
+    behind one that accepts every recommended value at once.
+    """
+
+    if _prompt_yes_no(
+        "Use the recommended analysis settings? "
+        "(auto-detect the structure and backend, top surface, a-b normal, widest holes)",
+        True,
+    ):
+        return "auto", "auto", "top", "auto", False
     kind = _choice(
         "What kind of structure is this?",
         [
@@ -85,8 +101,18 @@ def _build_defect_analyse() -> list[str]:
         ],
         default=1,
     )
+    side = "top"
+    if kind in {"surface", "molecule-on-substrate", "auto"}:
+        side = _choice(
+            "Which surface side should be used for adatom sites?",
+            [
+                {"key": "top", "label": "Top surface", "hint": "Recommended for adsorbates."},
+                {"key": "bottom", "label": "Bottom surface", "hint": "Use if the exposed side is below."},
+            ],
+            default=1,
+        )
     view_direction = _prompt_view_direction()
-    interstitials = _choice(
+    saddles = _choice(
         "Which interstitial sites should be listed?",
         [
             {
@@ -101,7 +127,14 @@ def _build_defect_analyse() -> list[str]:
             },
         ],
         default=1,
-    )
+    ) == "saddles"
+    return kind, backend, side, view_direction, saddles
+
+
+def _build_defect_analyse() -> list[str]:
+    _print_title("Defect Site Analysis", "Find inequivalent atom, interstitial, and surface adatom sites.")
+    structure = _prompt_path("Choose the structure to analyse", patterns=STRUCTURE_PATTERNS, roots=(INPUT_DIR, OUTPUT_DIR))
+    kind, backend, side, view_direction, saddles = _prompt_defect_settings()
     argv = [
         "defect",
         "analyse",
@@ -113,24 +146,16 @@ def _build_defect_analyse() -> list[str]:
         "--view-direction",
         view_direction,
     ]
-    if interstitials == "saddles":
+    if saddles:
         argv.append("--interstitial-saddles")
     if kind in {"surface", "molecule-on-substrate", "auto"}:
-        side = _choice(
-            "Which surface side should be used for adatom sites?",
-            [
-                {"key": "top", "label": "Top surface", "hint": "Recommended for adsorbates."},
-                {"key": "bottom", "label": "Bottom surface", "hint": "Use if the exposed side is below."},
-            ],
-            default=1,
-        )
         argv.extend(["--surface-side", side])
     return argv
 
 
 def _build_symmetry_analyse() -> list[str]:
     _print_title("Symmetry Analysis", "Analyse space group, operations, Wyckoff labels, and equivalent atoms.")
-    structure = _prompt_path("Choose the structure to analyse", patterns=("*.vasp", "POSCAR", "CONTCAR"), roots=(INPUT_DIR, OUTPUT_DIR))
+    structure = _prompt_path("Choose the structure to analyse", patterns=STRUCTURE_PATTERNS, roots=(INPUT_DIR, OUTPUT_DIR))
     backend = _choice(
         "Which symmetry backend should be used?",
         [
@@ -145,7 +170,7 @@ def _build_symmetry_analyse() -> list[str]:
 
 def _build_symmetry_reduce() -> list[str]:
     _print_title("Cell Reduction", "Write a primitive, conventional, or refined cell using spglib.")
-    structure = _prompt_path("Choose the structure to reduce", patterns=("*.vasp", "POSCAR", "CONTCAR"), roots=(INPUT_DIR, OUTPUT_DIR))
+    structure = _prompt_path("Choose the structure to reduce", patterns=STRUCTURE_PATTERNS, roots=(INPUT_DIR, OUTPUT_DIR))
     cell = _choice(
         "Which cell should be written?",
         [
@@ -160,7 +185,7 @@ def _build_symmetry_reduce() -> list[str]:
 
 def _build_symmetry_lattice_reduce() -> list[str]:
     _print_title("Lattice Reduction", "Write a Niggli- or Delaunay-reduced lattice representation.")
-    structure = _prompt_path("Choose the structure", patterns=("*.vasp", "POSCAR", "CONTCAR"), roots=(INPUT_DIR, OUTPUT_DIR))
+    structure = _prompt_path("Choose the structure", patterns=STRUCTURE_PATTERNS, roots=(INPUT_DIR, OUTPUT_DIR))
     reduction = _choice(
         "Which lattice reduction should be used?",
         [
@@ -179,7 +204,7 @@ def _build_symmetry_kpoints() -> list[str]:
     )
     structure = _prompt_path(
         "Choose the structure to sample",
-        patterns=("*.vasp", "POSCAR", "CONTCAR"),
+        patterns=STRUCTURE_PATTERNS,
         roots=(INPUT_DIR, OUTPUT_DIR),
     )
     how = _choice(
@@ -197,11 +222,11 @@ def _build_symmetry_kpoints() -> list[str]:
     argv = ["symmetry", "kpoints", structure]
     if how == "spacing":
         spacing = _prompt_float(
-            "Largest allowed step between sampled wavevectors in 1/angstrom", default=0.25
+            "Largest allowed step between sampled wavevectors in 1/angstrom", default=0.25, positive=True
         )
         argv.extend(["--spacing", str(spacing)])
     else:
-        divisions = _prompt("Mesh divisions as n1,n2,n3", default="6,6,6")
+        divisions = _prompt_parsed("Mesh divisions as n1,n2,n3", "6,6,6", parse_supercell)
         argv.extend(["--divisions", divisions])
     mesh = _choice(
         "Which mesh should be used?",
@@ -221,6 +246,22 @@ def _build_symmetry_kpoints() -> list[str]:
     return argv
 
 
+def _build_symmetry_kpath() -> list[str]:
+    _print_title(
+        "Band-Structure Path",
+        "Write a line-mode KPOINTS file along the high-symmetry path of a structure.",
+    )
+    structure = _prompt_path(
+        "Choose the structure",
+        patterns=STRUCTURE_PATTERNS,
+        roots=(INPUT_DIR, OUTPUT_DIR),
+    )
+    spacing = _prompt_float(
+        "Step between points along the path in 1/angstrom", 0.03, positive=True
+    )
+    return ["symmetry", "kpath", structure, "--spacing", str(spacing)]
+
+
 def _defect_analysis_from_preview(
     path: str,
     kind: str,
@@ -229,82 +270,42 @@ def _defect_analysis_from_preview(
     view_direction: str = "auto",
     interstitial_saddles: bool = False,
 ):
-    result = Defect().preview(
+    # The public preview command persists a run. Guided inspection must stay
+    # in memory so Back/cancel cannot create unconfirmed analysis artifacts.
+    workflow = Defect()
+    analysis = workflow._analysis_from_input(
         path,
-        limit=50,
         structure_kind=kind,
         backend=backend,
         surface_side=side,
         view_direction=view_direction,
         interstitial_saddles=interstitial_saddles,
+        layer_tolerance=LAYER_TOLERANCE,
+        symprec=0.01,
     )
-    print()
-    print("Available defect sites:")
-    print(result.payload.get("defect_preview", "No preview was returned."))
-    return result
+    get_guided_ui().print()
+    get_guided_ui().print("Available defect sites:")
+    get_guided_ui().print(workflow.format_analysis(analysis, limit=50))
+    return analysis
 
 
 def _defect_site_ids(analysis: dict, site_kind: str) -> list[str]:
     return [str(site["site_id"]) for site in analysis.get("sites", []) if site.get("site_kind") == site_kind]
 
 
-def _build_defect_generate() -> list[str]:
+def _build_defect_generate(*, source: str | None = None) -> list[str]:
     _print_title("Defect Structure Generation", "Preview valid sites first, then generate one POSCAR per selected inequivalent site.")
-    source = _prompt_path(
+    source = source or _prompt_path(
         "Choose a structure, defect manifest, or defect analysis JSON",
-        patterns=("manifest.json", "defect_analysis.json", "*.vasp", "POSCAR", "CONTCAR"),
+        patterns=("manifest.json", "defect_analysis.json", *STRUCTURE_PATTERNS),
         roots=(INPUT_DIR, OUTPUT_DIR, RUNS_DIR),
     )
-    kind = _choice(
-        "What kind of structure is this?",
-        [
-            {"key": "auto", "label": "Auto-detect", "hint": "Recommended for most inputs."},
-            {"key": "bulk", "label": "Bulk cell", "hint": "Vacancy/substitution in a periodic bulk structure."},
-            {"key": "surface", "label": "Surface or slab", "hint": "Layer-aware sites and adatoms on exposed surfaces."},
-            {"key": "molecule-on-substrate", "label": "Molecule on substrate", "hint": "Useful for adatoms or edits around adsorbed systems."},
-        ],
-        default=1,
+    kind, backend, side, view_direction, saddles = _prompt_defect_settings()
+    analysis = _remember(
+        lambda: _defect_analysis_from_preview(
+            source, kind, backend, side, view_direction, interstitial_saddles=saddles
+        ).to_dict()
     )
-    backend = _choice(
-        "Which equivalence backend should be used?",
-        [
-            {"key": "auto", "label": "Auto", "hint": "Recommended."},
-            {"key": "native", "label": "Native", "hint": "No optional dependencies."},
-            {"key": "spglib", "label": "spglib", "hint": "Exact bulk equivalence and Wyckoff labels."},
-        ],
-        default=1,
-    )
-    side = "top"
-    if kind in {"surface", "molecule-on-substrate", "auto"}:
-        side = _choice(
-            "Which surface side should be used for adatom sites?",
-            [
-                {"key": "top", "label": "Top surface", "hint": "Recommended for adsorbates."},
-                {"key": "bottom", "label": "Bottom surface", "hint": "Use if the exposed side is below."},
-            ],
-            default=1,
-        )
-    view_direction = _prompt_view_direction()
-    saddles = _choice(
-        "Which interstitial sites should be offered?",
-        [
-            {
-                "key": "maxima",
-                "label": "Widest holes only",
-                "hint": "Recommended. Centres surrounded by atoms on all sides.",
-            },
-            {
-                "key": "saddles",
-                "label": "Also the sites held by two or three atoms",
-                "hint": "Adds the octahedral site of a body-centred cubic metal and the bond centre of a covalent crystal.",
-            },
-        ],
-        default=1,
-    ) == "saddles"
-    preview_result = _defect_analysis_from_preview(
-        source, kind, backend, side, view_direction, interstitial_saddles=saddles
-    )
-    analysis = dict(preview_result.payload.get("analysis", {}))
     options = []
     if _defect_site_ids(analysis, "atom"):
         options.extend(
@@ -323,11 +324,11 @@ def _build_defect_generate() -> list[str]:
     defect_type = _choice("Which defect family should be generated?", options, default=1)
     site_kind = "atom" if defect_type in {"vacancy", "substitution", "antisite"} else defect_type
     valid_ids = _defect_site_ids(analysis, site_kind)
-    print()
-    print(f"Valid {site_kind} site IDs:")
-    print("  " + ", ".join(valid_ids[:30]))
+    get_guided_ui().print()
+    get_guided_ui().print(f"Valid {site_kind} site IDs:")
+    get_guided_ui().print("  " + ", ".join(valid_ids[:30]))
     if len(valid_ids) > 30:
-        print(f"  ... {len(valid_ids) - 30} more not shown")
+        get_guided_ui().print(f"  ... {len(valid_ids) - 30} more not shown")
     site_ids = _prompt("Site IDs to generate, comma-separated; leave blank for all valid inequivalent sites", "", allow_empty=True)
     layers = None if defect_type == "adatom" else _prompt_layers(analysis)
     coverage = _choice(
@@ -347,7 +348,7 @@ def _build_defect_generate() -> list[str]:
         default=1,
     )
     supercell = _prompt_supercell(source, site_ids)
-    target = source if supercell else str(preview_result.artifacts["analysis_json"])
+    target = source
     argv = [
         "defect",
         "generate",
@@ -425,7 +426,7 @@ def _prompt_supercell(source: str, site_ids: str) -> list[str]:
         return []
     if choice == "distance":
         distance = _prompt_float(
-            "Smallest acceptable distance from the defect to its nearest image in angstrom", 10.0
+            "Smallest acceptable distance from the defect to its nearest image in angstrom", 10.0, positive=True
         )
         return ["--min-image-distance", str(distance)]
     while True:
@@ -433,7 +434,7 @@ def _prompt_supercell(source: str, site_ids: str) -> list[str]:
         try:
             repeats = _normalise_supercell(raw)
         except ValueError as error:
-            print(f"  {error}")
+            get_guided_ui().print(f"  {error}")
             continue
         if repeats is None:
             return []
@@ -447,7 +448,7 @@ def _build_defect_supercell() -> list[str]:
     )
     structure = _prompt_path(
         "Choose the host structure",
-        patterns=("*.vasp", "POSCAR", "CONTCAR"),
+        patterns=STRUCTURE_PATTERNS,
         roots=(INPUT_DIR, OUTPUT_DIR),
     )
     kind = _choice(
@@ -478,7 +479,7 @@ def _build_defect_supercell() -> list[str]:
     argv = ["defect", "supercell", structure, "--structure-kind", kind]
     if mode == "distance":
         distance = _prompt_float(
-            "Smallest acceptable distance from the defect to its nearest image in angstrom", 10.0
+            "Smallest acceptable distance from the defect to its nearest image in angstrom", 10.0, positive=True
         )
         argv.extend(["--min-image-distance", str(distance)])
     else:
@@ -496,7 +497,7 @@ def _build_defect_preview() -> list[str]:
     _print_title("Defect Preview", "Print the detected inequivalent defect-site table.")
     source = _prompt_path(
         "Choose a structure, defect manifest, or defect analysis JSON",
-        patterns=("manifest.json", "defect_analysis.json", "*.vasp", "POSCAR", "CONTCAR"),
+        patterns=("manifest.json", "defect_analysis.json", *STRUCTURE_PATTERNS),
         roots=(INPUT_DIR, OUTPUT_DIR, RUNS_DIR),
     )
     view_direction = _prompt_view_direction()

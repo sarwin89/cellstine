@@ -21,7 +21,7 @@ The generator preserves evidence only when the normalized source module is uncha
 
 Passing tests or obtaining high coverage never automatically marks a function reviewed. Completion must also check external dependencies/callers and the actual reasoning in each part report.
 
-At the Part-05b local checkpoint, the ledger contains **1,148 functions**: **392 reviewed unchanged**, **144 optimized and verified**, **2 investigated deferrals**, and **610 pending reviews**. Thus **538 functions have inspection evidence**; the project-wide review is incomplete. Part05b reviews108 production functions and13 benchmark helpers, with3,406 full tests and package/install checks passed. Its exact-head CI follows the scoped push; Part05a's seven exact-head CI jobs and coverage XML are verified. Part05b resolves the prior unfolded-search persistence rejection while retaining physical symmetry-period metadata. The remaining investigated deferrals are rational lattice basis and extreme-scale structure validation. Part03c resolved the legacy output-suffix deferral in actual default-path consumers; lower-level reusable working-directory semantics remain outside that guarantee. The neighbour-count truncation investigated in Part02b is resolved within the limits documented in Part02c.
+At the Part-05c local checkpoint, the ledger contains **1,191 functions**: **483 reviewed unchanged**, **238 optimized and verified**, **2 investigated deferrals**, and **468 pending reviews**. Thus **723 functions have inspection evidence**; the project-wide review is incomplete. Part05c adds185 complete reviews (182 production and3 benchmark callables), with3,472 full tests, package/install checks and271 frozen Python hashes passed. Scoped push and exact-head CI remain pending. Part05b's seven exact-head CI jobs and coverage XML are verified. The remaining investigated deferrals are rational lattice basis and extreme-scale structure validation. Part03c resolved the output-suffix deferral in actual default-path consumers; lower-level working-directory/failure-artifact limits remain explicit. Part02c resolved neighbour-count truncation within its documented limits.
 
 ## Dependency order and evidence
 
@@ -42,7 +42,10 @@ The full sequence is in [the implementation plan](../superpowers/plans/2026-10-3
 | 04 | Native I/O, molecular temporary ownership, frame/format integrity and bounded allocations | [part-04-io-integrity.md](part-04-io-integrity.md) |
 | 05a | Engine/results integration, exact signed primitive keys, early invariant filters and bounded JSON encoding | [part-05a-search-fast-paths.md](part-05a-search-fast-paths.md) |
 | 05b | Bounded report writing, scalar-fallback validation, unfolded persistence and defect regrouping | [part-05b-persistence.md](part-05b-persistence.md) |
-| Remaining | Scoped Claude CLI integration; numerical-domain follow-ups and remaining shared code, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
+| 05c | Complete guided CLI integration, actual-row index bounds, replay/retry recovery and bounded recent-file selection | [part-05c-guided-cli.md](part-05c-guided-cli.md) |
+| Remaining | Optional portable NPZ; numerical-domain follow-ups and remaining shared code, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
+
+Portable-format follow-up: [I/O measurements and optional NPZ plan](portable-io-options.md). This is an investigation, not a promoted production function review.
 
 ## Coverage and release boundaries
 

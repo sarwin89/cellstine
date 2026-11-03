@@ -4,42 +4,51 @@ from __future__ import annotations
 
 from ...interface.surface import backend as surface_backend
 from ...interface.workflow.interface import parse_miller_notation
+from ..argtypes import parse_int_matrix
 from .build_visualize import _build_structure_visualize
 from .prompts import (
     INPUT_DIR,
     OUTPUT_DIR,
     RUNS_DIR,
+    STRUCTURE_PATTERNS,
     _choice,
     _print_title,
     _prompt,
-    _prompt_csv,
     _prompt_float,
     _prompt_int,
+    _prompt_parsed,
     _prompt_path,
+    _prompt_strain,
     _prompt_yes_no,
+    _remember,
+    get_guided_ui,
 )
 
 
 def _build_interface_surface() -> list[str]:
     _print_title("Surface Builder", "Generate a slab from a bulk structure and optional site analysis.")
-    bulk = _prompt_path("Choose the bulk POSCAR", patterns=("*.vasp",), roots=(INPUT_DIR, OUTPUT_DIR))
-    miller = _prompt("Miller indices (compact 111/001/111x or comma form 1,1,2x)", "111")
-    try:
-        preview = surface_backend.analyse_primitive_surface(
-            bulk,
-            miller=parse_miller_notation(miller),
-            probe_layers=6,
-        )
-        print()
-        print("Primitive surface preview:")
-        print(f"  centering detected: {preview.centering}")
-        print(f"  stacking sequence: {preview.stacking_sequence}")
-        print(f"  repeating period: {preview.stacking_period or 'A'}")
-        print(f"  atoms per detected layer: {', '.join(str(value) for value in preview.atoms_per_layer)}")
-        print(f"  in-plane angle: {preview.inplane_angle_deg:.3f} degrees")
-    except Exception as exc:
-        print()
-        print(f"Primitive surface preview was skipped: {exc}")
+    bulk = _prompt_path("Choose the bulk POSCAR", patterns=STRUCTURE_PATTERNS, roots=(INPUT_DIR, OUTPUT_DIR))
+    miller = _prompt_parsed("Miller indices (compact 111/001/111x or comma form 1,1,2x)", "111", parse_miller_notation)
+
+    def show_preview() -> None:
+        try:
+            preview = surface_backend.analyse_primitive_surface(
+                bulk,
+                miller=parse_miller_notation(miller),
+                probe_layers=6,
+            )
+            get_guided_ui().print()
+            get_guided_ui().print("Primitive surface preview:")
+            get_guided_ui().print(f"  centering detected: {preview.centering}")
+            get_guided_ui().print(f"  stacking sequence: {preview.stacking_sequence}")
+            get_guided_ui().print(f"  repeating period: {preview.stacking_period or 'A'}")
+            get_guided_ui().print(f"  atoms per detected layer: {', '.join(str(value) for value in preview.atoms_per_layer)}")
+            get_guided_ui().print(f"  in-plane angle: {preview.inplane_angle_deg:.3f} degrees")
+        except Exception as exc:
+            get_guided_ui().print()
+            get_guided_ui().print(f"Primitive surface preview was skipped: {exc}")
+
+    _remember(show_preview)
     enlarge_mode = _choice(
         "Do you want to enlarge the surface in plane?",
         [
@@ -51,20 +60,20 @@ def _build_interface_surface() -> list[str]:
     )
     expansion_args: list[str] = []
     if enlarge_mode == "repeat":
-        expansion_args.extend(["--repeat-a", str(_prompt_int("Repeat along a", 2)), "--repeat-b", str(_prompt_int("Repeat along b", 2))])
+        expansion_args.extend(["--repeat-a", str(_prompt_int("Repeat along a", 2, minimum=1)), "--repeat-b", str(_prompt_int("Repeat along b", 2, minimum=1))])
     elif enlarge_mode == "matrix":
-        expansion_args.extend(["--supercell-matrix", _prompt_csv("Matrix entries a,b,c,d", "2,0,0,3")])
-    layers = _prompt_int("Number of slab layers", 4)
-    vacuum = _prompt_float("Vacuum in angstrom", 15.0)
+        expansion_args.extend(["--supercell-matrix", _prompt_parsed("Matrix entries a,b,c,d", "2,0,0,3", parse_int_matrix)])
+    layers = _prompt_int("Number of slab layers", 4, minimum=1)
+    vacuum = _prompt_float("Vacuum in angstrom", 15.0, minimum=0.0)
     argv = ["surface", "build", bulk, "--miller", miller, "--layers", str(layers), "--vacuum", str(vacuum), *expansion_args]
     if _prompt_yes_no("Also detect adsorption sites after building the slab?", True):
         argv.append("--analyse-sites")
     return argv
 
 
-def _build_interface_sites() -> list[str]:
+def _build_interface_sites(*, slab: str | None = None) -> list[str]:
     _print_title("Surface Site Analysis", "Identify adsorption sites on an existing slab.")
-    slab = _prompt_path("Choose the slab POSCAR", patterns=("*.vasp",), roots=(OUTPUT_DIR, INPUT_DIR))
+    slab = slab or _prompt_path("Choose the slab POSCAR", patterns=STRUCTURE_PATTERNS, roots=(OUTPUT_DIR, INPUT_DIR))
     side = _choice(
         "Which surface side should be analysed?",
         [
@@ -86,12 +95,12 @@ def _prompt_interface_side(label: str) -> list[str]:
         default=1,
     )
     roots = (INPUT_DIR, OUTPUT_DIR) if kind == "bulk" else (OUTPUT_DIR, INPUT_DIR, RUNS_DIR)
-    path = _prompt_path(f"Choose the {label} structure", patterns=("*.vasp",), roots=roots)
+    path = _prompt_path(f"Choose the {label} structure", patterns=STRUCTURE_PATTERNS, roots=roots)
     extra = [path, f"--{label}-kind", kind]
     if kind == "bulk":
-        extra.extend([f"--{label}-miller", _prompt(f"{label.capitalize()} Miller indices, e.g. 111, 001, or 111x", "111")])
-        extra.extend([f"--{label}-layers", str(_prompt_int(f"{label.capitalize()} layer count", 4))])
-        extra.extend([f"--{label}-vacuum", str(_prompt_float(f"{label.capitalize()} vacuum in angstrom", 15.0))])
+        extra.extend([f"--{label}-miller", _prompt_parsed(f"{label.capitalize()} Miller indices, e.g. 111, 001, or 111x", "111", parse_miller_notation)])
+        extra.extend([f"--{label}-layers", str(_prompt_int(f"{label.capitalize()} layer count", 4, minimum=1))])
+        extra.extend([f"--{label}-vacuum", str(_prompt_float(f"{label.capitalize()} vacuum in angstrom", 15.0, minimum=0.0))])
     return extra
 
 
@@ -169,9 +178,9 @@ def _build_interface_registries() -> list[str]:
     return argv
 
 
-def _build_interface_build() -> list[str]:
+def _build_interface_build(*, matches: str | None = None) -> list[str]:
     _print_title("Interface Builder", "Stack a top slab onto a fixed bottom slab or bulk-derived surface.")
-    mode = _choice(
+    mode = "match" if matches else _choice(
         "How should the interface cell be chosen?",
         [
             {
@@ -188,26 +197,26 @@ def _build_interface_build() -> list[str]:
         default=1,
     )
     if mode == "match":
-        matches = _prompt_path(
+        matches = matches or _prompt_path(
             "Choose the matches.json written by the match scan",
             patterns=("matches.json",),
             roots=(RUNS_DIR, OUTPUT_DIR),
         )
-        index = _prompt_int("Match index to build", 1)
-        gap = _prompt_float("Gap between bottom and top slabs in angstrom", 3.0)
+        index = _prompt_int("Match index to build", 1, minimum=1)
+        gap = _prompt_float("Gap between bottom and top slabs in angstrom", 3.0, positive=True)
         argv = ["interface", "build", "--match", matches, "--match-index", str(index), "--gap", str(gap)]
         if _prompt_yes_no("Set the vacuum thickness of the finished cell?", False):
-            argv.extend(["--vacuum", str(_prompt_float("Vacuum thickness in angstrom", 15.0))])
+            argv.extend(["--vacuum", str(_prompt_float("Vacuum thickness in angstrom", 15.0, minimum=0.0))])
         argv.extend(_prompt_stacking_options(allow_relative=False))
         return argv
     bottom = _prompt_interface_side("bottom")
     top = _prompt_interface_side("top")
-    gap = _prompt_float("Gap between bottom and top slabs in angstrom", 3.0)
+    gap = _prompt_float("Gap between bottom and top slabs in angstrom", 3.0, positive=True)
     argv = ["interface", "build", bottom[0], top[0], *bottom[1:], *top[1:], "--gap", str(gap)]
     argv.extend(
         [
             "--max-strain",
-            str(_prompt_float("Largest principal logarithmic strain accepted between the two 1x1 cells", 0.05)),
+            str(_prompt_strain("Largest principal logarithmic strain accepted between the two 1x1 cells", 0.05)),
         ]
     )
     argv.extend(_prompt_stacking_options(allow_relative=True))
@@ -216,8 +225,8 @@ def _build_interface_build() -> list[str]:
 
 def _build_interface_match() -> list[str]:
     _print_title("Surface Match Scan", "Search bulk-derived surface combinations for low-strain matches.")
-    bottom = _prompt_path("Choose the bottom bulk structure", patterns=("*.vasp",), roots=(INPUT_DIR, OUTPUT_DIR))
-    top = _prompt_path("Choose the top bulk structure", patterns=("*.vasp",), roots=(INPUT_DIR, OUTPUT_DIR))
+    bottom = _prompt_path("Choose the bottom bulk structure", patterns=STRUCTURE_PATTERNS, roots=(INPUT_DIR, OUTPUT_DIR))
+    top = _prompt_path("Choose the top bulk structure", patterns=STRUCTURE_PATTERNS, roots=(INPUT_DIR, OUTPUT_DIR))
     miller_mode = _choice(
         "Which Miller set should be scanned?",
         [
@@ -241,8 +250,8 @@ def _build_interface_match() -> list[str]:
     if layer_mode == "custom":
         argv.extend(["--bottom-layers-list", *_prompt("Bottom layer counts separated by spaces", "4 6").split()])
         argv.extend(["--top-layers-list", *_prompt("Top layer counts separated by spaces", "4 6").split()])
-    argv.extend(["--max-strain", str(_prompt_float("Strain budget for one slab as a fraction", 0.05))])
-    argv.extend(["--length", str(_prompt_float("Maximum matched supercell length in angstrom", 20.0))])
+    argv.extend(["--max-strain", str(_prompt_strain("Strain budget for one slab as a fraction", 0.05))])
+    argv.extend(["--length", str(_prompt_float("Maximum matched supercell length in angstrom", 20.0, positive=True))])
     mode = _choice(
         "How should the strain be shared?",
         [

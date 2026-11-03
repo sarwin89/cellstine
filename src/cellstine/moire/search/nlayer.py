@@ -549,6 +549,8 @@ def run_findn(
         strains = [float(layer_strains)] * len(upper_paths)
     else:
         strains = [float(value) for value in layer_strains]
+    if len(strains) == 1:
+        strains = strains * len(upper_paths)
     if len(strains) != len(upper_paths):
         raise ValueError("one strain budget is required per upper layer")
 

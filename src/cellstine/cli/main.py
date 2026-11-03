@@ -89,6 +89,7 @@ def execute_namespace(args):
                 bottom_strain=bottom_strain,
                 min_length=args.min_length,
                 max_atoms=args.max_atoms,
+                max_candidates=args.max_candidates,
                 max_aspect_ratio=args.max_cell_aspect_ratio,
                 min_cell_angle_deg=args.min_cell_angle,
                 max_cell_angle_deg=args.max_cell_angle,

@@ -84,7 +84,10 @@ jobs:
           tests/test_conventional_resources.py
           tests/test_json_writer_resources.py
           tests/test_defect_record_resources.py
-          tests/test_moire_persistence_validation.py -q
+          tests/test_moire_persistence_validation.py
+          tests/test_cli_discovery_resources.py
+          tests/test_cli_command_preview_resources.py
+          tests/test_saved_preview_resources.py -q
 
   package:
     name: Package build

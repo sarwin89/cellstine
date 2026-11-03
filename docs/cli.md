@@ -33,6 +33,15 @@ Guided mode asks what you are trying to do, infers conservative defaults, prints
 the command it generated, and asks before running it. It does not mutate files
 or launch a workflow until you confirm.
 
+Answers are checked as you type them: paths must exist (quoted paths pasted from
+a file manager are fine), numbers must be in range, and indexes, vectors, Miller
+indices and matrices are parsed by the same rules as the direct command. Common
+questions come first; rarely changed settings sit behind one "advanced options"
+question. If a run fails or you press Ctrl+C, guided mode reports the error and
+offers to reopen the command with every answer kept. Answering `n` at the run
+confirmation returns to the menu. After a search, build, surface build or
+interface match it offers the natural next step.
+
 ## Direct commands
 
 ```text
@@ -81,6 +90,19 @@ For one release, removed commands fail early with this replacement guidance
 instead of falling through to ambiguous parser errors.
 
 ## Output model
+
+Guided bilayer search saves every accepted candidate unless a shortlist is
+requested. The direct Python `Moire.find` API retains its existing default of
+500. The short guided rigid-search path retains the400-atom cap; advanced
+questions allow an explicit opt-out. Back keeps earlier answers and reuses
+previews; failed primary and follow-up commands can reopen those answers
+without rerunning completed commands. Candidate index bounds use actual
+validated saved rows, including empty-file handling.
+
+Copied command previews use POSIX quoting on Unix hosts and literal PowerShell
+quoting on Windows. PowerShell7 native argument roundtrips are checked. Legacy
+PowerShell native quote handling and the reserved literal `--%` token remain
+copy/paste limitations; guided execution passes arguments directly.
 
 - `runs/<workflow>/<run-id>/manifest.json` records inputs, parameters, artifacts,
   backend, and summary metadata.

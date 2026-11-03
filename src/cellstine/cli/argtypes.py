@@ -96,6 +96,18 @@ def parse_float_vector(raw: str) -> List[float]:
     return values
 
 
+def parse_float_list(raw: str) -> List[float]:
+    """Parse one or more comma-separated numbers, one per layer of a stack."""
+
+    try:
+        values = [float(token.strip()) for token in str(raw).replace(";", ",").split(",") if token.strip()]
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("please provide numbers separated by commas") from error
+    if not values or not all(math.isfinite(value) for value in values):
+        raise argparse.ArgumentTypeError("please provide finite numbers separated by commas")
+    return values
+
+
 def parse_supercell(raw: str) -> List[int]:
     """Parse ``2``, ``2,2,1`` or ``2x2x1`` into three positive repeats."""
 

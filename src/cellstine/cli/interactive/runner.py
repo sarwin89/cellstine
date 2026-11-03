@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import contextlib
+import io
+
 from ..main import _print_result, execute_namespace
 from ..parsers import build_parser
 from .build_adsorbate import (
@@ -17,6 +20,7 @@ from .build_defect import (
     _build_defect_supercell,
     _build_defect_visualize,
     _build_symmetry_analyse,
+    _build_symmetry_kpath,
     _build_symmetry_kpoints,
     _build_symmetry_lattice_reduce,
     _build_symmetry_reduce,
@@ -38,19 +42,21 @@ from .build_moire import (
     _build_moire_visualize,
 )
 from .build_path import _build_migration_path
+from .build_visualize import _build_structure_visualize
 from .prompts import (
     PlainGuidedUI,
     _BackInteractive,
+    _PromptHistory,
     _QuitInteractive,
     _choice,
     _first_artifact,
     _print_command_preview,
     _print_main_menu_banner,
-    _prompt,
-    _prompt_csv,
-    _prompt_float,
     _prompt_yes_no,
+    forget_confirmation,
     get_guided_ui,
+    guided_history_active,
+    run_guided_steps,
     use_guided_ui,
 )
 
@@ -64,8 +70,8 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
                 [
                     {"key": "search", "label": "Search bilayer candidates", "hint": "Recommended when you are starting a new moire search."},
                     {"key": "build", "label": "Build from a saved search", "hint": "Generate one or more saved candidates."},
-                    {"key": "stack-search", "label": "Search multi-layer candidates", "hint": "Three or more layers sharing one commensurate cell."},
-                    {"key": "stack-build", "label": "Build from a saved multi-layer search", "hint": "Generate stacks of three or more layers."},
+                    {"key": "stack-search", "label": "Search multi-layer candidates (experimental)", "hint": "Three or more layers sharing one commensurate cell."},
+                    {"key": "stack-build", "label": "Build from a saved multi-layer search (experimental)", "hint": "Generate stacks of three or more layers."},
                     {"key": "shift", "label": "Shift a built structure", "hint": "Move the upper part of an existing stack."},
                     {"key": "view", "label": "View saved moire results", "hint": "Write a Matplotlib summary or optional Plotly HTML viewer."},
                 ],
@@ -85,6 +91,8 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
                     return _build_moire_translate()
                 return _build_moire_visualize()
             except _BackInteractive:
+                if guided_history_active():
+                    raise
                 continue
 
     if resolved_group == "surface":
@@ -103,6 +111,8 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
                     return _build_interface_surface()
                 return _build_interface_sites()
             except _BackInteractive:
+                if guided_history_active():
+                    raise
                 continue
 
     if resolved_group == "adsorbate":
@@ -130,6 +140,8 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
                     return _build_migration_path("adsorbate", subject="a molecule or adatom diffusing")
                 return _build_adsorbate_visualize()
             except _BackInteractive:
+                if guided_history_active():
+                    raise
                 continue
 
     if resolved_group == "defect":
@@ -160,6 +172,8 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
                     return _build_defect_visualize()
                 return _build_defect_preview()
             except _BackInteractive:
+                if guided_history_active():
+                    raise
                 continue
 
     if resolved_group == "symmetry":
@@ -171,6 +185,7 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
                     {"key": "reduce", "label": "Reduce cell", "hint": "Write primitive, conventional, or refined cells."},
                     {"key": "lattice-reduce", "label": "Reduce lattice", "hint": "Write a Niggli- or Delaunay-reduced lattice."},
                     {"key": "kpoints", "label": "Sample the Brillouin zone", "hint": "Write a symmetry-reduced KPOINTS mesh."},
+                    {"key": "kpath", "label": "Band-structure path", "hint": "Write a line-mode KPOINTS file along the high-symmetry path."},
                     {"key": "view", "label": "Backup visual inspection", "hint": "Optional. Draw a cell, looking along a direction of your choice."},
                 ],
                 default=1,
@@ -183,10 +198,14 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
                     return _build_symmetry_reduce()
                 if stage == "kpoints":
                     return _build_symmetry_kpoints()
+                if stage == "kpath":
+                    return _build_symmetry_kpath()
                 if stage == "view":
                     return _build_symmetry_visualize()
                 return _build_symmetry_lattice_reduce()
             except _BackInteractive:
+                if guided_history_active():
+                    raise
                 continue
 
     while True:
@@ -209,12 +228,22 @@ def _workflow_command(group: str, *, allow_back: bool = True) -> list[str]:
                 return _build_interface_match()
             return _build_interface_build()
         except _BackInteractive:
+            if guided_history_active():
+                raise
             continue
 
 
 def _follow_up(group: str, stage: str, result) -> list[str] | None:
     resolved_group = str(group).lower()
-    if resolved_group == "moire" and stage == "search":
+    if resolved_group == "moire" and stage in {"search", "stack-search"}:
+        summary = getattr(result, "summary", None) or {}
+        if summary.get("candidate_count") == 0:
+            get_guided_ui().print()
+            get_guided_ui().print(
+                "No candidates matched. Try a longer maximum length or a larger strain budget, "
+                "or remove any twist window or atom cap."
+            )
+            return None
         action = _choice(
             "What do you want to do next?",
             [
@@ -224,21 +253,58 @@ def _follow_up(group: str, stage: str, result) -> list[str] | None:
             default=1,
         )
         if action == "make":
-            return ["moire", "build", str(result.manifest_path), "--indexes", _prompt_csv("Candidate indexes to build", "1"), "--interlayer-distance", str(_prompt_float("Interlayer distance in angstrom", 3.35))]
+            if stage == "stack-search":
+                return _build_moire_maken(results_file=str(result.manifest_path))
+            return _build_moire_make(results_file=str(result.manifest_path))
+        return None
+    if resolved_group == "moire" and stage == "build":
+        structure = _first_artifact(result, "structures")
+        if structure is None:
+            return None
+        action = _choice(
+            "What do you want to do next?",
+            [
+                {"key": "view", "label": "Draw the first built structure", "hint": "Check the stack before running anything on it."},
+                {"key": "shift", "label": "Shift the upper layer", "hint": "Move the first built structure to another registry."},
+                {"key": "done", "label": "Finish here", "hint": "Return to the main workflow menu."},
+            ],
+            default=1,
+        )
+        if action == "view":
+            return _build_structure_visualize("moire", subject="a built moire stack", structure=structure)
+        if action == "shift":
+            return _build_moire_translate(poscar_path=structure)
         return None
     if resolved_group == "surface" and stage == "build":
         slab_path = _first_artifact(result, "slab_poscar")
         if slab_path is None:
             return None
-        if "sites_json" in result.artifacts:
-            return None
         options = [
-            {"key": "sites", "label": "Analyse adsorption sites now", "hint": "Generate the site report from this slab."},
+            {"key": "place", "label": "Place a molecule on this slab", "hint": "Continue with the adsorbate workflow."},
             {"key": "done", "label": "Finish here", "hint": "Return to the main workflow menu."},
         ]
+        if "sites_json" not in result.artifacts:
+            options.insert(0, {"key": "sites", "label": "Analyse adsorption sites now", "hint": "Generate the site report from this slab."})
         action = _choice("What do you want to do next?", options, default=1)
         if action == "sites":
-            return ["surface", "sites", slab_path]
+            return _build_interface_sites(slab=slab_path)
+        if action == "place":
+            return _build_adsorbate_place(substrate=slab_path)
+        return None
+    if resolved_group == "interface" and stage == "match":
+        matches = _first_artifact(result, "matches_json")
+        if matches is None:
+            return None
+        action = _choice(
+            "What do you want to do next?",
+            [
+                {"key": "build", "label": "Build an interface from these matches", "hint": "Uses the matches.json you just created."},
+                {"key": "done", "label": "Finish here", "hint": "Return to the main workflow menu."},
+            ],
+            default=1,
+        )
+        if action == "build":
+            return _build_interface_build(matches=matches)
         return None
     if resolved_group == "defect" and stage == "analyse":
         action = _choice(
@@ -250,40 +316,83 @@ def _follow_up(group: str, stage: str, result) -> list[str] | None:
             default=1,
         )
         if action == "generate":
-            defect_type = _choice(
-                "Which defect family should be generated?",
-                [
-                    {"key": "vacancy", "label": "Vacancy", "hint": "Remove representative atom sites."},
-                    {"key": "substitution", "label": "Substitution", "hint": "Replace representative atom sites."},
-                    {"key": "interstitial", "label": "Interstitial", "hint": "Insert species at native void candidates."},
-                    {"key": "adatom", "label": "Adatom", "hint": "Insert species above detected surface sites."},
-                ],
-                default=1,
-            )
-            argv = ["defect", "generate", str(result.manifest_path), "--defect-type", defect_type]
-            site_ids = _prompt("Site IDs to generate, comma-separated; leave blank for all valid inequivalent sites", "", allow_empty=True)
-            if site_ids:
-                argv.extend(["--site-ids", site_ids])
-            if defect_type == "substitution":
-                argv.extend(["--substitution-species", _prompt("Replacement species", "S")])
-            if defect_type in {"interstitial", "adatom"}:
-                argv.extend(["--species", _prompt("Inserted species", "H")])
-            if defect_type == "adatom":
-                argv.extend(["--height", str(_prompt_float("Height above the detected surface site in angstrom", 2.5))])
-            return argv
+            return _build_defect_generate(source=str(result.manifest_path))
         return None
     return None
+
+
+#: Returned instead of a command when the user reads it and declines to run it.
+_DECLINED = object()
+
+
+def _confirmed_command(builder, title="Planned command"):
+    argv = builder()
+    if argv is None:
+        return None
+    _print_command_preview(title, argv)
+    return argv if _prompt_yes_no("Run this command now?", True) else _DECLINED
+
+
+def _run_command(parser, argv):
+    """Run one confirmed command and return ``(namespace, result)``, or ``None``.
+
+    Guided answers can be slow to give and a failed run must not throw them away,
+    so a failure is reported here and the caller offers to edit them.  That
+    covers what the workflows raise, the ``SystemExit`` of a parser that refused
+    the command, and Ctrl+C during a long search.
+    """
+
+    ui = get_guided_ui()
+    refused = io.StringIO()
+    try:
+        with contextlib.redirect_stderr(refused):
+            namespace = parser.parse_args(argv)
+        result = execute_namespace(namespace)
+        _print_result(result)
+    except KeyboardInterrupt:
+        ui.print()
+        ui.print("Stopped before it finished.")
+    except SystemExit:
+        ui.print()
+        ui.print(f"The command was refused: {refused.getvalue().strip().splitlines()[-1] if refused.getvalue().strip() else 'see --help'}")
+    except Exception as error:
+        ui.print()
+        detail = str(error) if isinstance(error, (ValueError, OSError)) else f"{type(error).__name__}: {error}"
+        ui.print(f"The command failed: {detail}")
+    else:
+        return namespace, result
+    return None
+
+
+def _retry_failed_command(history: _PromptHistory) -> bool:
+    """Ask whether to reopen a failed command, keeping its answers."""
+
+    action = run_guided_steps(lambda: _choice(
+        "That did not finish. What do you want to do?",
+        [
+            {"key": "edit", "label": "Change my answers", "hint": "Reopens the command; b steps back through your answers."},
+            {"key": "menu", "label": "Back to the menu", "hint": "Forget these answers."},
+        ],
+        default=1,
+    ))
+    if action == "edit":
+        forget_confirmation(history)
+        return True
+    return False
 
 
 def _run_interactive(group: str | None = None, *, show_banner: bool = True) -> int:
     parser = build_parser()
     active_group = None if group is None else str(group).lower()
     banner_pending = bool(show_banner)
+    history: _PromptHistory | None = None
 
     while True:
+        history = history or _PromptHistory()
         try:
             if banner_pending:
                 _print_main_menu_banner()
+                get_guided_ui().print("At any question: b + Enter goes back; q + Enter quits. Enter accepts the shown default.")
                 banner_pending = False
             if active_group is None:
                 active_group = _choice(
@@ -300,30 +409,62 @@ def _run_interactive(group: str | None = None, *, show_banner: bool = True) -> i
                     allow_back=False,
                 )
 
-            argv = _workflow_command(active_group, allow_back=group is None)
+            argv = run_guided_steps(lambda: _confirmed_command(
+                lambda: _workflow_command(active_group, allow_back=True)
+            ), history)
         except _BackInteractive:
             active_group = None
+            history = None
+            continue
+        except (ValueError, OSError) as error:
+            # A builder found nothing to offer, such as a slab with no sites.
+            get_guided_ui().print()
+            get_guided_ui().print(f"That cannot continue: {error}")
+            history = None
             continue
 
-        _print_command_preview("Planned command", argv)
-        if not _prompt_yes_no("Run this command now?", True):
+        if argv is None:
             return 0
+        if argv is _DECLINED:
+            get_guided_ui().print("Nothing was run.")
+            history = None
+            continue
 
-        namespace = parser.parse_args(argv)
-        result = execute_namespace(namespace)
-        _print_result(result)
+        finished = _run_command(parser, argv)
+        if finished is None:
+            try:
+                if _retry_failed_command(history):
+                    continue
+            except _BackInteractive:
+                pass
+            history = None
+            continue
+        namespace, result = finished
+        history = None
 
         try:
-            follow_up = _follow_up(active_group, str(namespace.stage), result)
-            while follow_up is not None:
-                _print_command_preview("Next step", follow_up)
-                if not _prompt_yes_no("Run this next command now?", True):
+            group_name, stage_name = active_group, str(getattr(namespace, "stage", ""))
+            follow_history: _PromptHistory | None = None
+            while True:
+                follow_history = follow_history or _PromptHistory()
+                follow_up = run_guided_steps(lambda: _confirmed_command(
+                    lambda: _follow_up(group_name, stage_name, result), "Next step"
+                ), follow_history)
+                if follow_up is None or follow_up is _DECLINED:
                     break
-                next_namespace = parser.parse_args(follow_up)
-                result = execute_namespace(next_namespace)
-                _print_result(result)
-                follow_up = _follow_up(str(next_namespace.group), str(next_namespace.stage), result)
+                finished = _run_command(parser, follow_up)
+                if finished is None:
+                    if _retry_failed_command(follow_history):
+                        continue
+                    break
+                namespace, result = finished
+                group_name, stage_name = str(namespace.group), str(getattr(namespace, "stage", ""))
+                follow_history = None
         except _BackInteractive:
+            continue
+        except (ValueError, OSError) as error:
+            get_guided_ui().print()
+            get_guided_ui().print(f"That cannot continue: {error}")
             continue
 
         if group is not None:

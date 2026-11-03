@@ -8,10 +8,12 @@ from ..core.constants import DEFAULT_SYMMETRY_TOLERANCE
 from .argtypes import (
     HelpFormatter,
     add_legacy_moire_find_flag,
+    parse_float_list,
     parse_float_vector,
     parse_index_spec,
     parse_nonnegative_float,
     parse_positive_float,
+    parse_positive_int,
 )
 
 
@@ -41,6 +43,7 @@ def add_moire_group(groups: argparse._SubParsersAction[argparse.ArgumentParser])
     moire_find.add_argument("--bottom-strain", type=parse_nonnegative_float, default=None, help="bottom-layer strain budget for asymmetric searches")
     moire_find.add_argument("--min-length", type=parse_positive_float, default=None, help="minimum in-plane supercell length in angstrom")
     moire_find.add_argument("--atoms", dest="max_atoms", type=int, default=None, help="maximum atoms allowed in a candidate supercell")
+    moire_find.add_argument("--max-candidates", type=parse_positive_int, default=None, help="optional result shortlist size; keeps the whole Pareto front; default saves all accepted candidates")
     moire_find.add_argument("--max-cell-aspect-ratio", type=parse_positive_float, default=12.0, help="maximum in-plane supercell aspect ratio")
     moire_find.add_argument("--twist", default=None, help="twist-angle window in degrees, e.g. 9:14, :14, or 9:")
     moire_find.add_argument("--min-cell-angle", type=parse_positive_float, default=25.0, help="minimum in-plane supercell angle in degrees")
@@ -97,7 +100,7 @@ def add_moire_group(groups: argparse._SubParsersAction[argparse.ArgumentParser])
     moire_findn.add_argument("--length", dest="max_length", type=parse_positive_float, required=True, help="maximum in-plane supercell length in angstrom")
     moire_findn.add_argument(
         "--layer-strains",
-        type=parse_float_vector,
+        type=parse_float_list,
         default=None,
         help="per-layer principal logarithmic strain budget; one value applies to every upper layer",
     )
@@ -134,7 +137,7 @@ def add_moire_group(groups: argparse._SubParsersAction[argparse.ArgumentParser])
     moire_maken.add_argument("--indexes", "--indices", dest="indexes", type=parse_index_spec, required=True, help="comma-separated indices or ranges, e.g. 1,3-5")
     moire_maken.add_argument(
         "--interlayers",
-        type=parse_float_vector,
+        type=parse_float_list,
         default=None,
         help="gap in angstrom above each layer, bottom to top; a single value applies to every gap",
     )
