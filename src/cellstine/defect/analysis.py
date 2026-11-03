@@ -10,6 +10,7 @@ import numpy as np
 
 from ..core import geometry, symmetry3d
 from ..core.layers import layer_partition
+from ..core.jsonio import write_indented_json
 from ..io.models import StructureRecord
 from .records import DefectAnalysis, DefectSite
 
@@ -253,7 +254,7 @@ def _load_analysis_file(path: Path) -> DefectAnalysis:
 def _write_analysis_file(path: Path, analysis: DefectAnalysis) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
-        json.dump(analysis.to_dict(), handle, indent=2)
+        write_indented_json(handle, analysis.to_dict())
     return path.resolve()
 
 
@@ -314,30 +315,31 @@ def _record_from_atoms(
     comment: str,
     lattice: np.ndarray | None = None,
 ) -> StructureRecord:
-    old_order = list(source.species)
+    groups: dict[str, list[int]] = {}
+    for index, symbol in enumerate(atom_species):
+        groups.setdefault(str(symbol), []).append(index)
     ordered_species: list[str] = []
-    for symbol in old_order:
-        if symbol in atom_species and symbol not in ordered_species:
+    seen: set[str] = set()
+    for symbol in source.species:
+        if symbol in groups and symbol not in seen:
             ordered_species.append(str(symbol))
-    for symbol in atom_species:
-        if str(symbol) not in ordered_species:
-            ordered_species.append(str(symbol))
-
-    grouped_direct: list[np.ndarray] = []
-    grouped_flags: list[tuple[str, str, str]] = []
-    counts: list[int] = []
+            seen.add(str(symbol))
+    for symbol in groups:
+        if symbol not in seen:
+            ordered_species.append(symbol)
+    counts = [len(groups[symbol]) for symbol in ordered_species]
+    order = np.fromiter(
+        (index for symbol in ordered_species for index in groups[symbol]),
+        dtype=np.intp,
+        count=len(atom_species),
+    )
     direct = np.asarray(direct_positions, dtype=float)
     flags = None if selective_flags is None else [tuple(item) for item in selective_flags]
-    for symbol in ordered_species:
-        indices = [index for index, atom_symbol in enumerate(atom_species) if str(atom_symbol) == symbol]
-        counts.append(len(indices))
-        for index in indices:
-            grouped_direct.append(np.array(direct[index], dtype=float))
-            if flags is not None:
-                grouped_flags.append(tuple(flags[index]))
-
+    grouped_flags = None if flags is None else [flags[index] for index in order]
     cell = np.asarray(source.lattice if lattice is None else lattice, dtype=float)
-    output_direct = np.asarray(grouped_direct, dtype=float) if grouped_direct else np.zeros((0, 3), dtype=float)
+    # Advanced indexing owns one contiguous output without a NumPy object per
+    # atom. Retain the old empty shape even when the caller passed an empty list.
+    output_direct = direct[order] if len(order) else np.zeros((0, 3), dtype=float)
     output_cartesian = output_direct @ cell
     return StructureRecord(
         comment=comment,
@@ -348,7 +350,7 @@ def _record_from_atoms(
         positions_cartesian=output_cartesian,
         coordinate_mode=source.coordinate_mode,
         selective_dynamics=bool(source.selective_dynamics and flags is not None),
-        selective_flags=None if flags is None else grouped_flags,
+        selective_flags=grouped_flags,
         source_path=source.source_path,
         source_format=source.source_format,
         metadata=dict(source.metadata),

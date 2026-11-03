@@ -33,6 +33,7 @@ from typing import Any, Mapping, Sequence
 import numpy as np
 
 from ...moire.search.find import run_find
+from ...core.jsonio import write_indented_json
 from ...moire.search.results import read_results
 
 SCHEMA = "cellstine.interface.match"
@@ -435,7 +436,7 @@ def write_matches(path: str | Path, payload: Any) -> Path:
     destination = Path(path).resolve()
     destination.parent.mkdir(parents=True, exist_ok=True)
     with destination.open("w", encoding="utf-8", newline="\n") as handle:
-        json.dump(document, handle, indent=2, allow_nan=False)
+        write_indented_json(handle, document, allow_nan=False)
         handle.write("\n")
     return destination
 

@@ -340,6 +340,11 @@ def _validate_metadata(metadata: dict[str, Any]) -> None:
             raise ValueError(f"metadata.{name} must be null or a string")
 
 
+def _candidate_angle_limit(search: dict[str, Any]) -> float:
+    """Recorded twist bound: symmetry-folded or a full signed half turn."""
+    return .5 * float(search["angle_period_deg"]) if search["fold_symmetry"] else 180.
+
+
 def _validate_candidate(candidate: dict[str, Any], expected_index: int, search: dict[str, Any]) -> None:
     missing = sorted(_CANDIDATE_FIELDS.difference(candidate))
     if missing:
@@ -353,8 +358,7 @@ def _validate_candidate(candidate: dict[str, Any], expected_index: int, search: 
         if gram[0] <= 0.0 or gram[2] <= 0.0 or gram[0] * gram[2] - gram[1] * gram[1] <= 0.0:
             raise ValueError(f"candidate {expected_index}.{name} must be positive definite")
     angle = _finite_number(candidate["angle_deg"], f"candidate {expected_index}.angle_deg")
-    period = float(search["angle_period_deg"])
-    if abs(angle) > 0.5 * period + 1e-6:
+    if abs(angle) > _candidate_angle_limit(search) + 1e-6:
         raise ValueError(
             f"candidate {expected_index}.angle_deg must be folded into the fundamental range"
         )
@@ -418,6 +422,117 @@ def _validate_candidate(candidate: dict[str, Any], expected_index: int, search: 
             raise ValueError(f"candidate {expected_index}.{name} must be nonsingular")
 
 
+def _plain_numbers(value: Any, count: int) -> list[float] | None:
+    """A list of ``count`` finite plain ints or floats, as floats; else ``None``."""
+
+    if type(value) is not list or len(value) != count:
+        return None
+    numbers = []
+    for item in value:
+        kind = type(item)
+        if kind is float:
+            number = item
+        elif kind is int:
+            try:
+                number = float(item)
+            except OverflowError:
+                return None
+        else:
+            return None
+        if not math.isfinite(number):
+            return None
+        numbers.append(number)
+    return numbers
+
+def _plain_matrix(value: Any) -> list[float] | None:
+    """The four entries of a finite 2x2 nested list of plain numbers, or ``None``."""
+
+    if type(value) is not list or len(value) != 2:
+        return None
+    first, second = _plain_numbers(value[0], 2), _plain_numbers(value[1], 2)
+    if first is None or second is None:
+        return None
+    return first + second
+
+def _plain_integer_matrix(value: Any) -> bool:
+    """A nonsingular 2x2 nested list of plain ints."""
+
+    if type(value) is not list or len(value) != 2:
+        return False
+    entries = []
+    for row in value:
+        if type(row) is not list or len(row) != 2:
+            return False
+        for item in row:
+            if type(item) is not int:
+                return False
+            entries.append(item)
+    return entries[0] * entries[3] - entries[1] * entries[2] != 0
+
+def _plainly_valid_candidate(candidate: Any, expected_index: int, search: dict[str, Any]) -> bool:
+    """True only when :func:`_validate_candidate` would accept ``candidate``.
+
+    The same tests as that function, written for the plain JSON types a parsed
+    file holds, without its general helpers.  Anything unusual -- a missing
+    field, a tuple, a numeric subclass, any failed test -- returns ``False``
+    and the caller runs :func:`_validate_candidate`, which then raises its own
+    message.  So this can only ever skip work, never change a verdict.
+    """
+
+    if type(candidate) is not dict or not _CANDIDATE_FIELDS.issubset(candidate.keys()):
+        return False
+    index = candidate["index"]
+    if type(index) is not int or index != expected_index or index <= 0:
+        return False
+    if not (_plain_integer_matrix(candidate["top_matrix"]) and _plain_integer_matrix(candidate["bottom_matrix"])):
+        return False
+    for name in ("top_gram", "bottom_gram"):
+        gram = _plain_numbers(candidate[name], 3)
+        if gram is None or gram[0] <= 0.0 or gram[2] <= 0.0 or gram[0] * gram[2] - gram[1] * gram[1] <= 0.0:
+            return False
+    scalars = _plain_numbers(
+        [candidate[name] for name in ("angle_deg", "raw_angle_deg", "sharing_fraction", "moire_a", "moire_b", "moire_gamma_deg")],
+        6,
+    )
+    if scalars is None:
+        return False
+    angle, _, sharing, moire_a, moire_b, gamma = scalars
+    if abs(angle) > _candidate_angle_limit(search) + 1e-6:
+        return False
+    if not 0.0 <= sharing <= 1.0 or moire_a <= 0.0 or moire_b <= 0.0 or not 0.0 < gamma < 180.0:
+        return False
+    relative = _plain_numbers(candidate["strain"], 2)
+    top_layer = _plain_numbers(candidate["top_layer_strain"], 2)
+    bottom_layer = _plain_numbers(candidate["bottom_layer_strain"], 2)
+    if relative is None or top_layer is None or bottom_layer is None:
+        return False
+    for difference, expected in zip(
+        (top_layer[0] - bottom_layer[0], top_layer[1] - bottom_layer[1]), relative
+    ):
+        if abs(difference - expected) > 1e-9 + 1e-7 * abs(expected):
+            return False
+    if max(abs(entry) for entry in top_layer) > float(search["top_strain"]) + _STRAIN_BUDGET_TOLERANCE:
+        return False
+    if max(abs(entry) for entry in bottom_layer) > float(search["bottom_strain"]) + _STRAIN_BUDGET_TOLERANCE:
+        return False
+    counts = [candidate[name] for name in ("top_atom_count", "bottom_atom_count", "atom_count", "coincidence_index", "rank")]
+    if any(type(value) is not int or value <= 0 for value in counts):
+        return False
+    top_count, bottom_count, atom_count, coincidence, _ = counts
+    if atom_count != top_count + bottom_count or (coincidence != 1 and search["primitive_only"]):
+        return False
+    if any(
+        type(candidate[name]) is not bool
+        for name in ("loewner_certified", "loewner_borderline", "pareto_optimal")
+    ):
+        return False
+    for name in ("top_affine", "bottom_affine", "shared_lattice"):
+        matrix = _plain_matrix(candidate[name])
+        if matrix is None or abs(matrix[0] * matrix[3] - matrix[1] * matrix[2]) <= _EPS:
+            return False
+    return True
+
+
 def _validate_document(document: dict[str, Any]) -> dict[str, Any]:
     """Validate a document in place and return it."""
     if document.get("schema") != SCHEMA:
@@ -432,7 +547,8 @@ def _validate_document(document: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(candidates, list):
         raise ValueError("candidates must be a JSON array")
     for index, candidate in enumerate(candidates, start=1):
-        _validate_candidate(_mapping(candidate, f"candidate {index}"), index, search)
+        if not _plainly_valid_candidate(candidate, index, search):
+            _validate_candidate(_mapping(candidate, f"candidate {index}"), index, search)
     return document
 
 
@@ -675,9 +791,9 @@ def _first_invalid_row(
             | (gram[:, 0] * gram[:, 2] - gram[:, 1] * gram[:, 1] <= 0.0)
         )
     angle = result.twist_degrees[rows].astype(float)
-    period = float(search["angle_period_deg"])
+    angle_limit = _candidate_angle_limit(search)
     good &= finite(angle, np.degrees(result.raw_twist_radians[rows]).astype(float))
-    good &= ~(np.abs(angle) > 0.5 * period + 1e-6)
+    good &= ~(np.abs(angle) > angle_limit + 1e-6)
     relative = result.principal_strains[rows].astype(float)
     sharing = result.sharing_fraction[rows].astype(float)
     top_layer = result.top_layer_strains[rows].astype(float)

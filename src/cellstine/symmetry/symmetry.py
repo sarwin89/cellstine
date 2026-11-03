@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from dataclasses import replace
 from pathlib import Path
 from typing import Any, Sequence
@@ -13,6 +12,7 @@ from ..core.lattice import vector_angle_deg as vector_angle_deg
 from ..core.species import expand_species
 from ..core.base import Base, run_output_suffix
 from ..core.models import CommandResult
+from ..core.jsonio import write_indented_json
 from ..core.outputs import reserve_default_file
 from ..io.converters import StructureConverter
 from ..io.models import StructureRecord
@@ -39,7 +39,7 @@ from .spglib_adapter import (
 def _write_analysis_file(path: Path, analysis: SymmetryAnalysis) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
-        json.dump(analysis.to_dict(), handle, indent=2)
+        write_indented_json(handle, analysis.to_dict())
         handle.write("\n")
     return path.resolve()
 

@@ -359,10 +359,10 @@
       "qualified_name": "_baseline",
       "line": 29,
       "end_line": 51,
-      "module_sha256": "6730ab52a59bef1be391f650e7f7a9240089071eb9d10c2baa4a5cef39e9afcf",
+      "module_sha256": "b6ee3de1f21322783e9ec3dbc956876e303e2d4f98221b3e6cdcdc08717fa237",
       "status": "reviewed—unchanged",
-      "reason": "Validate Git commit and reconstruct the entire search package in an owned temporary namespace for a coherent old implementation.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "reason": "Reconstruct complete exact Git search source under an isolated namespace.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "benchmarks/benchmark_moire_fast_paths.py::_cases",
@@ -370,10 +370,10 @@
       "qualified_name": "_cases",
       "line": 54,
       "end_line": 89,
-      "module_sha256": "6730ab52a59bef1be391f650e7f7a9240089071eb9d10c2baa4a5cef39e9afcf",
+      "module_sha256": "b6ee3de1f21322783e9ec3dbc956876e303e2d4f98221b3e6cdcdc08717fa237",
       "status": "reviewed—unchanged",
-      "reason": "Enumerate38 explicit lattice/policy/group/window/cap configurations, including paired mirrors and asymmetric groups.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "reason": "Retain38 lattice/group/strain/window/cap/folding configurations.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "benchmarks/benchmark_moire_fast_paths.py::_document",
@@ -381,32 +381,120 @@
       "qualified_name": "_document",
       "line": 92,
       "end_line": 97,
-      "module_sha256": "6730ab52a59bef1be391f650e7f7a9240089071eb9d10c2baa4a5cef39e9afcf",
+      "module_sha256": "b6ee3de1f21322783e9ec3dbc956876e303e2d4f98221b3e6cdcdc08717fa237",
       "status": "reviewed—unchanged",
-      "reason": "Use deterministic timestamp and equal source-path/workflow metadata for old/new JSON comparison.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "reason": "Keep deterministic metadata for exact document comparison.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
+      "id": "benchmarks/benchmark_moire_fast_paths.py::_baseline_unfolded_document",
+      "path": "benchmarks/benchmark_moire_fast_paths.py",
+      "qualified_name": "_baseline_unfolded_document",
+      "line": 100,
+      "end_line": 123,
+      "module_sha256": "b6ee3de1f21322783e9ec3dbc956876e303e2d4f98221b3e6cdcdc08717fa237",
+      "status": "reviewed—unchanged",
+      "reason": "Correct only the old unfolded bound in a scoped validation oracle; retain payload period/other checks and restore both wrappers in finally.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
+      "id": "benchmarks/benchmark_moire_fast_paths.py::_baseline_unfolded_document.validate_candidate",
+      "path": "benchmarks/benchmark_moire_fast_paths.py",
+      "qualified_name": "_baseline_unfolded_document.validate_candidate",
+      "line": 109,
+      "end_line": 110,
+      "module_sha256": "b6ee3de1f21322783e9ec3dbc956876e303e2d4f98221b3e6cdcdc08717fa237",
+      "status": "reviewed—unchanged",
+      "reason": "Give old scalar validation a360degree period without changing serialized metadata.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
+      "id": "benchmarks/benchmark_moire_fast_paths.py::_baseline_unfolded_document.first_invalid_row",
+      "path": "benchmarks/benchmark_moire_fast_paths.py",
+      "qualified_name": "_baseline_unfolded_document.first_invalid_row",
+      "line": 112,
+      "end_line": 113,
+      "module_sha256": "b6ee3de1f21322783e9ec3dbc956876e303e2d4f98221b3e6cdcdc08717fa237",
+      "status": "reviewed—unchanged",
+      "reason": "Give old array validation the same corrected unfolded bound and retain other checks.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "benchmarks/benchmark_moire_fast_paths.py::_assert_same_result",
       "path": "benchmarks/benchmark_moire_fast_paths.py",
       "qualified_name": "_assert_same_result",
-      "line": 100,
-      "end_line": 108,
-      "module_sha256": "6730ab52a59bef1be391f650e7f7a9240089071eb9d10c2baa4a5cef39e9afcf",
+      "line": 126,
+      "end_line": 134,
+      "module_sha256": "b6ee3de1f21322783e9ec3dbc956876e303e2d4f98221b3e6cdcdc08717fa237",
       "status": "reviewed—unchanged",
-      "reason": "Compare every non-stats dataclass array exactly and retain every changed statistic for audit.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "reason": "Compare all non-statistic arrays exactly and retain every changed statistic.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "benchmarks/benchmark_moire_fast_paths.py::main",
       "path": "benchmarks/benchmark_moire_fast_paths.py",
       "qualified_name": "main",
-      "line": 111,
-      "end_line": 166,
-      "module_sha256": "6730ab52a59bef1be391f650e7f7a9240089071eb9d10c2baa4a5cef39e9afcf",
+      "line": 137,
+      "end_line": 199,
+      "module_sha256": "b6ee3de1f21322783e9ec3dbc956876e303e2d4f98221b3e6cdcdc08717fa237",
       "status": "reviewed—unchanged",
-      "reason": "Validate repeats, compare arrays/JSON or same baseline errors, manage owned scratch lifecycle and record bounded local measurements without CI thresholds.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "reason": "Accept only the identified old unfolded rejection as a corrected behavior; require scientific arrays/stable JSON to match the scoped oracle.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
+      "id": "benchmarks/benchmark_persistence.py::_load",
+      "path": "benchmarks/benchmark_persistence.py",
+      "qualified_name": "_load",
+      "line": 38,
+      "end_line": 45,
+      "module_sha256": "00ef9352314575e124318d5b07cb70faedb20ce9cede6f7e7054ac3109faad2b",
+      "status": "reviewed—unchanged",
+      "reason": "Load exact validated Git source in its package without changing checkout code.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
+      "id": "benchmarks/benchmark_persistence.py::_cases",
+      "path": "benchmarks/benchmark_persistence.py",
+      "qualified_name": "_cases",
+      "line": 48,
+      "end_line": 81,
+      "module_sha256": "00ef9352314575e124318d5b07cb70faedb20ce9cede6f7e7054ac3109faad2b",
+      "status": "reviewed—unchanged",
+      "reason": "Prepare genuine records and labelled encoder-only path/kpath shapes outside timing; bounded repeated candidate/match records exercise persistence.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
+      "id": "benchmarks/benchmark_persistence.py::_write",
+      "path": "benchmarks/benchmark_persistence.py",
+      "qualified_name": "_write",
+      "line": 84,
+      "end_line": 98,
+      "module_sha256": "00ef9352314575e124318d5b07cb70faedb20ce9cede6f7e7054ac3109faad2b",
+      "status": "reviewed—unchanged",
+      "reason": "Call actual writers or the explicitly labelled encoder expression with original newline policy.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
+      "id": "benchmarks/benchmark_persistence.py::_record",
+      "path": "benchmarks/benchmark_persistence.py",
+      "qualified_name": "_record",
+      "line": 101,
+      "end_line": 102,
+      "module_sha256": "00ef9352314575e124318d5b07cb70faedb20ce9cede6f7e7054ac3109faad2b",
+      "status": "reviewed—unchanged",
+      "reason": "Isolate grouping with equivalent source/labels/positions/flags.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
+      "id": "benchmarks/benchmark_persistence.py::main",
+      "path": "benchmarks/benchmark_persistence.py",
+      "qualified_name": "main",
+      "line": 105,
+      "end_line": 157,
+      "module_sha256": "00ef9352314575e124318d5b07cb70faedb20ce9cede6f7e7054ac3109faad2b",
+      "status": "reviewed—unchanged",
+      "reason": "Validate sizes/reference, assert bytes/readbacks and selected fields/ownership, then measure local medians/peak allocation in owned files.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "benchmarks/benchmark_reciprocal_resources.py::main",
@@ -3632,6 +3720,28 @@
       "evidence": "docs/optimization/part-03e-conventional.md; whole-function/caller inspection, independent cap/order/tie/ownership probes,456focused and3339full passing tests, exact benchmark and frozen-source/package/install checks."
     },
     {
+      "id": "src/cellstine/core/jsonio.py::_small_json_budget",
+      "path": "src/cellstine/core/jsonio.py",
+      "qualified_name": "_small_json_budget",
+      "line": 10,
+      "end_line": 57,
+      "module_sha256": "64724ab8fea423e46d4dff8b2b81ea67a1864e5d0818c42512d1d879e5af178b",
+      "status": "optimized—verified",
+      "reason": "Bound plain encoded text with conservative Unicode, indentation and key costs; reject large, deep, custom and exceptional values without user conversions.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
+      "id": "src/cellstine/core/jsonio.py::write_indented_json",
+      "path": "src/cellstine/core/jsonio.py",
+      "qualified_name": "write_indented_json",
+      "line": 60,
+      "end_line": 74,
+      "module_sha256": "64724ab8fea423e46d4dff8b2b81ea67a1864e5d0818c42512d1d879e5af178b",
+      "status": "optimized—verified",
+      "reason": "Use whole encoding only within the small plain-text budget; retain baseline stream semantics, handle/newline ownership and serialization errors otherwise.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
       "id": "src/cellstine/core/kpath.py::KPoint.length",
       "path": "src/cellstine/core/kpath.py",
       "qualified_name": "KPoint.length",
@@ -4086,45 +4196,45 @@
       "id": "src/cellstine/core/manifests.py::RunManifest.create",
       "path": "src/cellstine/core/manifests.py",
       "qualified_name": "RunManifest.create",
-      "line": 29,
-      "end_line": 53,
-      "module_sha256": "9ed846abf6446997af786077e366e98b47930cba5a79b66e0447a0a782bf0279",
+      "line": 31,
+      "end_line": 55,
+      "module_sha256": "22d63f907a3a3c0ba36c6f11cd3b30337ed3fd71a701fb931301cb54fb739adb",
       "status": "reviewed—unchanged",
-      "reason": "Inspected primitive string fields, UTC timestamp and shallow copied optional mappings; unchanged AST and direct ownership/time/default/handoff tests pass",
-      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
+      "reason": "Keep normalized metadata and independent input/parameter/artifact/summary/dependency dictionaries.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/core/manifests.py::RunManifest.to_dict",
       "path": "src/cellstine/core/manifests.py",
       "qualified_name": "RunManifest.to_dict",
-      "line": 55,
-      "end_line": 67,
-      "module_sha256": "9ed846abf6446997af786077e366e98b47930cba5a79b66e0447a0a782bf0279",
+      "line": 57,
+      "end_line": 69,
+      "module_sha256": "22d63f907a3a3c0ba36c6f11cd3b30337ed3fd71a701fb931301cb54fb739adb",
       "status": "reviewed—unchanged",
-      "reason": "Inspected exact field set/order and shared mapping references without path field; unchanged AST and direct serialization/ownership tests pass",
-      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
+      "reason": "Keep field order and exclude the mutable output path from persisted metadata.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/core/manifests.py::RunManifest.write",
       "path": "src/cellstine/core/manifests.py",
       "qualified_name": "RunManifest.write",
-      "line": 69,
-      "end_line": 75,
-      "module_sha256": "9ed846abf6446997af786077e366e98b47930cba5a79b66e0447a0a782bf0279",
-      "status": "reviewed—unchanged",
-      "reason": "Inspected resolved parent creation, UTF8/indent2 output and path assignment after successful dump; retains direct-write contract; unchanged AST and actual written manifest/installed tests pass",
-      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
+      "line": 71,
+      "end_line": 77,
+      "module_sha256": "22d63f907a3a3c0ba36c6f11cd3b30337ed3fd71a701fb931301cb54fb739adb",
+      "status": "optimized—verified",
+      "reason": "Use bounded encoding while preserving resolved path, parent creation, native newline policy and post-success path update.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/core/manifests.py::RunManifest.load",
       "path": "src/cellstine/core/manifests.py",
       "qualified_name": "RunManifest.load",
-      "line": 78,
-      "end_line": 94,
-      "module_sha256": "9ed846abf6446997af786077e366e98b47930cba5a79b66e0447a0a782bf0279",
+      "line": 80,
+      "end_line": 96,
+      "module_sha256": "22d63f907a3a3c0ba36c6f11cd3b30337ed3fd71a701fb931301cb54fb739adb",
       "status": "reviewed—unchanged",
-      "reason": "Inspected required fields, optional defaults, string conversion, mapping copies and resolved source path; unchanged AST and direct default/roundtrip/handoff tests pass",
-      "evidence": "docs/optimization/part-03b-shared-infrastructure.md"
+      "reason": "Keep required fields, shallow dictionary normalization and resolved source path.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/core/naming.py::safe_token",
@@ -4165,10 +4275,10 @@
       "qualified_name": "format_path_table",
       "line": 45,
       "end_line": 67,
-      "module_sha256": "39b1bda666788e5ca3f020cf420db40b3f27fa600dce2e682efbbb37c864f6a1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "edb4ddd9eba3cd56f827f79ccb371f8d877edd5759dede2a1d02e0631e8c59bc",
+      "status": "reviewed—unchanged",
+      "reason": "Keep measured spacings/contacts, reaction coordinates and travelled-distance display order.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/core/path_stage.py::format_moved_atoms",
@@ -4176,10 +4286,10 @@
       "qualified_name": "format_moved_atoms",
       "line": 70,
       "end_line": 87,
-      "module_sha256": "39b1bda666788e5ca3f020cf420db40b3f27fa600dce2e682efbbb37c864f6a1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "edb4ddd9eba3cd56f827f79ccb371f8d877edd5759dede2a1d02e0631e8c59bc",
+      "status": "reviewed—unchanged",
+      "reason": "Keep displacement ranking, movement threshold and truncation presentation.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/core/path_stage.py::_path_payload",
@@ -4187,10 +4297,10 @@
       "qualified_name": "_path_payload",
       "line": 90,
       "end_line": 127,
-      "module_sha256": "39b1bda666788e5ca3f020cf420db40b3f27fa600dce2e682efbbb37c864f6a1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "edb4ddd9eba3cd56f827f79ccb371f8d877edd5759dede2a1d02e0631e8c59bc",
+      "status": "reviewed—unchanged",
+      "reason": "Keep atom/matching/image order, coordinate/scalar conversion, certificates and paths in the published schema.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/core/path_stage.py::MigrationPathMixin.path",
@@ -4198,10 +4308,10 @@
       "qualified_name": "MigrationPathMixin.path",
       "line": 133,
       "end_line": 296,
-      "module_sha256": "39b1bda666788e5ca3f020cf420db40b3f27fa600dce2e682efbbb37c864f6a1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "edb4ddd9eba3cd56f827f79ccb371f8d877edd5759dede2a1d02e0631e8c59bc",
+      "status": "optimized—verified",
+      "reason": "Keep matching, collision validation, image provenance, warnings, manifests and outputs; change only bounded path.json encoding.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/core/path_stage.py::MigrationPathMixin.path.<lambda>@233:50",
@@ -4209,10 +4319,10 @@
       "qualified_name": "MigrationPathMixin.path.<lambda>@233:50",
       "line": 233,
       "end_line": 233,
-      "module_sha256": "39b1bda666788e5ca3f020cf420db40b3f27fa600dce2e682efbbb37c864f6a1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "edb4ddd9eba3cd56f827f79ccb371f8d877edd5759dede2a1d02e0631e8c59bc",
+      "status": "reviewed—unchanged",
+      "reason": "Keep first minimum-contact image selection for the warning.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/core/pathway.py::_wrap_to_cell",
@@ -6517,221 +6627,221 @@
       "id": "src/cellstine/defect/analysis.py::_normal_from_lattice",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_normal_from_lattice",
-      "line": 17,
-      "end_line": 22,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 18,
+      "end_line": 23,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep in-plane cross-product normal and existing area threshold.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_cluster_projection_layers",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_cluster_projection_layers",
-      "line": 25,
-      "end_line": 44,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 26,
+      "end_line": 45,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep shared connected layer partition and bottom-to-top one-based atom census.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_annotate_layer_census",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_annotate_layer_census",
-      "line": 47,
-      "end_line": 78,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 48,
+      "end_line": 79,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep per-layer species/orbit counts with deterministic keys.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_nearest_layer_id",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_nearest_layer_id",
-      "line": 81,
-      "end_line": 92,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 82,
+      "end_line": 93,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep closest projected plane and stable first-layer tie choice.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
-      "id": "src/cellstine/defect/analysis.py::_nearest_layer_id.<lambda>@91:27",
+      "id": "src/cellstine/defect/analysis.py::_nearest_layer_id.<lambda>@92:27",
       "path": "src/cellstine/defect/analysis.py",
-      "qualified_name": "_nearest_layer_id.<lambda>@91:27",
-      "line": 91,
-      "end_line": 91,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "qualified_name": "_nearest_layer_id.<lambda>@92:27",
+      "line": 92,
+      "end_line": 92,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep absolute projection-distance selection and tie order.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_atom_members",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_atom_members",
-      "line": 95,
-      "end_line": 120,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 96,
+      "end_line": 121,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep representative-first orbit members, one-based indices and associated layer/coordinate fields.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_layer_lookup",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_layer_lookup",
-      "line": 123,
-      "end_line": 129,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 124,
+      "end_line": 130,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep one-based atom-to-layer mapping and existing fallback values.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_detect_structure_kind",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_detect_structure_kind",
-      "line": 132,
-      "end_line": 150,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 133,
+      "end_line": 151,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep explicit choices and current vacuum/height heuristics for automatic classification.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_pairwise_minimum_image_distances",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_pairwise_minimum_image_distances",
-      "line": 153,
-      "end_line": 167,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 154,
+      "end_line": 168,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep shared exact periodic-distance kernel, empty shape and Cartesian convention.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_PlainOperation.__init__",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_PlainOperation.__init__",
-      "line": 175,
-      "end_line": 177,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 176,
+      "end_line": 178,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep minimal rotation/translation fields and ownership.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_symmetry_groups_for_points",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_symmetry_groups_for_points",
-      "line": 180,
-      "end_line": 241,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 181,
+      "end_line": 242,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep generator-reduced periodic matching, optional labels and deterministic orbit representatives.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_symmetry_groups_for_points.find",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_symmetry_groups_for_points.find",
-      "line": 202,
-      "end_line": 206,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 203,
+      "end_line": 207,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep path-compressed union-find lookup.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_symmetry_groups_for_points.union",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_symmetry_groups_for_points.union",
-      "line": 208,
-      "end_line": 211,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 209,
+      "end_line": 212,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep the smaller atom index as deterministic root.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_serialise_site_id",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_serialise_site_id",
-      "line": 244,
-      "end_line": 245,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 245,
+      "end_line": 246,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep stable zero-padded site identifiers.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_load_analysis_file",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_load_analysis_file",
-      "line": 248,
-      "end_line": 250,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 249,
+      "end_line": 251,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep JSON parsing and DefectAnalysis reconstruction.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_write_analysis_file",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_write_analysis_file",
-      "line": 253,
-      "end_line": 257,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 254,
+      "end_line": 258,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "optimized—verified",
+      "reason": "Use bounded encoding while retaining parent/path handling and no-trailing-newline format.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_normalise_site_ids",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_normalise_site_ids",
-      "line": 260,
-      "end_line": 269,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 261,
+      "end_line": 270,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep comma/list normalization and empty selection behavior.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_normalise_supercell",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_normalise_supercell",
-      "line": 272,
-      "end_line": 305,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 273,
+      "end_line": 306,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep scalar/string/sequence parsing, identity sentinel and diagnostics.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_record_from_atoms",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_record_from_atoms",
-      "line": 308,
-      "end_line": 355,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 309,
+      "end_line": 357,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "optimized—verified",
+      "reason": "Group string labels once and gather one permutation; preserve source-species priority, position/flag alignment, empty shape and ownership.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/analysis.py::_safe_species_token",
       "path": "src/cellstine/defect/analysis.py",
       "qualified_name": "_safe_species_token",
-      "line": 358,
-      "end_line": 363,
-      "module_sha256": "98a6a0ba55402844fa9085ea9f37c1e48d5dc1dda3b983faf0fa84c92c0fcdcd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 360,
+      "end_line": 365,
+      "module_sha256": "22c0fe1d99a4ad2826cc24c062d2ad5665c32501e9bb0c9fff965453f050bcf3",
+      "status": "reviewed—unchanged",
+      "reason": "Keep alphanumeric filtering and empty-value fallbacks.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/defect/dilution.py::image_separation",
@@ -7520,10 +7630,10 @@
       "qualified_name": "_site_report_to_dict",
       "line": 138,
       "end_line": 162,
-      "module_sha256": "f67b32088206f854939d51c75945b2efacbcc1306a26440f19c71b4ceed735af",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "status": "reviewed—unchanged",
+      "reason": "Keep site/group order, coordinates and optional coordination/radius/depth fields.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::write_site_report_json",
@@ -7531,10 +7641,10 @@
       "qualified_name": "write_site_report_json",
       "line": 165,
       "end_line": 171,
-      "module_sha256": "f67b32088206f854939d51c75945b2efacbcc1306a26440f19c71b4ceed735af",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "status": "optimized—verified",
+      "reason": "Use bounded encoding with native newline and final newline; retain parent/path behavior.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::canonical_site_type",
@@ -7542,10 +7652,10 @@
       "qualified_name": "canonical_site_type",
       "line": 174,
       "end_line": 179,
-      "module_sha256": "f67b32088206f854939d51c75945b2efacbcc1306a26440f19c71b4ceed735af",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "status": "reviewed—unchanged",
+      "reason": "Keep aliases and unsupported-type diagnostics.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::sorted_sites_for_type",
@@ -7553,10 +7663,10 @@
       "qualified_name": "sorted_sites_for_type",
       "line": 182,
       "end_line": 186,
-      "module_sha256": "f67b32088206f854939d51c75945b2efacbcc1306a26440f19c71b4ceed735af",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "status": "reviewed—unchanged",
+      "reason": "Keep canonical filtering and rounded-coordinate order.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::sorted_sites_for_type.<lambda>@185:22",
@@ -7564,10 +7674,10 @@
       "qualified_name": "sorted_sites_for_type.<lambda>@185:22",
       "line": 185,
       "end_line": 185,
-      "module_sha256": "f67b32088206f854939d51c75945b2efacbcc1306a26440f19c71b4ceed735af",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "status": "reviewed—unchanged",
+      "reason": "Keep twelve-decimal coordinate sorting and stable ties.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::select_adsorption_site",
@@ -7575,10 +7685,10 @@
       "qualified_name": "select_adsorption_site",
       "line": 189,
       "end_line": 202,
-      "module_sha256": "f67b32088206f854939d51c75945b2efacbcc1306a26440f19c71b4ceed735af",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "status": "reviewed—unchanged",
+      "reason": "Keep one-based index validation and missing/out-of-range diagnostics.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::find_adsorption_sites",
@@ -7586,10 +7696,10 @@
       "qualified_name": "find_adsorption_sites",
       "line": 205,
       "end_line": 302,
-      "module_sha256": "f67b32088206f854939d51c75945b2efacbcc1306a26440f19c71b4ceed735af",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "status": "reviewed—unchanged",
+      "reason": "Keep layer detection, nearest bonds, planar hollows, subsurface classification and optional report writeback.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::write_surface_poscar",
@@ -7597,10 +7707,10 @@
       "qualified_name": "write_surface_poscar",
       "line": 305,
       "end_line": 324,
-      "module_sha256": "f67b32088206f854939d51c75945b2efacbcc1306a26440f19c71b4ceed735af",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "status": "reviewed—unchanged",
+      "reason": "Keep unwrapped slab coordinates, flags, Miller provenance and explicit path behavior.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::build_surface",
@@ -7608,10 +7718,10 @@
       "qualified_name": "build_surface",
       "line": 327,
       "end_line": 393,
-      "module_sha256": "f67b32088206f854939d51c75945b2efacbcc1306a26440f19c71b4ceed735af",
+      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
       "status": "optimized—verified",
-      "reason": "Reserves default slab and automatic sibling site report, including with explicit slab path; preserves construction, Miller/site metadata and explicit file behavior; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Retain the prior verified optimization: Keep structure construction, default reservations and optional site-report path/count handling.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/surface/registry.py::mirror_configuration",
@@ -9003,221 +9113,221 @@
       "id": "src/cellstine/interface/workflow/lattice_match.py::MatchRequest.__post_init__",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "MatchRequest.__post_init__",
-      "line": 94,
-      "end_line": 100,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 95,
+      "end_line": 101,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep positive finite length/strain and shared/film mode validation.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::MatchRequest.strain_budgets",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "MatchRequest.strain_budgets",
-      "line": 103,
-      "end_line": 108,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 104,
+      "end_line": 109,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep bottom/top logarithmic-strain sharing conventions.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::_strain_magnitude",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "_strain_magnitude",
-      "line": 123,
-      "end_line": 124,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 124,
+      "end_line": 125,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep maximum absolute principal strain magnitude.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::_cell_area",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "_cell_area",
-      "line": 127,
-      "end_line": 129,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 128,
+      "end_line": 130,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep absolute shared-cell determinant and arithmetic order.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::search_slab_pair",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "search_slab_pair",
-      "line": 132,
-      "end_line": 159,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 133,
+      "end_line": 160,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep slab-to-moire top/bottom convention and limit forwarding.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::match_entries",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "match_entries",
-      "line": 162,
-      "end_line": 203,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 163,
+      "end_line": 204,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep candidate geometry, layer ordering and file/index provenance.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::match_order_key",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "match_order_key",
-      "line": 206,
-      "end_line": 221,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 207,
+      "end_line": 222,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep strain quantization, atom/area/twist ties and deterministic ordering.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::sort_matches",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "sort_matches",
-      "line": 224,
-      "end_line": 230,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 225,
+      "end_line": 231,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep detached entries and one-based indexes after sorting.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::build_match_document",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "build_match_document",
-      "line": 233,
-      "end_line": 273,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 234,
+      "end_line": 274,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep schema/search metadata, sorted entries and validation.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::_finite",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "_finite",
-      "line": 307,
-      "end_line": 313,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 308,
+      "end_line": 314,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep finite scalar validation and current type/diagnostic behavior.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::_pair",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "_pair",
-      "line": 316,
-      "end_line": 321,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 317,
+      "end_line": 322,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep two-component validation and conversion/error conventions.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::_integer_matrix_determinant",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "_integer_matrix_determinant",
-      "line": 324,
-      "end_line": 337,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 325,
+      "end_line": 338,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep validated2x2 determinant and diagnostic behavior.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::_validate_match",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "_validate_match",
-      "line": 340,
-      "end_line": 385,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 341,
+      "end_line": 386,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep required fields, strain/count/geometry constraints and tolerance/error order.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::_validate_document",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "_validate_document",
-      "line": 388,
-      "end_line": 410,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 389,
+      "end_line": 411,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep schema/search checks and consecutive match validation.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::validate_matches",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "validate_matches",
-      "line": 413,
-      "end_line": 420,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 414,
+      "end_line": 421,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep detached public document validation.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::write_matches",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "write_matches",
-      "line": 423,
-      "end_line": 440,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 424,
+      "end_line": 441,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "optimized—verified",
+      "reason": "Use bounded encoding while retaining in-place validation, LF, allow_nan=False and final newline.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::read_matches",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "read_matches",
-      "line": 443,
-      "end_line": 456,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 444,
+      "end_line": 457,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep parse-error translation, mapping requirements and validation.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::select_match",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "select_match",
-      "line": 459,
-      "end_line": 467,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 460,
+      "end_line": 468,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep one-based match selection and bounds diagnostics.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::candidate_for_match",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "candidate_for_match",
-      "line": 470,
-      "end_line": 484,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 471,
+      "end_line": 485,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep referenced result-file/candidate lookup and provenance consistency.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::format_matches_table",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "format_matches_table",
-      "line": 487,
-      "end_line": 515,
-      "module_sha256": "0ef1296825ee8b9a3abb32550d94af3c5f33525902fa6fadd74cd081aa17a4f7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 488,
+      "end_line": 516,
+      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "status": "reviewed—unchanged",
+      "reason": "Keep cell/strain/matrix ranking display.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/interface/workflow/match.py::match",
@@ -11447,10 +11557,10 @@
       "qualified_name": "_collection_paused",
       "line": 85,
       "end_line": 99,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "optimized—verified",
-      "reason": "Restore prior cyclic-GC enabled state on normal and exceptional exits while avoiding repeated large-document survivor scans.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "reason": "Retain the prior verified optimization: Restore prior cyclic-GC enabled state on normal and exceptional exits while avoiding repeated large-document survivor scans.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_json_ready",
@@ -11458,10 +11568,10 @@
       "qualified_name": "_json_ready",
       "line": 102,
       "end_line": 120,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "reviewed—unchanged",
       "reason": "Retain existing implementation: Fast concrete scalar/container checks preserve recursive JSON conversion and fallback Mapping semantics.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_cell_angle_deg",
@@ -11469,10 +11579,10 @@
       "qualified_name": "_cell_angle_deg",
       "line": 123,
       "end_line": 127,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "reviewed—unchanged",
       "reason": "Keep the shared stable scalar vector-angle implementation.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_cell_shapes",
@@ -11480,10 +11590,10 @@
       "qualified_name": "_cell_shapes",
       "line": 130,
       "end_line": 150,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "optimized—verified",
-      "reason": "Gather lengths and Kahan half-angle formula in arrays, retaining scalar atan2 and ordinary arithmetic ordering.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "reason": "Retain the prior verified optimization: Gather lengths and Kahan half-angle formula in arrays, retaining scalar atan2 and ordinary arithmetic ordering.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_mapping",
@@ -11491,10 +11601,10 @@
       "qualified_name": "_mapping",
       "line": 153,
       "end_line": 156,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "reviewed—unchanged",
       "reason": "Keep strict JSON object/dict requirement and field-specific error.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_boolean",
@@ -11502,10 +11612,10 @@
       "qualified_name": "_boolean",
       "line": 159,
       "end_line": 162,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "reviewed—unchanged",
       "reason": "Keep strict bool validation without integer coercion.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_finite_number",
@@ -11513,10 +11623,10 @@
       "qualified_name": "_finite_number",
       "line": 165,
       "end_line": 171,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "reviewed—unchanged",
       "reason": "Keep finite numeric validation and explicit bool rejection.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_positive_integer",
@@ -11524,10 +11634,10 @@
       "qualified_name": "_positive_integer",
       "line": 174,
       "end_line": 177,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "reviewed—unchanged",
       "reason": "Keep positive Python integer requirement and bool rejection.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_flat_scalars",
@@ -11535,10 +11645,10 @@
       "qualified_name": "_flat_scalars",
       "line": 180,
       "end_line": 198,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "reviewed—unchanged",
       "reason": "Retain existing implementation: Validate small fixed nested shapes without constructing NumPy arrays for each candidate field.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_finite_array",
@@ -11546,10 +11656,10 @@
       "qualified_name": "_finite_array",
       "line": 201,
       "end_line": 219,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "reviewed—unchanged",
       "reason": "Retain existing implementation: Flatten/check finite numeric values directly and preserve existing field-specific rejection messages.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_integer_matrix",
@@ -11557,10 +11667,10 @@
       "qualified_name": "_integer_matrix",
       "line": 222,
       "end_line": 235,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "reviewed—unchanged",
       "reason": "Retain existing implementation: Use Python-integer determinant for nonsingularity while preserving shape and integer/bool type checks.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_search",
@@ -11568,10 +11678,10 @@
       "qualified_name": "_validate_search",
       "line": 238,
       "end_line": 277,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "reviewed—unchanged",
       "reason": "Keep required fields, paths, physical bounds, period and symmetry metadata validation.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_twist_window",
@@ -11579,10 +11689,10 @@
       "qualified_name": "_validate_twist_window",
       "line": 280,
       "end_line": 296,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "reviewed—unchanged",
       "reason": "Keep optional older-document fields, range and bound-order errors.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_metadata",
@@ -11590,131 +11700,186 @@
       "qualified_name": "_validate_metadata",
       "line": 299,
       "end_line": 340,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "reviewed—unchanged",
       "reason": "Keep engine/provenance/count/tolerance validation and existing errors.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
+      "id": "src/cellstine/moire/search/results.py::_candidate_angle_limit",
+      "path": "src/cellstine/moire/search/results.py",
+      "qualified_name": "_candidate_angle_limit",
+      "line": 343,
+      "end_line": 345,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
+      "status": "optimized—verified",
+      "reason": "Share folded half-period and explicit180degree unfolded bounds without changing the stored physical period.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_candidate",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_validate_candidate",
-      "line": 343,
-      "end_line": 418,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
-      "status": "reviewed—unchanged",
-      "reason": "Retain existing implementation: Consume direct scalar lists instead of tiny NumPy arrays while preserving required fields, errors and numerical tolerance checks.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "line": 348,
+      "end_line": 422,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
+      "status": "optimized—verified",
+      "reason": "Keep the scalar error oracle and tolerances; use the shared folded/unfolded angle limit.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
+      "id": "src/cellstine/moire/search/results.py::_plain_numbers",
+      "path": "src/cellstine/moire/search/results.py",
+      "qualified_name": "_plain_numbers",
+      "line": 425,
+      "end_line": 445,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
+      "status": "optimized—verified",
+      "reason": "Accept only finite plain-number lists for the fast predicate; defer unusual types/overflow to the scalar oracle.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
+      "id": "src/cellstine/moire/search/results.py::_plain_matrix",
+      "path": "src/cellstine/moire/search/results.py",
+      "qualified_name": "_plain_matrix",
+      "line": 447,
+      "end_line": 455,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
+      "status": "optimized—verified",
+      "reason": "Reuse plain-number checks for2x2 fields and fall back for other shapes/types.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
+      "id": "src/cellstine/moire/search/results.py::_plain_integer_matrix",
+      "path": "src/cellstine/moire/search/results.py",
+      "qualified_name": "_plain_integer_matrix",
+      "line": 457,
+      "end_line": 470,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
+      "status": "optimized—verified",
+      "reason": "Check plain integer2x2 nonsingularity with exact Python products; unusual inputs use scalar validation.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+    },
+    {
+      "id": "src/cellstine/moire/search/results.py::_plainly_valid_candidate",
+      "path": "src/cellstine/moire/search/results.py",
+      "qualified_name": "_plainly_valid_candidate",
+      "line": 472,
+      "end_line": 533,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
+      "status": "optimized—verified",
+      "reason": "Prove ordinary parsed rows satisfy scalar checks before skipping helper calls; failed checks always use original diagnostics.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_document",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_validate_document",
-      "line": 421,
-      "end_line": 436,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
-      "status": "reviewed—unchanged",
-      "reason": "Retain existing implementation: Validate just-built or parsed owned documents in place; public validate_results remains explicitly detached.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "line": 536,
+      "end_line": 552,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
+      "status": "optimized—verified",
+      "reason": "Keep schema/search/metadata validation and scalar failure diagnostics while skipping redundant calls for plainly valid rows.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::validate_results",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "validate_results",
-      "line": 439,
-      "end_line": 442,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "line": 555,
+      "end_line": 558,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "reviewed—unchanged",
       "reason": "Keep detached public validation via deepcopy; only correct stale schema-version docstring.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::shortlist_offsets",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "shortlist_offsets",
-      "line": 445,
-      "end_line": 471,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "line": 561,
+      "end_line": 587,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "reviewed—unchanged",
       "reason": "Keep whole Pareto front and ranked budget fill without truncating scientifically dominant candidates.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::build_results_document",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "build_results_document",
-      "line": 475,
-      "end_line": 630,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "line": 591,
+      "end_line": 746,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "optimized—verified",
-      "reason": "Gather candidate columns once, preserve v2 fields and shortlist ordering, validate arrays then invoke scalar first-error path when needed.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "reason": "Retain the prior verified optimization: Gather candidate columns once, preserve v2 fields and shortlist ordering, validate arrays then invoke scalar first-error path when needed.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_first_invalid_row",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_first_invalid_row",
-      "line": 633,
-      "end_line": 711,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "line": 749,
+      "end_line": 827,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "optimized—verified",
-      "reason": "Vector checks mirror scalar candidate validation; report first invalid shortlisted row and preserve error diagnostics.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "reason": "Retain array checks and wrapped-zero determinant fallback; share the corrected unfolded angle limit.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_first_invalid_row.finite",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_first_invalid_row.finite",
-      "line": 649,
-      "end_line": 653,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "line": 765,
+      "end_line": 769,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "optimized—verified",
-      "reason": "Check per-row finiteness over fixed candidate arrays without per-scalar NumPy calls.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "reason": "Retain the prior verified optimization: Check per-row finiteness over fixed candidate arrays without per-scalar NumPy calls.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_first_invalid_row.nonsingular_integer",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_first_invalid_row.nonsingular_integer",
-      "line": 655,
-      "end_line": 665,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "line": 771,
+      "end_line": 781,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "optimized—verified",
-      "reason": "Accept nonzero modular determinants; recompute wrapped-zero determinants with Python integers to distinguish overflow from singularity.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "reason": "Retain the prior verified optimization: Accept nonzero modular determinants; recompute wrapped-zero determinants with Python integers to distinguish overflow from singularity.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::read_results",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "read_results",
-      "line": 714,
-      "end_line": 730,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "line": 830,
+      "end_line": 846,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "optimized—verified",
-      "reason": "Avoid copying an exclusively owned parsed document while preserving validation, legacy rejection and errors.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "reason": "Retain the prior verified optimization: Avoid copying an exclusively owned parsed document while preserving validation, legacy rejection and errors.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::write_results",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "write_results",
-      "line": 733,
-      "end_line": 752,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "line": 849,
+      "end_line": 868,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "optimized—verified",
-      "reason": "Use bounded encoder chunks and permit trusted just-built internal payloads to skip duplicate validation; default public input remains validated.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "reason": "Retain the prior verified optimization: Use bounded encoder chunks and permit trusted just-built internal payloads to skip duplicate validation; default public input remains validated.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_write_indented_json",
       "path": "src/cellstine/moire/search/results.py",
       "qualified_name": "_write_indented_json",
-      "line": 759,
-      "end_line": 789,
-      "module_sha256": "4ff1fd97554e85a2cc1db41041aae41648fc5814b5ac22e63f777e8d8c5ad085",
+      "line": 875,
+      "end_line": 905,
+      "module_sha256": "15e50cd2769354fc047d980271678680dc92c499f3965e6fa28829e8bbd96528",
       "status": "optimized—verified",
-      "reason": "Encode candidate chunks with C encoder and exact existing indentation/newline/allow_nan semantics; preserve fallback for other document orderings.",
-      "evidence": "docs/optimization/part-05a-search-fast-paths.md; complete source/caller review, independent114engine/config reviews, exact baseline comparisons,541 focused and3374 full tests, one build/Twine plus3installed environments;260frozen hashes match."
+      "reason": "Retain the prior verified optimization: Encode candidate chunks with C encoder and exact existing indentation/newline/allow_nan semantics; preserve fallback for other document orderings.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/moire/supermoire.py::Supermoire.findn",
@@ -11766,10 +11931,10 @@
       "qualified_name": "format_kpath_table",
       "line": 42,
       "end_line": 60,
-      "module_sha256": "8f8918f1a9a0f47c29cb4877cde59a0e813da8d54aec45c90281ec083d29a56b",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "ed9f058a41bab6b8acb934c5f45c8d3e7a419ebd9a590f03ee026b0e5a892750",
+      "status": "reviewed—unchanged",
+      "reason": "Keep point/coordinate/little-group labels and alias presentation.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/kpath_stage.py::format_segment_table",
@@ -11777,10 +11942,10 @@
       "qualified_name": "format_segment_table",
       "line": 63,
       "end_line": 75,
-      "module_sha256": "8f8918f1a9a0f47c29cb4877cde59a0e813da8d54aec45c90281ec083d29a56b",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "ed9f058a41bab6b8acb934c5f45c8d3e7a419ebd9a590f03ee026b0e5a892750",
+      "status": "reviewed—unchanged",
+      "reason": "Keep segment order, accumulated distance and stratum labels.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/kpath_stage.py::BandPathMixin.kpath",
@@ -11788,10 +11953,10 @@
       "qualified_name": "BandPathMixin.kpath",
       "line": 81,
       "end_line": 258,
-      "module_sha256": "8f8918f1a9a0f47c29cb4877cde59a0e813da8d54aec45c90281ec083d29a56b",
+      "module_sha256": "ed9f058a41bab6b8acb934c5f45c8d3e7a419ebd9a590f03ee026b0e5a892750",
       "status": "optimized—verified",
-      "reason": "Reserves default KPOINTS destination while preserving path/point construction, spacing/divisions, labels, JSON and selected-path manifest; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Keep decorated symmetry, Bravais path, sampling, KPOINTS reservations, warnings and manifests; change only bounded JSON encoding.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/models.py::SymmetryAnalysis.to_dict",
@@ -11898,10 +12063,10 @@
       "qualified_name": "_write_analysis_file",
       "line": 39,
       "end_line": 44,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
+      "status": "optimized—verified",
+      "reason": "Use bounded encoding while preserving parent/path handling and native final newline.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::Symmetry.__init__",
@@ -11909,10 +12074,10 @@
       "qualified_name": "Symmetry.__init__",
       "line": 52,
       "end_line": 55,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
+      "status": "reviewed—unchanged",
+      "reason": "Keep base workflow, converter and VASP writer initialization.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::Symmetry._spglib_cell",
@@ -11920,10 +12085,10 @@
       "qualified_name": "Symmetry._spglib_cell",
       "line": 57,
       "end_line": 66,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
+      "status": "reviewed—unchanged",
+      "reason": "Keep species mapping, coordinate wrapping and cell conversion.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::Symmetry.analyse_record",
@@ -11931,10 +12096,10 @@
       "qualified_name": "Symmetry.analyse_record",
       "line": 68,
       "end_line": 85,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
+      "status": "reviewed—unchanged",
+      "reason": "Keep backend selection and symmetry parameter forwarding.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::Symmetry._native_analysis",
@@ -11942,10 +12107,10 @@
       "qualified_name": "Symmetry._native_analysis",
       "line": 87,
       "end_line": 160,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
+      "status": "reviewed—unchanged",
+      "reason": "Keep native operations/orbits and scientific report construction.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::Symmetry._spglib_analysis",
@@ -11953,10 +12118,10 @@
       "qualified_name": "Symmetry._spglib_analysis",
       "line": 162,
       "end_line": 254,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
+      "status": "reviewed—unchanged",
+      "reason": "Keep dataset conversion, species/orbit metadata and report conventions.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::Symmetry._reduced_record",
@@ -11964,10 +12129,10 @@
       "qualified_name": "Symmetry._reduced_record",
       "line": 256,
       "end_line": 284,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
+      "status": "reviewed—unchanged",
+      "reason": "Keep primitive/conventional dispatch and diagnostics.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::Symmetry._native_primitive_record",
@@ -11975,10 +12140,10 @@
       "qualified_name": "Symmetry._native_primitive_record",
       "line": 286,
       "end_line": 295,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
+      "status": "reviewed—unchanged",
+      "reason": "Keep primitive translation reduction and coordinate/species transport.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::Symmetry._native_conventional_record",
@@ -11986,10 +12151,10 @@
       "qualified_name": "Symmetry._native_conventional_record",
       "line": 297,
       "end_line": 370,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
+      "status": "reviewed—unchanged",
+      "reason": "Keep conventional-cell transform and decorated crystal constraints.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::Symmetry._lattice_reduced_record",
@@ -11997,10 +12162,10 @@
       "qualified_name": "Symmetry._lattice_reduced_record",
       "line": 372,
       "end_line": 412,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
+      "status": "reviewed—unchanged",
+      "reason": "Keep selected lattice-reduction convention and coordinate transport.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::Symmetry.analyse",
@@ -12008,10 +12173,10 @@
       "qualified_name": "Symmetry.analyse",
       "line": 414,
       "end_line": 460,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
+      "status": "reviewed—unchanged",
+      "reason": "Keep analysis inputs, persisted report, summary and manifest/provenance.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::Symmetry.reduce",
@@ -12019,10 +12184,10 @@
       "qualified_name": "Symmetry.reduce",
       "line": 462,
       "end_line": 501,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
       "status": "optimized—verified",
-      "reason": "Reserves default reduced-cell filename; retains backend selection, cell construction, coordinates/species and explicit output behavior; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Retain the prior verified optimization: Keep primitive/conventional validation, reserved paths and provenance.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::Symmetry.lattice_reduce",
@@ -12030,10 +12195,10 @@
       "qualified_name": "Symmetry.lattice_reduce",
       "line": 503,
       "end_line": 538,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
       "status": "optimized—verified",
-      "reason": "Reserves default lattice-reduced filename; retains backend/reduction parameters, record construction and selected-path results; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Retain the prior verified optimization: Keep method, cell/coordinate data, reserved output and manifest.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::Symmetry.kpoints",
@@ -12041,10 +12206,10 @@
       "qualified_name": "Symmetry.kpoints",
       "line": 540,
       "end_line": 666,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
       "status": "optimized—verified",
-      "reason": "Reserves default mesh filename; retains symmetry/mesh/density calculations, ordering, labels and explicit output semantics; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Retain the prior verified optimization: Keep mesh/shift/group/time-reversal conventions, reservations and metadata.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::Symmetry.format_analysis",
@@ -12052,10 +12217,10 @@
       "qualified_name": "Symmetry.format_analysis",
       "line": 669,
       "end_line": 672,
-      "module_sha256": "86830ff61b307cede519c6c49c58366d8e5d518fb43f9f02e15f03f1938b9d86",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "e2feb04868e3e5761624c2ef7056c180245f2531ae9ab8a54fee51d01e904a75",
+      "status": "reviewed—unchanged",
+      "reason": "Keep the scientific text-formatting delegate.",
+      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
     },
     {
       "id": "src/cellstine/visualize/backends/matplotlib.py::_pyplot",

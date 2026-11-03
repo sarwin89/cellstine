@@ -8,6 +8,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict
 
+from .jsonio import write_indented_json
+
 
 @dataclass
 class RunManifest:
@@ -70,7 +72,7 @@ class RunManifest:
         output_path = Path(path).resolve()
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with output_path.open("w", encoding="utf-8") as handle:
-            json.dump(self.to_dict(), handle, indent=2)
+            write_indented_json(handle, self.to_dict())
         self.path = output_path
         return output_path
 

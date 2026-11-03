@@ -29,12 +29,12 @@ from cellstine.moire.search import gram, results  # noqa: E402
 def _baseline(ref, directory):
     commit = subprocess.check_output(
         ["git", "rev-parse", "--verify", "--end-of-options", ref + "^{commit}"],
-        cwd=ROOT, text=True,
+        cwd=ROOT, text=True, encoding="utf-8",
     ).strip()
     prefix = "src/cellstine/moire/search/"
     paths = subprocess.check_output(
         ["git", "ls-tree", "-r", "--name-only", commit, "--", prefix],
-        cwd=ROOT, text=True,
+        cwd=ROOT, text=True, encoding="utf-8",
     ).splitlines()
     for path in paths:
         if path.endswith(".py"):
@@ -97,6 +97,32 @@ def _document(module, config, result):
     )
 
 
+def _baseline_unfolded_document(module, config, result):
+    """Old construction with only the known unfolded validation bound corrected.
+
+    Keep the document's physical symmetry period. Every other scalar/array
+    validation check still runs; only its local angle-bound input is changed.
+    """
+    scalar = module._validate_candidate
+    arrays = getattr(module, "_first_invalid_row", None)
+
+    def validate_candidate(candidate, index, search):
+        return scalar(candidate, index, {**search, "angle_period_deg": 360.})
+
+    def first_invalid_row(result, rows, search, shapes):
+        return arrays(result, rows, {**search, "angle_period_deg": 360.}, shapes)
+
+    module._validate_candidate = validate_candidate
+    if arrays is not None:
+        module._first_invalid_row = first_invalid_row
+    try:
+        return _document(module, config, result)
+    finally:
+        module._validate_candidate = scalar
+        if arrays is not None:
+            module._first_invalid_row = arrays
+
+
 def _assert_same_result(name, before, after):
     for field in dataclasses.fields(before):
         if field.name != "stats":
@@ -133,8 +159,14 @@ def main(argv=None):
                 except ValueError as error:
                     documents.append(None)
                     errors.append(str(error))
-            assert errors[0] == errors[1], (name, "document validation", errors)
-            if errors[0] is not None:
+            fixed_unfolded = errors[0] is not None and errors[1] is None
+            if fixed_unfolded:
+                assert not configs[0].fold_symmetry, (name, errors)
+                assert errors[0].endswith(".angle_deg must be folded into the fundamental range"), (name, errors)
+                documents[0] = _baseline_unfolded_document(old_results, configs[0], before)
+            else:
+                assert errors[0] == errors[1], (name, "document validation", errors)
+            if errors[0] is not None and not fixed_unfolded:
                 records.append({"case": name, "rows": len(after), "exact_arrays": True,
                                 "same_document_error": errors[0], "changed_stats": changed_stats})
                 continue
@@ -142,7 +174,8 @@ def main(argv=None):
                 document["metadata"].pop("stage_stats", None)
             assert documents[0] == documents[1], (name, "JSON")
             records.append({"case": name, "rows": len(after), "exact_arrays_and_stable_json": True,
-                            "changed_stats": changed_stats})
+                            "changed_stats": changed_stats,
+                            "baseline_unfolded_error_corrected_in_validation_oracle": errors[0] if fixed_unfolded else None})
         measurements = []
         if args.measure:
             basis = np.array([[3., -1.5], [0., 1.5 * np.sqrt(3.)]])

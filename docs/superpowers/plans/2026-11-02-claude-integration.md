@@ -1,5 +1,7 @@
 # Scoped Claude handoff integration
 
+Current state:engine/results checkpoint6692121 is pushed; all seven CI41585027655jobs pass and retained coverage XML matches. Persistence batch05b integrates03manually through bounded encoding and04validation only, fixes unfolded persistence, and optimizes defect regrouping. Its local full/package checkpoint passes3406tests; scoped push/CI remain. CLI01 plus05follow-up is next. Older scratch sections below record provenance, not current source state.
+
 User-authorized coordination uses `E:/moire-supercell/docs/agent-coordination.md`. Claude supplied three patches and a30-file manifest in `.tmp/claude-patches/`. The working root remains shared/dirty and is never reset or copied wholesale. The user confirmed its final handoff and Continue instruction:finish the active conventional-cell checkpoint, then integrate engine/results, JSON writer hunks manually, and CLI in that order as separately reviewed source-function batches, with current dev as the behavior baseline. Claude has stopped with no background jobs and reported3334 passed/two skipped on root; this is external evidence, not integrated-dev verification.
 
 ## Verified handoff inventory

@@ -18,13 +18,13 @@ diffusing between two sites.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any, Sequence
 
 import numpy as np
 
 from .geometry import shortest_lattice_vector_length
+from .jsonio import write_indented_json
 from .models import CommandResult
 from .pathway import MigrationPath, build_migration_path
 from .provenance import restage_comment
@@ -218,7 +218,7 @@ class MigrationPathMixin:
         payload = _path_payload(path, species_by_atom, written)
         path_json = run_dir / "path.json"
         with path_json.open("w", encoding="utf-8") as handle:
-            json.dump(payload, handle, indent=2)
+            write_indented_json(handle, payload)
 
         contacts = path.shortest_contacts()
         endpoint_contact = float(min(contacts[0], contacts[-1]))

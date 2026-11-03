@@ -11,13 +11,13 @@ the single public face of the package.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Dict, Sequence
 
 import numpy as np
 
 from ...core.layers import LAYER_TOLERANCE
+from ...core.jsonio import write_indented_json
 from ...core.planar_voids import find_planar_voids
 from ...core.provenance import stage_comment
 from ...core.outputs import reserve_default_file
@@ -166,7 +166,7 @@ def write_site_report_json(path: str, run: SiteAnalysisRun) -> Path:
     output_path = Path(path).resolve()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as handle:
-        json.dump(_site_report_to_dict(run), handle, indent=2)
+        write_indented_json(handle, _site_report_to_dict(run))
         handle.write("\n")
     return output_path
 
