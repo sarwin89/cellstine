@@ -32,6 +32,7 @@ from typing import Dict, List, Sequence, Tuple
 import numpy as np
 
 from .geometry import as_lattice as _as_lattice, niggli_reduce
+from ._integer_grid import _integer_box_blocks
 
 __all__ = [
     "lattice_point_group",
@@ -49,12 +50,19 @@ def _integer_vectors_within(metric: np.ndarray, radius_squared: float) -> Tuple[
     """Return the integer vectors ``n`` with ``n G n <= radius_squared`` and their norms."""
 
     inverse = np.linalg.inv(metric)
-    limits = np.sqrt(np.maximum(radius_squared * np.diag(inverse), 0.0))
-    ranges = [np.arange(-int(np.floor(limit)) - 1, int(np.floor(limit)) + 2, dtype=np.int64) for limit in limits]
-    grid = np.stack(np.meshgrid(*ranges, indexing="ij"), axis=-1).reshape(-1, 3)
-    norms = np.einsum("ij,jk,ik->i", grid.astype(float), metric, grid.astype(float))
-    keep = norms <= radius_squared
-    return grid[keep], norms[keep]
+    limits = np.sqrt(np.maximum(radius_squared * np.diag(inverse), 0.0)).reshape(3)
+    bounds = tuple(int(np.floor(limit)) + 1 for limit in limits)
+    kept, distances = [], []
+    for grid in _integer_box_blocks(bounds):
+        floating = grid.astype(float)
+        norms = np.einsum("ij,jk,ik->i", floating, metric, floating)
+        keep = norms <= radius_squared
+        if np.any(keep):
+            kept.append(grid[keep])
+            distances.append(norms[keep])
+    if not kept:
+        return np.empty((0, 3), dtype=np.int64), np.empty(0, dtype=float)
+    return np.concatenate(kept), np.concatenate(distances)
 
 
 def lattice_point_group(lattice: np.ndarray, tolerance: float = 1e-5) -> np.ndarray:

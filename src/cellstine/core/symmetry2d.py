@@ -54,6 +54,7 @@ __all__ = [
 #: machine-epsilon tolerance rejects.
 from .constants import DEFAULT_SYMMETRY_TOLERANCE  # re-exported for callers
 from .idealisation import close_matrix_group, symmetrise_basis
+from ._integer_grid import _integer_box_blocks
 
 
 def column_basis_from_lattice(lattice: np.ndarray, *, name: str = "lattice") -> np.ndarray:
@@ -80,15 +81,14 @@ def _short_vectors(metric: np.ndarray, radius_squared: float) -> np.ndarray:
         raise ValueError("metric must be positive definite")
     m_max = int(math.floor(math.sqrt(max(radius_squared, 0.0) * g22 / determinant))) + 1
     n_max = int(math.floor(math.sqrt(max(radius_squared, 0.0) * g11 / determinant))) + 1
-    m, n = np.meshgrid(
-        np.arange(-m_max, m_max + 1, dtype=np.int64),
-        np.arange(-n_max, n_max + 1, dtype=np.int64),
-        indexing="ij",
-    )
-    m, n = m.ravel(), n.ravel()
-    squared = g11 * m * m + 2.0 * g12 * m * n + g22 * n * n
-    keep = (squared <= radius_squared) & ~((m == 0) & (n == 0))
-    return np.stack([m[keep], n[keep]], axis=1)
+    kept = []
+    for grid in _integer_box_blocks((m_max, n_max)):
+        m, n = grid[:, 0], grid[:, 1]
+        squared = g11 * m * m + 2.0 * g12 * m * n + g22 * n * n
+        keep = (squared <= radius_squared) & ~((m == 0) & (n == 0))
+        if np.any(keep):
+            kept.append(grid[keep])
+    return np.concatenate(kept) if kept else np.empty((0, 2), dtype=np.int64)
 
 
 def lattice_point_group(
@@ -268,15 +268,23 @@ def _accepts_translation(
     partners = np.nonzero(
         (labels == labels[reference]) & (np.abs(heights - heights[reference]) <= z_tolerance)
     )[0]
+    block_size = max(1, 65536 // max(len(planar), 1))
     for partner in partners:
         translation = planar[partner] - mapped[reference]
         shifted = mapped + translation
-        difference = _wrap(shifted[:, None, :] - planar[None, :, :])
-        close = np.all(np.abs(difference) <= position_tolerance, axis=2)
-        close &= labels[:, None] == labels[None, :]
-        close &= np.abs(heights[:, None] - heights[None, :]) <= z_tolerance
-        if np.all(close.any(axis=1)) and np.all(close.any(axis=0)):
-            return True
+        columns = np.zeros(len(planar), dtype=bool)
+        for start in range(0, len(mapped), block_size):
+            stop = min(start + block_size, len(mapped))
+            difference = _wrap(shifted[start:stop, None, :] - planar[None, :, :])
+            close = np.all(np.abs(difference) <= position_tolerance, axis=2)
+            close &= labels[start:stop, None] == labels[None, :]
+            close &= np.abs(heights[start:stop, None] - heights[None, :]) <= z_tolerance
+            if not np.all(close.any(axis=1)):
+                break
+            columns |= close.any(axis=0)
+        else:
+            if np.all(columns):
+                return True
     return False
 
 

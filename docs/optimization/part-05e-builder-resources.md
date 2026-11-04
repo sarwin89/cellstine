@@ -2,7 +2,7 @@
 
 Base:8bfcf17127fee9c4e865f3c0c3140fbb11112e5b. Its16 exact-head CI41777781487 jobs passed, including all nine portable-format lanes. Coverage artifact13298477050 has verified head and ZIP SHA2564b0331d856827b200a539a7a1e54edcb70a00a1f63584043cff213690588caae. The only coverage difference from local is prompts.py501–502's environment-dependent path fallback, with identical statement sets and branch counts.
 
-This batch passed its local full/package checkpoint; scoped commit/push and exact-head CI remain pending. The48 independently reasoned function reviews are promoted after all local gates. No project-wide completion is claimed. The minimum-NumPy helper lane includes the new46-case builder file; all16 exact-head CI jobs remain required.
+Commit1a2c3bb57039668333740915a824c653b455c313 is pushed to dev; its local full/package checkpoint and all16 exact-head CI41782577167 jobs passed. The48 independently reasoned function reviews are promoted after all local gates. No project-wide completion is claimed. The minimum-NumPy helper lane includes the new46-case builder file; all16 exact-head CI jobs remain required.
 
 ## Behavior and changes
 
@@ -42,7 +42,7 @@ All277 tracked Python files match the frozen set and byte hashes. Wheel/sdist bu
 
 The sdist install first exposed a verification setup error: disabling build isolation in the lean environment omitted setuptools. The isolated retry then spent CPU in tempfile.mkdtemp against pip's default sandbox cache outside the writable workspace. A read-only profiler identified the exact build process/path; only that verified owned backend was stopped. Offline isolated installation succeeded after setting workspace-local PIP_CACHE_DIR as well as TEMP/TMP. No production source, scientific data or full-suite process was changed for either setup correction. The profiler is an ignored diagnostic tool, not a package dependency.
 
-The ledger now contains1,211 functions:528 reviewed unchanged,261 optimized verified,2 investigated deferrals and420 pending reviews (791 with inspection evidence). The48 batch reviews include re-reviews;44 net new entries have inspection evidence. Global review remains incomplete. Scoped commit/push and exact-head16-job CI/artifact readback remain pending. The initial benchmark overlapped focused tests, so small-case timing variation prompted one serialized run; do not treat the initial observations as stable speedup claims.
+The ledger now contains1,211 functions:528 reviewed unchanged,261 optimized verified,2 investigated deferrals and420 pending reviews (791 with inspection evidence). The48 batch reviews include re-reviews;44 net new entries have inspection evidence. Global review remains incomplete. All16 exact-head CI jobs passed. Downloaded coverage artifact13299884630 has independently verified ZIPdigest7545a47e915103c01e395786975db837207772d20084172330ca5b1b24362fb4 and matching head/module/statement sets. CI covers13,812 statements and3,797 branches; only prompts.py501–502 add coverage beyond local, as previously investigated. No covered-branch difference exists. The initial benchmark overlapped focused tests, so small-case timing variation prompted one serialized run; do not treat the initial observations as stable speedup claims.
 
 ## Retained limits
 
