@@ -64,6 +64,7 @@ and ``core/KPATH.md`` is the prose account.
 from __future__ import annotations
 
 import math
+import heapq
 from dataclasses import dataclass
 from typing import Sequence
 
@@ -272,29 +273,34 @@ class BandPath:
         count = int(divisions)
         if count < 2:
             raise ValueError("a segment needs at least two points")
-        points: list[np.ndarray] = []
-        distances: list[float] = []
-        labels: list[str] = []
+        runs = list(zip(self.walk, self.walk_points))
+        size = sum(count + (count - 1) * (len(run) - 2) for run, _ in runs if len(run) >= 2)
+        if size > np.iinfo(np.intp).max // (4 * np.dtype(float).itemsize):
+            raise ValueError("sampled path is too large to address")
+        points = np.empty((size, 3) if size else (0,), dtype=float)
+        distances = np.empty(size, dtype=float)
+        labels = [""] * size
+        offset = 0
         travelled = 0.0
-        for run, run_points in zip(self.walk, self.walk_points):
+        for run, run_points in runs:
             coordinates = np.asarray(run_points, dtype=float)
             for position in range(len(run) - 1):
                 start = coordinates[position]
                 end = coordinates[position + 1]
                 span = float(np.linalg.norm((end - start) @ self.reciprocal))
                 first = 0 if position == 0 else 1
-                for step in range(first, count):
-                    fraction = step / (count - 1)
-                    points.append(start + fraction * (end - start))
-                    distances.append(travelled + fraction * span)
-                    if step == 0:
-                        labels.append(run[position])
-                    elif step == count - 1:
-                        labels.append(run[position + 1])
-                    else:
-                        labels.append("")
+                length = count - first
+                # Preserve the old Python scalar divisions exactly.
+                fractions = np.fromiter((step / (count - 1) for step in range(first, count)), dtype=float, count=length)
+                stop = offset + length
+                points[offset:stop] = start + fractions[:, None] * (end - start)
+                distances[offset:stop] = travelled + fractions * span
+                if first == 0:
+                    labels[offset] = run[position]
+                labels[stop - 1] = run[position + 1]
+                offset = stop
                 travelled += span
-        return np.asarray(points, dtype=float), np.asarray(distances, dtype=float), tuple(labels)
+        return points, distances, tuple(labels)
 
     def path_string(self) -> str:
         """Return the path as ``GAMMA-X-W|K-L`` style text."""
@@ -768,8 +774,7 @@ def _dijkstra(
     queue: list[tuple[float, int]] = [(0.0, source)]
     seen = set()
     while queue:
-        queue.sort(reverse=True)
-        current_distance, current = queue.pop()
+        current_distance, current = heapq.heappop(queue)
         if current in seen:
             continue
         seen.add(current)
@@ -778,7 +783,7 @@ def _dijkstra(
             if candidate < distance[neighbour] - 1e-12:
                 distance[neighbour] = candidate
                 previous[neighbour] = current
-                queue.append((candidate, neighbour))
+                heapq.heappush(queue, (candidate, neighbour))
     return distance, previous
 
 

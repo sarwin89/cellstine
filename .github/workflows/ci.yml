@@ -89,6 +89,7 @@ jobs:
           tests/test_cli_command_preview_resources.py
           tests/test_moire_builder_resources.py
           tests/test_symmetry_resources.py
+          tests/test_reciprocal_path_resources.py
           tests/test_saved_preview_resources.py -q
 
   portable_results:

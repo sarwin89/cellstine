@@ -2,7 +2,7 @@
 
 Base1a2c3bb57039668333740915a824c653b455c313 passed all16 CI41782577167 jobs. Downloaded coverage artifact13299884630 has verified ZIP SHA2567545a47e915103c01e395786975db837207772d20084172330ca5b1b24362fb4 and exact head/module/statement sets. CI covers13,812/15,510 statements and3,797/5,010 branches; its only extra local statements are prompts.py501–502's established absolute-path fallback.
 
-This batch passed the local full/package checkpoint and47 individually reasoned function reviews are promoted. It remains uncommitted; scoped commit/push and exact-head16-job CI/artifact checks are next. No project-wide completion, release or package publication is claimed.
+This batch passed the local full/package checkpoint and47 individually reasoned function reviews are promoted. Commit427e2d5d6bd8cbec41a8453c53a1fe1f2b964b4f is pushed to dev and all16 exact-head CI41787883849 jobs passed. Downloaded artifact13302931287 has independently verified ZIP SHA256e78173b1a7de0f72ab8504e8fa89ce46159b5e05328cb8e3e8d892d712eb1c05, run head and module/statement sets. CI covers13,891/15,583 statements and3,845/5,052 branches; only prompts.py501-502 path fallback adds two statements beyond local, without a branch delta. No project-wide completion, release or package publication is claimed.
 
 ## Implementation and invariants
 

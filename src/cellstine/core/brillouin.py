@@ -56,6 +56,17 @@ __all__ = [
 _SHELL = 2
 
 
+def _normalised_direction(direction: Sequence[float]) -> tuple[np.ndarray, float]:
+    """Return a max-component-normalized ray and its original magnitude."""
+    ray = np.asarray(direction, dtype=float).reshape(3)
+    if not np.all(np.isfinite(ray)):
+        raise ValueError("a direction must be nonzero and finite")
+    magnitude = float(np.max(np.abs(ray)))
+    if magnitude == 0.0:
+        raise ValueError("a direction must be nonzero and finite")
+    return ray / magnitude, magnitude
+
+
 def _candidate_vectors(basis: np.ndarray) -> np.ndarray:
     """Return the nonzero lattice vectors of the search shell, shortest first."""
 
@@ -198,19 +209,18 @@ class WignerSeitzCell:
         smallest positive scale allowed by the half spaces it crosses.
         """
 
-        ray = np.asarray(direction, dtype=float).reshape(3)
-        if not np.all(np.isfinite(ray)):
-            raise ValueError("a direction must be finite")
+        ray, magnitude = _normalised_direction(direction)
         projections = self.face_vectors @ ray
-        forward = projections > self.tolerance
+        # Keep the angular threshold independent of the ray's magnitude.
+        forward = projections > self.tolerance * float(np.linalg.norm(ray))
         if not np.any(forward):
             raise ValueError("a direction must be nonzero")
-        return float(np.min(self.face_offsets[forward] / projections[forward]))
+        return float(np.min(self.face_offsets[forward] / projections[forward])) / magnitude
 
     def boundary_point(self, direction: Sequence[float]) -> np.ndarray:
         """Return the point where the ray along ``direction`` meets the boundary."""
 
-        ray = np.asarray(direction, dtype=float).reshape(3)
+        ray, _ = _normalised_direction(direction)
         return self.boundary_scale(ray) * ray
 
     def face_centres(self) -> np.ndarray:
@@ -264,8 +274,8 @@ def wigner_seitz_cell(basis: Sequence[Sequence[float]], *, tolerance: float | No
     lattice = as_lattice(np.asarray(basis, dtype=float), "basis")
     scale = abs(float(np.linalg.det(lattice))) ** (1.0 / 3.0)
     slack = float(tolerance) if tolerance is not None else 1e-9 * scale
-    if slack <= 0.0:
-        raise ValueError("the tolerance must be positive")
+    if not math.isfinite(slack) or slack <= 0.0:
+        raise ValueError("the tolerance must be finite and positive")
     # The half-space tests compare a dot product with a squared length, so the
     # length tolerance enters them multiplied by the scale of the lattice.
     area_slack = slack * scale
@@ -354,8 +364,4 @@ def zone_boundary_distance(lattice: Sequence[Sequence[float]], direction: Sequen
     """Return the distance from Gamma to the zone boundary along ``direction``."""
 
     zone = brillouin_zone(lattice)
-    ray = np.asarray(direction, dtype=float).reshape(3)
-    length = float(np.linalg.norm(ray))
-    if not math.isfinite(length) or length <= 0.0:
-        raise ValueError("a direction must be nonzero and finite")
-    return zone.boundary_scale(ray) * length
+    return float(np.linalg.norm(zone.boundary_point(direction)))
