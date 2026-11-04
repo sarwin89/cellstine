@@ -31,7 +31,7 @@ from ..structure_helpers import expand_species
 
 
 def parse_results(filename: str) -> Tuple[str, str, List[dict], dict]:
-    """Read validated Gram JSON and expose its original POSCAR paths."""
+    """Read validated Gram results and expose their original POSCAR paths."""
 
     payload = read_results(filename)
     search = payload["search"]
@@ -51,8 +51,9 @@ def _column_hermite_normal_form(matrix: np.ndarray) -> tuple[int, int, int]:
     """
 
     integers = np.asarray(matrix, dtype=np.int64)
-    determinant = int(
-        integers[0, 0] * integers[1, 1] - integers[0, 1] * integers[1, 0]
+    determinant = (
+        int(integers[0, 0]) * int(integers[1, 1])
+        - int(integers[0, 1]) * int(integers[1, 0])
     )
     if determinant == 0:
         raise ValueError("supercell matrix must be nonsingular")
@@ -97,9 +98,11 @@ def _coset_representatives(matrix: np.ndarray) -> np.ndarray:
     """
 
     h11, _, h22 = _column_hermite_normal_form(np.asarray(matrix, dtype=np.int64).T)
-    first = np.arange(h11, dtype=np.int64)
-    second = np.arange(h22, dtype=np.int64)
-    grid = np.stack(np.meshgrid(first, second, indexing="ij"), axis=-1)
+    if h11 * h22 > np.iinfo(np.intp).max // (2 * np.dtype(np.int64).itemsize):
+        raise ValueError("supercell coset array is too large to address")
+    grid = np.empty((h11, h22, 2), dtype=np.int64)
+    grid[:, :, 0] = np.arange(h11, dtype=np.int64)[:, None]
+    grid[:, :, 1] = np.arange(h22, dtype=np.int64)[None, :]
     return grid.reshape(-1, 2)
 
 
@@ -285,10 +288,13 @@ def _transform_layer_atoms(
 ) -> List[Tuple[str, np.ndarray, Tuple[str, str, str] | None]]:
     """Apply a recorded Cartesian column affine to row-vector atom coordinates."""
 
+    if len(atoms) == 0:
+        return []
+    transform = np.asarray(affine, dtype=float)
     transformed: List[Tuple[str, np.ndarray, Tuple[str, str, str] | None]] = []
     for species, position, flags in atoms:
         updated = np.array(position, dtype=float, copy=True)
-        updated[:2] = np.asarray(affine, dtype=float) @ updated[:2]
+        updated[:2] = transform @ updated[:2]
         transformed.append((species, updated, flags))
     return transformed
 

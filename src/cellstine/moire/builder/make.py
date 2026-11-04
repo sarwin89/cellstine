@@ -44,32 +44,10 @@ def _slug(value: str) -> str:
 
 
 def _generate_from_results_worker(
-    task: tuple[str, int, float, str | None, int, float, float | None, int | None, int | None, float | None]
+    task: tuple[str, str, str, dict | None, dict]
 ) -> MakeRun:
-    (
-        task_results,
-        task_index,
-        task_interlayer,
-        task_output_dir,
-        task_tolerance,
-        task_tolerance_float,
-        task_zfix,
-        task_top_repeat,
-        task_bottom_repeat,
-        task_vacuum,
-    ) = task
-    return generate_from_results(
-        task_results,
-        index=task_index,
-        interlayer_distance=task_interlayer,
-        output_dir=task_output_dir,
-        tolerance=task_tolerance,
-        tolerance_float=task_tolerance_float,
-        zfix=task_zfix,
-        top_c_repeat=task_top_repeat,
-        bottom_c_repeat=task_bottom_repeat,
-        vacuum=task_vacuum,
-    )
+    results_file, top_poscar, bottom_poscar, record, options = task
+    return _generate_from_record(results_file, top_poscar, bottom_poscar, record, **options)
 
 
 def generate_from_results(
@@ -88,13 +66,39 @@ def generate_from_results(
 ) -> MakeRun:
     top_poscar, bottom_poscar, records, _payload = generator_backend.parse_results(results_file)
     by_index = {int(record["index"]): record for record in records}
-    if index not in by_index:
+    return _generate_from_record(
+        results_file, top_poscar, bottom_poscar, by_index.get(index),
+        index=index, interlayer_distance=interlayer_distance,
+        output_path=output_path, output_dir=output_dir, tolerance=tolerance,
+        tolerance_float=tolerance_float, zfix=zfix, top_c_repeat=top_c_repeat,
+        bottom_c_repeat=bottom_c_repeat, vacuum=vacuum,
+    )
+
+
+def _generate_from_record(
+    results_file: str,
+    top_poscar: str,
+    bottom_poscar: str,
+    record: dict | None,
+    *,
+    index: int,
+    interlayer_distance: float,
+    output_path: str | None = None,
+    output_dir: str | None = None,
+    tolerance: int = 1,
+    tolerance_float: float = 1e-4,
+    zfix: float | None = None,
+    top_c_repeat: int | None = None,
+    bottom_c_repeat: int | None = None,
+    vacuum: float | None = None,
+) -> MakeRun:
+    """Build one selected record without rereading the batch's result snapshot."""
+    if record is None:
         raise ValueError(f"index {index} not found in {results_file}")
 
     resolved_top_c_repeat = int(top_c_repeat if top_c_repeat is not None else 1)
     resolved_bottom_c_repeat = int(bottom_c_repeat if bottom_c_repeat is not None else 1)
 
-    record = by_index[index]
     lattice_out, positions_direct, counts, species, flags, contacts = generator_backend.build_supercell_with_report(
         top_poscar,
         bottom_poscar,
@@ -173,46 +177,32 @@ def generate_many_from_results(
     if len(resolved_indexes) > 1 and output_path is not None:
         raise ValueError("use output_path only when generating a single index")
 
-    if resolved_workers <= 1 or len(resolved_indexes) <= 1:
-        runs: List[MakeRun] = []
-        for index in resolved_indexes:
-            run = generate_from_results(
-                results_file,
-                index=index,
-                interlayer_distance=interlayer_distance,
-                output_path=output_path if len(resolved_indexes) == 1 else None,
-                output_dir=output_dir,
-                tolerance=tolerance,
-                tolerance_float=tolerance_float,
-                zfix=zfix,
-                top_c_repeat=top_c_repeat,
-                bottom_c_repeat=bottom_c_repeat,
-                vacuum=vacuum,
-            )
-            runs.append(run)
-        return runs
-
+    if not resolved_indexes:
+        return []
+    top_poscar, bottom_poscar, records, _payload = generator_backend.parse_results(results_file)
+    by_index = {int(record["index"]): record for record in records}
+    options = dict(
+        interlayer_distance=interlayer_distance, output_path=output_path,
+        output_dir=output_dir, tolerance=tolerance, tolerance_float=tolerance_float,
+        zfix=zfix, top_c_repeat=top_c_repeat, bottom_c_repeat=bottom_c_repeat, vacuum=vacuum,
+    )
+    # Each process receives only its selected candidate, never the entire result
+    # document. Missing indexes remain task errors, preserving ordered failures.
     task_inputs = [
-        (
-            results_file,
-            int(index),
-            float(interlayer_distance),
-            output_dir,
-            tolerance,
-            tolerance_float,
-            zfix,
-            top_c_repeat,
-            bottom_c_repeat,
-            vacuum,
-        )
+        (results_file, top_poscar, bottom_poscar, by_index.get(index), {**options, "index": index})
         for index in resolved_indexes
     ]
-
-    try:
-        with ProcessPoolExecutor(max_workers=resolved_workers, initializer=_limit_worker_threads) as executor:
-            return list(executor.map(_generate_from_results_worker, task_inputs))
-    except (OSError, PermissionError):
+    if resolved_workers <= 1 or len(resolved_indexes) <= 1:
         return [_generate_from_results_worker(task) for task in task_inputs]
+    try:
+        executor = ProcessPoolExecutor(max_workers=resolved_workers, initializer=_limit_worker_threads)
+    except OSError:
+        # Construction has dispatched no tasks, so a synchronous retry is safe.
+        return [_generate_from_results_worker(task) for task in task_inputs]
+    with executor:
+        # Once dispatch begins, an OSError may be a candidate's write failure;
+        # retrying the whole batch would duplicate already completed outputs.
+        return list(executor.map(_generate_from_results_worker, task_inputs))
 
 
 def make(**kwargs):

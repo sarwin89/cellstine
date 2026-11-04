@@ -12,6 +12,7 @@ commensurate stack is rejected instead of quietly producing a distorted one.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from itertools import chain
 from pathlib import Path
 from typing import Any, List, Sequence, Tuple
 
@@ -170,6 +171,28 @@ def generate_from_results(
 
     document = read_nlayer_results(results_file)
     by_index = {int(item["index"]): item for item in document["candidates"]}
+    return _generate_from_document(
+        results_file, document, by_index, index=index, interlayers=interlayers,
+        output_path=output_path, output_dir=output_dir, vacuum=vacuum, zfix=zfix,
+        base_c_repeat=base_c_repeat, upper_c_repeats=upper_c_repeats,
+    )
+
+
+def _generate_from_document(
+    results_file: str,
+    document: dict[str, Any],
+    by_index: dict[int, dict[str, Any]],
+    *,
+    index: int,
+    interlayers: Sequence[float],
+    output_path: str | None = None,
+    output_dir: str | None = None,
+    vacuum: float | None = None,
+    zfix: float | None = None,
+    base_c_repeat: int = 1,
+    upper_c_repeats: Sequence[int] | None = None,
+) -> MakeNRun:
+    """Write one candidate from a validated, batch-local document snapshot."""
     if int(index) not in by_index:
         raise ValueError(f"index {index} not found in {results_file}")
     candidate = by_index[int(index)]
@@ -233,12 +256,18 @@ def generate_many_from_results(
     base_c_repeat: int = 1,
     upper_c_repeats: Sequence[int] | None = None,
 ) -> List[MakeNRun]:
-    """Build several candidates of a multi-layer results document."""
+    """Build several candidates, reading the results once for a nonempty batch."""
 
+    iterator = iter(indexes)
+    try:
+        first = int(next(iterator))
+    except StopIteration:
+        return []
+    document = read_nlayer_results(results_file)
+    by_index = {int(item["index"]): item for item in document["candidates"]}
     return [
-        generate_from_results(
-            results_file,
-            index=int(index),
+        _generate_from_document(
+            results_file, document, by_index, index=int(index),
             interlayers=interlayers,
             output_dir=output_dir,
             vacuum=vacuum,
@@ -246,5 +275,5 @@ def generate_many_from_results(
             base_c_repeat=base_c_repeat,
             upper_c_repeats=upper_c_repeats,
         )
-        for index in indexes
+        for index in chain((first,), iterator)
     ]

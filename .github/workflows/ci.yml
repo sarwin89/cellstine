@@ -87,6 +87,7 @@ jobs:
           tests/test_moire_persistence_validation.py
           tests/test_cli_discovery_resources.py
           tests/test_cli_command_preview_resources.py
+          tests/test_moire_builder_resources.py
           tests/test_saved_preview_resources.py -q
 
   portable_results:

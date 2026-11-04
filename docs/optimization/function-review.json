@@ -2,6 +2,39 @@
   "schema_version": 1,
   "functions": [
     {
+      "id": "benchmarks/benchmark_builder_resources.py::_baseline",
+      "path": "benchmarks/benchmark_builder_resources.py",
+      "qualified_name": "_baseline",
+      "line": 33,
+      "end_line": 52,
+      "module_sha256": "5e54bfd4b0dbe982d09f153208553938b3bed120911b6efab916fdea5f8a13dc",
+      "status": "reviewed—unchanged",
+      "reason": "Commit ref is resolved with end-of-options; three source modules compiled under separate package module names and make/nlayer generator dependencies rewired to frozen generator. Other shared dependencies explicitly disclosed.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
+    },
+    {
+      "id": "benchmarks/benchmark_builder_resources.py::_batch",
+      "path": "benchmarks/benchmark_builder_resources.py",
+      "qualified_name": "_batch",
+      "line": 55,
+      "end_line": 67,
+      "module_sha256": "5e54bfd4b0dbe982d09f153208553938b3bed120911b6efab916fdea5f8a13dc",
+      "status": "reviewed—unchanged",
+      "reason": "New TemporaryDirectory owns outputs; ordered bytes and dataclass metadata excluding varying output_path enable exact comparison, including duplicate filename reservations. Cleanup included in documented measurement.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
+    },
+    {
+      "id": "benchmarks/benchmark_builder_resources.py::main",
+      "path": "benchmarks/benchmark_builder_resources.py",
+      "qualified_name": "main",
+      "line": 70,
+      "end_line": 127,
+      "module_sha256": "5e54bfd4b0dbe982d09f153208553938b3bed120911b6efab916fdea5f8a13dc",
+      "status": "reviewed—unchanged",
+      "reason": "Positive workload parameters checked; exact cosets compared and current/frozen batch outputs asserted before resource measurements. JSON/NPZ and repeated valid indexed candidates exercise parsing gains; tiny-cell and sequential/tracked-memory limitations explicitly disclosed.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
+    },
+    {
       "id": "benchmarks/benchmark_cli_discovery.py::_baseline",
       "path": "benchmarks/benchmark_cli_discovery.py",
       "qualified_name": "_baseline",
@@ -4628,9 +4661,9 @@
       "line": 55,
       "end_line": 82,
       "module_sha256": "130d76d90537f1f269c182a1dc4e41eee88b5b402744da0721252cc05ab313c5",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Stable sort plus strict adjacent-gap cuts retains single-linkage membership, original equal-height order and empty/negative-tolerance behavior; no changed arithmetic.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/core/layers.py::LayerSelection.top_atom_count",
@@ -4639,9 +4672,9 @@
       "line": 93,
       "end_line": 94,
       "module_sha256": "130d76d90537f1f269c182a1dc4e41eee88b5b402744da0721252cc05ab313c5",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Immutable tuple length accurately exposes the selected upper count without cache or state.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/core/layers.py::LayerSelection.bottom_atom_count",
@@ -4650,9 +4683,9 @@
       "line": 97,
       "end_line": 98,
       "module_sha256": "130d76d90537f1f269c182a1dc4e41eee88b5b402744da0721252cc05ab313c5",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Immutable complementary tuple length accurately exposes lower count without cache or state.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/core/layers.py::identify_top_layer",
@@ -4661,9 +4694,9 @@
       "line": 112,
       "end_line": 152,
       "module_sha256": "130d76d90537f1f269c182a1dc4e41eee88b5b402744da0721252cc05ab313c5",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Oriented normal heights preserve rotated/left-handed convention; argmax retains first-gap tie, strict cutoff and explicit empty-side errors. Added tests exercise boundaries without altering policy.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/core/layers.py::resolve_shift_vectors",
@@ -4672,9 +4705,9 @@
       "line": 155,
       "end_line": 179,
       "module_sha256": "130d76d90537f1f269c182a1dc4e41eee88b5b402744da0721252cc05ab313c5",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Mutually exclusive modes, two/three coordinate padding and row-lattice conversions are consistent with the writer; invalid lengths and zero default covered by added cases.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/core/layers.py::shift_top_layer",
@@ -4684,8 +4717,8 @@
       "end_line": 227,
       "module_sha256": "130d76d90537f1f269c182a1dc4e41eee88b5b402744da0721252cc05ab313c5",
       "status": "optimized—verified",
-      "reason": "Protects direct default layer-shift filename; preserves selected indices, coordinate shift, flags, writer args and selected-path result; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Copies direct positions, shifts selected original indices only, retains lattice/flags and disables wrapping; exclusive default reservation and explicit paths remain compatible with callers.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/core/manifests.py::RunManifest.create",
@@ -10314,241 +10347,241 @@
       "qualified_name": "parse_results",
       "line": 33,
       "end_line": 43,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Validated JSON/NPZ reader paths and candidate order retained; shallow list copy is batch-local and not modified by builders.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_column_hermite_normal_form",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_column_hermite_normal_form",
       "line": 46,
-      "end_line": 66,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 67,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "optimized—verified",
+      "reason": "Each determinant product now uses Python ints before subtraction; gcd/Bezout/modulo remain exact for int64 matrix entries, including determinants outside int64. Singular detection and HNF convention retained.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_bezout",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_bezout",
-      "line": 69,
-      "end_line": 82,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 70,
+      "end_line": 83,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Simultaneous Euclidean coefficient updates and final sign normalization produce signed/zero-input identity with constant storage; existing sweep inspected.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_coset_representatives",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_coset_representatives",
-      "line": 85,
-      "end_line": 103,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 86,
+      "end_line": 106,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "optimized—verified",
+      "reason": "Positive HNF dimensions imply byte guard also bounds each dimension; guard precedes allocation. One C-order final array with broadcast axes retains h22-fastest exact ij enumeration and reduces grid temporary storage.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_shift_vector",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_shift_vector",
-      "line": 106,
-      "end_line": 114,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 109,
+      "end_line": 117,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Direct lattice-row contributions then Cartesian shift preserve fixed floating addition order and three-dimensional shift interpretation.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_relax_flags",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_relax_flags",
-      "line": 117,
-      "end_line": 122,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 120,
+      "end_line": 125,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "None preserves inherited flags; positive fixes strictly below and nonpositive strictly above absolute threshold. Added cases retain equality and zero semantics.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_replicate_layer_cartesian",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_replicate_layer_cartesian",
-      "line": 125,
-      "end_line": 160,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 128,
+      "end_line": 163,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Atom-major/coset-minor loop, inverse wrapping, source c contribution and flags retain output order; no atom-wide vectorization or new geometry tolerance. Uses guarded exact cosets.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_finalise_species_order",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_finalise_species_order",
-      "line": 163,
-      "end_line": 184,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 166,
+      "end_line": 187,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "First-occurrence species grouping preserves within-species order, fills absent flags only when needed and explicitly retains empty (0,3) positions.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_swap_if_left_handed",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_swap_if_left_handed",
-      "line": 187,
-      "end_line": 193,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 190,
+      "end_line": 196,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Negative planar area swaps both lattice rows and corresponding direct columns; Cartesian geometry preserved. Nonnegative branch remains identity.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_scale_vector",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_scale_vector",
-      "line": 196,
-      "end_line": 200,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 199,
+      "end_line": 203,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Reference direction and existing 1e-12 zero-vector fallback retained; no threshold or orientation drift.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_reference_c_vector",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_reference_c_vector",
-      "line": 203,
-      "end_line": 206,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 206,
+      "end_line": 209,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Longer c vector retained with second vector winning norm ties; ndarray conversion unchanged.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_shift_atoms_z",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_shift_atoms_z",
-      "line": 209,
-      "end_line": 218,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 212,
+      "end_line": 221,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Each coordinate is copied before z mutation; species/flags/order retained and inputs remain unmodified.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_z_bounds",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_z_bounds",
-      "line": 221,
-      "end_line": 225,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 224,
+      "end_line": 228,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Empty (0,0) and scalar min/max retain stacking semantics; list allocation unchanged and not an introduced resource regression.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_build_final_lattice",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_build_final_lattice",
-      "line": 228,
-      "end_line": 259,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 231,
+      "end_line": 262,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Occupied z span, legacy minimum padding, nonnegative finite vacuum guard and c-direction scaling unchanged. Tilted-c interpretation is an existing scientific limitation.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_finalise_cartesian_atoms",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_finalise_cartesian_atoms",
-      "line": 262,
-      "end_line": 279,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 265,
+      "end_line": 282,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Empty short circuit avoids singular conversion; shared direct wrapping, zfix override and stable species order retain output convention.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_transform_layer_atoms",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_transform_layer_atoms",
-      "line": 282,
-      "end_line": 293,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 285,
+      "end_line": 299,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "optimized—verified",
+      "reason": "Nonempty sequence converts affine once, then applies identical per-position copy and xy matmul; len==0 preserves old empty permissiveness, including NumPy sequence support. Production callers supply lists.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::_recorded_layer_geometry",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "_recorded_layer_geometry",
-      "line": 296,
-      "end_line": 310,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 302,
+      "end_line": 316,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Planarity guard and row-supercell/column-affine transpose retain shared-lattice agreement conventions and tolerance.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::build_candidate_layers",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "build_candidate_layers",
-      "line": 326,
-      "end_line": 437,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 332,
+      "end_line": 443,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Original paths, c repeats, planarity/agreement checks, exact multiplicities, layer shifts, c selection and centering retained. Count checks after allocation predate this change.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::build_supercell",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "build_supercell",
-      "line": 440,
-      "end_line": 486,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 446,
+      "end_line": 492,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Public signature and ignored legacy tolerance preserved; common layer construction, flag/species finalization and handedness return identical tuple contract.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::interlayer_contact_report",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "interlayer_contact_report",
-      "line": 489,
-      "end_line": 510,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 495,
+      "end_line": 516,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Bottom then top Cartesian layers and requested-gap metadata are forwarded to shared exact periodic contact helper without geometry rebuild.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::build_supercell_with_report",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "build_supercell_with_report",
-      "line": 513,
-      "end_line": 545,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 519,
+      "end_line": 551,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Builds/finalizes once, measures interlayer plus whole-structure contacts and merges established report fields/notes. No altered geometry path.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/generator.py::write_supercell_poscar",
       "path": "src/cellstine/moire/builder/generator.py",
       "qualified_name": "write_supercell_poscar",
-      "line": 548,
-      "end_line": 566,
-      "module_sha256": "63ab53bb77f1b08419e3c76a31616478af86e6eb6c300d0a7def034a9b938366",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 554,
+      "end_line": 572,
+      "module_sha256": "dd247116ad1bfa2c69c8f385822f38bfff2e5e13272e840b22cf609715ebe65e",
+      "status": "reviewed—unchanged",
+      "reason": "Delegates shared writer with direct coordinates and selective flags unchanged.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/make.py::_limit_worker_threads",
@@ -10556,10 +10589,10 @@
       "qualified_name": "_limit_worker_threads",
       "line": 29,
       "end_line": 33,
-      "module_sha256": "a12548b67e014a6d3bc076f40a0fda832c72fc6f8b08b4c81e51e7dccff0e317",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "dd7ef40fbf16a3673bd72ae8136e4dcb776beb54e1fbcca4752cbfc5dc206b7c",
+      "status": "reviewed—unchanged",
+      "reason": "Existing setdefault respects caller environment; initializer executes after imports, so cannot guarantee initialized native pools are capped.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/make.py::_slug",
@@ -10567,109 +10600,131 @@
       "qualified_name": "_slug",
       "line": 36,
       "end_line": 43,
-      "module_sha256": "a12548b67e014a6d3bc076f40a0fda832c72fc6f8b08b4c81e51e7dccff0e317",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "dd7ef40fbf16a3673bd72ae8136e4dcb776beb54e1fbcca4752cbfc5dc206b7c",
+      "status": "reviewed—unchanged",
+      "reason": "Filename sanitization retains Unicode alphanumerics, dash/underscore, edge stripping and structure fallback; no naming drift.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/make.py::_generate_from_results_worker",
       "path": "src/cellstine/moire/builder/make.py",
       "qualified_name": "_generate_from_results_worker",
       "line": 46,
-      "end_line": 72,
-      "module_sha256": "a12548b67e014a6d3bc076f40a0fda832c72fc6f8b08b4c81e51e7dccff0e317",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "end_line": 50,
+      "module_sha256": "dd7ef40fbf16a3673bd72ae8136e4dcb776beb54e1fbcca4752cbfc5dc206b7c",
+      "status": "optimized—verified",
+      "reason": "Picklable selected-record/path/options tuple delegates module-level helper; no full document shipment or worker reread remains.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/make.py::generate_from_results",
       "path": "src/cellstine/moire/builder/make.py",
       "qualified_name": "generate_from_results",
-      "line": 75,
-      "end_line": 153,
-      "module_sha256": "a12548b67e014a6d3bc076f40a0fda832c72fc6f8b08b4c81e51e7dccff0e317",
+      "line": 53,
+      "end_line": 75,
+      "module_sha256": "dd7ef40fbf16a3673bd72ae8136e4dcb776beb54e1fbcca4752cbfc5dc206b7c",
       "status": "optimized—verified",
-      "reason": "Reserves automatically generated candidate filename even in explicit directories; preserves selected index, lattice/species/flags, contacts/layer metadata and return order; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Public single-candidate API still freshly validates and indexes the document for every direct call; delegates unchanged record-writing body with identical arguments and missing-index behavior.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
+    },
+    {
+      "id": "src/cellstine/moire/builder/make.py::_generate_from_record",
+      "path": "src/cellstine/moire/builder/make.py",
+      "qualified_name": "_generate_from_record",
+      "line": 78,
+      "end_line": 157,
+      "module_sha256": "dd7ef40fbf16a3673bd72ae8136e4dcb776beb54e1fbcca4752cbfc5dc206b7c",
+      "status": "optimized—verified",
+      "reason": "Missing index fails before build/output, repeat resolution and shared report preserved; default reservation, explicit overwrite path, comment and MakeRun fields remain identical to moved body.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/make.py::generate_many_from_results",
       "path": "src/cellstine/moire/builder/make.py",
       "qualified_name": "generate_many_from_results",
-      "line": 156,
-      "end_line": 215,
-      "module_sha256": "a12548b67e014a6d3bc076f40a0fda832c72fc6f8b08b4c81e51e7dccff0e317",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 160,
+      "end_line": 205,
+      "module_sha256": "dd7ef40fbf16a3673bd72ae8136e4dcb776beb54e1fbcca4752cbfc5dc206b7c",
+      "status": "optimized—verified",
+      "reason": "Nonempty batch parses/indexes once, preserves converted index order/duplicates and single explicit path. Selected-record tasks retain late invalid-index errors; fallback surrounds only constructor, avoiding retry after task I/O failures. Dispatch/startup failures intentionally propagate.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/make.py::make",
       "path": "src/cellstine/moire/builder/make.py",
       "qualified_name": "make",
-      "line": 218,
-      "end_line": 219,
-      "module_sha256": "a12548b67e014a6d3bc076f40a0fda832c72fc6f8b08b4c81e51e7dccff0e317",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 208,
+      "end_line": 209,
+      "module_sha256": "dd7ef40fbf16a3673bd72ae8136e4dcb776beb54e1fbcca4752cbfc5dc206b7c",
+      "status": "reviewed—unchanged",
+      "reason": "Thin kwargs alias retains ordered batch return semantics.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/nlayer.py::_layer_atoms",
       "path": "src/cellstine/moire/builder/nlayer.py",
       "qualified_name": "_layer_atoms",
-      "line": 43,
-      "end_line": 69,
-      "module_sha256": "beb7375458e4a67e251249ba27646a8c79637c771e09392ff8086ffd227572bf",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 44,
+      "end_line": 70,
+      "module_sha256": "91bc0604ac8607e3a3da5fc93174a8c95b38d2e2f24fab2b78ef914ffa8b749a",
+      "status": "reviewed—unchanged",
+      "reason": "N-layer-specific row-oriented shared lattice and tolerance retained before exact generator replication and affine transformation; no bilayer transpose accidentally introduced.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/nlayer.py::build_nlayer_supercell",
       "path": "src/cellstine/moire/builder/nlayer.py",
       "qualified_name": "build_nlayer_supercell",
-      "line": 72,
-      "end_line": 149,
-      "module_sha256": "beb7375458e4a67e251249ba27646a8c79637c771e09392ff8086ffd227572bf",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 73,
+      "end_line": 150,
+      "module_sha256": "91bc0604ac8607e3a3da5fc93174a8c95b38d2e2f24fab2b78ef914ffa8b749a",
+      "status": "reviewed—unchanged",
+      "reason": "Per-upper gaps/repeats validated; rigid base, recorded upper transforms/counts, accumulated max stacking, flags, vacuum and per-layer counts retained.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/nlayer.py::_slug",
       "path": "src/cellstine/moire/builder/nlayer.py",
       "qualified_name": "_slug",
-      "line": 152,
-      "end_line": 154,
-      "module_sha256": "beb7375458e4a67e251249ba27646a8c79637c771e09392ff8086ffd227572bf",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 153,
+      "end_line": 155,
+      "module_sha256": "91bc0604ac8607e3a3da5fc93174a8c95b38d2e2f24fab2b78ef914ffa8b749a",
+      "status": "reviewed—unchanged",
+      "reason": "Filename sanitization retains Unicode alphanumerics, dash/underscore, edge stripping and structure fallback; no naming drift.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/nlayer.py::generate_from_results",
       "path": "src/cellstine/moire/builder/nlayer.py",
       "qualified_name": "generate_from_results",
-      "line": 157,
-      "end_line": 222,
-      "module_sha256": "beb7375458e4a67e251249ba27646a8c79637c771e09392ff8086ffd227572bf",
+      "line": 158,
+      "end_line": 178,
+      "module_sha256": "91bc0604ac8607e3a3da5fc93174a8c95b38d2e2f24fab2b78ef914ffa8b749a",
       "status": "optimized—verified",
-      "reason": "Reserves automatically generated candidate filename even in explicit directories; preserves selected index, lattice/species/flags, contacts/layer metadata and return order; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Public single-candidate API still freshly validates/indexes N-layer results for each direct call; helper retains int-index normalization, gaps, repeats and explicit-path contract.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
+    },
+    {
+      "id": "src/cellstine/moire/builder/nlayer.py::_generate_from_document",
+      "path": "src/cellstine/moire/builder/nlayer.py",
+      "qualified_name": "_generate_from_document",
+      "line": 181,
+      "end_line": 245,
+      "module_sha256": "91bc0604ac8607e3a3da5fc93174a8c95b38d2e2f24fab2b78ef914ffa8b749a",
+      "status": "optimized—verified",
+      "reason": "Fresh reader public API delegates here after indexing; missing index check, geometry, exclusive default naming, explicit destination, stage metadata and counts retained from original body.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/builder/nlayer.py::generate_many_from_results",
       "path": "src/cellstine/moire/builder/nlayer.py",
       "qualified_name": "generate_many_from_results",
-      "line": 225,
-      "end_line": 250,
-      "module_sha256": "beb7375458e4a67e251249ba27646a8c79637c771e09392ff8086ffd227572bf",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 248,
+      "end_line": 279,
+      "module_sha256": "91bc0604ac8607e3a3da5fc93174a8c95b38d2e2f24fab2b78ef914ffa8b749a",
+      "status": "optimized—verified",
+      "reason": "Peeks/converts first index before read, returns no-I/O empty result, parses/indexes once and consumes later indexes lazily in order. Duplicate reservation and late-error prior outputs retain original list-comprehension behavior.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/moire.py::_format_timing",
@@ -12526,9 +12581,9 @@
       "line": 26,
       "end_line": 96,
       "module_sha256": "c52cbc62ff6d0cca3b5d078dc53a4736c94e910f297f982f15dc13c8663a6733",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Sequence API paths and all search controls forwarded with existing conversions; manifest/timings/preview and experimental shortlist policy unchanged.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/supermoire.py::Supermoire.maken",
@@ -12538,8 +12593,8 @@
       "end_line": 178,
       "module_sha256": "c52cbc62ff6d0cca3b5d078dc53a4736c94e910f297f982f15dc13c8663a6733",
       "status": "optimized—verified",
-      "reason": "Reserves default batch directory; preserves gap/repeat handling, N-layer generation, owned-directory suffix renames and ordered results; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Initial layer-count read/gap expansion retained before run creation; batch helper now makes one further read. Owned output renaming, ordered artifacts and manifest inputs/parameters unchanged.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/transform/translate.py::translate",
@@ -12548,9 +12603,9 @@
       "line": 8,
       "end_line": 9,
       "module_sha256": "a94822fa2295b1f28044e296fba2b5cac0833bb9a0b9529abee4ab1ab34c5901",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Fresh Moire wrapper forwards kwargs to existing public upper-layer translation workflow without extra inference.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/transform/translaten.py::translaten",
@@ -12559,9 +12614,9 @@
       "line": 14,
       "end_line": 15,
       "module_sha256": "efbed111d1cc164bd1055fc8680ee86b0a151674a5f9686d77a42eaa9ac32de1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Fresh Moire alias deliberately shares height-selected translation; no separate N-layer scientific policy introduced.",
+      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/symmetry/kpath_stage.py::format_kpath_table",
