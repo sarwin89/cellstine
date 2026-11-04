@@ -22,6 +22,15 @@ SCHEMA = "cellstine.moire.gram"
 VERSION = 2
 _EPS = float(np.finfo(float).eps)
 
+
+def normalize_results_format(value: str) -> str:
+    """Normalize an explicit output choice without changing the JSON default."""
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in ("json", "npz", "npz-compressed"):
+            return normalized
+    raise ValueError("results_format must be json, npz or npz-compressed")
+
 _SEARCH_FIELDS = {
     "top_poscar",
     "bottom_poscar",
@@ -828,7 +837,7 @@ def _first_invalid_row(
 
 
 def read_results(path: str | Path) -> dict[str, Any]:
-    """Read and validate JSON v2, rejecting positional legacy DAT results."""
+    """Read and validate JSON v2 or its no-pickle NPZ archive representation."""
 
     source = Path(path).resolve()
     if source.suffix.lower() == ".dat":
@@ -837,6 +846,10 @@ def read_results(path: str | Path) -> dict[str, Any]:
             "to create schema-versioned results.json"
         )
     with _collection_paused():
+        if source.suffix.lower() == ".npz":
+            from .npz_results import read_archive
+
+            return _validate_document(_mapping(read_archive(source), "results"))
         try:
             with source.open("r", encoding="utf-8") as handle:
                 payload = json.load(handle)
@@ -846,12 +859,13 @@ def read_results(path: str | Path) -> dict[str, Any]:
         return _validate_document(_mapping(payload, "results"))
 
 
-def write_results(path: str | Path, payload: Any, *, validated: bool = False) -> Path:
-    """Validate and write one deterministic JSON-v2 results document.
+def write_results(path: str | Path, payload: Any, *, validated: bool = False, compressed: bool = False) -> Path:
+    """Validate and write JSON v2 or an explicitly named .npz archive.
 
     ``validated=True`` is for a document :func:`build_results_document` has just
     returned, which is already JSON-ready and validated; checking it again costs
-    seconds on a wide search.  The file written is the same either way.
+    seconds on a wide search. ``compressed`` selects lossless ZIP compression
+    only for an .npz destination; the default JSON bytes stay unchanged.
     """
 
     with _collection_paused():
@@ -861,6 +875,13 @@ def write_results(path: str | Path, payload: Any, *, validated: bool = False) ->
             else _validate_document(_mapping(_json_ready(payload), "results"))
         )
         destination = Path(path).resolve()
+        if destination.suffix.lower() == ".npz":
+            from .npz_results import write_archive
+
+            write_archive(destination, document, compressed=compressed)
+            return destination
+        if compressed:
+            raise ValueError("compression requires an .npz results destination")
         destination.parent.mkdir(parents=True, exist_ok=True)
         with destination.open("w", encoding="utf-8", newline="\n") as handle:
             _write_indented_json(handle, document)

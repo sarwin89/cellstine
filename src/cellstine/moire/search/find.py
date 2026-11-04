@@ -20,7 +20,7 @@ from ...core.symmetry2d import (
 )
 from ...io import native as io_mod
 from . import gram
-from .results import build_results_document, write_results
+from .results import build_results_document, normalize_results_format, write_results
 
 
 # A wide bilayer search admits tens of thousands of supercells, almost all of
@@ -54,7 +54,9 @@ def _slug(value: str) -> str:
     return "".join(safe).strip("_") or "structure"
 
 
-def _make_result_path(output_root: str, bottom_path: str, top_path: str) -> tuple[str, Path]:
+def _make_result_path(
+    output_root: str, bottom_path: str, top_path: str, *, results_format: str = "json"
+) -> tuple[str, Path]:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     run_id = (
         f"{timestamp}_{_slug(Path(bottom_path).stem)}_below__"
@@ -62,7 +64,8 @@ def _make_result_path(output_root: str, bottom_path: str, top_path: str) -> tupl
     )
     output_dir = Path(output_root).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
-    return run_id, output_dir / "results.json"
+    extension = "json" if results_format == "json" else "npz"
+    return run_id, output_dir / f"results.{extension}"
 
 
 def _planar_column_basis(lattice: np.ndarray, name: str) -> np.ndarray:
@@ -172,8 +175,9 @@ def run_find(
     symmetry_tolerance: float = DEFAULT_SYMMETRY_TOLERANCE,
     output_root: str = "runs",
     progress_callback: Callable[[str, str], None] | None = None,
+    results_format: str = "json",
 ) -> FindRun:
-    """Read two POSCARs, run one native search, and write validated JSON v2.
+    """Read two POSCARs, run one native search, and persist validated results.
 
     ``top_strain`` and ``bottom_strain`` are bounds on principal logarithmic strain.
     There is no angle shortlist, index-box search, or DAT compatibility path.
@@ -191,7 +195,10 @@ def run_find(
     ``metadata.bottom_layer_index``.  ``reduce_layers=False`` searches the cells
     exactly as given.
 
-    ``max_candidates`` bounds how many candidates reach ``results.json``: the
+    ``results_format`` defaults to readable JSON v2. Explicit ``npz`` and
+    ``npz-compressed`` choices preserve the same document in a no-pickle archive.
+
+    ``max_candidates`` bounds how many candidates reach the results file: the
     whole Pareto front of size against strain is always kept and the remaining
     budget goes to the smallest cells, so a wide search reports the cells worth
     building instead of every admissible supercell.  ``None`` or a nonpositive
@@ -199,6 +206,7 @@ def run_find(
     """
 
     total_start = time.perf_counter()
+    results_format = normalize_results_format(results_format)
     timings: dict[str, float] = {}
     top_path = Path(top_poscar).resolve()
     bottom_path = Path(bottom_poscar).resolve()
@@ -207,7 +215,9 @@ def run_find(
 
     _notify(progress_callback, "read", "reading input structures")
     stage_start = time.perf_counter()
-    run_id, result_path = _make_result_path(str(output_root), str(bottom_path), str(top_path))
+    run_id, result_path = _make_result_path(
+        str(output_root), str(bottom_path), str(top_path), results_format=results_format
+    )
     top_structure = io_mod.read_poscar(str(top_path))
     bottom_structure = io_mod.read_poscar(str(bottom_path))
     top_source: Path | None = None
@@ -301,7 +311,7 @@ def run_find(
         f"found {len(result)} candidate(s) in {timings['search_s']:.3f}s",
     )
 
-    _notify(progress_callback, "write", "writing results.json")
+    _notify(progress_callback, "write", f"writing {result_path.name}")
     stage_start = time.perf_counter()
     document = build_results_document(
         top_poscar=top_path,
@@ -320,14 +330,17 @@ def run_find(
         top_poscar_source=top_source,
         bottom_poscar_source=bottom_source,
     )
-    write_results(result_path, document, validated=True)
+    if results_format == "json":
+        write_results(result_path, document, validated=True)
+    else:
+        write_results(result_path, document, validated=True, compressed=results_format == "npz-compressed")
     timings["write_results_s"] = time.perf_counter() - stage_start
     timings["total_s"] = time.perf_counter() - total_start
     recorded = len(document["candidates"])
     _notify(
         progress_callback,
         "write",
-        f"wrote {recorded} of {len(result)} candidate(s) to results.json in "
+        f"wrote {recorded} of {len(result)} candidate(s) to {result_path.name} in "
         f"{timings['write_results_s']:.3f}s",
     )
 
@@ -336,7 +349,8 @@ def run_find(
         result_path=result_path.resolve(),
         result=result,
         candidates=list(document["candidates"]),
-        parameters=dict(document["search"]),
+        parameters=(dict(document["search"]) if results_format == "json"
+                    else {**document["search"], "results_format": results_format}),
         timings=timings,
         layer_index={"top": int(top_layer_index), "bottom": int(bottom_layer_index)},
     )

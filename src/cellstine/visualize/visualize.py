@@ -40,7 +40,7 @@ class Visualize(Base):
         run_id, run_dir = self.create_run_dir("moire", Path(results_file).stem)
         output_suffix = run_output_suffix(run_id)
         resolved_results = self.resolve_results_file(
-            results_file, artifact_keys=("results_json", "results_dat")
+            results_file, artifact_keys=("results_json", "results_npz", "results_dat")
         )
         read_results(resolved_results)
         if plotly:

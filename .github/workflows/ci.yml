@@ -89,6 +89,31 @@ jobs:
           tests/test_cli_command_preview_resources.py
           tests/test_saved_preview_resources.py -q
 
+  portable_results:
+    name: Portable results on ${{ matrix.os }} / Python ${{ matrix.runtime.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        runtime:
+          - python: "3.10"
+            numpy: "numpy>=1.26,<3"
+          - python: "3.12"
+            numpy: "numpy==1.26.4"
+          - python: "3.14"
+            numpy: "numpy>=1.26,<3"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.runtime.python }}
+          cache: pip
+      - name: Install core package and portable result dependencies
+        run: python -m pip install -e . "${{ matrix.runtime.numpy }}" pytest
+      - name: Check archive and consumer portability
+        run: python -m pytest -q tests/test_moire_npz_persistence.py tests/test_moire_result_formats.py
+
   package:
     name: Package build
     runs-on: windows-latest

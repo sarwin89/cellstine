@@ -16,6 +16,7 @@ from ..core.previews import format_bilayer_candidates
 from .builder.make import generate_many_from_results
 from ..core.symmetry2d import DEFAULT_SYMMETRY_TOLERANCE
 from .search.find import DEFAULT_CANDIDATE_LIMIT, run_find
+from .search.results import normalize_results_format
 
 
 def _format_timing(value: float | int | None) -> str:
@@ -122,6 +123,7 @@ class Moire(Base):
         symmetry_tolerance: float = DEFAULT_SYMMETRY_TOLERANCE,
         preview_limit: int = 10,
         progress: bool = False,
+        results_format: str = "json",
     ) -> CommandResult:
         """Search one bilayer for commensurate supercells and record the best.
 
@@ -135,8 +137,13 @@ class Moire(Base):
         factor; the reduced layer is written into the run directory and is what
         the reported matrices refer to.  ``reduce_layers=False`` keeps the cells
         exactly as they were given.
+
+        ``results_format`` defaults to ``json``. ``npz`` stores numerical
+        columns without text conversion; ``npz-compressed`` adds lossless ZIP
+        compression. Both remain readable by the build/preview/plot workflows.
         """
         total_start = time.perf_counter()
+        results_format = normalize_results_format(results_format)
         progress_callback = _progress_printer() if progress else None
         backend = self.choose_backend(feature="moire.find")
         label = f"{Path(bottom_poscar).stem}_{Path(top_poscar).stem}"
@@ -161,6 +168,7 @@ class Moire(Base):
             symmetry_tolerance=float(symmetry_tolerance),
             output_root=str(run_dir),
             progress_callback=progress_callback,
+            results_format=results_format,
         )
 
         manifest_start = time.perf_counter()
@@ -175,7 +183,7 @@ class Moire(Base):
                 "bottom_poscar": str(Path(bottom_poscar).resolve()),
             },
             parameters=run.parameters,
-            artifacts={"results_json": run.result_path},
+            artifacts={"results_json" if results_format == "json" else "results_npz": run.result_path},
             summary={
                 "candidate_count": len(run.candidates),
                 "candidates_found": len(run.result),
@@ -200,7 +208,7 @@ class Moire(Base):
         return self.result(
             manifest_path=manifest_path,
             run_dir=run_dir,
-            artifacts={"results_json": run.result_path},
+            artifacts={"results_json" if results_format == "json" else "results_npz": run.result_path},
             summary={
                 "candidate_count": len(run.candidates),
                 "candidates_found": len(run.result),
@@ -232,7 +240,7 @@ class Moire(Base):
         workers: int = 1,
     ) -> CommandResult:
         backend = self.choose_backend(feature="moire.make")
-        resolved_results = self.resolve_results_file(results_file, artifact_keys=("results_json",))
+        resolved_results = self.resolve_results_file(results_file, artifact_keys=("results_json", "results_npz"))
         run_id, run_dir = self.create_run_dir("make", Path(resolved_results).stem)
         output_suffix = run_output_suffix(run_id)
         resolved_output_dir = output_dir or str(self.output_root / run_id)

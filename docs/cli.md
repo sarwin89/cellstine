@@ -72,6 +72,23 @@ cellstine moire search TOP.vasp BOTTOM.vasp --length 30 --rigid --twist 9:14 --a
 Choose exactly one strain mode: `--rigid`, `--strain E`, or both
 `--top-strain` and `--bottom-strain`.
 
+For large bilayer result sets, select an optional portable NumPy archive:
+
+```bash
+cellstine moire search TOP.vasp BOTTOM.vasp --length 30 --strain 0.01 --results-format npz
+cellstine moire search TOP.vasp BOTTOM.vasp --length 30 --strain 0.01 --results-format npz-compressed
+```
+
+JSON remains the default. Both archive options write `results.npz`; compression
+can reduce disk usage at extra encoding cost. `moire build` and `moire view`
+accept these results directly or through the run manifest. Advanced guided
+search exposes the same choice. Python callers use `Moire.find(...,
+results_format="npz")` or `"npz-compressed"`. These versioned archives preserve
+the JSON result document and never use pickle; use CELLSTINE's `read_results`
+to reconstruct it. Small results can remain faster as JSON. See the
+[format measurements and compatibility limits](optimization/part-05d-portable-results.md).
+N-layer stack results retain their separate experimental JSON format.
+
 ## Migration table
 
 | Old command | New command |

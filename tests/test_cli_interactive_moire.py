@@ -40,6 +40,7 @@ def test_the_guided_search_can_ask_for_a_rigid_commensurate_scan(monkeypatch, tm
             "n",  # symmetry-preserving branch
             "n",  # fold each layer onto its own primitive in-plane cell
             "0",  # preview limit
+            "json",  # readable results
         ],
     )
 
@@ -95,6 +96,7 @@ def test_the_guided_search_can_ask_for_a_twist_angle_window(monkeypatch, tmp_pat
             "n",  # symmetry-preserving branch
             "n",  # fold each layer onto its own primitive in-plane cell
             "10",  # preview limit
+            "json",  # readable results
         ],
     )
 
@@ -118,6 +120,7 @@ def test_the_guided_search_defaults_to_folding_each_layer_and_can_be_told_not_to
         "n",  # symmetry-preserving branch
         "n",  # fold each layer onto its own primitive in-plane cell
         "10",  # preview limit
+        "json",  # readable results
     ]
     argv = _drive(monkeypatch, answers)
     assert "--keep-layer-cells" not in argv

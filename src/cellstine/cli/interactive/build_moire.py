@@ -73,6 +73,17 @@ def _build_moire_find() -> list[str]:
         preview_limit = _prompt_int_range(
             "How many ranked candidates should be shown after the search? (0 hides the preview)", 10, 0, 50
         )
+        results_format = _choice(
+            "Saved results format",
+            [
+                {"key": "json", "label": "JSON (readable)", "hint": "Default. Existing JSON tools can inspect the file."},
+                {"key": "npz", "label": "NPZ (faster for large searches)", "hint": "Numerical archive; build and plot with CELLSTINE as usual."},
+                {"key": "npz-compressed", "label": "Compressed NPZ (smaller files)", "hint": "Lossless compression trades some write time for disk space."},
+            ],
+            default=1,
+        )
+        if results_format != "json":
+            argv.extend(["--results-format", results_format])
     elif rigid:
         # Keep the previous guided rigid-search default when advanced questions
         # are hidden. The advanced flow still lets the user explicitly opt out.
@@ -135,7 +146,7 @@ def _build_moire_make(*, results_file: str | None = None) -> list[str]:
     _print_title("Moire Build", "Build one or more saved commensurate candidates.")
     results_file = results_file or _prompt_path(
         "Choose a saved moire results file or manifest",
-        patterns=("results.json",),
+        patterns=("results.json", "results.npz"),
         roots=(RUNS_DIR,),
     )
     count = _print_saved_moire_preview(results_file, limit=15)
@@ -169,7 +180,7 @@ def _build_moire_visualize() -> list[str]:
     _print_title("Moire Visualization", "Create a static Matplotlib summary, or optionally an interactive Plotly viewer.")
     results_file = _prompt_path(
         "Choose a saved moire results file or manifest",
-        patterns=("results.json",),
+        patterns=("results.json", "results.npz"),
         roots=(RUNS_DIR,),
     )
     use_specific_indices = _prompt_yes_no("Do you want to visualize only selected candidate indices?", False)

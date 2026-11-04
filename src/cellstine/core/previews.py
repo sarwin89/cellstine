@@ -206,7 +206,7 @@ def format_nlayer_candidates(candidates: Sequence[Any], *, limit: int = 10, titl
 
 def _iter_manifest_result_paths(path: Path) -> Iterable[Path]:
     manifest = RunManifest.load(path)
-    priority = ["results_json", "results_dat"]
+    priority = ["results_json", "results_npz", "results_dat"]
     for key in priority:
         value = manifest.artifacts.get(key)
         if value is not None:
@@ -214,7 +214,7 @@ def _iter_manifest_result_paths(path: Path) -> Iterable[Path]:
     for key, value in sorted(manifest.artifacts.items()):
         if key in priority:
             continue
-        if key.startswith("results_dat") or key.startswith("results_json"):
+        if key.startswith(("results_dat", "results_json", "results_npz")):
             yield Path(str(value)).resolve()
 
 
