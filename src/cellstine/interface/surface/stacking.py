@@ -16,7 +16,8 @@ The letters carry two gauge freedoms, both proved in
   difference ``delta`` of the two contacting letters is physical: there are
   three contacts, not nine.
 * The direction that counts as ``A -> B -> C`` is arbitrary too, and swapping
-  it is realised by a reflection, which negates every layer step.  A slab on
+  it is realised by a coset-reversing reflection, which negates every layer step.
+  Some lattice reflections preserve the hollow coset instead. A slab on
   its own therefore has no handedness, and ``analyse_stacking`` reads every
   uniform close-packed slab as ``ABCABC`` unless it is given the hollow vector
   of another slab as a gauge.  Handedness is meaningful only between the two
@@ -26,6 +27,9 @@ The letters carry two gauge freedoms, both proved in
 from __future__ import annotations
 
 from dataclasses import dataclass
+from fractions import Fraction
+from itertools import product
+from math import isqrt, lcm, ulp
 from typing import Sequence
 
 import numpy as np
@@ -54,6 +58,10 @@ POSITION_TOLERANCE = 0.05
 """Default angstrom tolerance when deciding whether two sites coincide."""
 
 COSET_LETTERS = "ABC"
+
+# Bound preparatory scans and keep final matrix work within the legacy box.
+_MIRROR_ROW_SCAN_LIMIT = 65536
+_MIRROR_PAIR_LIMIT = 7 ** 4
 
 
 # ---------------------------------------------------------------------------
@@ -94,7 +102,7 @@ def _integer_coefficients(vector: np.ndarray, basis: np.ndarray, tolerance: floa
 
 
 def _reduce_modulo_lattice(vector: np.ndarray, basis: np.ndarray) -> np.ndarray:
-    """Return the representative of ``vector`` closest to the origin."""
+    """Find a short representative using the caller's Gauss-reduced basis."""
 
     basis = np.asarray(basis, dtype=float)
     coefficients = np.linalg.solve(basis.T, np.asarray(vector, dtype=float))
@@ -111,9 +119,9 @@ def _layer_point_lattice(points: np.ndarray, cell: np.ndarray, tolerance: float)
     """Return a primitive basis of the 2D point lattice of one layer.
 
     The layer must be a single orbit of a 2D lattice that has the slab cell as a
-    sublattice, which is what a close-packed monatomic layer is.  Anything else
-    (a honeycomb layer, a mixed-species layer, a buckled layer) returns ``None``
-    and switches the caller to the honest "not close packed" answer.
+    sublattice, which is what a close-packed monatomic layer is. Decorated
+    point sets such as a honeycomb return ``None``. This geometric helper
+    receives projected points, not chemical labels or out-of-plane heights.
     """
 
     points = np.asarray(points, dtype=float)
@@ -468,26 +476,118 @@ def _inplane_gram(lattice: np.ndarray) -> np.ndarray:
     return planar @ planar.T
 
 
+def _mirror_candidate_rows(
+    gram: np.ndarray, threshold: float,
+) -> tuple[list[tuple[int, int]], list[tuple[int, int]]] | None:
+    """Bound possible mirror rows, or retain the legacy numerical domain.
+
+    For positive definite G, |G01| <= sqrt(G00*G11), hence the absolute
+    quadratic sum is at most 2*(G00*v0^2 + G11*v1^2). A generous diagonal
+    error E therefore bounds both length-two floating dot products,
+    including subnormal absolute errors. Accepted rows lie inside a G-E
+    ellipse and outside a G+E ellipse. Final subtraction
+    rounding is included in the target interval too. Exact rational setup
+    and integer square roots keep the search bounds outward.
+
+    Nearly unresolved metrics and broad tolerances retain the old box;
+    these domains do not receive a new completeness claim. Coordinates
+    beyond exact float integer representation and searches exceeding the
+    bounded scan/pair budgets also keep that fallback.
+    """
+
+    if (gram.shape != (2, 2) or not np.all(np.isfinite(gram))
+            or not isinstance(threshold, (float, int, np.floating))
+            or not np.isfinite(threshold) or threshold < 0.0):
+        return None
+    if not np.array_equal(gram, gram.T) or threshold > min(gram[0, 0], gram[1, 1]):
+        return None
+    g00, g01, g11 = (Fraction.from_float(float(value))
+                    for value in (gram[0, 0], gram[0, 1], gram[1, 1]))
+    epsilon = Fraction.from_float(float(np.finfo(float).eps))
+    tiny = Fraction.from_float(ulp(0.0))
+    if g00 <= 0 or g11 <= 0 or g00 * g11 <= g01 * g01:
+        return None
+    error0, error1 = 64 * (epsilon * g00 + tiny), 64 * (epsilon * g11 + tiny)
+    h00, h01, h11 = g00 - error0, g01, g11 - error1
+    determinant = h00 * h11 - h01 * h01
+    if h00 <= 0 or h11 <= 0 or determinant <= error0 * h11 + error1 * h00:
+        return None
+    k00, k01, k11 = g00 + error0, g01, g11 + error1
+    denominator = lcm(*(value.denominator for value in (h00, h01, h11, k00, k01, k11)))
+    h00, h01, h11, k00, k01, k11 = (
+        int(value * denominator) for value in (h00, h01, h11, k00, k01, k11))
+    det_h, det_k = h00 * h11 - h01 * h01, k00 * k11 - k01 * k01
+    delta = Fraction.from_float(float(threshold))
+    result = []
+    for target in (g00, g11):
+        upper = (target * (1 + epsilon) + delta + tiny) / (1 - epsilon)
+        lower = (target * (1 - epsilon) - delta - tiny) / (1 + epsilon)
+        outer = (upper.numerator * denominator) // upper.denominator
+        inner = (lower.numerator * denominator - 1) // lower.denominator
+        first_bound = isqrt((outer * h11) // det_h)
+        second_bound = isqrt((outer * h00) // det_h)
+        if max(first_bound, second_bound) > 2 ** 53:
+            return None
+        swapped = first_bound > second_bound
+        p01, p11 = h01, h00 if swapped else h11
+        q01, q11 = k01, k00 if swapped else k11
+        if swapped:
+            first_bound = second_bound
+        if 2 * first_bound + 1 > _MIRROR_ROW_SCAN_LIMIT:
+            return None
+        rows = []
+        for first in range(-first_bound, first_bound + 1):
+            root = isqrt(p11 * outer - det_h * first * first)
+            lo = -((root + p01 * first) // p11)
+            hi = (root - p01 * first) // p11
+            excluded = q11 * inner - det_k * first * first
+            if excluded >= 0:
+                inner_root = isqrt(excluded)
+                inner_lo = -((inner_root + q01 * first) // q11)
+                inner_hi = (inner_root - q01 * first) // q11
+            else:
+                inner_lo, inner_hi = 1, 0
+            if inner_lo <= inner_hi:
+                intervals = ((lo, min(hi, inner_lo - 1)), (max(lo, inner_hi + 1), hi))
+            else:
+                intervals = ((lo, hi),)
+            for start, stop in intervals:
+                if len(rows) + max(0, stop - start + 1) > _MIRROR_PAIR_LIMIT:
+                    return None
+                if swapped:
+                    rows.extend((second, first) for second in range(start, stop + 1))
+                else:
+                    rows.extend((first, second) for second in range(start, stop + 1))
+        rows.sort()
+        result.append(rows)
+    if len(result[0]) * len(result[1]) > _MIRROR_PAIR_LIMIT:
+        return None
+    return result[0], result[1]
+
+
 def inplane_mirror_matrices(lattice: np.ndarray, tolerance: float = 1e-6) -> list[np.ndarray]:
     """Return the integer matrices of the in-plane mirrors of the cell.
 
     ``M`` is returned when ``M G M^T = G`` for the in-plane Gram matrix ``G``
-    and ``det M = -1``: those are exactly the improper operations of the lattice
-    point group, the ones that reverse a stacking sense.
+    and ``det M = -1``: those are the improper operations of the lattice
+    point group. Only a subset may reverse a chosen hollow-coset gauge.
     """
 
     gram = _inplane_gram(lattice)
     scale = float(np.max(np.abs(gram)))
+    threshold = tolerance * max(scale, 1.0)
+    rows = _mirror_candidate_rows(gram, threshold)
+    if rows is None:
+        candidates = product(range(-3, 4), repeat=4)
+    else:
+        candidates = ((a, b, c, d) for (a, b), (c, d) in product(*rows))
     matrices = []
-    for a in range(-3, 4):
-        for b in range(-3, 4):
-            for c in range(-3, 4):
-                for d in range(-3, 4):
-                    matrix = np.array([[a, b], [c, d]], dtype=int)
-                    if int(round(np.linalg.det(matrix))) != -1:
-                        continue
-                    if float(np.max(np.abs(matrix @ gram @ matrix.T - gram))) <= tolerance * max(scale, 1.0):
-                        matrices.append(matrix)
+    for a, b, c, d in candidates:
+        matrix = np.array([[a, b], [c, d]], dtype=int)
+        if int(round(np.linalg.det(matrix))) != -1:
+            continue
+        if float(np.max(np.abs(matrix @ gram @ matrix.T - gram))) <= threshold:
+            matrices.append(matrix)
     matrices.sort(key=lambda matrix: tuple(int(value) for value in matrix.reshape(-1)))
     return matrices
 
@@ -496,8 +596,9 @@ def mirror_structure(record, *, matrix: np.ndarray | None = None):
     """Return the mirror image of a slab, written in the same cell.
 
     The reflection is an in-plane mirror of the lattice, so the cell is
-    unchanged and only the fractional coordinates move.  Reflecting reverses the
-    stacking sense: ``ABCABC`` becomes ``CBACBA``.
+    unchanged and only the fractional coordinates move. Without an explicit
+    matrix the first sorted lattice mirror is used. That geometric reflection
+    can preserve a hollow coset; a requested stacking sense needs a gauge check.
     """
 
     lattice = np.asarray(record.lattice, dtype=float)
