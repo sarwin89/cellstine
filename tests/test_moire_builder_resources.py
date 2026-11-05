@@ -73,7 +73,8 @@ def test_coset_order_matches_exact_ij_box(matrix):
 
 @pytest.mark.parametrize('kind',['json','npz','npz-compressed'])
 @pytest.mark.parametrize('workers',[1,2])
-def test_batch_reads_once_preserves_duplicates_and_exact_output(tmp_path,monkeypatch,bilayer_document,kind,workers):
+@pytest.mark.parametrize('parallel_backend',['process','thread'])
+def test_batch_reads_once_preserves_duplicates_and_exact_output(tmp_path,monkeypatch,bilayer_document,kind,workers,parallel_backend):
     suffix='json' if kind=='json' else 'npz'
     path=write_results(tmp_path/f'results.{suffix}',bilayer_document,compressed=kind=='npz-compressed')
     original=copy.deepcopy(bilayer_document)
@@ -86,7 +87,7 @@ def test_batch_reads_once_preserves_duplicates_and_exact_output(tmp_path,monkeyp
         return parse(filename)
     monkeypatch.setattr(generator,'parse_results',counted)
     actual=bilayer.generate_many_from_results(str(path),indexes=[2,1,2],interlayer_distance=3.35,
-                output_dir=str(tmp_path/'batch'),top_c_repeat=2,vacuum=15.,workers=workers)
+                output_dir=str(tmp_path/'batch'),top_c_repeat=2,vacuum=15.,workers=workers,parallel_backend=parallel_backend)
     assert calls==[str(path)]
     assert [r.selected_index for r in actual]==[2,1,2]
     assert len({r.output_path for r in actual})==3
@@ -125,9 +126,14 @@ class _InlineExecutor:
         return self
     def __exit__(self,*args):
         pass
-    def map(self,worker,tasks):
-        for task in tasks:
-            yield worker(task)
+    def submit(self,worker,task):
+        from concurrent.futures import Future
+        future=Future()
+        try:
+            future.set_result(worker(task))
+        except BaseException as error:
+            future.set_exception(error)
+        return future
 
 
 def test_worker_write_error_propagates_without_retrying_completed_outputs(tmp_path,monkeypatch,bilayer_document):
@@ -144,10 +150,12 @@ def test_worker_write_error_propagates_without_retrying_completed_outputs(tmp_pa
     with pytest.raises(OSError,match='candidate write failed'):
         bilayer.generate_many_from_results(str(path),indexes=[1,2,1],interlayer_distance=3.35,
                     output_dir=str(tmp_path/'out'),workers=2)
-    assert len(attempts)==2
+    # Later tasks may start before the ordered failure is observed.
+    # All three requested writes run once; no completed output is replayed.
+    assert len(attempts)==3
     files=list((tmp_path/'out').glob('*.vasp'))
-    assert len(files)==2 # failed default destination remains reserved, matching direct writer semantics
-    assert sum(bool(p.stat().st_size) for p in files)==1
+    assert len(files)==3 # failed default destination remains reserved
+    assert sum(bool(p.stat().st_size) for p in files)==2
 
 
 def test_pool_construction_failure_safely_falls_back(tmp_path,monkeypatch,bilayer_document):
@@ -164,7 +172,7 @@ def test_pool_construction_failure_safely_falls_back(tmp_path,monkeypatch,bilaye
 def test_pool_dispatch_error_is_not_assumed_safe_to_retry(tmp_path,monkeypatch,bilayer_document):
     path=write_results(tmp_path/'results.json',bilayer_document)
     class DispatchError(_InlineExecutor):
-        def map(self,*args):
+        def submit(self,*args):
             raise OSError('dispatch failure after pool creation')
     monkeypatch.setattr(bilayer,'ProcessPoolExecutor',DispatchError)
     with pytest.raises(OSError,match='dispatch failure'):
@@ -287,3 +295,109 @@ def test_invalid_vacuum_rejected_before_building_lattice(vacuum):
     with pytest.raises(ValueError,match='finite nonnegative'):
         generator._build_final_lattice(np.array([1.,0.,0.]),np.array([0.,1.,0.]),
             np.array([0.,0.,12.]),[('C',np.array([0.,0.,2.]),None)],1e-4,vacuum)
+
+
+@pytest.mark.parametrize('backend',['threads','invalid',''])
+def test_invalid_parallel_backend_rejected_before_reading(tmp_path,monkeypatch,backend):
+    def forbidden(*args,**kwargs):
+        pytest.fail('invalid backend accessed input or created artifacts')
+    monkeypatch.setattr(generator,'parse_results',forbidden)
+    with pytest.raises(ValueError,match='parallel_backend'):
+        bilayer.generate_many_from_results('missing.npz',indexes=[1],interlayer_distance=3.,
+                output_dir=str(tmp_path/'out'),workers=2,parallel_backend=backend)
+    assert not (tmp_path/'out').exists()
+
+
+def test_thread_backend_does_not_run_process_initializer(tmp_path,monkeypatch,bilayer_document):
+    path=write_results(tmp_path/'results.npz',bilayer_document)
+    def forbidden():
+        pytest.fail('thread backend ran process environment initializer')
+    monkeypatch.setattr(bilayer,'_limit_worker_threads',forbidden)
+    actual=bilayer.generate_many_from_results(str(path),indexes=[2,1],interlayer_distance=3.35,
+                output_dir=str(tmp_path/'out'),workers=2,parallel_backend='thread')
+    assert [r.selected_index for r in actual]==[2,1]
+
+
+def test_parallel_submission_is_bounded_and_preserves_completion_order():
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event
+    release=Event()
+    completed=[]
+    consumed=[]
+    def tasks():
+        for n in range(40):
+            consumed.append(n)
+            yield n
+    def worker(n):
+        if n==0:
+            assert release.wait(10), 'later work never ran concurrently'
+        else:
+            completed.append(n)
+            release.set()
+        return n
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        ordered=bilayer._ordered_parallel_results(executor,worker,tasks(),max_pending=4)
+        assert next(ordered)==0
+        assert completed and len(consumed)<=4
+        assert [0,*ordered]==list(range(40))
+
+
+def test_parallel_error_cancels_pending_work_without_replay():
+    from concurrent.futures import Future
+    submitted=[]
+    class Executor:
+        def submit(self,worker,task):
+            future=Future()
+            if task==0:
+                future.set_exception(OSError('write failed'))
+            submitted.append((task,future))
+            return future
+    with pytest.raises(OSError,match='write failed'):
+        list(bilayer._ordered_parallel_results(Executor(),lambda x:x,range(1000),max_pending=4))
+    assert [n for n,_ in submitted]==[0,1,2,3]
+    assert all(f.cancelled() for _,f in submitted[1:])
+
+
+def test_effective_thread_workers_capped_to_selection_size(tmp_path,monkeypatch,bilayer_document):
+    from concurrent.futures import ThreadPoolExecutor
+    observed=[]
+    def executor(**kwargs):
+        observed.append(kwargs)
+        return ThreadPoolExecutor(**kwargs)
+    monkeypatch.setattr(bilayer,'ThreadPoolExecutor',executor)
+    path=write_results(tmp_path/'results.npz',bilayer_document)
+    runs=bilayer.generate_many_from_results(str(path),indexes=[2,1],interlayer_distance=3.35,
+                output_dir=str(tmp_path/'out'),workers=10000,parallel_backend='thread')
+    assert len(runs)==2 and observed==[{'max_workers':2}]
+
+
+@pytest.mark.parametrize('backend',['process','thread'])
+def test_cli_forwards_parallel_backend(monkeypatch,backend):
+    from cellstine.cli.parsers import build_parser
+    main=importlib.import_module('cellstine.cli.main')
+    calls=[]
+    class Workflow:
+        def make(self,**kwargs):
+            calls.append(kwargs)
+    monkeypatch.setattr(main,'_workflow',lambda _:Workflow)
+    args=build_parser().parse_args(['moire','build','results.npz','--indexes','2,1',
+                     '--workers','4','--parallel-backend',backend])
+    main.execute_namespace(args)
+    assert calls[0]['parallel_backend']==backend and calls[0]['workers']==4
+
+
+def test_workflow_records_thread_backend_and_rejects_invalid_before_run(tmp_path,bilayer_document):
+    from cellstine.moire.moire import Moire
+    from cellstine.core.manifests import RunManifest
+    path=write_results(tmp_path/'results.npz',bilayer_document)
+    runs_root=tmp_path/'runs'
+    workflow=Moire(backend='native',runs_root=runs_root,output_root=tmp_path/'output')
+    before=set(runs_root.rglob('*'))
+    with pytest.raises(ValueError,match='parallel_backend'):
+        workflow.make(results_file=str(path),indexes=[1],interlayer_distance=3.35,parallel_backend='invalid')
+    assert set(runs_root.rglob('*'))==before
+    result=workflow.make(results_file=str(path),indexes=[2,1],interlayer_distance=3.35,
+                         workers=2,parallel_backend='thread')
+    manifest=RunManifest.load(result.manifest_path)
+    assert manifest.parameters['parallel_backend']=='thread'
+    assert manifest.summary['generated_count']==2

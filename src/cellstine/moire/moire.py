@@ -240,7 +240,10 @@ class Moire(Base):
         bottom_c_repeat: int | None = None,
         vacuum: float | None = None,
         workers: int = 1,
+        parallel_backend: str = "process",
     ) -> CommandResult:
+        if parallel_backend not in ("process", "thread"):
+            raise ValueError("parallel_backend must be process or thread")
         backend = self.choose_backend(feature="moire.make")
         resolved_results = self.resolve_results_file(results_file, artifact_keys=("results_json", "results_npz"))
         run_id, run_dir = self.create_run_dir("make", Path(resolved_results).stem)
@@ -261,6 +264,7 @@ class Moire(Base):
             bottom_c_repeat=bottom_c_repeat,
             vacuum=None if vacuum is None else float(vacuum),
             workers=int(workers),
+            parallel_backend=parallel_backend,
         )
         if output_path is None and output_dir is None:
             for run in runs:
@@ -282,6 +286,7 @@ class Moire(Base):
                 "interlayer_distance": float(interlayer_distance),
                 "vacuum": None if vacuum is None else float(vacuum),
                 "workers": int(workers),
+                "parallel_backend": parallel_backend,
             },
             artifacts={"structures": artifact_paths},
             summary={

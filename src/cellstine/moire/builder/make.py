@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from concurrent.futures import ProcessPoolExecutor
+from collections import deque
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from itertools import islice
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Sequence
@@ -157,6 +159,26 @@ def _generate_from_record(
     )
 
 
+def _ordered_parallel_results(executor, worker, tasks, *, max_pending: int):
+    """Yield requested order while bounding queued payloads and futures.
+
+    An error or an early close cancels work which has not started. The owning
+    executor context waits for active writers; completed outputs are not retried.
+    """
+    task_iterator = iter(tasks)
+    pending = deque()
+    try:
+        for task in islice(task_iterator, max_pending):
+            pending.append(executor.submit(worker, task))
+        while pending:
+            yield pending.popleft().result()
+            for task in islice(task_iterator, 1):
+                pending.append(executor.submit(worker, task))
+    finally:
+        for future in pending:
+            future.cancel()
+
+
 def generate_many_from_results(
     results_file: str,
     *,
@@ -171,7 +193,11 @@ def generate_many_from_results(
     bottom_c_repeat: int | None = None,
     vacuum: float | None = None,
     workers: int = 1,
+    parallel_backend: str = "process",
 ) -> List[MakeRun]:
+    """Calculate and write independent structures with explicit bounded concurrency."""
+    if parallel_backend not in ("process", "thread"):
+        raise ValueError("parallel_backend must be process or thread")
     resolved_indexes = [int(index) for index in indexes]
     resolved_workers = max(1, int(workers))
     if len(resolved_indexes) > 1 and output_path is not None:
@@ -188,21 +214,29 @@ def generate_many_from_results(
     )
     # Each process receives only its selected candidate, never the entire result
     # document. Missing indexes remain task errors, preserving ordered failures.
-    task_inputs = [
+    task_inputs = (
         (results_file, top_poscar, bottom_poscar, by_index.get(index), {**options, "index": index})
         for index in resolved_indexes
-    ]
+    )
     if resolved_workers <= 1 or len(resolved_indexes) <= 1:
         return [_generate_from_results_worker(task) for task in task_inputs]
+    effective_workers = min(resolved_workers, len(resolved_indexes))
     try:
-        executor = ProcessPoolExecutor(max_workers=resolved_workers, initializer=_limit_worker_threads)
+        if parallel_backend == "thread":
+            # Threads share the caller's numerical runtime and must not mutate
+            # its environment or native-library thread configuration.
+            executor = ThreadPoolExecutor(max_workers=effective_workers)
+        else:
+            executor = ProcessPoolExecutor(max_workers=effective_workers, initializer=_limit_worker_threads)
     except OSError:
         # Construction has dispatched no tasks, so a synchronous retry is safe.
         return [_generate_from_results_worker(task) for task in task_inputs]
     with executor:
         # Once dispatch begins, an OSError may be a candidate's write failure;
         # retrying the whole batch would duplicate already completed outputs.
-        return list(executor.map(_generate_from_results_worker, task_inputs))
+        return list(_ordered_parallel_results(
+            executor, _generate_from_results_worker, task_inputs, max_pending=2 * effective_workers
+        ))
 
 
 def make(**kwargs):

@@ -110,6 +110,7 @@ def execute_namespace(args):
                 interlayer_distance=args.interlayer_distance,
                 vacuum=args.vacuum,
                 workers=args.workers,
+                parallel_backend=args.parallel_backend,
                 output_dir=args.output_dir,
             )
         if args.stage == "stack-search":

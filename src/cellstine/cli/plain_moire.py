@@ -164,6 +164,8 @@ def add_moire_group(groups: argparse._SubParsersAction[argparse.ArgumentParser])
         "the default keeps the longer input c vector",
     )
     moire_make.add_argument("--workers", type=int, default=1)
+    moire_make.add_argument("--parallel-backend", choices=("process", "thread"), default="process",
+                            help="concurrent build backend; process (default) or shared-memory threads")
     moire_make.add_argument("--output-dir", default=None)
 
     moire_translate = moire_sub.add_parser("shift", formatter_class=HelpFormatter, help="translate the upper layer in a stacked bilayer")

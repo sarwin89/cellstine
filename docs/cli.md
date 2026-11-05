@@ -137,3 +137,11 @@ copy/paste limitations; guided execution passes arguments directly.
 - `output/` stores generated structures, plots, site reports, and exported files.
 - `input/` is for user source structures.
 - `input/examples/` and `output/examples/` are tracked public examples.
+
+
+For concurrent bilayer calculation and structure writing, pass `moire build
+<results> --indexes 1-12 --workers 4 --parallel-backend thread`. The backend may
+be `process` (default) or `thread`; the default worker count remains 1. Worker
+count is capped to the selection size and pending tasks are bounded. Results
+retain requested order. See [build concurrency](moire-performance.md#concurrent-structure-builds)
+for script guards, native threads and partial-output failure behavior.

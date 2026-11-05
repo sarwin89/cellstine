@@ -2636,10 +2636,10 @@
       "qualified_name": "_workflow",
       "line": 27,
       "end_line": 33,
-      "module_sha256": "8cd7685bf58608ded533391df5326888fb05caea4fb92014227fd7bcf93a0e62",
+      "module_sha256": "268bc0109e3baade283881986b50f6d44e13711b343ec396adc3e03515b2fd35",
       "status": "reviewed—unchanged",
-      "reason": "Lazy class import mapping and relative package resolution preserve dependency-free parser startup.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete lazy workflow resolver preserves import_module package resolution and dispatch class lookup; imports occur on coordinator before pool dispatch.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/cli/main.py::__getattr__",
@@ -2647,10 +2647,10 @@
       "qualified_name": "__getattr__",
       "line": 36,
       "end_line": 43,
-      "module_sha256": "8cd7685bf58608ded533391df5326888fb05caea4fb92014227fd7bcf93a0e62",
+      "module_sha256": "268bc0109e3baade283881986b50f6d44e13711b343ec396adc3e03515b2fd35",
       "status": "reviewed—unchanged",
-      "reason": "Known workflows are cached on first module access; unknown names still raise AttributeError.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete lazy attribute compatibility path preserves module cache publication and unknown-name AttributeError; not called by bilayer workers.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/cli/main.py::_print_versions",
@@ -2658,10 +2658,10 @@
       "qualified_name": "_print_versions",
       "line": 46,
       "end_line": 53,
-      "module_sha256": "8cd7685bf58608ded533391df5326888fb05caea4fb92014227fd7bcf93a0e62",
+      "module_sha256": "268bc0109e3baade283881986b50f6d44e13711b343ec396adc3e03515b2fd35",
       "status": "reviewed—unchanged",
-      "reason": "Installed dependency reporting remains independent of changed output defaults.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete sorted dependency version reporting remains unchanged and serial; no concurrency interaction.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/cli/main.py::_print_result",
@@ -2669,43 +2669,43 @@
       "qualified_name": "_print_result",
       "line": 56,
       "end_line": 63,
-      "module_sha256": "8cd7685bf58608ded533391df5326888fb05caea4fb92014227fd7bcf93a0e62",
+      "module_sha256": "268bc0109e3baade283881986b50f6d44e13711b343ec396adc3e03515b2fd35",
       "status": "reviewed—unchanged",
-      "reason": "Shared result formatter renders artifact mappings dynamically, avoiding a JSON-only assumption.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete formatter and conditional print path remains unchanged and receives completed workflow results.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/cli/main.py::execute_namespace",
       "path": "src/cellstine/cli/main.py",
       "qualified_name": "execute_namespace",
       "line": 66,
-      "end_line": 475,
-      "module_sha256": "8cd7685bf58608ded533391df5326888fb05caea4fb92014227fd7bcf93a0e62",
+      "end_line": 476,
+      "module_sha256": "268bc0109e3baade283881986b50f6d44e13711b343ec396adc3e03515b2fd35",
       "status": "optimized—verified",
-      "reason": "Search already forwards parser format; new assembly forwarding reaches Molecule inherited assemble. All other workflow dispatch bodies preserve their arguments and control flow.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete body across all workflow groups inspected. Only bilayer build forwards new parser field; all preexisting scientific options/defaults and other stages preserved. Rich frontend delegates direct commands to the shared plain parser; guided build is parsed there and receives process default.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/cli/main.py::dispatch_namespace",
       "path": "src/cellstine/cli/main.py",
       "qualified_name": "dispatch_namespace",
-      "line": 478,
-      "end_line": 496,
-      "module_sha256": "8cd7685bf58608ded533391df5326888fb05caea4fb92014227fd7bcf93a0e62",
+      "line": 479,
+      "end_line": 497,
+      "module_sha256": "268bc0109e3baade283881986b50f6d44e13711b343ec396adc3e03515b2fd35",
       "status": "reviewed—unchanged",
-      "reason": "Version, group/stage guided fallback and finished-result rendering remain unchanged.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete version, guided-mode, and direct execution/report paths preserve control flow; parsed namespace reaches execute_namespace.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/cli/main.py::main",
       "path": "src/cellstine/cli/main.py",
       "qualified_name": "main",
-      "line": 499,
-      "end_line": 520,
-      "module_sha256": "8cd7685bf58608ded533391df5326888fb05caea4fb92014227fd7bcf93a0e62",
+      "line": 500,
+      "end_line": 521,
+      "module_sha256": "268bc0109e3baade283881986b50f6d44e13711b343ec396adc3e03515b2fd35",
       "status": "reviewed—unchanged",
-      "reason": "Plain/Rich frontend selection, removed-command error detection and ImportError fallback remain unchanged.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete argv filtering, legacy rejection, optional Rich import fallback and plain execution inspected; new flag passes unchanged through shared parser.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/cli/plain.py::build_parser",
@@ -2767,11 +2767,11 @@
       "path": "src/cellstine/cli/plain_moire.py",
       "qualified_name": "add_moire_group",
       "line": 20,
-      "end_line": 189,
-      "module_sha256": "f39f8e0e766591b09784f6a3f74e679cfef14a9f1d2e11d595ad83224ace2ca5",
+      "end_line": 191,
+      "module_sha256": "f3419709ef829de1f1582ee52061987de1dc647902d3edba936ac6a04087a8aa",
       "status": "optimized—verified",
-      "reason": "Only bilayer search format default/help changes to NPZ; explicit JSON/compressed choices, N-layer contracts and generation/view arguments remain intact.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete search/stack-search/stack-build/build/shift/view parser definitions inspected. Backend choices reject invalid CLI values; workers=1 and backend=process defaults retained. Added flag belongs only to bilayer build.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/cli/plain_surface.py::add_surface_group",
@@ -10686,78 +10686,89 @@
       "id": "src/cellstine/moire/builder/make.py::_limit_worker_threads",
       "path": "src/cellstine/moire/builder/make.py",
       "qualified_name": "_limit_worker_threads",
-      "line": 29,
-      "end_line": 33,
-      "module_sha256": "dd7ef40fbf16a3673bd72ae8136e4dcb776beb54e1fbcca4752cbfc5dc206b7c",
+      "line": 31,
+      "end_line": 35,
+      "module_sha256": "9dd4ba93b7d68fe434287872e3c5c40ba192bb7b61f7f77dcc2db507df961dab",
       "status": "reviewed—unchanged",
-      "reason": "Existing setdefault respects caller environment; initializer executes after imports, so cannot guarantee initialized native pools are capped.",
-      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete setdefault-only environment initializer inspected; remains process-only. Thread branch does not call it or mutate native-library configuration. Existing late-initializer limitation is documented.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/builder/make.py::_slug",
       "path": "src/cellstine/moire/builder/make.py",
       "qualified_name": "_slug",
-      "line": 36,
-      "end_line": 43,
-      "module_sha256": "dd7ef40fbf16a3673bd72ae8136e4dcb776beb54e1fbcca4752cbfc5dc206b7c",
+      "line": 38,
+      "end_line": 45,
+      "module_sha256": "9dd4ba93b7d68fe434287872e3c5c40ba192bb7b61f7f77dcc2db507df961dab",
       "status": "reviewed—unchanged",
-      "reason": "Filename sanitization retains Unicode alphanumerics, dash/underscore, edge stripping and structure fallback; no naming drift.",
-      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete local character sanitization preserves deterministic filenames without shared state.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/builder/make.py::_generate_from_results_worker",
       "path": "src/cellstine/moire/builder/make.py",
       "qualified_name": "_generate_from_results_worker",
-      "line": 46,
-      "end_line": 50,
-      "module_sha256": "dd7ef40fbf16a3673bd72ae8136e4dcb776beb54e1fbcca4752cbfc5dc206b7c",
+      "line": 48,
+      "end_line": 52,
+      "module_sha256": "9dd4ba93b7d68fe434287872e3c5c40ba192bb7b61f7f77dcc2db507df961dab",
       "status": "optimized—verified",
-      "reason": "Picklable selected-record/path/options tuple delegates module-level helper; no full document shipment or worker reread remains.",
-      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete top-level picklable worker unpacks one selected record and distinct options mapping and forwards without modification; same worker supports both executors.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/builder/make.py::generate_from_results",
       "path": "src/cellstine/moire/builder/make.py",
       "qualified_name": "generate_from_results",
-      "line": 53,
-      "end_line": 75,
-      "module_sha256": "dd7ef40fbf16a3673bd72ae8136e4dcb776beb54e1fbcca4752cbfc5dc206b7c",
+      "line": 55,
+      "end_line": 77,
+      "module_sha256": "9dd4ba93b7d68fe434287872e3c5c40ba192bb7b61f7f77dcc2db507df961dab",
       "status": "optimized—verified",
-      "reason": "Public single-candidate API still freshly validates and indexes the document for every direct call; delegates unchanged record-writing body with identical arguments and missing-index behavior.",
-      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete single-record path preserves result parsing, index mapping, missing-index behavior and scientific option forwarding; no new executor used.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/builder/make.py::_generate_from_record",
       "path": "src/cellstine/moire/builder/make.py",
       "qualified_name": "_generate_from_record",
-      "line": 78,
-      "end_line": 157,
-      "module_sha256": "dd7ef40fbf16a3673bd72ae8136e4dcb776beb54e1fbcca4752cbfc5dc206b7c",
+      "line": 80,
+      "end_line": 159,
+      "module_sha256": "9dd4ba93b7d68fe434287872e3c5c40ba192bb7b61f7f77dcc2db507df961dab",
       "status": "optimized—verified",
-      "reason": "Missing index fails before build/output, repeat resolution and shared report preserved; default reservation, explicit overwrite path, comment and MakeRun fields remain identical to moved body.",
-      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete geometry/build/report/write path inspected. Reads record fields only; generator allocates task-owned atoms/coordinates and POSCAR input records. Exclusive reserve_default_file uses xb per destination; each task owns its output handle. Geometry, tolerances, repeats, vacuum, contacts and provenance unchanged.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
+    },
+    {
+      "id": "src/cellstine/moire/builder/make.py::_ordered_parallel_results",
+      "path": "src/cellstine/moire/builder/make.py",
+      "qualified_name": "_ordered_parallel_results",
+      "line": 162,
+      "end_line": 179,
+      "module_sha256": "9dd4ba93b7d68fe434287872e3c5c40ba192bb7b61f7f77dcc2db507df961dab",
+      "status": "optimized—verified",
+      "reason": "Complete deque/iterator/finally body inspected. Initial islice caps futures at max_pending; each ordered result removes one before one replacement. Task generation and submission remain on coordinator. Submit/task/result exceptions unwind finally, cancel tracked outstanding futures, then owning context waits for active work. No replay/fallback after dispatch. Yield order follows selection order despite completion order.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/builder/make.py::generate_many_from_results",
       "path": "src/cellstine/moire/builder/make.py",
       "qualified_name": "generate_many_from_results",
-      "line": 160,
-      "end_line": 205,
-      "module_sha256": "dd7ef40fbf16a3673bd72ae8136e4dcb776beb54e1fbcca4752cbfc5dc206b7c",
+      "line": 182,
+      "end_line": 239,
+      "module_sha256": "9dd4ba93b7d68fe434287872e3c5c40ba192bb7b61f7f77dcc2db507df961dab",
       "status": "optimized—verified",
-      "reason": "Nonempty batch parses/indexes once, preserves converted index order/duplicates and single explicit path. Selected-record tasks retain late invalid-index errors; fallback surrounds only constructor, avoiding retry after task I/O failures. Dispatch/startup failures intentionally propagate.",
-      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete body inspected. Backend validation precedes any input/artifact access. Empty selection and single-worker/single-selection paths remain serial. Selection duplicates retained and candidate snapshot parsed once. Generator constructs distinct per-task option dictionaries lazily; candidate aliases are read only downstream. Effective worker cap=min(requested,selection length); queue window=2*effective_workers. Thread constructor omits initializer. Only construction OSError falls back before tasks consumed; later errors propagate.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/builder/make.py::make",
       "path": "src/cellstine/moire/builder/make.py",
       "qualified_name": "make",
-      "line": 208,
-      "end_line": 209,
-      "module_sha256": "dd7ef40fbf16a3673bd72ae8136e4dcb776beb54e1fbcca4752cbfc5dc206b7c",
+      "line": 242,
+      "end_line": 243,
+      "module_sha256": "9dd4ba93b7d68fe434287872e3c5c40ba192bb7b61f7f77dcc2db507df961dab",
       "status": "reviewed—unchanged",
-      "reason": "Thin kwargs alias retains ordered batch return semantics.",
-      "evidence": "docs/optimization/part-05e-builder-resources.md; independent whole-function review; 691 focused tests including46new cases; 3556fulltests/4skips; 277frozenPythonfiles; wheel/sdist/Twine,143runtimearchivebytes and3installedenvs; source-hashed production benchmark plus12-pair small-case investigation; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete compatibility alias forwards keyword arguments unchanged to batch API.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/builder/nlayer.py::_layer_atoms",
@@ -10831,10 +10842,10 @@
       "qualified_name": "_format_timing",
       "line": 23,
       "end_line": 26,
-      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
+      "module_sha256": "78e1951642af937f7847b07a5d01c99cc5ab84f6c9d134ca2b0487e41ad86e38",
       "status": "reviewed—unchanged",
-      "reason": "None and numeric elapsed-time formatting remain unchanged.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete timing formatter preserves None behavior and precision; no shared mutable state.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/moire.py::_progress_printer",
@@ -10842,10 +10853,10 @@
       "qualified_name": "_progress_printer",
       "line": 29,
       "end_line": 50,
-      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
+      "module_sha256": "78e1951642af937f7847b07a5d01c99cc5ab84f6c9d134ca2b0487e41ad86e38",
       "status": "reviewed—unchanged",
-      "reason": "Creates one private stage counter; output format/progress completion detection is unchanged.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete callback factory and closure inspected; private step dictionary belongs to each find invocation and is not used by make pool.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/moire.py::_progress_printer._print",
@@ -10853,10 +10864,10 @@
       "qualified_name": "_progress_printer._print",
       "line": 43,
       "end_line": 48,
-      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
+      "module_sha256": "78e1951642af937f7847b07a5d01c99cc5ab84f6c9d134ca2b0487e41ad86e38",
       "status": "reviewed—unchanged",
-      "reason": "Read/found/wrote completion prefixes still advance once, and actual write filenames now come from run_find.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete nested stage printer inspected; completion-prefix step counting and bar clamping unchanged; not invoked concurrently by new backend.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/moire.py::_measured",
@@ -10864,10 +10875,10 @@
       "qualified_name": "_measured",
       "line": 53,
       "end_line": 59,
-      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
+      "module_sha256": "78e1951642af937f7847b07a5d01c99cc5ab84f6c9d134ca2b0487e41ad86e38",
       "status": "reviewed—unchanged",
-      "reason": "Finite contact extraction with selected indices remains unchanged.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete finite-distance projection inspected; operates after batch completion on ordered MakeRun values.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/moire.py::_contact_summary",
@@ -10875,10 +10886,10 @@
       "qualified_name": "_contact_summary",
       "line": 62,
       "end_line": 97,
-      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
+      "module_sha256": "78e1951642af937f7847b07a5d01c99cc5ab84f6c9d134ca2b0487e41ad86e38",
       "status": "reviewed—unchanged",
-      "reason": "Per-structure contacts, whole-cell minimum and deduplicated warning summaries remain unchanged for existing list callers.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete contact minima, per-index summary and warning aggregation inspected. Existing duplicate-index summary-key behavior preserved; input is realized list returned after pool shutdown.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/moire.py::Moire.find",
@@ -10886,54 +10897,54 @@
       "qualified_name": "Moire.find",
       "line": 105,
       "end_line": 226,
-      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
+      "module_sha256": "78e1951642af937f7847b07a5d01c99cc5ab84f6c9d134ca2b0487e41ad86e38",
       "status": "optimized—verified",
-      "reason": "Shared NPZ default is normalized early, forwarded to run_find and exposed via correctly named artifact. Candidate limit, search parameters, timings, manifest and preview semantics remain unchanged.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete find workflow body inspected: format normalization, backend/run creation, scientific forwarding, manifests, timing, preview and result behavior unchanged; new pool confined to make.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/moire.py::Moire.make",
       "path": "src/cellstine/moire/moire.py",
       "qualified_name": "Moire.make",
       "line": 228,
-      "end_line": 299,
-      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
+      "end_line": 304,
+      "module_sha256": "78e1951642af937f7847b07a5d01c99cc5ab84f6c9d134ca2b0487e41ad86e38",
       "status": "optimized—verified",
-      "reason": "Manifest resolver already accepts NPZ and JSON; generation, workers, filenames, contact summaries and output geometry paths are unchanged.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete workflow body inspected. Backend validation before resolve/run/output reservation. New backend forwarded and recorded in manifest; scientific parameters retained. Output suffix renaming and manifest creation happen after pool context finishes, preserving private file ownership and ordered artifacts. Existing explicit-output multi-selection handling unchanged.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/moire.py::Moire.translate",
       "path": "src/cellstine/moire/moire.py",
       "qualified_name": "Moire.translate",
-      "line": 301,
-      "end_line": 354,
-      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
+      "line": 306,
+      "end_line": 359,
+      "module_sha256": "78e1951642af937f7847b07a5d01c99cc5ab84f6c9d134ca2b0487e41ad86e38",
       "status": "optimized—verified",
-      "reason": "Layer shift parameters, explicit/reserved output policy and returned provenance remain unchanged.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete shift workflow, path reservation, geometry arguments, manifests and results unchanged; does not use bilayer executor.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/moire.py::Moire.visualize",
       "path": "src/cellstine/moire/moire.py",
       "qualified_name": "Moire.visualize",
-      "line": 356,
-      "end_line": 385,
-      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
+      "line": 361,
+      "end_line": 390,
+      "module_sha256": "78e1951642af937f7847b07a5d01c99cc5ab84f6c9d134ca2b0487e41ad86e38",
       "status": "reviewed—unchanged",
-      "reason": "Forwards either raw file or manifest into common Visualize workflow with unchanged plotting parameters.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete delegated visualizer setup and options preserved; no new executor or changed state.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/moire.py::Moire.resolve_results_file",
       "path": "src/cellstine/moire/moire.py",
       "qualified_name": "Moire.resolve_results_file",
-      "line": 387,
-      "end_line": 400,
-      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
+      "line": 392,
+      "end_line": 405,
+      "module_sha256": "78e1951642af937f7847b07a5d01c99cc5ab84f6c9d134ca2b0487e41ad86e38",
       "status": "reviewed—unchanged",
-      "reason": "Manifest key iteration accepts the callers NPZ key without aliasing archives under results_json; direct paths are preserved.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Complete direct-path/manifest artifact resolution and missing-artifact error inspected; both results_json/results_npz remain accepted by make.",
+      "evidence": "docs/optimization/part-05g-bounded-concurrency.md; complete-body independent review;93focused +3681full/4skip/81warnings;283Pythonfreeze; wheel/Twine/144runtimebytes and2installedenvironments; exact baseline/final scientific signatures and 3repeat localworker timings; finalsdist and exact-headCI/artifact gate before next production batch"
     },
     {
       "id": "src/cellstine/moire/search/find.py::FindRun.<lambda>@50:56",
