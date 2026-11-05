@@ -77,7 +77,7 @@ def _run(workspace, top_poscar, bottom_poscar, max_length):
         bottom_strain=0.01,
         preview_limit=0,
     )
-    results = found.artifacts["results_json"]
+    results = found.artifacts["results_npz"]
     _, _, candidates, _ = generator.parse_results(results)
     measured = []
     for record in candidates:

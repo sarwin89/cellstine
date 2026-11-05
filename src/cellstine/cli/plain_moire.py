@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 
-from ..core.constants import DEFAULT_SYMMETRY_TOLERANCE
+from ..core.constants import DEFAULT_RESULTS_FORMAT, DEFAULT_SYMMETRY_TOLERANCE
 from .argtypes import (
     HelpFormatter,
     add_legacy_moire_find_flag,
@@ -44,7 +44,7 @@ def add_moire_group(groups: argparse._SubParsersAction[argparse.ArgumentParser])
     moire_find.add_argument("--min-length", type=parse_positive_float, default=None, help="minimum in-plane supercell length in angstrom")
     moire_find.add_argument("--atoms", dest="max_atoms", type=int, default=None, help="maximum atoms allowed in a candidate supercell")
     moire_find.add_argument("--max-candidates", type=parse_positive_int, default=None, help="optional result shortlist size; keeps the whole Pareto front; default saves all accepted candidates")
-    moire_find.add_argument("--results-format", choices=("json", "npz", "npz-compressed"), default="json", help="saved candidates: readable JSON (default), fast NPZ, or lossless compressed NPZ")
+    moire_find.add_argument("--results-format", choices=("json", "npz", "npz-compressed"), default=DEFAULT_RESULTS_FORMAT, help="saved candidates: fast NPZ (default), readable JSON, or lossless compressed NPZ")
     moire_find.add_argument("--max-cell-aspect-ratio", type=parse_positive_float, default=12.0, help="maximum in-plane supercell aspect ratio")
     moire_find.add_argument("--twist", default=None, help="twist-angle window in degrees, e.g. 9:14, :14, or 9:")
     moire_find.add_argument("--min-cell-angle", type=parse_positive_float, default=25.0, help="minimum in-plane supercell angle in degrees")

@@ -225,6 +225,7 @@ def execute_namespace(args):
                 top_strain=args.top_strain,
                 bottom_strain=args.bottom_strain,
                 preview_limit=args.preview_limit,
+                results_format=args.results_format,
             )
         if args.stage == "kpath":
             spacing = args.spacing

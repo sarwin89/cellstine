@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 
+from ..core.constants import DEFAULT_RESULTS_FORMAT
 from .argtypes import (
     HelpFormatter,
     parse_float_vector,
@@ -77,6 +78,7 @@ def add_adsorbate_group(groups: argparse._SubParsersAction[argparse.ArgumentPars
     ads_assemble.add_argument("--length", dest="max_length", type=parse_positive_float, required=True, help="maximum in-plane supercell length in angstrom")
     ads_assemble.add_argument("--top-strain", type=parse_nonnegative_float, required=True, help="target molecular-lattice principal logarithmic strain budget as a fraction")
     ads_assemble.add_argument("--bottom-strain", type=parse_nonnegative_float, required=True, help="substrate principal logarithmic strain budget as a fraction")
+    ads_assemble.add_argument("--results-format", choices=("json", "npz", "npz-compressed"), default=DEFAULT_RESULTS_FORMAT, help="saved candidates: fast NPZ (default), readable JSON, or lossless compressed NPZ")
     ads_assemble.add_argument("--preview-limit", type=int, default=10, help="number of lowest-strain candidates to print after the search; use 0 to hide")
 
     ads_path = adsorbate_sub.add_parser(

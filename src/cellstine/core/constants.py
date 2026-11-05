@@ -16,11 +16,16 @@ from __future__ import annotations
 __all__ = [
     "DEFAULT_CELL_LIMIT",
     "DEFAULT_MATCH_LIMIT",
+    "DEFAULT_RESULTS_FORMAT",
     "DEFAULT_SYMMETRY_TOLERANCE",
     "DIRECTION_HELP",
     "LAYER_TOLERANCE",
     "LAYER_SELECTION_HELP",
 ]
+
+
+#: Portable bilayer search results; JSON remains an explicit compatibility choice.
+DEFAULT_RESULTS_FORMAT = "npz"
 
 
 #: The tolerance the planar symmetry search uses to decide whether two sites

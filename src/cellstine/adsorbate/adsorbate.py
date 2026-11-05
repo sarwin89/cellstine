@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Sequence
 
 from ..core.base import Base, run_output_suffix
+from ..core.constants import DEFAULT_RESULTS_FORMAT
 from ..core.outputs import reserve_default_file
 from ..core.lattice import build_target_lattice
 from ..core.naming import safe_token
@@ -19,6 +20,7 @@ from ..io import native as io_mod
 from ..io.converters import StructureConverter
 from ..io.vasp import VaspIO
 from ..moire.search.find import run_find
+from ..moire.search.results import normalize_results_format
 from .placement.operations import place_molecule_on_site, transform_top_molecule
 
 
@@ -360,7 +362,11 @@ class Adsorbate(MigrationPathMixin, Base):
         max_atoms: int | None = 2000,
         output_root: str | None = None,
         preview_limit: int = 10,
+        results_format: str = DEFAULT_RESULTS_FORMAT,
     ) -> CommandResult:
+        """Match a molecular assembly lattice; save NPZ or explicitly chosen JSON."""
+        results_format = normalize_results_format(results_format)
+        result_artifact = "results_json" if results_format == "json" else "results_npz"
         backend = self.choose_backend(feature="adsorbate.assemble")
         run_id, run_dir = self.create_run_dir("assemble", Path(substrate_poscar).stem)
         substrate = self.converter.read(substrate_poscar)
@@ -383,6 +389,7 @@ class Adsorbate(MigrationPathMixin, Base):
             bottom_strain=float(bottom_strain),
             max_atoms=max_atoms,
             output_root=str(output_root or run_dir),
+            results_format=results_format,
         )
         manifest_path = self.write_manifest(
             stage="assemble",
@@ -397,15 +404,16 @@ class Adsorbate(MigrationPathMixin, Base):
                 "max_length": float(max_length),
                 "top_strain": float(top_strain),
                 "bottom_strain": float(bottom_strain),
+                "results_format": results_format,
             },
-            artifacts={"target_poscar": target_path, "results_json": run.result_path},
+            artifacts={"target_poscar": target_path, result_artifact: run.result_path},
             summary={"candidate_count": len(run.candidates)},
         )
         preview = format_bilayer_candidates(run.candidates, limit=int(preview_limit)) if int(preview_limit) > 0 else ""
         return self.result(
             manifest_path=manifest_path,
             run_dir=run_dir,
-            artifacts={"target_poscar": target_path, "results_json": run.result_path},
+            artifacts={"target_poscar": target_path, result_artifact: run.result_path},
             summary={"candidate_count": len(run.candidates)},
             payload={"candidate_preview": preview},
         )

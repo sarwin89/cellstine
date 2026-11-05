@@ -65,7 +65,7 @@ Or run a workflow directly:
 
 ```bash
 cellstine moire search input/examples/mos2.vasp input/examples/mos2.vasp --length 20 --strain 0.01
-cellstine moire build runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
+cellstine moire build runs/moire/<run-id>/results.npz --indexes 1 --interlayer-distance 3.35
 cellstine surface build input/examples/Au_Bulk.vasp --miller 111 --layers 4 --vacuum 15
 cellstine surface sites output/examples/Au_Bulk_111_surface.vasp
 cellstine symmetry analyse input/examples/Au_Bulk.vasp
@@ -90,8 +90,11 @@ runs/     Manifests and intermediate workflow artifacts
 
 Generated files outside the `examples/` folders are ignored by Git.
 
-The native moire search writes schema-versioned `results.json`; previews,
-builders, and visualizers consume that file rather than positional tables.
+The native moire search writes portable `results.npz` by default; previews,
+builders, and visualizers accept the archive or its manifest. NumPy is already
+required, and archives never use pickle. Choose `--results-format json` for
+readable `results.json` and compatibility with JSON-only tools. Both preserve
+the same validated result document.
 Here **strain** means principal logarithmic strain, `h = log(lambda)`, for a
 principal stretch `lambda`. The accepted relative principal strain is bounded
 by the sum of the top and bottom strain budgets and is shared optimally between

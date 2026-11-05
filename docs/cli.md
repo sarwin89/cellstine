@@ -72,22 +72,33 @@ cellstine moire search TOP.vasp BOTTOM.vasp --length 30 --rigid --twist 9:14 --a
 Choose exactly one strain mode: `--rigid`, `--strain E`, or both
 `--top-strain` and `--bottom-strain`.
 
-For large bilayer result sets, select an optional portable NumPy archive:
+Bilayer search writes a portable NumPy archive by default:
 
 ```bash
-cellstine moire search TOP.vasp BOTTOM.vasp --length 30 --strain 0.01 --results-format npz
+cellstine moire search TOP.vasp BOTTOM.vasp --length 30 --strain 0.01
+cellstine moire search TOP.vasp BOTTOM.vasp --length 30 --strain 0.01 --results-format json
 cellstine moire search TOP.vasp BOTTOM.vasp --length 30 --strain 0.01 --results-format npz-compressed
 ```
 
-JSON remains the default. Both archive options write `results.npz`; compression
-can reduce disk usage at extra encoding cost. `moire build` and `moire view`
-accept these results directly or through the run manifest. Advanced guided
-search exposes the same choice. Python callers use `Moire.find(...,
-results_format="npz")` or `"npz-compressed"`. These versioned archives preserve
-the JSON result document and never use pickle; use CELLSTINE's `read_results`
-to reconstruct it. Small results can remain faster as JSON. See the
-[format measurements and compatibility limits](optimization/part-05d-portable-results.md).
-N-layer stack results retain their separate experimental JSON format.
+The default file/artifact is `results.npz` / `results_npz`. Scripts that require
+`results.json` / `results_json` must select `--results-format json`. Explicit
+`--results-format npz` remains accepted. Compressed NPZ also writes
+`results.npz`, trading encoding work for disk space. Molecular assembly exposes
+the same option through `adsorbate assemble`.
+
+`moire build` and `moire view` accept either format directly or through the run
+manifest. Advanced guided search offers NPZ first and forwards an explicit JSON
+choice. Python callers use `Moire.find(..., results_format="json")` or the same
+keyword on `run_find` and `Adsorbate.assemble`; omitting it now selects NPZ.
+These versioned archives preserve the validated JSON v2 result document and
+never use pickle; CELLSTINE's `read_results` reconstructs that document. NumPy is
+already a required dependency. Small results can remain faster as JSON; see the
+[production measurements](optimization/part-05d-portable-results.md).
+
+N-layer top-level results retain their separate experimental JSON schema;
+intermediate bilayer pair results use NPZ. Interface v1 match records retain
+actual JSON files for their existing `results_json` pointers. Existing JSON
+inputs remain readable. No positional `.dat` compatibility is introduced.
 
 ## Migration table
 

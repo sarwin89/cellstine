@@ -156,6 +156,7 @@ def search_slab_pair(
         min_cell_angle_deg=float(request.min_cell_angle_deg),
         max_cell_angle_deg=float(request.max_cell_angle_deg),
         output_root=str(results_root),
+        results_format="json",  # The v1 match schema names this pointer results_json.
     )
     return run.result_path, list(run.candidates)
 

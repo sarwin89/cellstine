@@ -11,6 +11,7 @@ from typing import Any, Callable
 import numpy as np
 
 from ...core import symmetry3d
+from ...core.constants import DEFAULT_RESULTS_FORMAT
 from ...core.species import expand_species, group_species
 from ...core.symmetry2d import (
     DEFAULT_SYMMETRY_TOLERANCE,
@@ -55,7 +56,7 @@ def _slug(value: str) -> str:
 
 
 def _make_result_path(
-    output_root: str, bottom_path: str, top_path: str, *, results_format: str = "json"
+    output_root: str, bottom_path: str, top_path: str, *, results_format: str = DEFAULT_RESULTS_FORMAT
 ) -> tuple[str, Path]:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     run_id = (
@@ -175,7 +176,7 @@ def run_find(
     symmetry_tolerance: float = DEFAULT_SYMMETRY_TOLERANCE,
     output_root: str = "runs",
     progress_callback: Callable[[str, str], None] | None = None,
-    results_format: str = "json",
+    results_format: str = DEFAULT_RESULTS_FORMAT,
 ) -> FindRun:
     """Read two POSCARs, run one native search, and persist validated results.
 
@@ -195,8 +196,9 @@ def run_find(
     ``metadata.bottom_layer_index``.  ``reduce_layers=False`` searches the cells
     exactly as given.
 
-    ``results_format`` defaults to readable JSON v2. Explicit ``npz`` and
-    ``npz-compressed`` choices preserve the same document in a no-pickle archive.
+    ``results_format`` defaults to a portable NPZ archive. ``npz-compressed``
+    adds lossless compression; ``json`` writes readable JSON v2. All choices
+    preserve the validated document, and archive loading never uses pickle.
 
     ``max_candidates`` bounds how many candidates reach the results file: the
     whole Pareto front of size against strain is always kept and the remaining
@@ -349,8 +351,7 @@ def run_find(
         result_path=result_path.resolve(),
         result=result,
         candidates=list(document["candidates"]),
-        parameters=(dict(document["search"]) if results_format == "json"
-                    else {**document["search"], "results_format": results_format}),
+        parameters={**document["search"], "results_format": results_format},
         timings=timings,
         layer_index={"top": int(top_layer_index), "bottom": int(bottom_layer_index)},
     )

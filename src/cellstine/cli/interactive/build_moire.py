@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from ...core.constants import DEFAULT_RESULTS_FORMAT
 from ..argtypes import parse_float_list, parse_float_vector, parse_index_spec
 from .prompts import (
     INPUT_DIR,
@@ -73,16 +74,17 @@ def _build_moire_find() -> list[str]:
         preview_limit = _prompt_int_range(
             "How many ranked candidates should be shown after the search? (0 hides the preview)", 10, 0, 50
         )
+        format_options = [
+            {"key": "npz", "label": "NPZ (faster for large searches)", "hint": "Default. Build and plot with CELLSTINE as usual."},
+            {"key": "json", "label": "JSON (readable)", "hint": "Choose this for tools that require JSON."},
+            {"key": "npz-compressed", "label": "Compressed NPZ (smaller files)", "hint": "Lossless compression trades some write time for disk space."},
+        ]
         results_format = _choice(
-            "Saved results format",
-            [
-                {"key": "json", "label": "JSON (readable)", "hint": "Default. Existing JSON tools can inspect the file."},
-                {"key": "npz", "label": "NPZ (faster for large searches)", "hint": "Numerical archive; build and plot with CELLSTINE as usual."},
-                {"key": "npz-compressed", "label": "Compressed NPZ (smaller files)", "hint": "Lossless compression trades some write time for disk space."},
-            ],
-            default=1,
+            "Saved results format", format_options,
+            default=next(index for index, option in enumerate(format_options, 1)
+                         if option["key"] == DEFAULT_RESULTS_FORMAT),
         )
-        if results_format != "json":
+        if results_format != DEFAULT_RESULTS_FORMAT:
             argv.extend(["--results-format", results_format])
     elif rigid:
         # Keep the previous guided rigid-search default when advanced questions

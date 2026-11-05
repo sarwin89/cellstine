@@ -1,4 +1,4 @@
-"""Opt-in archives work through CLI, manifests and scientific consumers."""
+"""Result format choices work through CLI, manifests and scientific consumers."""
 
 from pathlib import Path
 
@@ -33,7 +33,7 @@ def test_cli_dispatch_forwards_result_format(monkeypatch, kind):
 
     monkeypatch.setattr(main, "_workflow", lambda _: Workflow)
     base = ["moire", "search", "top.vasp", "bottom.vasp", "--length", "20", "--rigid"]
-    assert build_parser().parse_args(base).results_format == "json"
+    assert build_parser().parse_args(base).results_format == "npz"
     main.execute_namespace(build_parser().parse_args(base + ["--results-format", kind]))
     assert calls[0]["results_format"] == kind
 

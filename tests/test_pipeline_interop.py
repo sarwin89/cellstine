@@ -20,9 +20,11 @@ import json
 import math
 from pathlib import Path
 
+
 import numpy as np
 import pytest
 
+from cellstine.moire.search.results import read_results
 from cellstine.cli.main import execute_namespace
 from cellstine.cli.parsers import build_parser
 from cellstine.core.geometry import pairwise_minimum_image_distances
@@ -211,8 +213,8 @@ def test_a_moire_bilayer_is_accepted_by_the_defect_and_adsorbate_stages(graphene
         "moire", "search", graphene, hbn, "--length", "8",
         "--strain", "0.02", "--preview-limit", "0",
     )
-    results_path = Path(found.artifacts["results_json"])
-    document = json.loads(results_path.read_text())
+    results_path = Path(found.artifacts["results_npz"])
+    document = read_results(results_path)
     assert document["candidates"]
 
     made = run_cli(

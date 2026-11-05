@@ -96,10 +96,13 @@ Every reference angle is there, each with its 60-degree partner, and every
 strain is exactly zero. Build the one you want and inspect its sites:
 
 ```console
-$ cellstine moire build runs/moire/find_*/results.json \
+$ cellstine moire build runs/moire/find_*/results.npz \
       --indexes 3 --interlayer-distance 3.1 --output-dir out42
 $ cellstine defect analyse out42/stack_idx003_*.vasp --structure-kind bulk
 ```
+
+The default is NPZ. Add `--results-format json` to the search for readable
+`results.json`; build and view accept either format or a run manifest.
 
 ```text
 Atomic planes (height along the surface normal, atoms, and how many inequivalent sites each plane holds)

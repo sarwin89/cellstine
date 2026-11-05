@@ -1,6 +1,6 @@
 # Part03g: reciprocal geometry and path resources
 
-Base427e2d5d6bd8cbec41a8453c53a1fe1f2b964b4f passed all16 exact-head CI41787883849 jobs. Downloaded coverage13302931287 SHA256e78173b1a7de0f72ab8504e8fa89ce46159b5e05328cb8e3e8d892d712eb1c05 has verified head/module/statement sets; only two already-investigated path-display fallback statements differ from local coverage, with identical covered branches. Local full/package/installed gates passed and67 individually reasoned reviews are promoted. The batch is uncommitted; scoped dev commit/push and exact-head16-job CI/artifact checks remain next. No release or package publication is authorized.
+Base427e2d5d6bd8cbec41a8453c53a1fe1f2b964b4f passed all16 exact-head CI41787883849 jobs. Downloaded coverage13302931287 SHA256e78173b1a7de0f72ab8504e8fa89ce46159b5e05328cb8e3e8d892d712eb1c05 has verified head/module/statement sets; only two already-investigated path-display fallback statements differ from local coverage, with identical covered branches. Local full/package/installed gates passed and67 individually reasoned reviews are promoted. Commit1e01173aa2725431d035d8ecfdcc519fc529ab11 is pushed to dev; all16 exact-head CI41820006659 jobs passed. Downloaded coverage13316437813 ZIP SHA256d1564189d31d0adb3c7f1683b3c8d546d10e8ec489944eef7fd2136b3cfb8db0, head/module/statement sets verified; only known prompts.py501-502 fallback adds two CI statements without branch delta. No release or package publication is authorized.
 
 ## Behavior and invariants
 

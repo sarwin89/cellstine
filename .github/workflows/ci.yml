@@ -90,6 +90,7 @@ jobs:
           tests/test_moire_builder_resources.py
           tests/test_symmetry_resources.py
           tests/test_reciprocal_path_resources.py
+          tests/test_moire_npz_defaults.py
           tests/test_saved_preview_resources.py -q
 
   portable_results:
@@ -115,7 +116,7 @@ jobs:
       - name: Install core package and portable result dependencies
         run: python -m pip install -e . "${{ matrix.runtime.numpy }}" pytest
       - name: Check archive and consumer portability
-        run: python -m pytest -q tests/test_moire_npz_persistence.py tests/test_moire_result_formats.py
+        run: python -m pytest -q tests/test_moire_npz_persistence.py tests/test_moire_result_formats.py tests/test_moire_npz_defaults.py
 
   package:
     name: Package build

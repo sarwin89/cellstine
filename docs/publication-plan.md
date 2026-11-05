@@ -16,6 +16,12 @@ The user-authorized [portable I/O follow-up](optimization/portable-io-options.md
 
 Read-only public metadata check on 2026-10-30: `https://pypi.org/pypi/cellstine/json` returned HTTP 404. No public version history was read back. This does not establish project-name availability or maintainer access, and no account or publisher configuration was changed. If a new project is required, PyPI documents a [pending trusted publisher](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/); configuring one does not reserve the name, so availability must still be checked at the later authorized publication step.
 
+The2026-11-05 user-authorized NPZ default changes the default bilayer and
+assembly filename/artifact to `results.npz`/`results_npz`. Preserve explicit JSON
+exports and old JSON readers, document this migration, and reassess release
+versioning against scripts that hardcode the former default. Do not label this
+as an unchanged default or publish without the later explicit instruction.
+
 ## Artifact validation
 
 Build fresh wheel and source distribution from the frozen candidate; keep release artifacts separate from prior local builds:

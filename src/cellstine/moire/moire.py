@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Sequence
 
 from ..core.base import Base, run_output_suffix
+from ..core.constants import DEFAULT_RESULTS_FORMAT
 from ..core.outputs import reserve_default_directory, reserve_default_file
 from ..core.layers import shift_top_layer
 from ..core.models import CommandResult
@@ -123,7 +124,7 @@ class Moire(Base):
         symmetry_tolerance: float = DEFAULT_SYMMETRY_TOLERANCE,
         preview_limit: int = 10,
         progress: bool = False,
-        results_format: str = "json",
+        results_format: str = DEFAULT_RESULTS_FORMAT,
     ) -> CommandResult:
         """Search one bilayer for commensurate supercells and record the best.
 
@@ -138,9 +139,10 @@ class Moire(Base):
         the reported matrices refer to.  ``reduce_layers=False`` keeps the cells
         exactly as they were given.
 
-        ``results_format`` defaults to ``json``. ``npz`` stores numerical
+        ``results_format`` defaults to ``npz``, which stores numerical
         columns without text conversion; ``npz-compressed`` adds lossless ZIP
         compression. Both remain readable by the build/preview/plot workflows.
+        Choose ``json`` for the readable legacy file and results_json artifact.
         """
         total_start = time.perf_counter()
         results_format = normalize_results_format(results_format)

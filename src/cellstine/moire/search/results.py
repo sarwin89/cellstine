@@ -24,7 +24,7 @@ _EPS = float(np.finfo(float).eps)
 
 
 def normalize_results_format(value: str) -> str:
-    """Normalize an explicit output choice without changing the JSON default."""
+    """Normalize an explicit output choice without inferring it from a filename."""
     if isinstance(value, str):
         normalized = value.strip().lower()
         if normalized in ("json", "npz", "npz-compressed"):

@@ -6,23 +6,25 @@ matrices, not an angle swept by the user.
 
 ## Native workflow
 
-Run a bounded search and then build candidates from its JSON:
+Run a bounded search and then build candidates from its saved results:
 
 ```bash
 cellstine moire search TOP.vasp BOTTOM.vasp --length 20 --strain 0.01
-cellstine moire build runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
+cellstine moire build runs/moire/<run-id>/results.npz --indexes 1 --interlayer-distance 3.35
 ```
 
 Candidate selection is spelled the same way everywhere: `build`,
 `stack-build`, and `view` all accept either `--indexes` or `--indices`, with
 comma-separated values and ranges such as `1,3-5`.
 
-The result is schema `cellstine.moire.gram`, version 1, in `results.json`.
+The default `results.npz` archive preserves the validated
+`cellstine.moire.gram` version2 document. Select `--results-format json` for
+readable `results.json`, or `--results-format npz-compressed` for compression.
 Previews, the builder, and both visualization paths use the same validated
 central reader. Legacy positional `.dat` input is rejected with an instruction
 to rerun native `moire search`.
 
-The JSON records the top and bottom integer matrices, their Gram triples, angle
+The reconstructed result document records the top and bottom integer matrices, their Gram triples, angle
 in degrees, relative principal strain pair, strain budgets and sharing fraction,
 layer and total atom counts, rank and Pareto flag, Löwner certification,
 recorded affine maps, shared lattice, and search metadata. No reader depends on
@@ -45,7 +47,7 @@ Two more modules carry the stages built on top of that pipeline:
 
 | module | contents |
 | --- | --- |
-| `find.py` | the `moire search` stage: reading the layers, detecting and idealising their symmetry, running one search, writing `results.json` |
+| `find.py` | the `moire search` stage: reading the layers, detecting and idealising their symmetry, running one search, writing `results.npz` |
 | `nlayer.py` | the `moire stack-search` stage: matching every upper layer against a rigid base layer and intersecting the per-layer base supercells |
 
 The older coincidence-lattice engine that swept twist angles has been removed;
@@ -105,7 +107,7 @@ is applied after folding and before ranking. It therefore returns exactly the
 candidates the unrestricted search would have reported inside the window --
 the same integer matrices and the same angles -- rather than steering the
 enumeration. Either bound may be given alone. Both are recorded in
-`results.json` as `search.min_twist_angle_deg` and `search.max_twist_angle_deg`,
+`results.npz` as `search.min_twist_angle_deg` and `search.max_twist_angle_deg`,
 which are `null` when no window was asked for.
 
 `--symmetric` is a restricted square/hexagonal symmetry-preserving family. Both
@@ -157,7 +159,7 @@ g_sym = (1 / |G|) * sum_G  G.T @ g @ G
 ```
 
 which is the closest invariant metric, and the basis realising it is chosen by
-orthogonal Procrustes so the layer is not rotated. `results.json` records
+orthogonal Procrustes so the layer is not rotated. `results.npz` records
 `metadata.symmetry_tolerance` together with `metadata.top_idealisation` and
 `metadata.bottom_idealisation`, the largest relative change made to either
 metric, so the size of the correction is always visible.
@@ -253,6 +255,6 @@ timings at three increasing length bounds, and treats speed numbers as
 host-dependent measurements rather than fixed performance assertions.
 
 The guided interface remains a simple launcher over the same native backend.
-Its preview and static/interactive visualizations read `results.json`, show
+Its preview and static/interactive visualizations read `results.npz`, show
 angles in degrees, and use the terms top strain, bottom strain, and relative
 principal strain.

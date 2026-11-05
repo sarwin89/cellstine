@@ -12,10 +12,13 @@ shared optimally between the layers. A representative native workflow is:
 
 ```bash
 cellstine moire search input/examples/mos2.vasp input/examples/mos2.vasp --length 20 --strain 0.01 --progress
-cellstine moire build runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
+cellstine moire build runs/moire/<run-id>/results.npz --indexes 1 --interlayer-distance 3.35
 ```
 
-The finder writes schema-versioned `results.json`. `--symmetric` requests a
+The default is NPZ. Add `--results-format json` to the search for readable
+`results.json`; build and view accept either format or a run manifest.
+
+The finder writes portable `results.npz` by default. `--symmetric` requests a
 restricted square/hexagonal family and falls back to the general search when it
 is inapplicable. Experimental N-layer commands are exposed as
 `moire stack-search` and `moire stack-build`, but performance claims here are

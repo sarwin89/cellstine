@@ -874,78 +874,78 @@
       "id": "src/cellstine/adsorbate/adsorbate.py::_contact_summary",
       "path": "src/cellstine/adsorbate/adsorbate.py",
       "qualified_name": "_contact_summary",
-      "line": 25,
-      "end_line": 47,
-      "module_sha256": "f4424d69a3287069e13831a37e24721c561d1b2f58406e37fa6c786828464de1",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 27,
+      "end_line": 49,
+      "module_sha256": "b1c3450b127ef9e4541cbd29754ac18d76ad66bee5a055821127db8b22ae6b59",
+      "status": "reviewed—unchanged",
+      "reason": "Finite molecule/substrate and periodic-image contacts and warning projection remain independent of result persistence.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/adsorbate/adsorbate.py::Adsorbate.__init__",
       "path": "src/cellstine/adsorbate/adsorbate.py",
       "qualified_name": "Adsorbate.__init__",
-      "line": 60,
-      "end_line": 63,
-      "module_sha256": "f4424d69a3287069e13831a37e24721c561d1b2f58406e37fa6c786828464de1",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 62,
+      "end_line": 65,
+      "module_sha256": "b1c3450b127ef9e4541cbd29754ac18d76ad66bee5a055821127db8b22ae6b59",
+      "status": "reviewed—unchanged",
+      "reason": "Superclass initialization and converter/VASP adapter construction remain unchanged and preserve workflow inheritance.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/adsorbate/adsorbate.py::Adsorbate._resolve_substrate",
       "path": "src/cellstine/adsorbate/adsorbate.py",
       "qualified_name": "Adsorbate._resolve_substrate",
-      "line": 65,
-      "end_line": 104,
-      "module_sha256": "f4424d69a3287069e13831a37e24721c561d1b2f58406e37fa6c786828464de1",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 67,
+      "end_line": 106,
+      "module_sha256": "b1c3450b127ef9e4541cbd29754ac18d76ad66bee5a055821127db8b22ae6b59",
+      "status": "reviewed—unchanged",
+      "reason": "Existing slab expansion versus bulk Surface dispatch preserves repetitions, geometry arguments and provenance.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/adsorbate/adsorbate.py::Adsorbate._expand_slab_substrate",
       "path": "src/cellstine/adsorbate/adsorbate.py",
       "qualified_name": "Adsorbate._expand_slab_substrate",
-      "line": 106,
-      "end_line": 159,
-      "module_sha256": "f4424d69a3287069e13831a37e24721c561d1b2f58406e37fa6c786828464de1",
+      "line": 108,
+      "end_line": 161,
+      "module_sha256": "b1c3450b127ef9e4541cbd29754ac18d76ad66bee5a055821127db8b22ae6b59",
       "status": "optimized—verified",
-      "reason": "Reserves the shared default expanded substrate only when no owned run directory was supplied; preserves repeat/matrix construction, metadata and internal run filenames; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "In-plane repeats/matrix application, reserved output and selective-flag preservation do not depend on bilayer result encoding.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/adsorbate/adsorbate.py::Adsorbate.place",
       "path": "src/cellstine/adsorbate/adsorbate.py",
       "qualified_name": "Adsorbate.place",
-      "line": 161,
-      "end_line": 278,
-      "module_sha256": "f4424d69a3287069e13831a37e24721c561d1b2f58406e37fa6c786828464de1",
+      "line": 163,
+      "end_line": 280,
+      "module_sha256": "b1c3450b127ef9e4541cbd29754ac18d76ad66bee5a055821127db8b22ae6b59",
       "status": "optimized—verified",
-      "reason": "Reserves actual default POSCAR before delegation and propagates selected writer path to artifacts/results; preserves site, molecule, substrate, contact and explicit-file behavior; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Molecule conversion, substrate resolution, placement arguments and contact/manifest outputs remain unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/adsorbate/adsorbate.py::Adsorbate.move",
       "path": "src/cellstine/adsorbate/adsorbate.py",
       "qualified_name": "Adsorbate.move",
-      "line": 280,
-      "end_line": 348,
-      "module_sha256": "f4424d69a3287069e13831a37e24721c561d1b2f58406e37fa6c786828464de1",
+      "line": 282,
+      "end_line": 350,
+      "module_sha256": "b1c3450b127ef9e4541cbd29754ac18d76ad66bee5a055821127db8b22ae6b59",
       "status": "optimized—verified",
-      "reason": "Reserves actual default movement output; retains target-token precedence, transforms/vacuum/contacts and selected-path manifests; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Coordinate/rotation forwarding, reserved destination and contact/vacuum reporting are unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/adsorbate/adsorbate.py::Adsorbate.assemble",
       "path": "src/cellstine/adsorbate/adsorbate.py",
       "qualified_name": "Adsorbate.assemble",
-      "line": 350,
-      "end_line": 411,
-      "module_sha256": "f4424d69a3287069e13831a37e24721c561d1b2f58406e37fa6c786828464de1",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 352,
+      "end_line": 419,
+      "module_sha256": "b1c3450b127ef9e4541cbd29754ac18d76ad66bee5a055821127db8b22ae6b59",
+      "status": "optimized—verified",
+      "reason": "Normalizes format before side effects, forwards it to run_find, and consistently selects NPZ/JSON artifact and manifest parameter without changing target geometry.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/adsorbate/assemble.py::assemble",
@@ -1699,78 +1699,78 @@
       "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_find",
       "path": "src/cellstine/cli/interactive/build_moire.py",
       "qualified_name": "_build_moire_find",
-      "line": 27,
-      "end_line": 92,
-      "module_sha256": "bc041cf0b54d7c7b87733454ea9f948177d547cf0920d3ca12dd6247d666be0d",
+      "line": 28,
+      "end_line": 94,
+      "module_sha256": "bf2af17b0ff67e64a63aeed90747a614591bc997a73dcfc41ba5d269c42706e3",
       "status": "optimized—verified",
-      "reason": "Reviewed all rigid/shared/separate strain and advanced branches. Choice is advanced-only with JSON first/default; only NPZ selections append flag. Normal short path remains unchanged, including rigid atom cap 400 and preview/progress behavior.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "NPZ first/default agrees with parser constant; explicit JSON and compressed choices are emitted. Rigid/strain, shortlist, layer-cell and atom-cap behavior stays unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_findn",
       "path": "src/cellstine/cli/interactive/build_moire.py",
       "qualified_name": "_build_moire_findn",
-      "line": 95,
-      "end_line": 124,
-      "module_sha256": "bc041cf0b54d7c7b87733454ea9f948177d547cf0920d3ca12dd6247d666be0d",
+      "line": 97,
+      "end_line": 126,
+      "module_sha256": "bf2af17b0ff67e64a63aeed90747a614591bc997a73dcfc41ba5d269c42706e3",
       "status": "optimized—verified",
-      "reason": "Reviewed base/upper paths, strain budgets, atom/shortlist limits and preview arguments; unchanged separate N-layer command has no NPZ option.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Experimental stack builder still emits its existing JSON-schema workflow parameters and has no format-specific bilayer assumptions.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_maken",
       "path": "src/cellstine/cli/interactive/build_moire.py",
       "qualified_name": "_build_moire_maken",
-      "line": 127,
-      "end_line": 142,
-      "module_sha256": "bc041cf0b54d7c7b87733454ea9f948177d547cf0920d3ca12dd6247d666be0d",
+      "line": 129,
+      "end_line": 144,
+      "module_sha256": "bf2af17b0ff67e64a63aeed90747a614591bc997a73dcfc41ba5d269c42706e3",
       "status": "optimized—verified",
-      "reason": "Reviewed N-layer JSON file pattern, index parsing and gap/vacuum routing; unchanged and separate from bilayer format schema.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Stack result picker, gap selection and vacuum forwarding remain unchanged for top-level N-layer JSON.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_make",
       "path": "src/cellstine/cli/interactive/build_moire.py",
       "qualified_name": "_build_moire_make",
-      "line": 145,
-      "end_line": 160,
-      "module_sha256": "bc041cf0b54d7c7b87733454ea9f948177d547cf0920d3ca12dd6247d666be0d",
+      "line": 147,
+      "end_line": 162,
+      "module_sha256": "bf2af17b0ff67e64a63aeed90747a614591bc997a73dcfc41ba5d269c42706e3",
       "status": "optimized—verified",
-      "reason": "Reviewed both JSON/NPZ discovery patterns, one preview-and-count result reused for bounded index parsing, and unchanged generation/gap/vacuum/worker argv.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Picker accepts both results.json and results.npz; preview-derived index parser and existing worker/vacuum arguments are format-neutral.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_translate",
       "path": "src/cellstine/cli/interactive/build_moire.py",
       "qualified_name": "_build_moire_translate",
-      "line": 163,
-      "end_line": 176,
-      "module_sha256": "bc041cf0b54d7c7b87733454ea9f948177d547cf0920d3ca12dd6247d666be0d",
+      "line": 165,
+      "end_line": 178,
+      "module_sha256": "bf2af17b0ff67e64a63aeed90747a614591bc997a73dcfc41ba5d269c42706e3",
       "status": "optimized—verified",
-      "reason": "Reviewed direct/cartesian selection, vector parsing and shift flag routing; unchanged and unrelated to archive persistence.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Direct/Cartesian shift choice and vector parsing remain unrelated to persisted search encoding.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_visualize",
       "path": "src/cellstine/cli/interactive/build_moire.py",
       "qualified_name": "_build_moire_visualize",
-      "line": 179,
-      "end_line": 193,
-      "module_sha256": "bc041cf0b54d7c7b87733454ea9f948177d547cf0920d3ca12dd6247d666be0d",
+      "line": 181,
+      "end_line": 195,
+      "module_sha256": "bf2af17b0ff67e64a63aeed90747a614591bc997a73dcfc41ba5d269c42706e3",
       "status": "optimized—verified",
-      "reason": "Reviewed JSON/NPZ discovery patterns, selected-index branch, remembered count and optional Plotly argv. Manifest/direct file resolution remains downstream.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Both file extensions remain discoverable; optional selection and Plotly choice use the common reader-backed preview.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
-      "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_visualize.<lambda>@189:26",
+      "id": "src/cellstine/cli/interactive/build_moire.py::_build_moire_visualize.<lambda>@191:26",
       "path": "src/cellstine/cli/interactive/build_moire.py",
-      "qualified_name": "_build_moire_visualize.<lambda>@189:26",
-      "line": 189,
-      "end_line": 189,
-      "module_sha256": "bc041cf0b54d7c7b87733454ea9f948177d547cf0920d3ca12dd6247d666be0d",
+      "qualified_name": "_build_moire_visualize.<lambda>@191:26",
+      "line": 191,
+      "end_line": 191,
+      "module_sha256": "bf2af17b0ff67e64a63aeed90747a614591bc997a73dcfc41ba5d269c42706e3",
       "status": "optimized—verified",
-      "reason": "Reviewed deferred candidate-count closure over selected result path; remembered evaluation preserves guided replay semantics and downstream NPZ-aware reader.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Deferred candidate-count lookup captures the selected result path and goes through saved preview reader for either extension.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/interactive/build_path.py::_build_migration_path",
@@ -2636,10 +2636,10 @@
       "qualified_name": "_workflow",
       "line": 27,
       "end_line": 33,
-      "module_sha256": "8bc07e87eb698fef0bcc0ea321d8946f00d70000b1349acd66380bee1ebc23bb",
+      "module_sha256": "8cd7685bf58608ded533391df5326888fb05caea4fb92014227fd7bcf93a0e62",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed lazy module/class lookup against the static workflow registry; format support adds no eager dependency or alternate writer path.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Lazy class import mapping and relative package resolution preserve dependency-free parser startup.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/main.py::__getattr__",
@@ -2647,10 +2647,10 @@
       "qualified_name": "__getattr__",
       "line": 36,
       "end_line": 43,
-      "module_sha256": "8bc07e87eb698fef0bcc0ea321d8946f00d70000b1349acd66380bee1ebc23bb",
+      "module_sha256": "8cd7685bf58608ded533391df5326888fb05caea4fb92014227fd7bcf93a0e62",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed lazy workflow attribute caching and unknown-name AttributeError; unchanged and independent of result format.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Known workflows are cached on first module access; unknown names still raise AttributeError.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/main.py::_print_versions",
@@ -2658,10 +2658,10 @@
       "qualified_name": "_print_versions",
       "line": 46,
       "end_line": 53,
-      "module_sha256": "8bc07e87eb698fef0bcc0ea321d8946f00d70000b1349acd66380bee1ebc23bb",
+      "module_sha256": "8cd7685bf58608ded533391df5326888fb05caea4fb92014227fd7bcf93a0e62",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed dependency version enumeration and deterministic reporting; unchanged and no result persistence coupling.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Installed dependency reporting remains independent of changed output defaults.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/main.py::_print_result",
@@ -2669,43 +2669,43 @@
       "qualified_name": "_print_result",
       "line": 56,
       "end_line": 63,
-      "module_sha256": "8bc07e87eb698fef0bcc0ea321d8946f00d70000b1349acd66380bee1ebc23bb",
+      "module_sha256": "8cd7685bf58608ded533391df5326888fb05caea4fb92014227fd7bcf93a0e62",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed shared report formatting and empty-result behavior; unchanged and consumes generic workflow artifacts.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Shared result formatter renders artifact mappings dynamically, avoiding a JSON-only assumption.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/main.py::execute_namespace",
       "path": "src/cellstine/cli/main.py",
       "qualified_name": "execute_namespace",
       "line": 66,
-      "end_line": 474,
-      "module_sha256": "8bc07e87eb698fef0bcc0ea321d8946f00d70000b1349acd66380bee1ebc23bb",
+      "end_line": 475,
+      "module_sha256": "8cd7685bf58608ded533391df5326888fb05caea4fb92014227fd7bcf93a0e62",
       "status": "optimized—verified",
-      "reason": "Reviewed every group/stage dispatch; bilayer search forwards parser results_format to Moire.find, which normalizes before runs and forwards to run_find actual writer. Stack-search/build remain separate JSON workflow; other kwargs and stages unchanged.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Search already forwards parser format; new assembly forwarding reaches Molecule inherited assemble. All other workflow dispatch bodies preserve their arguments and control flow.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/main.py::dispatch_namespace",
       "path": "src/cellstine/cli/main.py",
       "qualified_name": "dispatch_namespace",
-      "line": 477,
-      "end_line": 495,
-      "module_sha256": "8bc07e87eb698fef0bcc0ea321d8946f00d70000b1349acd66380bee1ebc23bb",
+      "line": 478,
+      "end_line": 496,
+      "module_sha256": "8cd7685bf58608ded533391df5326888fb05caea4fb92014227fd7bcf93a0e62",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed version, root/group guided launch, execution and report branches; all continue through shared parser dispatch without altering default JSON.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Version, group/stage guided fallback and finished-result rendering remain unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/main.py::main",
       "path": "src/cellstine/cli/main.py",
       "qualified_name": "main",
-      "line": 498,
-      "end_line": 519,
-      "module_sha256": "8bc07e87eb698fef0bcc0ea321d8946f00d70000b1349acd66380bee1ebc23bb",
+      "line": 499,
+      "end_line": 520,
+      "module_sha256": "8cd7685bf58608ded533391df5326888fb05caea4fb92014227fd7bcf93a0e62",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed plain flag filtering, legacy diagnostics and rich/plain fallback; both backends retain shared namespace dispatch and import fallback behavior.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Plain/Rich frontend selection, removed-command error detection and ImportError fallback remain unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/plain.py::build_parser",
@@ -2733,12 +2733,12 @@
       "id": "src/cellstine/cli/plain_adsorbate.py::add_adsorbate_group",
       "path": "src/cellstine/cli/plain_adsorbate.py",
       "qualified_name": "add_adsorbate_group",
-      "line": 16,
-      "end_line": 108,
-      "module_sha256": "0fb66a44720a3ee5b37770b3230d23d4384df7debf4f99c43223f223c9986708",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 17,
+      "end_line": 110,
+      "module_sha256": "833f7740347b3303fcfb01d11077821bb1bfed5df9955142d1fd6df303aecc39",
+      "status": "optimized—verified",
+      "reason": "New assembly option choices align with normalizer and default constant; all existing placement/movement/path options retain prior defaults.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/plain_defect.py::add_defect_group",
@@ -2768,10 +2768,10 @@
       "qualified_name": "add_moire_group",
       "line": 20,
       "end_line": 189,
-      "module_sha256": "72cccba62ddd16fe43470d7553806e6eb9d0340e9123bc489fd9386e8afb79b5",
+      "module_sha256": "f39f8e0e766591b09784f6a3f74e679cfef14a9f1d2e11d595ad83224ace2ca5",
       "status": "optimized—verified",
-      "reason": "Reviewed all search/build/stack/shift/view arguments. Bilayer-only format choices default json; shortlist None, atom defaults, legacy flags and separate stack JSON parser preserved. Format argument remains dependency free.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Only bilayer search format default/help changes to NPZ; explicit JSON/compressed choices, N-layer contracts and generation/view arguments remain intact.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/cli/plain_surface.py::add_surface_group",
@@ -9753,10 +9753,10 @@
       "qualified_name": "MatchRequest.__post_init__",
       "line": 95,
       "end_line": 101,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep positive finite length/strain and shared/film mode validation.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Existing finite positive limits and supported strain modes retain validation behavior.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::MatchRequest.strain_budgets",
@@ -9764,10 +9764,10 @@
       "qualified_name": "MatchRequest.strain_budgets",
       "line": 104,
       "end_line": 109,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep bottom/top logarithmic-strain sharing conventions.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Film mode keeps substrate rigid and shared mode keeps equal budgets; no physical thresholds changed.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::_strain_magnitude",
@@ -9775,10 +9775,10 @@
       "qualified_name": "_strain_magnitude",
       "line": 124,
       "end_line": 125,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep maximum absolute principal strain magnitude.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Maximum absolute principal logarithmic component remains unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::_cell_area",
@@ -9786,186 +9786,186 @@
       "qualified_name": "_cell_area",
       "line": 128,
       "end_line": 130,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep absolute shared-cell determinant and arithmetic order.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Absolute determinant of shared in-plane lattice remains unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::search_slab_pair",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "search_slab_pair",
       "line": 133,
-      "end_line": 160,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
-      "status": "reviewed—unchanged",
-      "reason": "Keep slab-to-moire top/bottom convention and limit forwarding.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "end_line": 161,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
+      "status": "optimized—verified",
+      "reason": "Explicit results_format=json preserves the actual v1 results_json pointer contract while forwarding exactly the same scientific request.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::match_entries",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "match_entries",
-      "line": 163,
-      "end_line": 204,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 164,
+      "end_line": 205,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep candidate geometry, layer ordering and file/index provenance.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Validated candidate records retain real JSON path/index provenance and all geometric/strain/atom fields.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::match_order_key",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "match_order_key",
-      "line": 207,
-      "end_line": 222,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 208,
+      "end_line": 223,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep strain quantization, atom/area/twist ties and deterministic ordering.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Strain quantum, atom count, rounded area and absolute twist tie ordering are unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::sort_matches",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "sort_matches",
-      "line": 225,
-      "end_line": 231,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 226,
+      "end_line": 232,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep detached entries and one-based indexes after sorting.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Stable sorted-copy behavior and consecutive one-based match numbering are unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::build_match_document",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "build_match_document",
-      "line": 234,
-      "end_line": 274,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 235,
+      "end_line": 275,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep schema/search metadata, sorted entries and validation.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Search budgets/limits and sorted matches still use interface schema v1 and its existing validation.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::_finite",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "_finite",
-      "line": 308,
-      "end_line": 314,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 309,
+      "end_line": 315,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep finite scalar validation and current type/diagnostic behavior.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Rejects booleans/non-numbers/nonfinite values as before; unaffected by pair file default change.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::_pair",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "_pair",
-      "line": 317,
-      "end_line": 322,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 318,
+      "end_line": 323,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep two-component validation and conversion/error conventions.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Two-entry finite vector validation is unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::_integer_matrix_determinant",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "_integer_matrix_determinant",
-      "line": 325,
-      "end_line": 338,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 326,
+      "end_line": 339,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep validated2x2 determinant and diagnostic behavior.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Integer-only 2x2 shape/type checks preserve Python-integer determinant arithmetic.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::_validate_match",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "_validate_match",
-      "line": 341,
-      "end_line": 386,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 342,
+      "end_line": 387,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep required fields, strain/count/geometry constraints and tolerance/error order.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Existing strain-sharing, count, cell shape and nonsingular matrix validations are unchanged; no new NPZ path is mislabeled JSON.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::_validate_document",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "_validate_document",
-      "line": 389,
-      "end_line": 411,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 390,
+      "end_line": 412,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep schema/search checks and consecutive match validation.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Existing schema/version/search checks and per-match validation remain unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::validate_matches",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "validate_matches",
-      "line": 414,
-      "end_line": 421,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 415,
+      "end_line": 422,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep detached public document validation.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Detached deepcopy behavior and mapping validation retain public API semantics.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::write_matches",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "write_matches",
-      "line": 424,
-      "end_line": 441,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 425,
+      "end_line": 442,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "optimized—verified",
-      "reason": "Use bounded encoding while retaining in-place validation, LF, allow_nan=False and final newline.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Interface output remains JSON with the same validation, indentation and final newline.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::read_matches",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "read_matches",
-      "line": 444,
-      "end_line": 457,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 445,
+      "end_line": 458,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep parse-error translation, mapping requirements and validation.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Interface JSON parsing, error translation and validation remain unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::select_match",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "select_match",
-      "line": 460,
-      "end_line": 468,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 461,
+      "end_line": 469,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep one-based match selection and bounds diagnostics.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Empty/out-of-bounds checks and one-based record copy are unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::candidate_for_match",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "candidate_for_match",
-      "line": 471,
-      "end_line": 485,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 472,
+      "end_line": 486,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep referenced result-file/candidate lookup and provenance consistency.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Resolves its retained real results_json pointer with the shared reader, then selects the recorded candidate index.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::format_matches_table",
       "path": "src/cellstine/interface/workflow/lattice_match.py",
       "qualified_name": "format_matches_table",
-      "line": 488,
-      "end_line": 516,
-      "module_sha256": "16f0dd269d6500dfddfee84ffc7cd393d559190e9345c3a28698fedfcccd1832",
+      "line": 489,
+      "end_line": 517,
+      "module_sha256": "4e106c9f7f99515c9b834b1451cb0941eed41d781c27d345bc47c66229eb9f95",
       "status": "reviewed—unchanged",
-      "reason": "Keep cell/strain/matrix ranking display.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Human-readable physical quantities, truncation and empty-state output remain independent of persistence format.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/interface/workflow/match.py::match",
@@ -10829,210 +10829,210 @@
       "id": "src/cellstine/moire/moire.py::_format_timing",
       "path": "src/cellstine/moire/moire.py",
       "qualified_name": "_format_timing",
-      "line": 22,
-      "end_line": 25,
-      "module_sha256": "1aaebda78d27585dc37def883c2ac5b2d63895edaac25e33ecdd469717d4b519",
+      "line": 23,
+      "end_line": 26,
+      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed whole unchanged formatter: None remains n/a and numeric timings keep three decimal seconds; independent of archive choice.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "None and numeric elapsed-time formatting remain unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/moire.py::_progress_printer",
       "path": "src/cellstine/moire/moire.py",
       "qualified_name": "_progress_printer",
-      "line": 28,
-      "end_line": 49,
-      "module_sha256": "1aaebda78d27585dc37def883c2ac5b2d63895edaac25e33ecdd469717d4b519",
+      "line": 29,
+      "end_line": 50,
+      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed whole unchanged callback factory and closure state: exactly four completed stage reports advance the bar; format-specific filename text does not change completion prefixes.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Creates one private stage counter; output format/progress completion detection is unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/moire.py::_progress_printer._print",
       "path": "src/cellstine/moire/moire.py",
       "qualified_name": "_progress_printer._print",
-      "line": 42,
-      "end_line": 47,
-      "module_sha256": "1aaebda78d27585dc37def883c2ac5b2d63895edaac25e33ecdd469717d4b519",
+      "line": 43,
+      "end_line": 48,
+      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed complete nested callback: read/found/wrote prefixes, bounded step counter, bar width and flushed output remain unchanged and accept results.npz messages.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Read/found/wrote completion prefixes still advance once, and actual write filenames now come from run_find.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/moire.py::_measured",
       "path": "src/cellstine/moire/moire.py",
       "qualified_name": "_measured",
-      "line": 52,
-      "end_line": 58,
-      "module_sha256": "1aaebda78d27585dc37def883c2ac5b2d63895edaac25e33ecdd469717d4b519",
+      "line": 53,
+      "end_line": 59,
+      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed whole unchanged measurement filter: only finite contact distances survive and original selected indices are retained; archive route does not affect generated run objects.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Finite contact extraction with selected indices remains unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/moire.py::_contact_summary",
       "path": "src/cellstine/moire/moire.py",
       "qualified_name": "_contact_summary",
-      "line": 61,
-      "end_line": 96,
-      "module_sha256": "1aaebda78d27585dc37def883c2ac5b2d63895edaac25e33ecdd469717d4b519",
+      "line": 62,
+      "end_line": 97,
+      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed whole unchanged contact summary: minima, per-index distances, rounding and deduplicated notes are preserved for list-valued builder outputs; no format-specific change.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Per-structure contacts, whole-cell minimum and deduplicated warning summaries remain unchanged for existing list callers.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/moire.py::Moire.find",
       "path": "src/cellstine/moire/moire.py",
       "qualified_name": "Moire.find",
-      "line": 104,
-      "end_line": 224,
-      "module_sha256": "1aaebda78d27585dc37def883c2ac5b2d63895edaac25e33ecdd469717d4b519",
+      "line": 105,
+      "end_line": 226,
+      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
       "status": "optimized—verified",
-      "reason": "Reviewed full method and run_find contract: normalized format rejects before run creation; JSON default and 500 shortlist persist; all geometry options and preview ordering unchanged; NPZ correctly routes filename/writer and results_npz artifacts while JSON parameters/artifact names remain original.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Shared NPZ default is normalized early, forwarded to run_find and exposed via correctly named artifact. Candidate limit, search parameters, timings, manifest and preview semantics remain unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/moire.py::Moire.make",
       "path": "src/cellstine/moire/moire.py",
       "qualified_name": "Moire.make",
-      "line": 226,
-      "end_line": 297,
-      "module_sha256": "1aaebda78d27585dc37def883c2ac5b2d63895edaac25e33ecdd469717d4b519",
+      "line": 228,
+      "end_line": 299,
+      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
       "status": "optimized—verified",
-      "reason": "Reviewed full method through builder, output reservations, suffix renames and manifest/result summaries: added results_npz resolution reaches generate_many_from_results/read_results; build parameters, tolerance defaults and output ownership behavior unchanged.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Manifest resolver already accepts NPZ and JSON; generation, workers, filenames, contact summaries and output geometry paths are unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/moire.py::Moire.translate",
       "path": "src/cellstine/moire/moire.py",
       "qualified_name": "Moire.translate",
-      "line": 299,
-      "end_line": 352,
-      "module_sha256": "1aaebda78d27585dc37def883c2ac5b2d63895edaac25e33ecdd469717d4b519",
+      "line": 301,
+      "end_line": 354,
+      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
       "status": "optimized—verified",
-      "reason": "Reviewed whole unchanged shift workflow: original source resolution, file reservation, numeric min_gap, manifest parameters and shift payload remain independent of results format.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Layer shift parameters, explicit/reserved output policy and returned provenance remain unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/moire.py::Moire.visualize",
       "path": "src/cellstine/moire/moire.py",
       "qualified_name": "Moire.visualize",
-      "line": 354,
-      "end_line": 383,
-      "module_sha256": "1aaebda78d27585dc37def883c2ac5b2d63895edaac25e33ecdd469717d4b519",
+      "line": 356,
+      "end_line": 385,
+      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed whole unchanged forwarding wrapper: dependency manager/backend/roots and all plot parameters retained; Visualize.moire_results now resolves results_npz and both backends read_results.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Forwards either raw file or manifest into common Visualize workflow with unchanged plotting parameters.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/moire.py::Moire.resolve_results_file",
       "path": "src/cellstine/moire/moire.py",
       "qualified_name": "Moire.resolve_results_file",
-      "line": 385,
-      "end_line": 398,
-      "module_sha256": "1aaebda78d27585dc37def883c2ac5b2d63895edaac25e33ecdd469717d4b519",
+      "line": 387,
+      "end_line": 400,
+      "module_sha256": "48b059ef0901a5bbcc357737e4479ec5d5967bbb33f8dbd001986893c654f9b3",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed whole unchanged resolver: explicit caller artifact priority and absolute direct paths preserved; make now supplies results_json/results_npz; Supermoire.maken still supplies results_json for its separate schema.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Manifest key iteration accepts the callers NPZ key without aliasing archives under results_json; direct paths are preserved.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
-      "id": "src/cellstine/moire/search/find.py::FindRun.<lambda>@49:56",
+      "id": "src/cellstine/moire/search/find.py::FindRun.<lambda>@50:56",
       "path": "src/cellstine/moire/search/find.py",
-      "qualified_name": "FindRun.<lambda>@49:56",
-      "line": 49,
-      "end_line": 49,
-      "module_sha256": "3df8582cd055a9f64158d1a065ef8131b9b7636d2886dde3bd7fbc0d5059dc87",
+      "qualified_name": "FindRun.<lambda>@50:56",
+      "line": 50,
+      "end_line": 50,
+      "module_sha256": "2fbba6e20d719ecde3d53c6266f469669eb19a848e81402a251431e9f8916d9e",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed unchanged dataclass default factory: fresh top/bottom multiplicity dictionary per FindRun; numerical metadata defaults preserved.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Default factory returns fresh top/bottom multiplicities per record and is independent of encoding.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/find.py::_slug",
       "path": "src/cellstine/moire/search/find.py",
       "qualified_name": "_slug",
-      "line": 52,
-      "end_line": 54,
-      "module_sha256": "3df8582cd055a9f64158d1a065ef8131b9b7636d2886dde3bd7fbc0d5059dc87",
+      "line": 53,
+      "end_line": 55,
+      "module_sha256": "2fbba6e20d719ecde3d53c6266f469669eb19a848e81402a251431e9f8916d9e",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed whole unchanged slug function: alphanumeric/hyphen/underscore retention and structure fallback preserve run identifiers.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Existing alphanumeric filename sanitation and nonempty fallback preserve run identifiers.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/find.py::_make_result_path",
       "path": "src/cellstine/moire/search/find.py",
       "qualified_name": "_make_result_path",
-      "line": 57,
-      "end_line": 68,
-      "module_sha256": "3df8582cd055a9f64158d1a065ef8131b9b7636d2886dde3bd7fbc0d5059dc87",
+      "line": 58,
+      "end_line": 69,
+      "module_sha256": "2fbba6e20d719ecde3d53c6266f469669eb19a848e81402a251431e9f8916d9e",
       "status": "optimized—verified",
-      "reason": "Reviewed entire helper and callers: timestamp/run identifier and output-root creation unchanged; normalized public caller chooses json versus npz suffix, compressed archives share npz suffix, JSON default filename preserved.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Default npz extension matches requested default and normalized run_find input; explicit JSON remains .json and compressed NPZ remains .npz.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/find.py::_planar_column_basis",
       "path": "src/cellstine/moire/search/find.py",
       "qualified_name": "_planar_column_basis",
-      "line": 71,
-      "end_line": 74,
-      "module_sha256": "3df8582cd055a9f64158d1a065ef8131b9b7636d2886dde3bd7fbc0d5059dc87",
+      "line": 72,
+      "end_line": 75,
+      "module_sha256": "2fbba6e20d719ecde3d53c6266f469669eb19a848e81402a251431e9f8916d9e",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed whole unchanged conversion wrapper: POSCAR Cartesian row lattice still converted by column_basis_from_lattice with same diagnostic name; no matrix orientation change.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Delegates existing POSCAR row-to-column geometry validation unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/find.py::_layer_group",
       "path": "src/cellstine/moire/search/find.py",
       "qualified_name": "_layer_group",
-      "line": 77,
-      "end_line": 95,
-      "module_sha256": "3df8582cd055a9f64158d1a065ef8131b9b7636d2886dde3bd7fbc0d5059dc87",
+      "line": 78,
+      "end_line": 96,
+      "module_sha256": "2fbba6e20d719ecde3d53c6266f469669eb19a848e81402a251431e9f8916d9e",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed entire unchanged decorated-layer symmetry wrapper: species expansion and lattice tolerance forwarded unchanged; folding remains decorated group rather than bare lattice.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Uses decorated species-aware layer symmetry with same tolerance and basis; no physical equivalences changed.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/find.py::primitive_layer_cell",
       "path": "src/cellstine/moire/search/find.py",
       "qualified_name": "primitive_layer_cell",
-      "line": 98,
-      "end_line": 144,
-      "module_sha256": "3df8582cd055a9f64158d1a065ef8131b9b7636d2886dde3bd7fbc0d5059dc87",
+      "line": 99,
+      "end_line": 145,
+      "module_sha256": "2fbba6e20d719ecde3d53c6266f469669eb19a848e81402a251431e9f8916d9e",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed entire unchanged reduction workflow: planar primitive reduction, symprec, species regrouping, indexed coordinate order, output filename and reread preserved; archive choice only shares parent directory.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Primitive reduction, species ordering, written reduced geometry and source/multiplicity provenance remain unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/find.py::_notify",
       "path": "src/cellstine/moire/search/find.py",
       "qualified_name": "_notify",
-      "line": 147,
-      "end_line": 153,
-      "module_sha256": "3df8582cd055a9f64158d1a065ef8131b9b7636d2886dde3bd7fbc0d5059dc87",
+      "line": 148,
+      "end_line": 154,
+      "module_sha256": "2fbba6e20d719ecde3d53c6266f469669eb19a848e81402a251431e9f8916d9e",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed whole unchanged callback guard: stage and message forwarded once when present, exceptions remain visible; actual output filename is now supplied by run_find.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Optional progress callback invocation remains unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/find.py::run_find",
       "path": "src/cellstine/moire/search/find.py",
       "qualified_name": "run_find",
-      "line": 156,
-      "end_line": 356,
-      "module_sha256": "3df8582cd055a9f64158d1a065ef8131b9b7636d2886dde3bd7fbc0d5059dc87",
+      "line": 157,
+      "end_line": 357,
+      "module_sha256": "2fbba6e20d719ecde3d53c6266f469669eb19a848e81402a251431e9f8916d9e",
       "status": "optimized—verified",
-      "reason": "Reviewed full reader/reduction/symmetry/SearchConfig/search-fallback/document/write/result pipeline against baseline: scientific algorithms, constants, parameter conversions and all-candidate direct default retained; only normalized format/filename/compression branch added; JSON document/search parameters remain original, NPZ manifest parameters add results_format. Interface slab matches, N-layer pair searches and adsorbate callers omit format and keep JSON.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Normalizes shared NPZ default before I/O; search configuration, symmetric fallback, shortlist and certification document stay unchanged. Actual filename drives progress and correct encoder dispatch; parameters record normalized format.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/find.py::find",
       "path": "src/cellstine/moire/search/find.py",
       "qualified_name": "find",
-      "line": 359,
-      "end_line": 360,
-      "module_sha256": "3df8582cd055a9f64158d1a065ef8131b9b7636d2886dde3bd7fbc0d5059dc87",
+      "line": 360,
+      "end_line": 361,
+      "module_sha256": "2fbba6e20d719ecde3d53c6266f469669eb19a848e81402a251431e9f8916d9e",
       "status": "reviewed—unchanged",
-      "reason": "Reviewed entire unchanged compatibility wrapper: keyword forwarding transparently carries opt-in results_format and preserves all run_find defaults.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Functional wrapper forwards kwargs untouched and inherits run_find default without signature drift.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/gram.py::_class_invariant_filter",
@@ -12338,10 +12338,10 @@
       "qualified_name": "normalize_results_format",
       "line": 26,
       "end_line": 32,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Normalizes only explicit known choices; invalid/nonstring values fail, preserving existing JSON default at callers.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Existing trim/lower normalization accepts only JSON, NPZ and compressed NPZ and rejects non-string/unsupported values.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_collection_paused",
@@ -12349,10 +12349,10 @@
       "qualified_name": "_collection_paused",
       "line": 94,
       "end_line": 108,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Existing context manager restores enabled collection in finally, including new archive early returns and errors.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Finally restores cyclic-GC enable state for enabled callers; no new threading/concurrency has been introduced here.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_json_ready",
@@ -12360,10 +12360,10 @@
       "qualified_name": "_json_ready",
       "line": 111,
       "end_line": 129,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "reviewed—unchanged",
-      "reason": "Existing normalization preserves dictionary insertion order and converts supported NumPy/path/container types before validation; unknown extension objects reach guarded archive fallback serialization.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Existing recursive conversion preserves plain scalars, nested mappings/sequences, paths and NumPy values.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_cell_angle_deg",
@@ -12371,10 +12371,10 @@
       "qualified_name": "_cell_angle_deg",
       "line": 132,
       "end_line": 136,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "reviewed—unchanged",
-      "reason": "Existing vector-angle helper retains coefficient-column interpretation and shared lattice geometry.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged scalar shared-vector angle delegates stable lattice helper.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_cell_shapes",
@@ -12382,10 +12382,10 @@
       "qualified_name": "_cell_shapes",
       "line": 139,
       "end_line": 159,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Existing batched Kahan half-angle operations retain float precision and scalar atan2 ordering; nonzero vectors checked.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged vectorized lengths/Kahan half-angle expression retains scalar libm atan2 and rejects zero vectors.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_mapping",
@@ -12393,10 +12393,10 @@
       "qualified_name": "_mapping",
       "line": 162,
       "end_line": 165,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "reviewed—unchanged",
-      "reason": "Existing object guard remains unchanged and is applied to archive reconstruction before document validation.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged JSON-object validation ensures document sections are dictionaries.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_boolean",
@@ -12404,10 +12404,10 @@
       "qualified_name": "_boolean",
       "line": 168,
       "end_line": 171,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "reviewed—unchanged",
-      "reason": "Existing strict boolean validation remains unchanged for reconstructed candidate flags and metadata.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged strict boolean type check avoids integer substitutes.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_finite_number",
@@ -12415,10 +12415,10 @@
       "qualified_name": "_finite_number",
       "line": 174,
       "end_line": 180,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "reviewed—unchanged",
-      "reason": "Existing finite numeric scalar check rejects booleans and nonfinite science fields after reconstruction.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged numeric type/finiteness validation excludes boolean values.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_positive_integer",
@@ -12426,10 +12426,10 @@
       "qualified_name": "_positive_integer",
       "line": 183,
       "end_line": 186,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "reviewed—unchanged",
-      "reason": "Existing positive integer guard rejects bool/nonintegral/zero fields after reconstruction.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged strict positive integer check excludes boolean values.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_flat_scalars",
@@ -12437,10 +12437,10 @@
       "qualified_name": "_flat_scalars",
       "line": 189,
       "end_line": 207,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "reviewed—unchanged",
-      "reason": "Existing fixed-shape nested list/tuple extraction checks every dimension and preserves row-major entries.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged recursive fixed-shape flattening rejects malformed dimensions.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_finite_array",
@@ -12448,10 +12448,10 @@
       "qualified_name": "_finite_array",
       "line": 210,
       "end_line": 228,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "reviewed—unchanged",
-      "reason": "Existing scientific shape/type/finiteness guard validates reconstructed grams, strains and matrices.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged shape/type/finiteness validation returns row-major floats.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_integer_matrix",
@@ -12459,10 +12459,10 @@
       "qualified_name": "_integer_matrix",
       "line": 231,
       "end_line": 244,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "reviewed—unchanged",
-      "reason": "Existing exact Python integer determinant check rejects singular or malformed matrices without float narrowing.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged 2x2 integral nonsingular validation uses exact Python determinant arithmetic.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_search",
@@ -12470,10 +12470,10 @@
       "qualified_name": "_validate_search",
       "line": 247,
       "end_line": 286,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "reviewed—unchanged",
-      "reason": "Existing required search fields and numeric bounds are applied unchanged to NPZ metadata reconstruction.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged required fields, lengths, strains, limits, symmetry and angle-period validation preserves JSON-v2 semantics.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_twist_window",
@@ -12481,10 +12481,10 @@
       "qualified_name": "_validate_twist_window",
       "line": 289,
       "end_line": 305,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "reviewed—unchanged",
-      "reason": "Existing optional twist-window handling preserves older-document defaults and validates finite ordered bounds.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged optional bounds/defaults and ordering checks preserve older files without explicit windows.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_metadata",
@@ -12492,10 +12492,10 @@
       "qualified_name": "_validate_metadata",
       "line": 308,
       "end_line": 349,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "reviewed—unchanged",
-      "reason": "Existing engine, symmetry, count and provenance scalar checks remain in NPZ read path without dropping extensions.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged engine, symmetry, shortlist and primitive-source provenance validation preserves result contract.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_candidate_angle_limit",
@@ -12503,10 +12503,10 @@
       "qualified_name": "_candidate_angle_limit",
       "line": 352,
       "end_line": 354,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Existing folded versus unfolded bound calculation is reused by both scalar and fast validators.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged folded half-period versus signed half-turn bound preserves search convention.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_candidate",
@@ -12514,10 +12514,10 @@
       "qualified_name": "_validate_candidate",
       "line": 357,
       "end_line": 431,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Existing full scientific invariants remain reachable after NPZ reconstruction, including strain budgets, layer counts, nonsingular matrices and index/rank validity.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Full scalar candidate checks keep matrices, principal strain sharing/budgets, atom counts, primitive constraint, cell shapes and affine validation unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_plain_numbers",
@@ -12525,10 +12525,10 @@
       "qualified_name": "_plain_numbers",
       "line": 434,
       "end_line": 454,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Existing exact builtin scalar fast path rejects nonfinite/unusual data and catches huge-int float overflow before scalar fallback.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged fast plain-number conversion declines subclasses and overflow/nonfinite input for scalar fallback.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_plain_matrix",
@@ -12536,10 +12536,10 @@
       "qualified_name": "_plain_matrix",
       "line": 456,
       "end_line": 464,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Existing finite 2x2 nested-list fast path preserves scalar validator row-major ordering.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged strict nested-list numeric 2x2 fast-path representation matches scalar shape.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_plain_integer_matrix",
@@ -12547,10 +12547,10 @@
       "qualified_name": "_plain_integer_matrix",
       "line": 466,
       "end_line": 479,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Existing exact builtin integer fast path uses Python arithmetic for determinant, avoiding int64 overflow.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged plain-int determinant check retains exact arithmetic.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_plainly_valid_candidate",
@@ -12558,10 +12558,10 @@
       "qualified_name": "_plainly_valid_candidate",
       "line": 481,
       "end_line": 542,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Existing fast validator preserves scalar invariants for plain reconstructed types; unusual/failing values fall through to full validator.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged fast path checks every required candidate field and returns false to diagnostic scalar validation for uncommon/invalid cases.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_validate_document",
@@ -12569,10 +12569,10 @@
       "qualified_name": "_validate_document",
       "line": 545,
       "end_line": 561,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Archive documents enter unchanged search/metadata/candidate validation; insertion order and extension data survive in-place validation.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Same schema/version/search/metadata and one-based candidate validation applies after JSON and NPZ reads.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::validate_results",
@@ -12580,10 +12580,10 @@
       "qualified_name": "validate_results",
       "line": 564,
       "end_line": 567,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "reviewed—unchanged",
-      "reason": "Existing deepcopy returns a detached validated document; archive reading already reconstructs fresh objects.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Public detached deep-copy validation remains unchanged.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::shortlist_offsets",
@@ -12591,10 +12591,10 @@
       "qualified_name": "shortlist_offsets",
       "line": 570,
       "end_line": 596,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "reviewed—unchanged",
-      "reason": "Existing complete Pareto-front and rank-order shortlist logic is unaffected by persistence format.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Whole Pareto front is preserved and remainder selected in existing rank order; default format does not change ties/candidate selection.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::build_results_document",
@@ -12602,10 +12602,10 @@
       "qualified_name": "build_results_document",
       "line": 600,
       "end_line": 755,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Existing JSONv2 construction retains matrix transposes, float conversion, original rank and consecutive recorded index; no archive-specific changes.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged coefficient-column transpose, gathered physical columns, provenance and bulk validation preserve exact result values/order independent of destination encoding.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_first_invalid_row",
@@ -12613,10 +12613,10 @@
       "qualified_name": "_first_invalid_row",
       "line": 758,
       "end_line": 836,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Existing batched generated-document validation retains scientific checks and scalar fallback on first failure; archive reads use reconstructed-document validator.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged array validation mirrors scalar constraints and identifies first recorded failing row without scientific tolerance changes.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_first_invalid_row.finite",
@@ -12624,10 +12624,10 @@
       "qualified_name": "_first_invalid_row.finite",
       "line": 774,
       "end_line": 778,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Existing nested batch finiteness check reduces each recorded row consistently for vector/matrix inputs.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged per-row all-finite reduction combines each array over remaining dimensions.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_first_invalid_row.nonsingular_integer",
@@ -12635,10 +12635,10 @@
       "qualified_name": "_first_invalid_row.nonsingular_integer",
       "line": 780,
       "end_line": 790,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Existing modulo-int64 nonzero determinant proof plus Python-int exceptional fallback avoids rejecting overflowed determinants.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged int64 determinant handles zero-modulo overflow by exact Python-integer fallback.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::read_results",
@@ -12646,10 +12646,10 @@
       "qualified_name": "read_results",
       "line": 839,
       "end_line": 859,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "New .npz suffix routes reconstructed archive document through unchanged full validation; JSON/DAT paths remain unchanged and returned data is detached.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Existing suffix dispatch loads NPZ via no-pickle archive reader then identical validation; JSON remains readable and DAT remains rejected.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::write_results",
@@ -12657,10 +12657,10 @@
       "qualified_name": "write_results",
       "line": 862,
       "end_line": 889,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "New explicit NPZ routing preserves JSON default bytes and rejects compression for JSON before open; archive suitability, including strict nonfinite extension policy, is preflighted by write_archive.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Only doc wording changes: explicit .json destination keeps prior JSON bytes, .npz delegates archive writer, and compression rejects non-NPZ destination.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/search/results.py::_write_indented_json",
@@ -12668,10 +12668,10 @@
       "qualified_name": "_write_indented_json",
       "line": 896,
       "end_line": 926,
-      "module_sha256": "88bf9bf5fb1f9884a502997989367c8e64f76a4f09a506b1645c4591d8dbdd41",
+      "module_sha256": "6b1701f4c13b39c8d0c0d9932b19ad27b6b88c55dcdc15cea2759e2cf6a0c911",
       "status": "optimized—verified",
-      "reason": "Existing allow_nan=False and chunked indentation remain unchanged; new NPZ fallback encoders now match its strict JSON scalar policy.",
-      "evidence": "docs/optimization/part-05d-portable-results.md; individual whole-function review; 782 affected tests; 38 new archive/consumer cases; 3510 full tests and 4 skips; 275 frozen tracked Python files; wheel/sdist and 3 installed environments; source-hashed production benchmark (3 samples); exact-head CI required before next source batch."
+      "reason": "Unchanged bounded candidate chunks reproduce indent=2 JSON, retain allow_nan=False and stream final structure.",
+      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
     },
     {
       "id": "src/cellstine/moire/supermoire.py::Supermoire.findn",
