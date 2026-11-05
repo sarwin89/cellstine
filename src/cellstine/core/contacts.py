@@ -108,6 +108,36 @@ def _covalent_sum(first_label: str, second_label: str) -> float:
     return float(radii[0] + radii[1])
 
 
+def _contact_candidate_index(cell, first, second, radius):
+    """Build a conservative small index, or retain the legacy dense path.
+
+    This only selects an optimization: unsuitable numerical/index scales are
+    never rejected here. Raw coordinates remain the source of exact scores.
+    """
+    if not np.isfinite(radius) or radius <= 0.0 or len(second) > 16384:
+        return None
+    if not (np.all(np.isfinite(cell)) and np.all(np.isfinite(first)) and np.all(np.isfinite(second))):
+        return None
+    magnitude = float(np.max(np.abs(cell)))
+    coordinate_scale = max(float(np.max(np.abs(first))), float(np.max(np.abs(second))))
+    if not 1e-100 <= magnitude <= 1e100 or coordinate_scale > 2.0**20:
+        return None
+    try:
+        if float(np.linalg.cond(cell)) > 1e6:
+            return None
+        lengths = np.linalg.norm(cell, axis=1)
+        padding = 64.0 * np.finfo(float).eps * (coordinate_scale + 1.0) * float(lengths.sum())
+        cutoff = float(np.nextafter(radius + padding, np.inf))
+        ratios = geometry.axis_spacings(cell) / cutoff
+    except np.linalg.LinAlgError:
+        return None
+    # The existing index encodes at most20 bits per axis. Stay inside that
+    # range before its float-to-integer cast, including extremely tiny radii.
+    if not np.all(np.isfinite(ratios)) or np.any(ratios <= 0.0) or np.any(ratios > 1 << 20):
+        return None
+    return geometry.PeriodicSiteIndex(cell, second, tolerance=cutoff)
+
+
 def closest_contact(
     lattice: np.ndarray,
     first_direct: np.ndarray,
@@ -135,9 +165,21 @@ def closest_contact(
     step = max(1, 65536 // second.shape[0])
     best = np.inf
     best_pair = None
+    candidate_index = None
     for start in range(0, first.shape[0], step):
         chunk = first[start : start + step]
-        if np.isfinite(best):
+        if candidate_index is not None:
+            candidates, valid = candidate_index.candidates(chunk)
+            if not np.any(valid):
+                continue
+            # Bucket lookup wraps coordinates; exact arithmetic must instead
+            # use the original inputs, just as the legacy dense strip does.
+            deltas = (chunk[:, None, :] - second[candidates]).reshape(-1, 3)
+            deltas[~valid.reshape(-1)] = 0.0
+            squared = geometry.bounded_minimum_image_squared(cell, deltas, best)
+            distances = np.sqrt(squared).reshape(candidates.shape)
+            distances[~valid] = np.inf
+        elif np.isfinite(best):
             # Once a contact is known, only pairs at least as close can win.
             # The bounded kernel is exact within that radius; every other
             # returned distance is guaranteed to remain outside it.
@@ -151,9 +193,13 @@ def closest_contact(
         flat = int(np.argmin(distances))
         row, column = divmod(flat, distances.shape[1])
         distance = float(distances[row, column])
+        if candidate_index is not None:
+            column = int(candidates[row, column])
         if best_pair is None or distance < best or (np.isnan(distance) and not np.isnan(best)):
             best = distance
             best_pair = (start + row, column)
+        if start == 0 and start + step < first.shape[0]:
+            candidate_index = _contact_candidate_index(cell, first, second, best)
     row, column = best_pair
     first_labels = _labels(first_species, first.shape[0])
     second_labels = _labels(second_species, second.shape[0])

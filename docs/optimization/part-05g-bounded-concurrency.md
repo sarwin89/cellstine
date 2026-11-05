@@ -40,3 +40,8 @@ The refreshed ledger contains 1221 functions and 911 with inspection evidence. C
 
 
 Final sdist build/Twine and the third installed environment passed the same serial/process/thread exact-byte and dependency checks. All three isolated installed environments are verified. Documentation/ledger closure refreshes only the sdist; unchanged runtime wheel/install/full-suite gates are not repeated. The tested 283 Python-file freeze and all 144 runtime module bytes remain authoritative. Scoped dev push and exact-head 16-job CI plus downloaded coverage identity/digest/readback are required before the next production batch.
+
+
+### Exact-head CI closure
+
+Commit `6d2b6414b248cfa71220e58a411fcef9ba0416d6` passed all 16 jobs in [CI 41998047816](https://github.com/sarwin89/cellstine/actions/runs/41998047816). Downloaded coverage artifact 13401697811 has verified ZIP SHA256 `56b21312ae7a62a8a3d54a22d2c33d0639d854fadb14640d3f68f77f5db5b460`, commit identity and matching module/statement sets. CI coverage is 13963/15644 statements and 3875/5072 branches; only known `prompts.py`501-502 fallback statements are CI-only, with no branch delta. This closed the gate before the indexed-contact runtime batch.

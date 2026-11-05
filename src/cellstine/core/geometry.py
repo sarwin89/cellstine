@@ -655,6 +655,22 @@ class PeriodicSiteIndex:
         strides = np.array([self.bins[1] * self.bins[2], self.bins[2], 1], dtype=np.int64)
         return (np.asarray(cells, dtype=np.int64) * strides).sum(axis=1)
 
+    def candidates(self, points_direct: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """Return original-index-ordered bucket candidates and validity masks.
+
+        Every site within ``tolerance`` is included, independent of labels;
+        extra sites can appear and require the caller's exact distance check.
+        Query in blocks when a large padded candidate table is unnecessary.
+        Returned arrays own their data and do not expose the stored index.
+        """
+        points = wrap_to_cell(np.asarray(points_direct, dtype=float).reshape(-1, 3))
+        count = points.shape[0]
+        if count == 0 or self.positions.shape[0] == 0:
+            return np.zeros((count, 0), dtype=np.int64), np.zeros((count, 0), dtype=bool)
+        cells = np.floor(points * self.bins).astype(np.int64) % self.bins
+        first, last = _bucket_slices(self._unique, self._offsets, self._encode(cells))
+        return _bucket_candidates(self._entries, first, last)
+
     def match(
         self,
         points_direct: np.ndarray,

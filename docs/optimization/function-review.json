@@ -93,133 +93,133 @@
       "id": "benchmarks/benchmark_geometry.py::_load_cellstine",
       "path": "benchmarks/benchmark_geometry.py",
       "qualified_name": "_load_cellstine",
-      "line": 34,
-      "end_line": 45,
-      "module_sha256": "4ce9217f0a6368ee374178f95ccb55cc17399c0d996f4997ebf06f8a067ddae6",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 35,
+      "end_line": 46,
+      "module_sha256": "47f5d400b6a979e3e3279d8728c1084ce5b254c85c494e5699251fc93d85910c",
+      "status": "optimized—verified",
+      "reason": "Resolved src/cellstine package path and src sys.path match the current checkout; package submodule search locations and __main__ driver guard retain import-only usability. Existing cached cellstine reuse is unchanged.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "benchmarks/benchmark_geometry.py::si_supercell",
       "path": "benchmarks/benchmark_geometry.py",
       "qualified_name": "si_supercell",
-      "line": 60,
-      "end_line": 81,
-      "module_sha256": "4ce9217f0a6368ee374178f95ccb55cc17399c0d996f4997ebf06f8a067ddae6",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 61,
+      "end_line": 82,
+      "module_sha256": "47f5d400b6a979e3e3279d8728c1084ce5b254c85c494e5699251fc93d85910c",
+      "status": "reviewed—unchanged",
+      "reason": "Diamond basis, shift order, fractional division and species cardinality produce the documented cubic n-supercell fixture; only n=1..4 are used by this driver.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "benchmarks/benchmark_geometry.py::graphene_supercell",
       "path": "benchmarks/benchmark_geometry.py",
       "qualified_name": "graphene_supercell",
-      "line": 84,
-      "end_line": 97,
-      "module_sha256": "4ce9217f0a6368ee374178f95ccb55cc17399c0d996f4997ebf06f8a067ddae6",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 85,
+      "end_line": 98,
+      "module_sha256": "47f5d400b6a979e3e3279d8728c1084ce5b254c85c494e5699251fc93d85910c",
+      "status": "reviewed—unchanged",
+      "reason": "Hexagonal row cell, two-site basis, in-plane replication and vacuum coordinate are internally consistent; fixture is graphene 3x3.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "benchmarks/benchmark_geometry.py::sheared_cell",
       "path": "benchmarks/benchmark_geometry.py",
       "qualified_name": "sheared_cell",
-      "line": 100,
-      "end_line": 104,
-      "module_sha256": "4ce9217f0a6368ee374178f95ccb55cc17399c0d996f4997ebf06f8a067ddae6",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 101,
+      "end_line": 105,
+      "module_sha256": "47f5d400b6a979e3e3279d8728c1084ce5b254c85c494e5699251fc93d85910c",
+      "status": "reviewed—unchanged",
+      "reason": "Fixed nonsingular sheared cell and supplied-generator site allocation give deterministic independent sites and species cardinality.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "benchmarks/benchmark_geometry.py::reference_minimum_image_distances",
       "path": "benchmarks/benchmark_geometry.py",
       "qualified_name": "reference_minimum_image_distances",
-      "line": 119,
-      "end_line": 124,
-      "module_sha256": "4ce9217f0a6368ee374178f95ccb55cc17399c0d996f4997ebf06f8a067ddae6",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 120,
+      "end_line": 125,
+      "module_sha256": "47f5d400b6a979e3e3279d8728c1084ce5b254c85c494e5699251fc93d85910c",
+      "status": "reviewed—unchanged",
+      "reason": "Exhaustive finite shift product scores raw displacements and takes distance minima; reach4 is adequate for the listed modest test cells, not a general lattice-domain oracle.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "benchmarks/benchmark_geometry.py::reference_neighbour_counts",
       "path": "benchmarks/benchmark_geometry.py",
       "qualified_name": "reference_neighbour_counts",
-      "line": 127,
-      "end_line": 135,
-      "module_sha256": "4ce9217f0a6368ee374178f95ccb55cc17399c0d996f4997ebf06f8a067ddae6",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 128,
+      "end_line": 136,
+      "module_sha256": "47f5d400b6a979e3e3279d8728c1084ce5b254c85c494e5699251fc93d85910c",
+      "status": "reviewed—unchanged",
+      "reason": "Shift-major image expansion includes every site owner and self; Cartesian differences and <= cutoff match neighbour_images counts for listed fixtures.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "benchmarks/benchmark_geometry.py::timed",
       "path": "benchmarks/benchmark_geometry.py",
       "qualified_name": "timed",
-      "line": 138,
-      "end_line": 142,
-      "module_sha256": "4ce9217f0a6368ee374178f95ccb55cc17399c0d996f4997ebf06f8a067ddae6",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 139,
+      "end_line": 143,
+      "module_sha256": "47f5d400b6a979e3e3279d8728c1084ce5b254c85c494e5699251fc93d85910c",
+      "status": "reviewed—unchanged",
+      "reason": "Single direct callable invocation returns its result while printing elapsed perf_counter; contains no warmup or repeat statistics and makes no universal performance assertion.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "benchmarks/benchmark_geometry.py::check_minimum_image",
       "path": "benchmarks/benchmark_geometry.py",
       "qualified_name": "check_minimum_image",
-      "line": 150,
-      "end_line": 160,
-      "module_sha256": "4ce9217f0a6368ee374178f95ccb55cc17399c0d996f4997ebf06f8a067ddae6",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 151,
+      "end_line": 161,
+      "module_sha256": "47f5d400b6a979e3e3279d8728c1084ce5b254c85c494e5699251fc93d85910c",
+      "status": "reviewed—unchanged",
+      "reason": "Full pair-difference fixture checks exact kernel against independent finite-box reference; naive rint gap is diagnostic only and no tolerance is applied to runtime decisions.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "benchmarks/benchmark_geometry.py::check_neighbour_images",
       "path": "benchmarks/benchmark_geometry.py",
       "qualified_name": "check_neighbour_images",
-      "line": 163,
-      "end_line": 168,
-      "module_sha256": "4ce9217f0a6368ee374178f95ccb55cc17399c0d996f4997ebf06f8a067ddae6",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 164,
+      "end_line": 169,
+      "module_sha256": "47f5d400b6a979e3e3279d8728c1084ce5b254c85c494e5699251fc93d85910c",
+      "status": "reviewed—unchanged",
+      "reason": "Sums returned validity masks per atom and checks exact integer equality with exhaustive image counts; includes self consistently.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "benchmarks/benchmark_geometry.py::check_nearest_points",
       "path": "benchmarks/benchmark_geometry.py",
       "qualified_name": "check_nearest_points",
-      "line": 171,
-      "end_line": 179,
-      "module_sha256": "4ce9217f0a6368ee374178f95ccb55cc17399c0d996f4997ebf06f8a067ddae6",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 172,
+      "end_line": 180,
+      "module_sha256": "47f5d400b6a979e3e3279d8728c1084ce5b254c85c494e5699251fc93d85910c",
+      "status": "reviewed—unchanged",
+      "reason": "Queries are generated deterministically from supplied RNG and compared with a direct Cartesian all-pair distance reduction; periodicity is not incorrectly imposed.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "benchmarks/benchmark_geometry.py::check_site_index",
       "path": "benchmarks/benchmark_geometry.py",
       "qualified_name": "check_site_index",
-      "line": 182,
-      "end_line": 188,
-      "module_sha256": "4ce9217f0a6368ee374178f95ccb55cc17399c0d996f4997ebf06f8a067ddae6",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 183,
+      "end_line": 189,
+      "module_sha256": "47f5d400b6a979e3e3279d8728c1084ce5b254c85c494e5699251fc93d85910c",
+      "status": "reviewed—unchanged",
+      "reason": "Wrapped/integer-shifted, tiny jittered stored sites retain original ordering; direct equality to arange tests all fixture site matches at tolerance1e-4.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "benchmarks/benchmark_geometry.py::main",
       "path": "benchmarks/benchmark_geometry.py",
       "qualified_name": "main",
-      "line": 196,
-      "end_line": 243,
-      "module_sha256": "4ce9217f0a6368ee374178f95ccb55cc17399c0d996f4997ebf06f8a067ddae6",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 197,
+      "end_line": 244,
+      "module_sha256": "47f5d400b6a979e3e3279d8728c1084ce5b254c85c494e5699251fc93d85910c",
+      "status": "reviewed—unchanged",
+      "reason": "Runs four correctness checks on each of three named fixtures before separately timing symmetry, voids and neighbour consumers; all execution remains under __main__, with no new automatic worker policy.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "benchmarks/benchmark_geometry_memory.py::_baseline",
@@ -3395,10 +3395,10 @@
       "qualified_name": "Contact.ratio",
       "line": 80,
       "end_line": 85,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "reviewed—unchanged",
-      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Finite positive covalent denominator is required; otherwise NaN is retained, and distance division schema is unchanged.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/contacts.py::Contact.as_dict",
@@ -3406,10 +3406,10 @@
       "qualified_name": "Contact.as_dict",
       "line": 87,
       "end_line": 94,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "reviewed—unchanged",
-      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Scalar casts, pair ordering, species and derived ratio preserve public serialization contract.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/contacts.py::_labels",
@@ -3417,10 +3417,10 @@
       "qualified_name": "_labels",
       "line": 97,
       "end_line": 103,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "reviewed—unchanged",
-      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "None expands X per atom; supplied labels are copied/stringified and count mismatch raises without mutating caller data.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/contacts.py::_covalent_sum",
@@ -3428,131 +3428,142 @@
       "qualified_name": "_covalent_sum",
       "line": 106,
       "end_line": 108,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "reviewed—unchanged",
-      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Two-label radii query and scalar addition retain established element fallback and ratio behavior.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
+    },
+    {
+      "id": "src/cellstine/core/contacts.py::_contact_candidate_index",
+      "path": "src/cellstine/core/contacts.py",
+      "qualified_name": "_contact_candidate_index",
+      "line": 111,
+      "end_line": 138,
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
+      "status": "optimized—verified",
+      "reason": "Optimization-only finite positive-radius, full-input finite, second-count16384, scale, coordinate and conditioning guards preserve dense fallback; expanded cutoff and finite20-bit spacing checks precede index integer casts. No new rejection policy is introduced.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/contacts.py::closest_contact",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "closest_contact",
-      "line": 111,
-      "end_line": 167,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "line": 141,
+      "end_line": 213,
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "optimized—verified",
-      "reason": "Retained prior verified exact contact reduction and diameter tiling; this module review revalidated existing contracts and reports",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "First dense strip and65536/second-count strip boundaries are retained. Later raw unwrapped differences use existing bounded kernel and sqrt; index candidates are original-index sorted. Invalid padding is zeroed before scoring and masked to infinity; strict distance update preserves first pair and NaN fallback. Empty groups and delayed label validation are unchanged; tables remain at most original strip pair budget and second-index spread is capped.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/contacts.py::closest_contact_cartesian",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "closest_contact_cartesian",
-      "line": 170,
-      "end_line": 188,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "line": 216,
+      "end_line": 234,
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "reviewed—unchanged",
-      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Validated row lattice inverse converts each group once and forwards original label ownership to changed fractional implementation; empty/validation behavior is unchanged.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/contacts.py::layer_contact_report",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "layer_contact_report",
-      "line": 191,
-      "end_line": 225,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "line": 237,
+      "end_line": 271,
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "reviewed—unchanged",
-      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Calls closest Cartesian contact and existing notes, includes unchanged public distance/contact schema, and does not reorder species or groups.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/contacts.py::unwrap_group",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "unwrap_group",
-      "line": 228,
-      "end_line": 244,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "line": 274,
+      "end_line": 290,
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "reviewed—unchanged",
-      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "First-site anchor plus shortest fractional images returns a coherent copy without mutating positions; empty reshape result and wrapping conventions remain unchanged.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/contacts.py::group_diameter",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "group_diameter",
-      "line": 247,
-      "end_line": 271,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "line": 293,
+      "end_line": 317,
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "optimized—verified",
-      "reason": "Retained prior verified exact contact reduction and diameter tiling; this module review revalidated existing contracts and reports",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Upper-triangle block traversal covers all unordered atom pairs, reduces maximum squared Cartesian distance, retains NaN propagation and bounds temporary storage.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/contacts.py::self_image_contact",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "self_image_contact",
-      "line": 274,
-      "end_line": 330,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "line": 320,
+      "end_line": 376,
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "optimized—verified",
-      "reason": "Verified bounded pair/child allocations or coarse-grid setup with regressions, full-suite coverage, independent review and comparative measurements",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Shortest-translation plus group-diameter cutoff bounds translation enumeration; nonzero shift order and first-row strips preserve exact self-image pair tie order and label ownership.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/contacts.py::structure_contact",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "structure_contact",
-      "line": 333,
-      "end_line": 398,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "line": 379,
+      "end_line": 444,
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "reviewed—unchanged",
-      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Starts with shortest self-translation, grows radius only to that ceiling, excludes coincident distances and keeps sorted distinct-pair order/strict improvements; report identity unchanged.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/contacts.py::structure_contact_report",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "structure_contact_report",
-      "line": 401,
-      "end_line": 433,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "line": 447,
+      "end_line": 479,
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "reviewed—unchanged",
-      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Empty report, serialized contact, ratio-derived notes and self-repeat explanation preserve established output schema and diagnosis.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/contacts.py::contact_notes",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "contact_notes",
-      "line": 436,
-      "end_line": 474,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "line": 482,
+      "end_line": 520,
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "reviewed—unchanged",
-      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Finite ratio comparisons, overlap/bond thresholds and requested-normal-clearance explanation are unchanged; no candidate pruning enters diagnostic chemistry.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/contacts.py::contact_report",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "contact_report",
-      "line": 477,
-      "end_line": 516,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "line": 523,
+      "end_line": 562,
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "reviewed—unchanged",
-      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Optional cross-group contact and independent self-image measurement preserve group/species forwarding, note order and public report keys.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/contacts.py::merge_notes",
       "path": "src/cellstine/core/contacts.py",
       "qualified_name": "merge_notes",
-      "line": 519,
-      "end_line": 526,
-      "module_sha256": "e3b4771ca6a62ddb370fe125b9366918060ef4c200668c7e87cdb24d49620257",
+      "line": 565,
+      "end_line": 572,
+      "module_sha256": "6fe8190a3d8e3ee6db7707774c75b279b80d5741dabe901c9b9928987b8fae93",
       "status": "reviewed—unchanged",
-      "reason": "Inspected scientific algorithm, callers, edge cases, tests and ordering/tolerance conventions; retain established behavior",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Copies existing notes and appends only unseen report notes in encounter order; no ownership mutation.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/covering.py::grid_box_reach",
@@ -3901,10 +3912,10 @@
       "qualified_name": "shortest_lattice_vector_length",
       "line": 108,
       "end_line": 119,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Cached reduced-cell shortest vector is reused by contacts and neighbour ceilings; complete existing body unchanged.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::_shortest_vector_length",
@@ -3912,10 +3923,10 @@
       "qualified_name": "_shortest_vector_length",
       "line": 122,
       "end_line": 129,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Reduced-lattice nonzero integer box enumeration retains existing shortest norm reduction and no candidate-search coupling.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::_unreduced_shortest_vector_length",
@@ -3923,10 +3934,10 @@
       "qualified_name": "_unreduced_shortest_vector_length",
       "line": 132,
       "end_line": 173,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "optimized—verified",
-      "reason": "Verified complete coefficient-box shortest-vector fallback on reduction failure; ordinary reduced path unchanged; bounded allocation and explicit representability limits",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Exceptional unreduced-cell reciprocal coefficient bounds, streamed inner-axis chunks and explicit representability limits preserve the previously reviewed exact fallback.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::shortest_plane_vector_length",
@@ -3934,10 +3945,10 @@
       "qualified_name": "shortest_plane_vector_length",
       "line": 176,
       "end_line": 184,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Lagrange-Gauss reduced first vector norm preserves existing planar shortest-translation semantics.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::image_shift_reach",
@@ -3945,10 +3956,10 @@
       "qualified_name": "image_shift_reach",
       "line": 187,
       "end_line": 197,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Reciprocal plane spacings and existing floor margin produce nonnegative image translation reach with unchanged arithmetic.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::lattice_shifts",
@@ -3956,10 +3967,10 @@
       "qualified_name": "lattice_shifts",
       "line": 200,
       "end_line": 205,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Three-axis Cartesian product and ij order preserve translation-major ownership used by image consumers.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::plane_shift_reach",
@@ -3967,10 +3978,10 @@
       "qualified_name": "plane_shift_reach",
       "line": 208,
       "end_line": 233,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Two-dimensional pseudo-inverse reciprocal reach and floor margin are unchanged; no periodic site candidates enter planar enumeration.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::plane_shifts",
@@ -3978,10 +3989,10 @@
       "qualified_name": "plane_shifts",
       "line": 236,
       "end_line": 241,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Two-axis ij product preserves existing planar translation ordering.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::plane_minimum_image",
@@ -3989,10 +4000,10 @@
       "qualified_name": "plane_minimum_image",
       "line": 244,
       "end_line": 290,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "optimized—verified",
-      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Reduced-plane raw displacement conversion, rounded seed, half-shortest settlement, complete reach box and bounded row chunks retain first minimum-image selection.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::plane_minimum_image_distances",
@@ -4000,10 +4011,10 @@
       "qualified_name": "plane_minimum_image_distances",
       "line": 293,
       "end_line": 297,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Existing shortest Cartesian plane vectors are reduced through einsum and sqrt with unchanged rounding.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::atom_images",
@@ -4011,10 +4022,10 @@
       "qualified_name": "atom_images",
       "line": 300,
       "end_line": 312,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Reach plus one expands shift-major/site-major raw fractional image tensor then applies row cell; ownership modulo site count is unchanged.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::_reduced_cell",
@@ -4022,10 +4033,10 @@
       "qualified_name": "_reduced_cell",
       "line": 334,
       "end_line": 360,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "optimized—verified",
-      "reason": "Verified complete coefficient-box shortest-vector fallback on reduction failure; ordinary reduced path unchanged; bounded allocation and explicit representability limits",
-      "evidence": "docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Validated-cell bytes key, reduction failure fallback, inverse transform, reciprocal data and bounded cache hygiene remain unchanged; candidate path shares precisely the same scoring state.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::minimum_image_displacements",
@@ -4033,10 +4044,10 @@
       "qualified_name": "minimum_image_displacements",
       "line": 363,
       "end_line": 413,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Raw deltas enter reduced fractional transform, rounded seed, half-shortest settlement and complete boxed exact search unchanged; row grouping does not replace coordinates.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::minimum_image_distances",
@@ -4044,10 +4055,10 @@
       "qualified_name": "minimum_image_distances",
       "line": 416,
       "end_line": 425,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Squared norm and sqrt of exact shortest vectors preserve score rounding used in first dense contact strip.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::minimum_image_fractional",
@@ -4055,10 +4066,10 @@
       "qualified_name": "minimum_image_fractional",
       "line": 428,
       "end_line": 443,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Shortest Cartesian displacement times original inverse returns original-basis fractional image, preserving unwrap and midpoint consumers.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::bounded_minimum_image_squared",
@@ -4066,10 +4077,10 @@
       "qualified_name": "bounded_minimum_image_squared",
       "line": 446,
       "end_line": 500,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Existing half-shortest radius argument screens only provably farther seeds, exact-searches hard rows, and falls back to full image search at large radii; unchanged arithmetic is reused after pruning.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::periodic_midpoints",
@@ -4077,10 +4088,10 @@
       "qualified_name": "periodic_midpoints",
       "line": 503,
       "end_line": 524,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Shape equality and shortest second-minus-first image precede wrapped half-step; original inputs remain unchanged.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::pairwise_minimum_image_distances",
@@ -4088,10 +4099,10 @@
       "qualified_name": "pairwise_minimum_image_distances",
       "line": 527,
       "end_line": 554,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Dense public matrix retains left/right shapes, empty dimensions,256-row inner strips and raw left-minus-right subtraction; first contact strip is unchanged.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::_bucket_table",
@@ -4099,10 +4110,10 @@
       "qualified_name": "_bucket_table",
       "line": 562,
       "end_line": 569,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Stable argsort retains per-key entry order; unique starts and terminal offset make exact empty/hit slices.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::_bucket_slices",
@@ -4110,10 +4121,10 @@
       "qualified_name": "_bucket_slices",
       "line": 572,
       "end_line": 582,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Searchsorted/clipping and hit mask map missing keys to zero-length slices safely; empty unique table is handled without indexing.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::_bucket_candidates",
@@ -4121,10 +4132,10 @@
       "qualified_name": "_bucket_candidates",
       "line": 585,
       "end_line": 597,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "optimized—verified",
-      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Maximum slice width sets padded table; invalid lanes use a safe offset before gather; fancy-indexed return owns data and explicit valid mask identifies padding.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::PeriodicSiteIndex.__init__",
@@ -4132,10 +4143,10 @@
       "qualified_name": "PeriodicSiteIndex.__init__",
       "line": 612,
       "end_line": 652,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Wrapped owned positions, per-site labels, clipped20-bit bins,27-neighbour spread and lexicographic unique(bucket,site) rows ensure deduplicated ascending original indexes in each stable bucket.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::PeriodicSiteIndex._encode",
@@ -4143,164 +4154,175 @@
       "qualified_name": "PeriodicSiteIndex._encode",
       "line": 654,
       "end_line": 656,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "At most20 bits per axis keeps three-axis mixed-radix keys inside signed int64; axis order matches constructor and candidate lookup.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
+    },
+    {
+      "id": "src/cellstine/core/geometry.py::PeriodicSiteIndex.candidates",
+      "path": "src/cellstine/core/geometry.py",
+      "qualified_name": "PeriodicSiteIndex.candidates",
+      "line": 658,
+      "end_line": 672,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
+      "status": "optimized—verified",
+      "reason": "Uses same wrapped query cells, encoding and slices as match; returns owned padded original-index table and mask. Label filtering is intentionally absent; empty query/site shapes are correct. Contact caller supplies conservative expanded tolerance and bounds query rows.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::PeriodicSiteIndex.match",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "PeriodicSiteIndex.match",
-      "line": 658,
-      "end_line": 717,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "line": 674,
+      "end_line": 733,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "optimized—verified",
-      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Existing label validation, bounded padded chunks, owned-buffer subtraction, invalid-lane zeroing and distance-versus-lowest-index policy remain bytecode-AST identical; no redirection to new candidate API.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::PeriodicSiteIndex.find",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "PeriodicSiteIndex.find",
-      "line": 719,
-      "end_line": 722,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "line": 735,
+      "end_line": 738,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "One-point match delegation and scalar int conversion preserve label semantics and missing -1 result.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::CartesianGrid.__init__",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "CartesianGrid.__init__",
-      "line": 735,
-      "end_line": 754,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "line": 751,
+      "end_line": 770,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Point pitch, bounding origin, neighbour spread and stable bucket construction are unchanged; new periodic API does not affect Cartesian consumers.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::CartesianGrid._cells",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "CartesianGrid._cells",
-      "line": 756,
-      "end_line": 757,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "line": 772,
+      "end_line": 773,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Original Cartesian offset/pitch floor conversion is retained.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::CartesianGrid._encode",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "CartesianGrid._encode",
-      "line": 759,
-      "end_line": 765,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "line": 775,
+      "end_line": 781,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Border clamping and mixed-radix encoding retain conservative distant-query candidate behavior.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::CartesianGrid.candidates",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "CartesianGrid.candidates",
-      "line": 767,
-      "end_line": 780,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "line": 783,
+      "end_line": 796,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "optimized—verified",
-      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Existing empty handling, Cartesian key lookup and owned padded table delegation are unchanged.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::_occupancy_pitch",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "_occupancy_pitch",
-      "line": 783,
-      "end_line": 813,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "line": 799,
+      "end_line": 829,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "optimized—verified",
-      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Active Cartesian axes, density estimate and two occupancy adjustments remain unchanged; no intrinsic-rank or universal scaling claim added.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::NearestPointQuery.__init__",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "NearestPointQuery.__init__",
-      "line": 834,
-      "end_line": 853,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "line": 850,
+      "end_line": 869,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Point alias behavior, block budget, supplied/automatic pitch floors, span and lazy grid list are unchanged.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::NearestPointQuery._grid",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "NearestPointQuery._grid",
-      "line": 855,
-      "end_line": 858,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "line": 871,
+      "end_line": 874,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Geometric pitch doubling and cached Cartesian grids are unchanged, independent of new periodic candidate path.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::NearestPointQuery.distances",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "NearestPointQuery.distances",
-      "line": 860,
-      "end_line": 912,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "line": 876,
+      "end_line": 928,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "optimized—verified",
-      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Linear slice lookup, bounded candidate materialization, valid-only reduction, certified pitch stopping and blocked dense fallback retain exact nearest behavior and owned gather mutation.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::nearest_point_distances",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "nearest_point_distances",
-      "line": 915,
-      "end_line": 928,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "line": 931,
+      "end_line": 944,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Single-shot wrapper forwards pitch/block to unchanged nearest engine.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::neighbour_images",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "neighbour_images",
-      "line": 931,
-      "end_line": 958,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "line": 947,
+      "end_line": 974,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Shift-major atom images, Cartesian candidate filtering and <= squared cutoff retain returned images/indices/valid schema; no index substitution.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::periodic_neighbour_pairs",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "periodic_neighbour_pairs",
-      "line": 961,
-      "end_line": 1001,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "line": 977,
+      "end_line": 1017,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "reviewed—unchanged",
-      "reason": "Inspected algorithm, callers, edge cases and regression coverage; preserve established bounds, ordering and tolerances; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Image-owner modulo count, first<second filter and sorted unique pair codes preserve exact pair identity and deduplication.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/geometry.py::shortest_interatomic_distance",
       "path": "src/cellstine/core/geometry.py",
       "qualified_name": "shortest_interatomic_distance",
-      "line": 1004,
-      "end_line": 1037,
-      "module_sha256": "b586e9aba8edcb7b15195ab3fe534d3340f8d6c8505c53ca6e0803a360b17601",
+      "line": 1020,
+      "end_line": 1053,
+      "module_sha256": "fb697764971ab7287d7d09e43f25b62462558a8f2643695fe2fdf3cdd9f6f104",
       "status": "optimized—verified",
-      "reason": "Verified bounded allocations or search heuristic with regression tests, full suite, exact baseline comparisons and recorded benchmark; body unchanged against be43f26, normal-path comparisons/full suite revalidated",
-      "evidence": "docs/optimization/part-02a-geometry.md; docs/optimization/part-02b-contacts-covering.md"
+      "reason": "Self-translation ceiling, mean-density initial radius and monotone doubling retain positive noncoincident distance contract and bounded vacuum search.",
+      "evidence": "docs/optimization/part-05h-indexed-contacts.md;66complete callable body independent review;243focused +3701full/4skips/81warnings;284Pythonfreeze; exact predecessor/final small+large nativebuild signatures, repaired independent geometry benchmark and interleaved contact/allocation probes; wheel/Twine/144runtimebytes +2installedenvs; finalsdist and exact-headCI/artifact before next production batch"
     },
     {
       "id": "src/cellstine/core/idealisation.py::close_matrix_group",
