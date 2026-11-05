@@ -866,9 +866,9 @@
       "line": 52,
       "end_line": 59,
       "module_sha256": "0c9bb0a223cf2d75f7a685bdf841155e416070b94fa898f42e190533d3e449f4",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Recognized public names import lazily and cache only successful lookups; missing names raise AttributeError. Current mapping and __all__ agree on all19 exported names; imported dependency failures propagate unchanged.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/adsorbate/adsorbate.py::_contact_summary",
@@ -4881,9 +4881,9 @@
       "line": 18,
       "end_line": 30,
       "module_sha256": "c8d480b03423cd5ac363ff115c5104df79b9049cffd17d42b2e1b3097033eab7",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Strip, minus/decimal substitution, Unicode alphanumeric filtering and x fallback preserve filename tokens. Callers embed these in longer names, so reserved full-path validation is outside this helper contract.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/outputs.py::reserve_default_file",
@@ -4968,10 +4968,10 @@
       "qualified_name": "_wrap_to_cell",
       "line": 74,
       "end_line": 80,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "reviewed—unchanged",
+      "reason": "Modulo creates owned float output and strict upper/lower FACE_TOLERANCE comparisons preserve zero-face naming without mutating the image input.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::Assignment.size",
@@ -4979,10 +4979,10 @@
       "qualified_name": "Assignment.size",
       "line": 102,
       "end_line": 103,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "reviewed—unchanged",
+      "reason": "Length of assigned-column vector converted to Python int; no dependence on cost shape or mutable cached size.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::Assignment.dual_bound",
@@ -4990,175 +4990,175 @@
       "qualified_name": "Assignment.dual_bound",
       "line": 105,
       "end_line": 108,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "reviewed—unchanged",
+      "reason": "Separately sums both potential vectors then adds, preserving floating summation order and certificate objective.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::Assignment.certificate_error",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "Assignment.certificate_error",
       "line": 110,
-      "end_line": 122,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 152,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "optimized—verified",
+      "reason": "Normal square finite certificates use row strips, identical left-associative subtractions and row-selected tightness. Finite safe-magnitude checks prevent the altered NaN/max propagation in fast path; nonfinite, non-square, negative-index and unusual dtype/shape certificates fall back to original expression. Empty certificate uses the original fallback and returns0. Single strip is at least one full row, so65536 is not a universal value cap when size exceeds65536. Final small-input threshold selects bounded certificate processing only for matrix.size>65536; smaller matrices retain the exact bottom legacy slack/min/max expression, avoiding shape/finite-scan overhead. Threshold does not alter large square eligibility, unusual/nonfinite fallback or arithmetic order.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::optimal_assignment",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "optimal_assignment",
-      "line": 125,
-      "end_line": 193,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 155,
+      "end_line": 223,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "reviewed—unchanged",
+      "reason": "Square/finite validation precedes unchanged shortest augmenting-path solver. Virtual indices, strict better comparison, first argmin ties, potential updates, final sums and copied real potentials retain exact established solver policy. Extreme finite costs can still overflow internal subtraction; no expanded numerical-domain claim.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::AtomMatching.distances",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "AtomMatching.distances",
-      "line": 213,
-      "end_line": 214,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 243,
+      "end_line": 244,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "reviewed—unchanged",
+      "reason": "Rowwise Cartesian squared norm followed by sqrt produces one distance per atom without altering stored displacements.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::_species_by_atom",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "_species_by_atom",
-      "line": 217,
-      "end_line": 218,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 247,
+      "end_line": 248,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "reviewed—unchanged",
+      "reason": "Expands header counts through shared expand_species then stringifies. Strict migration header guard now runs before this deliberately permissive shared expander; ordinary duplicate headers stay in source order.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::_pair_cost_matrix",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "_pair_cost_matrix",
-      "line": 221,
-      "end_line": 230,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 251,
+      "end_line": 271,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "optimized—verified",
+      "reason": "Final row-count times column-count threshold uses exact original dense delta, metric and squared-distance expression for products<=65536, including zero-row/zero-column rectangular shape and retained metric lattice validation. Larger products retain reviewed preallocation and row blocking with identical end-minus-start and distance-square arithmetic. Nonnegative Python shape product avoids fixed-width overflow. Large branch necessarily has positive columns, so65536//columns cannot divide by zero. Result remains quadratic and at least one full row may exceed nominal strip budget.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::match_atoms",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "match_atoms",
-      "line": 233,
-      "end_line": 282,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 274,
+      "end_line": 327,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "optimized—verified",
+      "reason": "Both endpoint cardinalities and sorted compositions are checked before grouping. Dict buckets preserve original index order and sorted species traversal, therefore cost submatrix ordering, solver ties, total accumulation and partners are retained. Removed displacement allocation was overwritten before any read. Final minimum-image displacement still runs after matching, including empty matching.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::MigrationPath.image_count",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "MigrationPath.image_count",
-      "line": 303,
-      "end_line": 304,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 348,
+      "end_line": 349,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "reviewed—unchanged",
+      "reason": "Returns actual tuple length, independent of requested intermediate count; no new cache or ownership change.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::MigrationPath.path_length",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "MigrationPath.path_length",
-      "line": 307,
-      "end_line": 310,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 352,
+      "end_line": 355,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "reviewed—unchanged",
+      "reason": "Square root of aggregate squared assignment cost retains configuration-space norm convention.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::MigrationPath.image_spacing",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "MigrationPath.image_spacing",
-      "line": 313,
-      "end_line": 316,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 358,
+      "end_line": 361,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "reviewed—unchanged",
+      "reason": "Divides length by intermediate_count+1; build requires positive image count, so valid constructed records have nonzero denominator.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::MigrationPath.maximum_atom_displacement",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "MigrationPath.maximum_atom_displacement",
-      "line": 319,
-      "end_line": 321,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 364,
+      "end_line": 366,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "reviewed—unchanged",
+      "reason": "Computes maximum per-atom norm with explicit0 empty behavior; no reduction failure on empty vectors.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::MigrationPath.moved_atom_count",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "MigrationPath.moved_atom_count",
-      "line": 324,
-      "end_line": 325,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 369,
+      "end_line": 370,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "reviewed—unchanged",
+      "reason": "Counts distances strictly above unchanged1e-8 displacement threshold; scientific tolerance unchanged.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::MigrationPath.spacings",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "MigrationPath.spacings",
-      "line": 327,
-      "end_line": 335,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 372,
+      "end_line": 380,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "reviewed—unchanged",
+      "reason": "Iterates adjacent stored images, applies exact periodic displacement then row-cell Cartesian map and full configuration norm. Returns a fresh float array, including shape(0,) if no gaps.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::MigrationPath.shortest_contacts",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "MigrationPath.shortest_contacts",
-      "line": 337,
-      "end_line": 343,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 382,
+      "end_line": 388,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "reviewed—unchanged",
+      "reason": "Delegates each stored image to shared periodic contact metric with unchanged row lattice convention and array return type.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::_check_same_cell",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "_check_same_cell",
-      "line": 346,
-      "end_line": 353,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 391,
+      "end_line": 407,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "optimized—verified",
+      "reason": "Both endpoints must be finite3x3 arrays and tolerance finite/nonnegative, including zero. Maximum absolute entry difference still uses strict greater refusal. Opposite enormous finite cells can overflow difference toinf and are refused; no invalid acceptance introduced.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/pathway.py::build_migration_path",
       "path": "src/cellstine/core/pathway.py",
       "qualified_name": "build_migration_path",
-      "line": 356,
-      "end_line": 430,
-      "module_sha256": "a849e054d80f52a0e187c6aa404437d9883a600321a92b802b8c60e20f35fb8f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 410,
+      "end_line": 500,
+      "module_sha256": "5cb8af139d8bff113249c3515da49eb976b691889adf1dbe805e478c5a501291",
+      "status": "optimized—verified",
+      "reason": "Count/address guard runs before matching and image allocation. Valid source headers are coerced once and checked against positions; end species counts explicitly preserve None/empty fallback and now support NumPy sequences. Missing end species intentionally retains original ignoring-end_counts convention. Composition/no-match ordering checks, assignment policy, minimum-image step, interpolation/wrapping and output header tuples remain unchanged. Byte guard is an early impossibility check, not a practical RAM quota.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/core/planar_voids.py::_plane_frame",
@@ -8971,264 +8971,275 @@
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_translation_maps_structure",
       "line": 26,
-      "end_line": 41,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 52,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "optimized—verified",
+      "reason": "Finite ordinary point inputs retain exactly the original componentwise minimum-image fractional coincidence and species edges. Any row without an edge makes perfect matching impossible. Since graph is square, n distinct first-choice targets prove a bijection immediately. Ambiguous case passes boolean complement edges to optimal_assignment, whose float coercion makes exact0 feasible/1 forbidden costs; optimum0 is equivalent to a perfect feasible matching. This fixes Hall-deficit without substituting Cartesian tolerance or changing solver. Empty structure retainsTrue. Lazy core.pathway import has no surface back-edge and no new dependency. DenseNxN edge/cost storage and worst-caseO(N^3) ambiguous solve remain explicit limits.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_pure_translations",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_pure_translations",
-      "line": 62,
-      "end_line": 75,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 73,
+      "end_line": 86,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "Expands species to declared atoms then delegates actual translation enumeration to symmetry3d.translation_group with fixed default symprec and no spglib dependency. It does not call flawed _translation_maps_structure helper.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_centering_label",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_centering_label",
-      "line": 78,
-      "end_line": 99,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 89,
+      "end_line": 110,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "Matches expected nonzero standard translation sets only at exact expected group order, retainingP trivial and X<count> other-group output. Valid decorated translation group is a precondition; arbitrary duplicate-vector validation is not added.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_centering_type",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_centering_type",
-      "line": 102,
-      "end_line": 105,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 113,
+      "end_line": 116,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "Simple composition of production pure translation group and centering label, retaining delegated scientific tolerance.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_standard_centering_matrices",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_standard_centering_matrices",
-      "line": 108,
-      "end_line": 172,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 119,
+      "end_line": 183,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "FreshP,F,I,A,B,C basis matrices have expected1,1/4,1/2 determinants and row signs; no sharing or mutation leaks between calls.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_primitive_translation_lattice",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_primitive_translation_lattice",
-      "line": 175,
-      "end_line": 199,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 186,
+      "end_line": 210,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "Named centerings use retained right-handed textbook matrix times lattice; unknown higher-index group delegates actual translation-lattice basis. Standard ordering stays bit-compatible and no simplistic half-cell-only guess replaces production group computation.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_reciprocal_normal",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_reciprocal_normal",
-      "line": 202,
-      "end_line": 211,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 213,
+      "end_line": 222,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "Rejects zero Miller triple; inverse-transpose row combination and normalization match row-vector reciprocal convention. Finite nonsingular scientific lattice preconditions remain; arbitrary extreme float/Miller values are not newly certified.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_select_surface_pair",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_select_surface_pair",
-      "line": 214,
-      "end_line": 268,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 225,
+      "end_line": 279,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "Candidate lengths then rounded-coordinate lexsort determine stable candidate order; triangular pair scan and lexicographic(max length,sum,area) keep earliest ties. Positive orientation and single hexagonal shear retain existing conventions. Guarantee is selection within supplied finite candidate set, not completeness of a caller search box.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_primitive_surface_vectors_from_lattice",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_primitive_surface_vectors_from_lattice",
-      "line": 271,
-      "end_line": 303,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
+      "line": 282,
+      "end_line": 314,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Actual fixed coefficient-box fallback is incomplete even for ordinary finite skew lattice [[1,0,0],[10,.1,0],[0,0,1]]. search4 yields lengths1 and5.001 while -10a+b=[0,.1,0] is shorter; valid selected pair does not establish successive minima. Deferred for complete search/bounded proof; bounded heuristic already acknowledged in docstring.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_surface_vector_search_limit",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_surface_vector_search_limit",
-      "line": 306,
-      "end_line": 307,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 317,
+      "end_line": 318,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "Returns max(5,2max|hkl|+3) as existing heuristic budget. Miller magnitude does not bound shortest-vector coefficients in an arbitrarily skew primitive basis, so this must not be used as a completeness certificate; defer with fallback design. Disposition narrowed after follow-up: this helper/wrapper itself has been reviewed for the stated finite ordinary input/explicit budget contract; delegated unsupported-domain or cubic-resource limitations remain documented, not a reason to call its own inspected statements unreviewed. No unbounded completeness or resource guarantee is conferred.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_integer_plane_form",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_integer_plane_form",
-      "line": 310,
-      "end_line": 348,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 321,
+      "end_line": 359,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "Clear denominators up to720 with unchanged relative acceptance threshold, divide by gcd and returnNone on nonfinite/zero weights. Sound intended rational-centering domain is retained, but this is floating rational recognition rather than universal exact arithmetic; general numeric domain remains deferred with primitive fallback. Disposition narrowed after follow-up: this helper/wrapper itself has been reviewed for the stated finite ordinary input/explicit budget contract; delegated unsupported-domain or cubic-resource limitations remain documented, not a reason to call its own inspected statements unreviewed. No unbounded completeness or resource guarantee is conferred.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_primitive_surface_vectors",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_primitive_surface_vectors",
-      "line": 351,
-      "end_line": 390,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
+      "line": 362,
+      "end_line": 401,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Rational form uses existing integer kernel, plane reduction and eight short combinations then stable selector. When recognition fails it delegates fixed-box heuristic; therefore full-domain primitive/successive-minimum guarantee cannot be promoted despite ordinary rational crystallographic path remaining unchanged.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_surface_coordinate_frame",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_surface_coordinate_frame",
-      "line": 393,
-      "end_line": 409,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 404,
+      "end_line": 420,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "Normalizesa, orthogonalizesb, rejects dependent pair and flipsy for handedness. Dot-product2D basis maps the unchanged primitive vectors into canonical surface frame.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_deduplicate_scalar_levels",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_deduplicate_scalar_levels",
-      "line": 412,
-      "end_line": 431,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 423,
+      "end_line": 444,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "optimized—verified",
+      "reason": "Tolerance guard precedes copying/sorting and rejects negative/nonfinite values, including empty input. Explicit owned copy removes caller mutation; right searchsorted retains last-kept greedy rule and accepts zero tolerance. Finite scientific projection input is assumed; no new nonfinite-value clustering policy is invented.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_group_surface_atoms_by_species",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_group_surface_atoms_by_species",
-      "line": 434,
-      "end_line": 463,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 447,
+      "end_line": 476,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "optimized—verified",
+      "reason": "Order is now first-occurrence unique dictionary header order, then newly encountered labels. Per-species atom/flag order and defaultTTT for mixed flag presence are retained, without duplicating a repeated header species. Existing empty result shape(0,) remains; nonempty primitive/transform production callers are expected, so no expanded empty-group-shape contract is claimed.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_integer_shift_grid_3d",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_integer_shift_grid_3d",
-      "line": 466,
-      "end_line": 468,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 479,
+      "end_line": 481,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "i/j/k meshgrid C traversal and float coefficient dtype are unchanged, but a full cubic grid and meshgrid temporaries remain. Large layer/shear requests still have substantial resource exposure; defer resource optimization to complete consumer enumeration design. Disposition narrowed after follow-up: this helper/wrapper itself has been reviewed for the stated finite ordinary input/explicit budget contract; delegated unsupported-domain or cubic-resource limitations remain documented, not a reason to call its own inspected statements unreviewed. No unbounded completeness or resource guarantee is conferred.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_integer_shift_grid_2d",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_integer_shift_grid_2d",
-      "line": 471,
-      "end_line": 473,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 484,
+      "end_line": 486,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "i/j meshgrid C traversal and float coefficient dtype are unchanged. Full square search size grows with largest shear and determinant, even for small output multiplicity; deferred resource/coset work cannot be replaced by a wrapper-only determinant change. Disposition narrowed after follow-up: this helper/wrapper itself has been reviewed for the stated finite ordinary input/explicit budget contract; delegated unsupported-domain or cubic-resource limitations remain documented, not a reason to call its own inspected statements unreviewed. No unbounded completeness or resource guarantee is conferred.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_build_native_primitive_surface_cell",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_build_native_primitive_surface_cell",
-      "line": 476,
-      "end_line": 715,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
+      "line": 489,
+      "end_line": 728,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Full body preserves primitive frame, layer projection/selection, period refusal, c-spacing, vacuum placement and species grouping. Cubic image grid plus atoms-times-shifts projection matrix remain and finite search can omit required representatives; no complete-domain/resource approval follows merely from scalar ownership fix. Defer full enumeration/resource algorithm with explicit evidence.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_build_native_primitive_surface_cell._layer_atoms",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_build_native_primitive_surface_cell._layer_atoms",
-      "line": 552,
-      "end_line": 593,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
+      "line": 565,
+      "end_line": 606,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Per-source-atom matched shifts preserve first accepted species/uv/flag order, round9 unique occurrence and physical2D comparison. Growing accepted arrays and componentwise wrapping in skew coordinates remain; scientific equivalence of replacing this with exact nearest images/spatial indexing needs separate investigation, so deferred rather than silently certified.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_build_native_primitive_surface_cell._layer",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_build_native_primitive_surface_cell._layer",
-      "line": 597,
-      "end_line": 602,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 610,
+      "end_line": 615,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "Call-local cache keys layer offsets and computes absent entries using start-indexed levels. Existing empty list is cached because onlyNone means missing; no cross-call mutable state.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_build_native_primitive_surface_cell._layer_signature",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_build_native_primitive_surface_cell._layer_signature",
-      "line": 604,
-      "end_line": 612,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 617,
+      "end_line": 625,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "Wrapped round6 species/u/v entries form sorted origin-fixed tuple, intentionally excluding flags. Repeated rounding/wrapping preserves periodic boundary signature; no geometric translation freedom is silently added.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_build_native_primitive_surface_cell._stacking_period",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_build_native_primitive_surface_cell._stacking_period",
-      "line": 616,
-      "end_line": 641,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 629,
+      "end_line": 654,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "reviewed—unchanged",
+      "reason": "Finite cap and at least two spans are explicitly tested; both spacing and every origin-fixed layer signature must agree, returningNone on no certified period. It does not claim absence of longer periods; refusal is propagated by vacuum-free builder.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_structure_from_transform",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_structure_from_transform",
-      "line": 718,
-      "end_line": 777,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
+      "line": 731,
+      "end_line": 825,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Follow-up ordinary missing-image fix preserves the first coefficient cube and exact collection statements, then retries only when final count differs from determinant times declared atom count. For finite integer row transform and finite tol>=0, every accepted old-axis shift satisfies abs(n_j) <= (1+tol)*sum_i(abs(T_ij))+maxabs(base), so new max-column-L1 cube plus2 shells contains exact accepted representatives. Returned record now requires expected cardinality. Existing23-versus27 ordinary case is addressed by wider enumeration and coordinator regression. Output/grid byte-address guards reject impossible arrays; first-pass successful ordering/flags are retained. Still deferred for arbitrary float conditioning/huge integers, practical cubic memory bounds and cross-species coincidence policy; this is not full general-transform certification. Final guard converts tolerance once and rejects negative or nonfinite values before planar dispatch, inverse, grid or fallback work; zero remains allowed and finite ordinary values preserve earlier behavior.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
+    },
+    {
+      "id": "src/cellstine/interface/surface/surface_cell.py::_structure_from_transform._collect",
+      "path": "src/cellstine/interface/surface/surface_cell.py",
+      "qualified_name": "_structure_from_transform._collect",
+      "line": 751,
+      "end_line": 783,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
+      "status": "deferred—with reason",
+      "reason": "New nested collector retains original shifts-through-atom-loop statement AST exactly after sole search_pad->limit parameter substitution; checked directly against base. New width-cubed address guard precedes grid allocation. Source-atom, grid-image and first-unique order, modulo arithmetic, round9 pre-dedup, global fractional near-dedup, selective flags and repeatedvstack behavior are preserved. Local lists restart on each retry, so stale first-pass flags cannot mix with fallback. Resource and cross-species dedup limits remain; inherited malformed flag/header policy is unchanged.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_structure_from_inplane_transform",
       "path": "src/cellstine/interface/surface/surface_cell.py",
       "qualified_name": "_structure_from_inplane_transform",
-      "line": 780,
-      "end_line": 866,
-      "module_sha256": "e1afac1aa9c840d032ec8e854ef37256750462e4f1c193dd2f00622e103da69f",
+      "line": 828,
+      "end_line": 914,
+      "module_sha256": "fb10ec08bf118795919c6c49e6f52ccf9168e968e19cf7f96bf755ee4591a0fb",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Per-species candidate dedup, expected atom check, header grouping and flags are internally consistent for ordinary matrices. Float determinant/inverse and square coefficient enumeration make huge unimodular shear/resource behavior unsafe to certify; defer full arbitrary-integer coset implementation while preserving row/order/arithmetic compatibility.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_cluster_projection_levels",
@@ -9400,55 +9411,55 @@
       "path": "src/cellstine/interface/surface/surface_supercell.py",
       "qualified_name": "repeat_structure_inplane",
       "line": 23,
-      "end_line": 57,
-      "module_sha256": "470c1eeaac6bab960ea24f7d432c7c9aa0e79affc720fc17649ba20313fbd3d4",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 82,
+      "module_sha256": "1cc2a6ed25d91222351e0a35cd08b4697d5005c9d7b4eecb2c41b1c77a4abdc8",
+      "status": "optimized—verified",
+      "reason": "Identity1x1 returns the exact source object before validation. Other repeats validate header/position and flag cardinalities, reject impossible float-coordinate byte sizes before copying, then preallocate and emit source-header block/cell/atom order with exact original add/divide arithmetic. Duplicate headers remain distinct blocks, zero-count headers and empty(0,3) outputs survive, flags repeat with matching order; lattice is owned and metadata behavior remains legacy. Output-sized storage/flag list and a full source block are unavoidable in this implementation.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_supercell.py::apply_inplane_supercell_matrix",
       "path": "src/cellstine/interface/surface/surface_supercell.py",
       "qualified_name": "apply_inplane_supercell_matrix",
-      "line": 60,
-      "end_line": 85,
-      "module_sha256": "470c1eeaac6bab960ea24f7d432c7c9aa0e79affc720fc17649ba20313fbd3d4",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 85,
+      "end_line": 110,
+      "module_sha256": "1cc2a6ed25d91222351e0a35cd08b4697d5005c9d7b4eecb2c41b1c77a4abdc8",
+      "status": "reviewed—unchanged",
+      "reason": "None retains identity; ordinary four integer entries, determinant sign correction and actual applied tuple are consistent with downstream row convention. However fixed-width int coercion, float determinant and lower coefficient-grid enumeration do not implement arbitrary integer matrices; deferred with lower-level transform work rather than certified by this wrapper review. Disposition narrowed after follow-up: this helper/wrapper itself has been reviewed for the stated finite ordinary input/explicit budget contract; delegated unsupported-domain or cubic-resource limitations remain documented, not a reason to call its own inspected statements unreviewed. No unbounded completeness or resource guarantee is conferred.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_supercell.py::_resolve_inplane_repeats",
       "path": "src/cellstine/interface/surface/surface_supercell.py",
       "qualified_name": "_resolve_inplane_repeats",
-      "line": 88,
-      "end_line": 104,
-      "module_sha256": "470c1eeaac6bab960ea24f7d432c7c9aa0e79affc720fc17649ba20313fbd3d4",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 113,
+      "end_line": 129,
+      "module_sha256": "1cc2a6ed25d91222351e0a35cd08b4697d5005c9d7b4eecb2c41b1c77a4abdc8",
+      "status": "reviewed—unchanged",
+      "reason": "Existing max1 integer repeats and ceil(min physical length/current vector norm) policy is preserved; tiny/zero lengths do not divide. Current callers pass scalar length constraints, not adversarial nonfinite objects.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_supercell.py::analyse_primitive_surface",
       "path": "src/cellstine/interface/surface/surface_supercell.py",
       "qualified_name": "analyse_primitive_surface",
-      "line": 107,
-      "end_line": 142,
-      "module_sha256": "470c1eeaac6bab960ea24f7d432c7c9aa0e79affc720fc17649ba20313fbd3d4",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 132,
+      "end_line": 167,
+      "module_sha256": "1cc2a6ed25d91222351e0a35cd08b4697d5005c9d7b4eecb2c41b1c77a4abdc8",
+      "status": "reviewed—unchanged",
+      "reason": "Reads once, derives primitive translation basis and normal/pair, then probes with require_bulk_period=False so requested probe count is independent of the stack period. Returns copied lattice and actual stacking/angle fields. Delegated bounded enumeration limits remain explicit and prevent full-domain promotion. Disposition narrowed after follow-up: this helper/wrapper itself has been reviewed for the stated finite ordinary input/explicit budget contract; delegated unsupported-domain or cubic-resource limitations remain documented, not a reason to call its own inspected statements unreviewed. No unbounded completeness or resource guarantee is conferred.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/surface_supercell.py::build_surface_structure",
       "path": "src/cellstine/interface/surface/surface_supercell.py",
       "qualified_name": "build_surface_structure",
-      "line": 145,
-      "end_line": 178,
-      "module_sha256": "470c1eeaac6bab960ea24f7d432c7c9aa0e79affc720fc17649ba20313fbd3d4",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 170,
+      "end_line": 203,
+      "module_sha256": "1cc2a6ed25d91222351e0a35cd08b4697d5005c9d7b4eecb2c41b1c77a4abdc8",
+      "status": "reviewed—unchanged",
+      "reason": "Read, primitive build, physical repeat resolution, repeat and optional transform occur in that order, with actual requested choices reflected in result. Changed repeat grouping fixes downstream compound records; primitive generation and arbitrary-matrix limits remain unresolved dependencies. Disposition narrowed after follow-up: this helper/wrapper itself has been reviewed for the stated finite ordinary input/explicit budget contract; delegated unsupported-domain or cubic-resource limitations remain documented, not a reason to call its own inspected statements unreviewed. No unbounded completeness or resource guarantee is conferred.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/termination.py::formula_unit",
@@ -9456,10 +9467,10 @@
       "qualified_name": "formula_unit",
       "line": 54,
       "end_line": 69,
-      "module_sha256": "6aaf049c8124d37b8b853d7d76845f27aec38fdba702e68ecd79010c3e342404",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "7689eb3dd09b2063dbc2834af72d024b1dcc1c7fe4e26e961da19e9a53ae3d94",
+      "status": "reviewed—unchanged",
+      "reason": "Positive integer values are gcd-reduced exactly in mapping encounter order; empty input yields empty formula. Duplicate physical symbols have already been aggregated by revised caller; arbitrary mixed-type equal-string keys remain outside typed mapping input.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/termination.py::_format_counts",
@@ -9467,10 +9478,10 @@
       "qualified_name": "_format_counts",
       "line": 72,
       "end_line": 75,
-      "module_sha256": "6aaf049c8124d37b8b853d7d76845f27aec38fdba702e68ecd79010c3e342404",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "7689eb3dd09b2063dbc2834af72d024b1dcc1c7fe4e26e961da19e9a53ae3d94",
+      "status": "reviewed—unchanged",
+      "reason": "Stable sorted symbols and int values preserve public notes format without changing formula arithmetic.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/termination.py::layer_species",
@@ -9478,10 +9489,10 @@
       "qualified_name": "layer_species",
       "line": 78,
       "end_line": 113,
-      "module_sha256": "6aaf049c8124d37b8b853d7d76845f27aec38fdba702e68ecd79010c3e342404",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "7689eb3dd09b2063dbc2834af72d024b1dcc1c7fe4e26e961da19e9a53ae3d94",
+      "status": "reviewed—unchanged",
+      "reason": "Projects true surface-normal heights, checks one label per atom and uses shared layer_partition with stable sorted Counter output. Empty heights return[]; transitive physical layer rule and mean reporting are unchanged.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/termination.py::TerminationReport.summary",
@@ -9489,32 +9500,32 @@
       "qualified_name": "TerminationReport.summary",
       "line": 131,
       "end_line": 145,
-      "module_sha256": "6aaf049c8124d37b8b853d7d76845f27aec38fdba702e68ecd79010c3e342404",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "module_sha256": "7689eb3dd09b2063dbc2834af72d024b1dcc1c7fe4e26e961da19e9a53ae3d94",
+      "status": "reviewed—unchanged",
+      "reason": "Every exposed mapping and notes list is copied, scalar types are JSON-ready and existing field order/schema is preserved.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/termination.py::termination_report",
       "path": "src/cellstine/interface/surface/termination.py",
       "qualified_name": "termination_report",
       "line": 148,
-      "end_line": 229,
-      "module_sha256": "6aaf049c8124d37b8b853d7d76845f27aec38fdba702e68ecd79010c3e342404",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 231,
+      "module_sha256": "7689eb3dd09b2063dbc2834af72d024b1dcc1c7fe4e26e961da19e9a53ae3d94",
+      "status": "optimized—verified",
+      "reason": "Each positive header count now adds to its string species total instead of overwriting duplicate headers. Unique-header insertion order, exact gcd/floor-unit/excess arithmetic, fractional-unit output, expanded layer labels, composition-only face comparison and notes remain unchanged. Zip truncation of malformed mismatched headers is legacy policy, not newly validated here; symmetric composition is not a proof of electronic nonpolarity.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/surface/termination.py::_fractional_units",
       "path": "src/cellstine/interface/surface/termination.py",
       "qualified_name": "_fractional_units",
-      "line": 232,
-      "end_line": 242,
-      "module_sha256": "6aaf049c8124d37b8b853d7d76845f27aec38fdba702e68ecd79010c3e342404",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 234,
+      "end_line": 245,
+      "module_sha256": "7689eb3dd09b2063dbc2834af72d024b1dcc1c7fe4e26e961da19e9a53ae3d94",
+      "status": "reviewed—unchanged",
+      "reason": "Only docstring changed: minimum real count/need ratio remains; integer limiting ratio can coexist with excess species. Empty formula returns0.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::parse_miller_notation",
@@ -12790,53 +12801,53 @@
       "line": 57,
       "end_line": 83,
       "module_sha256": "bcbf2621969aa66bd43a0bf0132ecc4872a60574a09915d3dbfa25f5b420bb9a",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Explicitv1 keys/types and dataclass conversion preserve JSON schema. Operation/group asdict copies nested values, while transformation_matrix and other optional model data retain established shallow references; no universal detached-output guarantee is claimed.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/symmetry/records.py::species_type_map",
       "path": "src/cellstine/symmetry/records.py",
       "qualified_name": "species_type_map",
       "line": 13,
-      "end_line": 24,
-      "module_sha256": "1de3909e694f7f3943cf0ce691153d076cf8381a578862242dbbd674c960b200",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 26,
+      "module_sha256": "95268297c56048466547a038698c9ad06f5c6a7619ebcc9b8173ace38692db86",
+      "status": "optimized—verified",
+      "reason": "Dictionary codes assign first-seen string species contiguous1-based numbers and inverse mapping in linear traversal. Empty input and Unicode labels preserve old results; only one string conversion per label is now performed.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/symmetry/records.py::record_from_spglib_cell",
       "path": "src/cellstine/symmetry/records.py",
       "qualified_name": "record_from_spglib_cell",
-      "line": 27,
-      "end_line": 38,
-      "module_sha256": "1de3909e694f7f3943cf0ce691153d076cf8381a578862242dbbd674c960b200",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 29,
+      "end_line": 40,
+      "module_sha256": "95268297c56048466547a038698c9ad06f5c6a7619ebcc9b8173ace38692db86",
+      "status": "reviewed—unchanged",
+      "reason": "Unpacks lattice/positions/numeric labels, maps known types or stable X<number> fallback and delegates checked grouping. Position/number cardinality failure now propagates from shared reconstruction rather than silently discarding rows.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/symmetry/records.py::record_from_atoms",
       "path": "src/cellstine/symmetry/records.py",
       "qualified_name": "record_from_atoms",
-      "line": 41,
-      "end_line": 84,
-      "module_sha256": "1de3909e694f7f3943cf0ce691153d076cf8381a578862242dbbd674c960b200",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 43,
+      "end_line": 89,
+      "module_sha256": "95268297c56048466547a038698c9ad06f5c6a7619ebcc9b8173ace38692db86",
+      "status": "optimized—verified",
+      "reason": "Modulo produces fresh direct coordinates, label count must equal atom rows, and one index bucket per species drives a single advanced-index gather. First source-species priority is deduplicated, new species follow first encounter, and within-species order remains stable. Empty gather has(0,3) shape. Lattice remains a shallow asarray alias; top metadata dictionary is copied with nested objects intentionally shared, matching StructureRecord.copy convention.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/symmetry/records.py::lattice_parameters",
       "path": "src/cellstine/symmetry/records.py",
       "qualified_name": "lattice_parameters",
-      "line": 87,
-      "end_line": 104,
-      "module_sha256": "1de3909e694f7f3943cf0ce691153d076cf8381a578862242dbbd674c960b200",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 92,
+      "end_line": 109,
+      "module_sha256": "95268297c56048466547a038698c9ad06f5c6a7619ebcc9b8173ace38692db86",
+      "status": "reviewed—unchanged",
+      "reason": "Three row norms, alpha(b,c)/beta(a,c)/gamma(a,b) shared angle helper and absolute determinant use the established row-vector convention. Fixed3D size needs no unmeasured algorithm rewrite.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/symmetry/reporting.py::format_symmetry_analysis",
@@ -12845,9 +12856,9 @@
       "line": 8,
       "end_line": 36,
       "module_sha256": "defaf0df4ae82d494861dc815a86028bb25a652245b571c45b97806d825c2ecd",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Conditional fields,20-group/4-note caps and remainder count are stable. Per-group member list can be large, but truncating it would change public preview text and is not required by this scoped change.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/symmetry/spglib_adapter.py::dataset_value",
@@ -12856,9 +12867,9 @@
       "line": 10,
       "end_line": 20,
       "module_sha256": "90a747f787451f201c72c7c1585c58071af7ffd3a1732c691ef44486a0278741",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Object attribute takes priority over mapping; None/mapping failure produce default. hasattr then getattr may evaluate a property twice, but existing spglib data are passive values; no demonstrated functional failure warrants a compatibility change in this batch.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/symmetry/spglib_adapter.py::crystal_system",
@@ -12867,9 +12878,9 @@
       "line": 23,
       "end_line": 43,
       "module_sha256": "90a747f787451f201c72c7c1585c58071af7ffd3a1732c691ef44486a0278741",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "All seven standard international ranges1..230 have inclusive nonoverlapping boundaries; None and out-of-range values returnNone and int coercion is unchanged.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/symmetry/spglib_adapter.py::has_inversion",
@@ -12878,9 +12889,9 @@
       "line": 46,
       "end_line": 52,
       "module_sha256": "90a747f787451f201c72c7c1585c58071af7ffd3a1732c691ef44486a0278741",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "None is unknown; otherwise integer-cast rotations are compared to-I with early exit. Empty collectionFalse and integer rotation caller contract remain unchanged.",
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
     },
     {
       "id": "src/cellstine/symmetry/symmetry.py::_write_analysis_file",

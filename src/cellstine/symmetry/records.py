@@ -13,14 +13,16 @@ from ..io.models import StructureRecord
 def species_type_map(species_by_atom: Sequence[str]) -> tuple[list[int], dict[int, str]]:
     """Return spglib integer species labels and their symbol map."""
 
-    order: list[str] = []
+    codes: dict[str, int] = {}
     numbers: list[int] = []
     mapping: dict[int, str] = {}
-    for symbol in species_by_atom:
-        if str(symbol) not in order:
-            order.append(str(symbol))
-            mapping[len(order)] = str(symbol)
-        numbers.append(order.index(str(symbol)) + 1)
+    for value in species_by_atom:
+        symbol = str(value)
+        if symbol not in codes:
+            code = len(codes) + 1
+            codes[symbol] = code
+            mapping[code] = symbol
+        numbers.append(codes[symbol])
     return numbers, mapping
 
 
@@ -52,22 +54,25 @@ def record_from_atoms(
     direct = np.mod(np.asarray(positions, dtype=float).reshape(-1, 3), 1.0)
     atom_species = [str(value) for value in atom_species]
 
+    if len(atom_species) != direct.shape[0]:
+        raise ValueError("one species label per atom is required")
+    grouped: dict[str, list[int]] = {}
+    for index, symbol in enumerate(atom_species):
+        grouped.setdefault(symbol, []).append(index)
     ordered_species: list[str] = []
-    for symbol in source.species:
-        if symbol in atom_species and symbol not in ordered_species:
-            ordered_species.append(str(symbol))
-    for symbol in atom_species:
-        if symbol not in ordered_species:
-            ordered_species.append(str(symbol))
-
-    grouped_positions: list[np.ndarray] = []
-    counts: list[int] = []
-    for symbol in ordered_species:
-        indices = [index for index, atom_symbol in enumerate(atom_species) if atom_symbol == symbol]
-        counts.append(len(indices))
-        grouped_positions.extend(np.asarray(direct[index], dtype=float) for index in indices)
-
-    output_direct = np.asarray(grouped_positions, dtype=float) if grouped_positions else np.zeros((0, 3), dtype=float)
+    seen: set[str] = set()
+    for value in source.species:
+        symbol = str(value)
+        if symbol in grouped and symbol not in seen:
+            ordered_species.append(symbol)
+            seen.add(symbol)
+    for symbol in grouped:
+        if symbol not in seen:
+            ordered_species.append(symbol)
+            seen.add(symbol)
+    counts = [len(grouped[symbol]) for symbol in ordered_species]
+    indices = [index for symbol in ordered_species for index in grouped[symbol]]
+    output_direct = direct[np.asarray(indices, dtype=np.intp)]
     return StructureRecord(
         comment=comment,
         lattice=lattice_array,

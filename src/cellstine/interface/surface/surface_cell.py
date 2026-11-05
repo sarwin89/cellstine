@@ -37,8 +37,19 @@ def _translation_maps_structure(structure: io_mod.PoscarData, translation: Seque
     coincident = np.all(np.abs(diff) <= tolerance, axis=2)
     codes = np.unique(np.asarray(species), return_inverse=True)[1]
     same_species = codes[:, None] == codes[None, :]
-    matched = np.any(coincident & same_species, axis=1)
-    return bool(np.all(matched))
+    edges = coincident & same_species
+    if not bool(np.all(np.any(edges, axis=1))):
+        return False
+    # Most crystal translations have one unambiguous site per row. A unique
+    # first choice already proves a bijection, without an assignment solve.
+    first_choices = np.argmax(edges, axis=1)
+    if np.unique(first_choices).size == positions.shape[0]:
+        return True
+    # Overlapping tolerance neighborhoods need an injective assignment: rows
+    # that each have some match can still compete for too few target sites.
+    from ...core.pathway import optimal_assignment
+
+    return optimal_assignment(~edges).total_cost == 0.0
 
 
 # The pure translations of each named centring, as fractional vectors of the
@@ -410,11 +421,13 @@ def _surface_coordinate_frame(surface_a: np.ndarray, surface_b: np.ndarray, norm
 
 
 def _deduplicate_scalar_levels(values: Sequence[float], tolerance: float) -> list[float]:
-    arr = np.asarray(values, dtype=float).ravel()
+    tol = float(tolerance)
+    if not np.isfinite(tol) or tol < 0.0:
+        raise ValueError("level tolerance must be finite and non-negative")
+    arr = np.array(values, dtype=float, copy=True).ravel()
     if arr.size == 0:
         return []
     arr.sort()
-    tol = float(tolerance)
     # Greedy clustering identical to scanning the sorted values and keeping a
     # value whenever it is more than ``tolerance`` away from the last kept one.
     # ``searchsorted`` jumps directly to the next kept value, so the loop runs
@@ -437,7 +450,7 @@ def _group_surface_atoms_by_species(
 ) -> tuple[np.ndarray, list[int], list[str], list[tuple[str, str, str]] | None]:
     grouped: dict[str, list[np.ndarray]] = {str(symbol): [] for symbol in species_order}
     grouped_flags: dict[str, list[tuple[str, str, str] | None]] = {str(symbol): [] for symbol in species_order}
-    order = [str(symbol) for symbol in species_order]
+    order = list(grouped)
     for symbol, direct, flags in atoms:
         if symbol not in grouped:
             grouped[symbol] = []
@@ -716,6 +729,9 @@ def _build_native_primitive_surface_cell(
 
 
 def _structure_from_transform(structure: io_mod.PoscarData, transform: np.ndarray, tolerance: float = 1e-8) -> io_mod.PoscarData:
+    tolerance = float(tolerance)
+    if not np.isfinite(tolerance) or tolerance < 0.0:
+        raise ValueError("surface transform tolerance must be finite and non-negative")
     if np.allclose(transform[2], np.array([0, 0, 1], dtype=float), atol=tolerance) and np.allclose(
         transform[:2, 2],
         np.zeros(2, dtype=float),
@@ -727,42 +743,74 @@ def _structure_from_transform(structure: io_mod.PoscarData, transform: np.ndarra
     lattice_new = transform @ lattice_old
     inverse_new = np.linalg.inv(lattice_new)
 
-    search_pad = max(2, int(np.max(np.abs(transform))) + 1)
-    shifts_3d = _integer_shift_grid_3d(search_pad)
-    collected_positions: List[np.ndarray] = []
-    collected_array = np.empty((0, 3), dtype=float)
-    collected_flags: List[Tuple[str, str, str]] | None = [] if structure.selective_flags is not None else None
-    expanded_flags = structure.selective_flags or []
+    multiplicity = int(round(abs(np.linalg.det(transform))))
+    expected_atoms = int(structure.natoms) * multiplicity
+    if expected_atoms > int(np.iinfo(np.intp).max) // (3 * np.dtype(float).itemsize):
+        raise ValueError("surface transform output is too large to address")
 
-    for atom_index, base_direct in enumerate(np.asarray(structure.positions_direct, dtype=float)):
-        images = base_direct + shifts_3d
-        new_directs = io_mod.direct_to_cartesian(images, lattice_old) @ inverse_new
-        inside = np.all((-tolerance <= new_directs) & (new_directs <= 1.0 + tolerance), axis=1)
-        wrapped_all = np.mod(new_directs[inside], 1.0)
-        if wrapped_all.shape[0] == 0:
-            continue
-        # Collapse exact (to ~1e-9) duplicate images first, preserving order.
-        if wrapped_all.shape[0] > 1:
-            _, first_occurrence = np.unique(np.round(wrapped_all, 9), axis=0, return_index=True)
-            wrapped_all = wrapped_all[np.sort(first_occurrence)]
-        flag_value = tuple(expanded_flags[atom_index]) if collected_flags is not None else None
-        for wrapped in wrapped_all:
-            if collected_array.shape[0]:
-                difference = wrapped[None, :] - collected_array
-                difference -= np.round(difference)
-                if np.any(np.all(np.abs(difference) <= tolerance, axis=1)):
-                    continue
-            collected_positions.append(wrapped)
-            collected_array = np.vstack((collected_array, wrapped[None, :]))
-            if collected_flags is not None:
-                collected_flags.append(flag_value)
+    def _collect(limit: int):
+        width = 2 * int(limit) + 1
+        if width**3 > int(np.iinfo(np.intp).max) // (3 * np.dtype(float).itemsize):
+            raise ValueError("surface transform image grid is too large to address")
+        shifts_3d = _integer_shift_grid_3d(limit)
+        collected_positions: List[np.ndarray] = []
+        collected_array = np.empty((0, 3), dtype=float)
+        collected_flags: List[Tuple[str, str, str]] | None = [] if structure.selective_flags is not None else None
+        expanded_flags = structure.selective_flags or []
+
+        for atom_index, base_direct in enumerate(np.asarray(structure.positions_direct, dtype=float)):
+            images = base_direct + shifts_3d
+            new_directs = io_mod.direct_to_cartesian(images, lattice_old) @ inverse_new
+            inside = np.all((-tolerance <= new_directs) & (new_directs <= 1.0 + tolerance), axis=1)
+            wrapped_all = np.mod(new_directs[inside], 1.0)
+            if wrapped_all.shape[0] == 0:
+                continue
+            # Collapse exact (to ~1e-9) duplicate images first, preserving order.
+            if wrapped_all.shape[0] > 1:
+                _, first_occurrence = np.unique(np.round(wrapped_all, 9), axis=0, return_index=True)
+                wrapped_all = wrapped_all[np.sort(first_occurrence)]
+            flag_value = tuple(expanded_flags[atom_index]) if collected_flags is not None else None
+            for wrapped in wrapped_all:
+                if collected_array.shape[0]:
+                    difference = wrapped[None, :] - collected_array
+                    difference -= np.round(difference)
+                    if np.any(np.all(np.abs(difference) <= tolerance, axis=1)):
+                        continue
+                collected_positions.append(wrapped)
+                collected_array = np.vstack((collected_array, wrapped[None, :]))
+                if collected_flags is not None:
+                    collected_flags.append(flag_value)
+        return collected_positions, collected_flags
+
+    # Retain every already-complete legacy result byte for byte, including its
+    # first-image order and boundary representatives. Only incomplete results
+    # need a wider search derived from the transformed cell's corner bounds.
+    search_pad = max(2, int(np.max(np.abs(transform))) + 1)
+    collected_positions, collected_flags = _collect(search_pad)
+    if len(collected_positions) != expected_atoms:
+        coefficients = np.asarray(transform, dtype=float)
+        base = np.asarray(structure.positions_direct, dtype=float)
+        # If f' is inside[-tol,1+tol]^3, then f'@T is bounded in each old
+        # fractional axis by(1+abs(tol))*sum_i(abs(T_ij)). Subtracting an
+        # original atom adds at most its largest absolute coordinate. The
+        # extra two integer shells conservatively cover floating boundaries.
+        transformed_bound = (1.0 + abs(float(tolerance))) * float(np.max(np.sum(np.abs(coefficients), axis=0)))
+        base_bound = float(np.max(np.abs(base))) if base.size else 0.0
+        complete_pad = max(search_pad, int(np.ceil(transformed_bound + base_bound)) + 2)
+        if complete_pad > search_pad:
+            collected_positions, collected_flags = _collect(complete_pad)
 
     if not collected_positions:
         raise ValueError("surface transform did not capture any atoms; try a simpler Miller index")
 
+    if len(collected_positions) != expected_atoms:
+        raise ValueError(
+            f"surface transform captured {len(collected_positions)} atoms, expected {expected_atoms}; "
+            "check the integer transform, input cell and coincident sites"
+        )
+
     positions_direct = np.array(collected_positions, dtype=float)
     positions_cartesian = io_mod.direct_to_cartesian(positions_direct, lattice_new)
-    multiplicity = int(round(abs(np.linalg.det(transform))))
     counts = [int(count) * multiplicity for count in structure.counts]
     return io_mod.PoscarData(
         comment=f"{structure.comment} | oriented surface cell",

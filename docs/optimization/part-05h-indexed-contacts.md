@@ -47,3 +47,6 @@ The new 20 regressions also run in the existing minimum-NumPy job and nine cross
 
 
 Ledger: **1,223 functions**, **925 with inspection evidence**; 636 reviewed—unchanged, 287 optimized—verified, 300 deferred—with reason. Of deferred rows, 298 are pending and two are investigated numerical limitations. This batch refreshes 66 complete reviews and adds 14 inspection records; the project-wide goal remains incomplete. Prepared surface/placement notes are outside this promotion.
+
+
+Closed on dev604d6609c5333b360826789eba6efef62fdbdcf5: all16 jobs in CI42020605925 passed. Downloaded coverage artifact13411738331 SHA25687a4e963d44cf1289dd6317c61223805be7786ac14187b0151eb6338e12cba6a matched digest/head/module/statement expectations. CI covered14005/15687 statements and3893/5092 branches; local14003 differs only at known prompts.py501-502 CI-only display fallbacks, with no branch delta. This closure preceded Part03h runtime edits.

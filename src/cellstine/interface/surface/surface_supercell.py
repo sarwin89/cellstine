@@ -28,22 +28,47 @@ def repeat_structure_inplane(structure: io_mod.PoscarData, repeat_a: int, repeat
     if repeat_a == 1 and repeat_b == 1:
         return structure
 
+    source = np.asarray(structure.positions_direct, dtype=float)
+    counts = [int(value) for value in structure.counts]
+    natoms = int(sum(counts))
+    if (len(structure.species) != len(counts) or any(value < 0 for value in counts)
+            or source.shape != (natoms, 3)):
+        raise ValueError("species/count records must agree with atom positions")
+    cells = repeat_a * repeat_b
+    total = natoms * cells
+    if total > int(np.iinfo(np.intp).max) // (3 * np.dtype(float).itemsize):
+        raise ValueError("in-plane repeat output is too large to address")
+    source_flags = structure.selective_flags
+    if source_flags is not None and len(source_flags) != natoms:
+        raise ValueError("one selective-dynamics flag record per atom is required")
     lattice = np.array(structure.lattice, dtype=float, copy=True)
     lattice[0] *= float(repeat_a)
     lattice[1] *= float(repeat_b)
-
-    direct_blocks = []
-    flags_out: List[Tuple[str, str, str]] | None = [] if structure.selective_flags is not None else None
-    for i_repeat in range(repeat_a):
-        for j_repeat in range(repeat_b):
-            shifted = np.array(structure.positions_direct, dtype=float, copy=True)
-            shifted[:, 0] = (shifted[:, 0] + float(i_repeat)) / float(repeat_a)
-            shifted[:, 1] = (shifted[:, 1] + float(j_repeat)) / float(repeat_b)
-            direct_blocks.append(shifted)
-            if flags_out is not None:
-                flags_out.extend(tuple(flags) for flags in structure.selective_flags or [])
-
-    positions_direct = np.vstack(direct_blocks)
+    positions_direct = np.empty((total, 3), dtype=float)
+    flags_out: List[Tuple[str, str, str]] | None = [] if source_flags is not None else None
+    source_start = target_start = 0
+    # A POSCAR's header blocks must stay together. Within each block retain the
+    # original i-cell, j-cell, source-atom traversal and exact add/divide order.
+    for size in counts:
+        if size:
+            block = source[source_start:source_start + size]
+            block_flags = None if source_flags is None else [tuple(value) for value in source_flags[source_start:source_start + size]]
+            cell_step = max(1, 65536 // size)
+            for first_cell in range(0, cells, cell_step):
+                last_cell = min(first_cell + cell_step, cells)
+                indexes = np.arange(first_cell, last_cell, dtype=np.intp)
+                first = target_start + first_cell * size
+                last = target_start + last_cell * size
+                output = positions_direct[first:last].reshape(last_cell - first_cell, size, 3)
+                output[:] = block
+                output[:, :, 0] += (indexes // repeat_b).astype(float)[:, None]
+                output[:, :, 0] /= float(repeat_a)
+                output[:, :, 1] += (indexes % repeat_b).astype(float)[:, None]
+                output[:, :, 1] /= float(repeat_b)
+                if flags_out is not None:
+                    flags_out.extend(block_flags * (last_cell - first_cell))
+        source_start += size
+        target_start += size * cells
     return io_mod.PoscarData(
         comment=f"{structure.comment} | in-plane repeat {repeat_a}x{repeat_b}",
         lattice=lattice,
