@@ -22,6 +22,14 @@ exports and old JSON readers, document this migration, and reassess release
 versioning against scripts that hardcode the former default. Do not label this
 as an unchanged default or publish without the later explicit instruction.
 
+Part06f corrects contact metadata that previously ignored a slab's relative
+in-plane translation. Ideal contacts retain the existing fields and values.
+Nonideal unrequested offsets now report `delta: null`, `contact: "unclassified"`
+and `kind: "general_offset"`, with a note. Include this expanded metadata domain
+in release notes and schema/consumer review; scripts must not assume every
+close-packed pair has an ideal discrete contact. The legacy label-only
+`contact_summary` helper retains its existing inference and signature.
+
 ## Artifact validation
 
 Build fresh wheel and source distribution from the frozen candidate; keep release artifacts separate from prior local builds:

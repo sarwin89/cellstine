@@ -8390,9 +8390,9 @@
       "line": 35,
       "end_line": 48,
       "module_sha256": "5e53431fb1f276f29ca43d12a79eba93364d0873ae244ec7a078f5398ef1983f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Elementwise modulo3 negation consistently reflects both increments and boundary delta; no change.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/registry.py::configuration_word",
@@ -8401,9 +8401,9 @@
       "line": 51,
       "end_line": 64,
       "module_sha256": "5e53431fb1f276f29ca43d12a79eba93364d0873ae244ec7a078f5398ef1983f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Concatenation retains boundary placement between ordered increment tuples and normalizes values modulo3; no change.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/registry.py::configuration_orbit",
@@ -8412,9 +8412,9 @@
       "line": 67,
       "end_line": 85,
       "module_sha256": "5e53431fb1f276f29ca43d12a79eba93364d0873ae244ec7a078f5398ef1983f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Four-word action is identity/negation and optional reverse-negation/reversal; duplicate orbit entries are harmless for minimum. Interchangeability is caller-supplied physical premise, not established here.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/registry.py::canonical_configuration",
@@ -8423,9 +8423,9 @@
       "line": 88,
       "end_line": 103,
       "module_sha256": "5e53431fb1f276f29ca43d12a79eba93364d0873ae244ec7a078f5398ef1983f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Returns lexicographic orbit minimum consistently with enumeration. Full-isometry wording presupposes registry model and interchangeability premise; not a proof of chemical/metric equivalence for arbitrary slabs.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/registry.py::registry_contact_label",
@@ -8434,9 +8434,9 @@
       "line": 106,
       "end_line": 112,
       "module_sha256": "5e53431fb1f276f29ca43d12a79eba93364d0873ae244ec7a078f5398ef1983f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Valid label plus normalized delta produces cyclic endpoint, unknown label returns ?-?; unchanged.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/registry.py::registry_kind",
@@ -8445,9 +8445,9 @@
       "line": 115,
       "end_line": 131,
       "module_sha256": "5e53431fb1f276f29ca43d12a79eba93364d0873ae244ec7a078f5398ef1983f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Zero delta is eclipsed; supplied last increment overrides overall sense for nonuniform sequences, with hollow fallback for unknown sense. Modulo3 semantics unchanged.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/registry.py::RegistryOption.as_dict",
@@ -8456,9 +8456,9 @@
       "line": 159,
       "end_line": 174,
       "module_sha256": "5e53431fb1f276f29ca43d12a79eba93364d0873ae244ec7a078f5398ef1983f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected field names/order, scalar conversions, sense label conversion and nullable equivalence index; immutable option serialization unchanged.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/registry.py::_mirrored_sequence",
@@ -8467,9 +8467,9 @@
       "line": 177,
       "end_line": 188,
       "module_sha256": "5e53431fb1f276f29ca43d12a79eba93364d0873ae244ec7a078f5398ef1983f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Keeps initial origin label and negates successive increments. Invalid alphabet returns original sequence; empty string remains empty. Consistent with mirror_configuration.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/registry.py::enumerate_registry_options",
@@ -8478,9 +8478,9 @@
       "line": 191,
       "end_line": 303,
       "module_sha256": "5e53431fb1f276f29ca43d12a79eba93364d0873ae244ec7a078f5398ef1983f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected close-packed rejection, reversible choices, stable nested ordering, canonical keys, equivalent index accounting, relation reconstruction and final contact kind. Known interchangeability premise limitation remains; no demonstrated dropped physical class in this review.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/registry.py::slabs_are_interchangeable",
@@ -8490,8 +8490,8 @@
       "end_line": 343,
       "module_sha256": "5e53431fb1f276f29ca43d12a79eba93364d0873ae244ec7a078f5398ef1983f",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Compares layer count, reverse-bottom versus forward-top species multisets and spacing tolerance. It does not check species placement or complete in-plane isometry; preexisting limited predicate, with no dropped-class witness established. Investigated physical premise: chemistry/spacings omit in-plane decorations and stacking word. Existing ABC/HCP suspicion changes no option rows and is not a wrong-output witness; retain policy without claiming complete isometry proof.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/registry.py::slabs_are_interchangeable.profile",
@@ -8500,9 +8500,9 @@
       "line": 327,
       "end_line": 335,
       "module_sha256": "5e53431fb1f276f29ca43d12a79eba93364d0873ae244ec7a078f5398ef1983f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Expands species in atom order, collects sorted layer species and absolute adjacent spacings outward from contact. Reversing bottom matches intended comparison; does not inspect in-plane species decoration.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/registry.py::select_registry_option",
@@ -8511,9 +8511,9 @@
       "line": 346,
       "end_line": 393,
       "module_sha256": "5e53431fb1f276f29ca43d12a79eba93364d0873ae244ec7a078f5398ef1983f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Inspected None, bool rejection, integer/numeric string indices, aliases and cyclic label differences, plus failure messages. Stable first-match policy preserved, no changed semantics.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/registry.py::format_registry_table",
@@ -8522,53 +8522,53 @@
       "line": 396,
       "end_line": 426,
       "module_sha256": "5e53431fb1f276f29ca43d12a79eba93364d0873ae244ec7a078f5398ef1983f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Materializes iterable once into rows, supports empty options using header widths and retains mirrored/equivalence annotations. No change.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/sequence.py::_inplane_lattice",
       "path": "src/cellstine/interface/surface/sequence.py",
       "qualified_name": "_inplane_lattice",
-      "line": 36,
-      "end_line": 48,
-      "module_sha256": "9a0960c36caf2356cb3ac2ac29f8b081106fdba7eb034a1a213d2d29e457b8a1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 38,
+      "end_line": 50,
+      "module_sha256": "ffb4439c80a5c04e1e7281dda0dfa26478481d3cecd17b979a542d6a0046cbad",
+      "status": "reviewed—unchanged",
+      "reason": "Keeps a/b vectors and replaces c with long normal vector. Distance rows from projected fractional planes retain original planar metric, with no dense allocation.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/sequence.py::_planes_coincide",
       "path": "src/cellstine/interface/surface/sequence.py",
       "qualified_name": "_planes_coincide",
-      "line": 51,
-      "end_line": 66,
-      "module_sha256": "9a0960c36caf2356cb3ac2ac29f8b081106fdba7eb034a1a213d2d29e457b8a1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 53,
+      "end_line": 109,
+      "module_sha256": "ffb4439c80a5c04e1e7281dda0dfa26478481d3cecd17b979a542d6a0046cbad",
+      "status": "optimized—verified",
+      "reason": "Checked equal-cardinality, greedy first-nearest ordering, lazy inverse map initialization, alternating BFS visited/parent invariants, endpoint removal and path reassignment. Successful assignments remain bijections; failure proves no augmenting path for current prefix. Linear temporary storage, worst-case repeated distance rows remain potentially cubic; no recursion or dense NxN matrix. Valid empty planes return true. Independent exhaustive-assignment probes passed.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/sequence.py::stacking_sequence",
       "path": "src/cellstine/interface/surface/sequence.py",
       "qualified_name": "stacking_sequence",
-      "line": 69,
-      "end_line": 100,
-      "module_sha256": "9a0960c36caf2356cb3ac2ac29f8b081106fdba7eb034a1a213d2d29e457b8a1",
+      "line": 112,
+      "end_line": 143,
+      "module_sha256": "ffb4439c80a5c04e1e7281dda0dfa26478481d3cecd17b979a542d6a0046cbad",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Inspected layer grouping, modular fractional projection, first-representative classification, position-only identity and layer count return. Existing 26-letter cycling can conflate labels beyond alphabet; retained explicit format limitation. Investigated limitation: the fixed one-character format cycles after26 distinct planes. Preserve format/API pending explicit representation decision; do not claim unbounded plane identity.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/sequence.py::shortest_repeating_prefix",
       "path": "src/cellstine/interface/surface/sequence.py",
       "qualified_name": "shortest_repeating_prefix",
-      "line": 103,
-      "end_line": 113,
-      "module_sha256": "9a0960c36caf2356cb3ac2ac29f8b081106fdba7eb034a1a213d2d29e457b8a1",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 146,
+      "end_line": 170,
+      "module_sha256": "ffb4439c80a5c04e1e7281dda0dfa26478481d3cecd17b979a542d6a0046cbad",
+      "status": "optimized—verified",
+      "reason": "First256 candidate checks preserve ordinary fast behavior. Packed unsigned prefix function returns n-longest_border, the least period including incomplete final repeat, without divisibility requirement. Empty/Unicode semantics retained; independent >256 period probes passed. Current period301 positive partial-repeat regression directly covers successful fallback.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/sites.py::sites",
@@ -8577,9 +8577,9 @@
       "line": 8,
       "end_line": 9,
       "module_sha256": "3894c4bcb9519aa2cd78ea65aeb1782787a6042fb9e427ef3729e7653d14fbca",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Thin functional wrapper creates Surface and forwards kwargs/result unchanged. Inspected delegated Surface.sites for compatibility; no change.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::_gauss_reduce",
@@ -9555,10 +9555,10 @@
       "qualified_name": "parse_miller_notation",
       "line": 39,
       "end_line": 73,
-      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
+      "module_sha256": "0fad5bd3c34b3d7d902bdf3de182b862e916b6d5d41eef96d2078c0a9cd606a6",
       "status": "optimized—verified",
-      "reason": "Sequence conversion and length check now reject all-zero tuple/list/array consistently with compact/separated strings. Existing integer-cast policy and compact x notation retained.",
-      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Inspected compact digit/x and separated signed forms, zero rejection and length validation. Existing integer-conversion behavior retained; no changed path.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::group_by_species",
@@ -9566,98 +9566,120 @@
       "qualified_name": "group_by_species",
       "line": 76,
       "end_line": 115,
-      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
+      "module_sha256": "0fad5bd3c34b3d7d902bdf3de182b862e916b6d5d41eef96d2078c0a9cd606a6",
       "status": "optimized—verified",
-      "reason": "Validates nonempty labels, matching header lengths, nonnegative integer-cast counts, total position cardinality and flag cardinality before atom-scaled allocation. Positive header blocks preserve first positive species and per-species order, including duplicate and zero headers. Output coordinates and flag tuples are owned; zero atoms retain shape (0,) and original None/list flag convention.",
-      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Inspected header/count/flag validation, duplicate species interval coalescing, owned output allocation and stable first-species order. Empty shape is existing behavior and stack_structures handles it.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::contact_summary",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "contact_summary",
       "line": 118,
-      "end_line": 160,
-      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
-      "status": "deferred—with reason",
-      "reason": "Re-read requested delta modulo three, bottom last-step classification, realized sense/word and mirror fields. Active registry summaries use the selected delta and actual analyses. Existing passive-origin reporting limitation explicitly recorded outside this plan. Coordinator investigation additionally confirms existing passive contact-origin misclassification against predecessor: top translations0,h,2h require deltas1,2,0, but report1,1,1. Label-only summary/record-owning reporting needs dedicated registry-phase correction before release readiness; coordinates are unchanged. Evidence: part06e-passive-registry-probe.json. This overrides the review disposition explicitly rather than silently certifying that domain.",
-      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "end_line": 142,
+      "module_sha256": "0fad5bd3c34b3d7d902bdf3de182b862e916b6d5d41eef96d2078c0a9cd606a6",
+      "status": "optimized—verified",
+      "reason": "Public signature and label-only inference remain compatible. Unknown endpoint labels still return empty dict; explicit delta normalizes modulo3 and requested flag remains true. Delegated field insertion order matches predecessor.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
+    },
+    {
+      "id": "src/cellstine/interface/workflow/assembly.py::_contact_summary_fields",
+      "path": "src/cellstine/interface/workflow/assembly.py",
+      "qualified_name": "_contact_summary_fields",
+      "line": 145,
+      "end_line": 173,
+      "module_sha256": "0fad5bd3c34b3d7d902bdf3de182b862e916b6d5d41eef96d2078c0a9cd606a6",
+      "status": "optimized—verified",
+      "reason": "Extracted formatting preserves prior keys/order, sense and final-step contact classification. Nullable measured delta becomes unclassified/general_offset with explicit note; does not conflate absent request with absent measurement.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
+    },
+    {
+      "id": "src/cellstine/interface/workflow/assembly.py::_registry_delta_from_records",
+      "path": "src/cellstine/interface/workflow/assembly.py",
+      "qualified_name": "_registry_delta_from_records",
+      "line": 176,
+      "end_line": 199,
+      "module_sha256": "0fad5bd3c34b3d7d902bdf3de182b862e916b6d5d41eef96d2078c0a9cd606a6",
+      "status": "optimized—verified",
+      "reason": "Boundary anchors are projected in the bottom normal frame and tested modulo its primitive layer lattice with the same componentwise physical tolerance/arithmetic as registry_shift_direct. Explicit request is checked alone, preserving requested class when neighborhoods overlap. Precondition is close-packed analyses and common planar cell.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::realised_stacking_summary",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "realised_stacking_summary",
-      "line": 163,
-      "end_line": 180,
-      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
-      "status": "deferred—with reason",
-      "reason": "Bottom analysis fixes gauge, top is checked in that gauge, and unavailable analysis raises for the passive caller to omit summary. Existing passive contact-origin policy is unchanged and explicitly scoped out. Coordinator investigation additionally confirms existing passive contact-origin misclassification against predecessor: top translations0,h,2h require deltas1,2,0, but report1,1,1. Label-only summary/record-owning reporting needs dedicated registry-phase correction before release readiness; coordinates are unchanged. Evidence: part06e-passive-registry-probe.json. This overrides the review disposition explicitly rather than silently certifying that domain.",
-      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "line": 202,
+      "end_line": 221,
+      "module_sha256": "0fad5bd3c34b3d7d902bdf3de182b862e916b6d5d41eef96d2078c0a9cd606a6",
+      "status": "optimized—verified",
+      "reason": "Both analyses are validated in shared hollow gauge before accessing anchors; actual relative positions replace unrelated origin-reset labels. Does not alter records. Nonideal incoming translation returns explicit nullable classification.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::prepare_stacking",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "prepare_stacking",
-      "line": 183,
-      "end_line": 324,
-      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
-      "status": "deferred—with reason",
-      "reason": "Re-read passive path, bottom absolute-sense rejection, shared gauge, interchangeability enumeration, index/contact selection conflicts and both mirror choices. New selector realizes both words, reuses unchanged/returned analyses, checks top increments after registry translation and validates explicit final ABC/CBA. No requested-sense success is returned after an unavailable reversal. Coordinator investigation additionally confirms existing passive contact-origin misclassification against predecessor: top translations0,h,2h require deltas1,2,0, but report1,1,1. Label-only summary/record-owning reporting needs dedicated registry-phase correction before release readiness; coordinates are unchanged. Evidence: part06e-passive-registry-probe.json. This overrides the review disposition explicitly rather than silently certifying that domain.",
-      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "line": 224,
+      "end_line": 368,
+      "module_sha256": "0fad5bd3c34b3d7d902bdf3de182b862e916b6d5d41eef96d2078c0a9cd606a6",
+      "status": "optimized—verified",
+      "reason": "Inspected passive fallback, common incoming gauge, interchangeability enumeration, pinned senses versus numeric option selection, reversals, requested translation, realized-sense checks and final measurement. Existing choices/order/signatures preserved; no-request active path now correctly measures offset and requested path validates own delta.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::reported_kind",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "reported_kind",
-      "line": 327,
-      "end_line": 331,
-      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
+      "line": 371,
+      "end_line": 375,
+      "module_sha256": "0fad5bd3c34b3d7d902bdf3de182b862e916b6d5d41eef96d2078c0a9cd606a6",
       "status": "reviewed—unchanged",
-      "reason": "Preserves stored kind default and detected suffix; constant-size metadata presentation.",
-      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Existing dict fallback and detected suffix remain unchanged.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::slab_vacuum_thickness",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "slab_vacuum_thickness",
-      "line": 334,
-      "end_line": 342,
-      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
+      "line": 378,
+      "end_line": 386,
+      "module_sha256": "0fad5bd3c34b3d7d902bdf3de182b862e916b6d5d41eef96d2078c0a9cd606a6",
       "status": "reviewed—unchanged",
-      "reason": "Uses c-z extent and occupied z span with empty guard; Interface.build calls after normalization. No general tilted-cell claim.",
-      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Existing z-span convention is compatible with normalized xy-cell caller in Interface.build; empty structure returns c length and occupied spans clamp at zero. Not generalized to arbitrary oblique raw slabs.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::stacked_cartesian",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "stacked_cartesian",
-      "line": 345,
-      "end_line": 372,
-      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
+      "line": 389,
+      "end_line": 416,
+      "module_sha256": "0fad5bd3c34b3d7d902bdf3de182b862e916b6d5d41eef96d2078c0a9cd606a6",
       "status": "reviewed—unchanged",
-      "reason": "Copies both Cartesian arrays, computes original extrema/thickness/base arithmetic and final c vector, and rejects nonpositive cell length. Arithmetic order and caller ownership unchanged.",
-      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Inspected copy ownership, vertical shifts, exact gap/vacuum arithmetic and final c construction. Matches normalized xy caller contract; scientific geometry untouched.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::interface_contact_report",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "interface_contact_report",
-      "line": 375,
-      "end_line": 396,
-      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
+      "line": 419,
+      "end_line": 440,
+      "module_sha256": "0fad5bd3c34b3d7d902bdf3de182b862e916b6d5d41eef96d2078c0a9cd606a6",
       "status": "reviewed—unchanged",
-      "reason": "Retains separate bottom/top Cartesian geometry and species for periodic contact reporting. Direct build invokes only after stack_structures header validation; standalone permissive-label policy remains external to grouping validation.",
-      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Uses exact same stacked geometry and expanded species for periodic contact report; gap is passed consistently as requested distance. No change.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::stack_structures",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "stack_structures",
-      "line": 399,
-      "end_line": 444,
-      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
+      "line": 443,
+      "end_line": 488,
+      "module_sha256": "0fad5bd3c34b3d7d902bdf3de182b862e916b6d5d41eef96d2078c0a9cd606a6",
       "status": "optimized—verified",
-      "reason": "Both original Cartesian-to-direct operations and arithmetic retained. Grouped-header maps remove repeated per-species source rescans and per-atom NumPy copies; output is preallocated with species order bottom first then new top labels. Each species emits bottom then top atoms and aligned flags, filling unflagged source sites with TTT. Both-empty output retains (0,) and flags None.",
-      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Inspected coordinate conversion, duplicate-species grouping, stable merged species blocks, flag defaulting and output count accumulation. Preserves geometry/atom associations and selective flags; no change.",
+      "evidence": "docs/optimization/part-06f-registry-sequence.md;30 independent complete body reviews;178 focused/3855 full tests/4 skips/81 warnings on289Python freeze;exhaustive small bijection and long-prefix oracles;physical translated contact/tolerance/POSCAR/manifest readbacks;predecessor timing and traced allocation evidence;wheel/sdist/Twine and3 installed native process/thread workflows;two explicit investigated format/isometry limitations;exact-headCI/artifact required before next runtime batch"
     },
     {
       "id": "src/cellstine/interface/workflow/build.py::build",

@@ -21,6 +21,8 @@ therefore reads by position, as the ``ABC`` convention does.
 
 from __future__ import annotations
 
+from array import array
+
 import numpy as np
 
 from ...core.geometry import minimum_image_distances
@@ -56,13 +58,54 @@ def _planes_coincide(
     if len(first) != len(second):
         return False
     remaining = list(range(len(second)))
-    for point in first:
+    left_match = np.empty(len(first), dtype=int)
+    right_match = None
+    for index, point in enumerate(first):
         candidates = second[np.asarray(remaining, dtype=int)] - point
         distances = minimum_image_distances(lattice, candidates)
         best = int(np.argmin(distances))
         if float(distances[best]) > float(tolerance):
-            return False
-        remaining.pop(best)
+            # A nearest-first choice can steal another atom's only partner.
+            # Repair the existing matching using an iterative augmenting path.
+            # Distance rows are computed on demand, never as a dense N x N array.
+            if right_match is None:
+                right_match = np.full(len(second), -1, dtype=int)
+                right_match[left_match[:index]] = np.arange(index)
+            left_match[index] = -1
+            parents = np.full(len(second), -1, dtype=int)
+            queue = [index]
+            seen = {index}
+            endpoint = -1
+            for left in queue:
+                distances = minimum_image_distances(lattice, second - first[left])
+                for right in np.flatnonzero(distances <= float(tolerance)):
+                    if parents[right] != -1:
+                        continue
+                    parents[right] = left
+                    owner = int(right_match[right])
+                    if owner == -1:
+                        endpoint = int(right)
+                        break
+                    if owner not in seen:
+                        seen.add(owner)
+                        queue.append(owner)
+                if endpoint != -1:
+                    break
+            if endpoint == -1:
+                return False
+            remaining.remove(endpoint)
+            right = endpoint
+            while right != -1:
+                left = int(parents[right])
+                previous = int(left_match[left])
+                left_match[left] = right
+                right_match[right] = left
+                right = previous
+        else:
+            right = remaining.pop(best)
+            left_match[index] = right
+            if right_match is not None:
+                right_match[right] = index
     return True
 
 
@@ -105,9 +148,23 @@ def shortest_repeating_prefix(sequence: str) -> str:
 
     if not sequence:
         return ""
-    for size in range(1, len(sequence) + 1):
+    # Ordinary crystal periods are short: keep their fast native string checks.
+    # Long nonperiodic words otherwise build and compare O(N) strings N times.
+    for size in range(1, min(len(sequence), 256) + 1):
         prefix = sequence[:size]
         repeats = (prefix * ((len(sequence) // size) + 1))[: len(sequence)]
         if repeats == sequence:
             return prefix
-    return sequence
+    if len(sequence) <= 256:
+        return sequence
+    # Packed unsigned entries avoid one Python integer object per prefix.
+    prefix_lengths = array("Q", [0]) * len(sequence)
+    matched = 0
+    for index in range(1, len(sequence)):
+        while matched and sequence[index] != sequence[matched]:
+            matched = prefix_lengths[matched - 1]
+        if sequence[index] == sequence[matched]:
+            matched += 1
+        prefix_lengths[index] = matched
+    # A final partial repeat is valid; the period need not divide the length.
+    return sequence[:len(sequence) - prefix_lengths[-1]]

@@ -125,9 +125,10 @@ def contact_summary(
 ) -> dict:
     """Describe the contact two analysed slabs make.
 
-    ``delta`` is the contact that was *asked for*; when nothing was asked for,
-    the contact the two slabs happen to make is read off their labels instead,
-    so a built interface always reports which of the three contacts it is.
+    ``delta`` is the contact that was *asked for*. This label-only compatibility
+    helper infers an unrequested contact from the supplied coset labels. Call
+    :func:`realised_stacking_summary` to measure records with arbitrary relative
+    origins, including offsets outside the three ideal registry classes.
     """
 
     requested = delta is not None
@@ -137,9 +138,18 @@ def contact_summary(
         if bottom_coset is None or top_coset is None:
             return {}
         delta = (int(top_coset) - int(bottom_coset)) % 3
-    delta = int(delta) % 3
+    return _contact_summary_fields(bottom_analysis, top_analysis, delta=delta,
+        bottom_mirrored=bottom_mirrored, top_mirrored=top_mirrored, requested=requested)
+
+
+def _contact_summary_fields(bottom_analysis, top_analysis, *, delta,
+                            bottom_mirrored, top_mirrored, requested) -> dict:
+    """Format a measured contact, retaining the public label-only field order."""
+
+    delta = None if delta is None else int(delta) % 3
     last_step = bottom_analysis.increments[-1] if bottom_analysis.increments else None
-    kind = registry_mod.registry_kind(delta, bottom_analysis.sense, bottom_last_step=last_step)
+    kind = ("general_offset" if delta is None else
+            registry_mod.registry_kind(delta, bottom_analysis.sense, bottom_last_step=last_step))
     summary = {
         "bottom_sequence": bottom_analysis.sequence,
         "top_sequence": top_analysis.sequence,
@@ -148,16 +158,45 @@ def contact_summary(
         "bottom_mirrored": bool(bottom_mirrored),
         "top_mirrored": bool(top_mirrored),
         "delta": delta,
-        "contact": registry_mod.registry_contact_label(bottom_analysis.top_label, delta),
+        "contact": ("unclassified" if delta is None else
+                    registry_mod.registry_contact_label(bottom_analysis.top_label, delta)),
         "kind": kind,
         "registry_requested": bool(requested),
     }
-    if not requested and kind == "eclipsed":
+    if delta is None:
+        summary["note"] = "the boundary offset does not coincide with an ideal close-packed registry"
+    elif not requested and kind == "eclipsed":
         summary["note"] = (
             "the slabs meet eclipsed, one layer directly above the other; "
             "pass --registry fcc for the contact that continues the bulk stacking"
         )
     return summary
+
+
+def _registry_delta_from_records(bottom, top, bottom_analysis, top_analysis,
+                                 *, requested=None) -> int | None:
+    """Measure boundary anchors in the bottom slab's primitive layer gauge.
+
+    Use the same projection, integer-lattice test and componentwise physical
+    tolerance as registry_shift_direct. Test an explicit request on its own:
+    overlapping tolerance neighborhoods must not silently change the request.
+    """
+
+    normal = stacking_mod.surface_normal(np.asarray(bottom.lattice, dtype=float))
+    lower = stacking_mod._inplane(np.asarray(bottom.positions_cartesian, dtype=float), normal)
+    upper = stacking_mod._inplane(np.asarray(top.positions_cartesian, dtype=float), normal)
+    offset = (upper[top_analysis.layers[0].atom_indices[0]] -
+              lower[bottom_analysis.layers[-1].atom_indices[0]])
+    hollow = np.asarray(bottom_analysis.hollow_cartesian, dtype=float)
+    basis = np.asarray(bottom_analysis.layer_basis, dtype=float)
+    candidates = range(3) if requested is None else (int(requested) % 3,)
+    for delta in candidates:
+        if stacking_mod._integer_coefficients(offset - delta * hollow, basis,
+                                              stacking_mod.POSITION_TOLERANCE) is not None:
+            return delta
+    if requested is not None:
+        raise ValueError("the realized boundary offset does not match the requested registry")
+    return None
 
 
 def realised_stacking_summary(bottom, top) -> dict:
@@ -171,12 +210,14 @@ def realised_stacking_summary(bottom, top) -> dict:
     )
     if not top_analysis.close_packed:
         raise ValueError(top_analysis.reason)
-    return contact_summary(
+    delta = _registry_delta_from_records(bottom, top, bottom_analysis, top_analysis)
+    return _contact_summary_fields(
         bottom_analysis,
         top_analysis,
-        delta=None,
+        delta=delta,
         bottom_mirrored=False,
         top_mirrored=False,
+        requested=False,
     )
 
 
@@ -313,12 +354,15 @@ def prepare_stacking(
     if top_choice in {"abc", "cba"} and top_analysis.sense != (1 if top_choice == "abc" else -1):
         raise ValueError("the realized top stacking does not match the requested stacking sense")
 
-    summary = contact_summary(
+    measured_delta = _registry_delta_from_records(bottom, top, bottom_analysis,
+                                                 top_analysis, requested=delta)
+    summary = _contact_summary_fields(
         bottom_analysis,
         top_analysis,
-        delta=delta,
+        delta=measured_delta,
         bottom_mirrored=bool(mirror_bottom),
         top_mirrored=bool(mirror_top),
+        requested=delta is not None,
     )
     summary["distinct_options"] = sum(1 for entry in options if entry.equivalent_to is None)
     return bottom, top, summary
