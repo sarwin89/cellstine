@@ -41,6 +41,8 @@ def parse_miller_notation(miller: str | Sequence[int]) -> tuple[int, int, int]:
         values = [int(value) for value in miller]
         if len(values) != 3:
             raise ValueError("Miller indices must have exactly three values")
+        if values == [0, 0, 0]:
+            raise ValueError("Miller indices cannot all be zero")
         return values[0], values[1], values[2]
     raw = miller.strip()
     if "," not in raw and ";" not in raw and " " not in raw:
@@ -72,30 +74,45 @@ def parse_miller_notation(miller: str | Sequence[int]) -> tuple[int, int, int]:
 
 
 def group_by_species(record, positions_direct: np.ndarray, selective_flags):
-    expanded_species = expand_species(record.species, record.counts)
-    grouped_positions: dict[str, list[np.ndarray]] = {}
-    grouped_flags: dict[str, list[tuple[str, str, str] | None]] = {}
-    species_order: list[str] = []
-    for index, symbol in enumerate(expanded_species):
-        if symbol not in grouped_positions:
-            grouped_positions[symbol] = []
-            grouped_flags[symbol] = []
-            species_order.append(symbol)
-        grouped_positions[symbol].append(np.array(positions_direct[index], dtype=float))
-        if selective_flags is None:
-            grouped_flags[symbol].append(None)
-        else:
-            grouped_flags[symbol].append(tuple(selective_flags[index]))
-    ordered_positions = []
-    ordered_flags: list[tuple[str, str, str]] = []
-    counts = []
-    for symbol in species_order:
-        ordered_positions.extend(grouped_positions[symbol])
-        counts.append(len(grouped_positions[symbol]))
-        if selective_flags is not None:
-            ordered_flags.extend(flag for flag in grouped_flags[symbol] if flag is not None)
-    flags_out = ordered_flags if selective_flags is not None else None
-    return np.array(ordered_positions, dtype=float), counts, species_order, flags_out
+    """Group owned coordinate blocks after checking the complete atom header."""
+
+    symbols = [str(symbol) for symbol in record.species]
+    counts = [int(value) for value in record.counts]
+    if not symbols:
+        raise ValueError("POSCAR species labels are required")
+    if len(symbols) != len(counts) or any(count < 0 for count in counts):
+        raise ValueError("species and nonnegative atom counts must have matching lengths")
+    natoms = len(positions_direct)
+    if sum(counts) != natoms:
+        raise ValueError("atom counts must match the number of positions")
+    if selective_flags is not None and len(selective_flags) != natoms:
+        raise ValueError("selective flags must match the number of positions")
+    if not natoms:
+        return np.empty((0,), dtype=float), [], [], [] if selective_flags is not None else None
+    points = np.asarray(positions_direct, dtype=float)
+    if points.shape != (natoms, 3):
+        raise ValueError("positions must be an (N, 3) array")
+    blocks: dict[str, list[tuple[int, int]]] = {}
+    offset = 0
+    for symbol, count in zip(symbols, counts):
+        if count:
+            blocks.setdefault(symbol, []).append((offset, offset + count))
+        offset += count
+    ordered_positions = np.empty((natoms, 3), dtype=float)
+    ordered_flags = [] if selective_flags is not None else None
+    grouped_counts = []
+    cursor = 0
+    for intervals in blocks.values():
+        total = 0
+        for start, stop in intervals:
+            size = stop - start
+            ordered_positions[cursor:cursor + size] = points[start:stop]
+            if ordered_flags is not None:
+                ordered_flags.extend(tuple(flag) for flag in selective_flags[start:stop])
+            cursor += size
+            total += size
+        grouped_counts.append(total)
+    return ordered_positions, grouped_counts, list(blocks), ordered_flags
 
 
 def contact_summary(
@@ -272,12 +289,15 @@ def prepare_stacking(
         mirror_bottom = mirror_bottom or bool(option.bottom_mirrored)
         mirror_top = mirror_top or bool(option.top_mirrored)
 
+    bottom_analysis, top_analysis = incoming, top_incoming
     if mirror_bottom:
-        bottom = stacking_mod.mirror_structure(bottom)
+        bottom, bottom_analysis = stacking_mod._reverse_stacking(
+            bottom, incoming, reference_hollow=gauge
+        )
     if mirror_top:
-        top = stacking_mod.mirror_structure(top)
-    bottom_analysis = stacking_mod.analyse_stacking(bottom, hollow_cartesian=gauge)
-    top_analysis = stacking_mod.analyse_stacking(top, hollow_cartesian=gauge)
+        top, top_analysis = stacking_mod._reverse_stacking(
+            top, top_incoming, reference_hollow=gauge
+        )
 
     delta = None if option is None else int(option.delta)
     if delta is not None:
@@ -286,6 +306,12 @@ def prepare_stacking(
         )
         top = stacking_mod.shift_structure_inplane(top, shift)
         top_analysis = stacking_mod.analyse_stacking(top, hollow_cartesian=gauge)
+
+    expected_top = tuple((-int(value)) % 3 for value in top_incoming.increments) if mirror_top else top_incoming.increments
+    if not top_analysis.close_packed or top_analysis.increments != expected_top:
+        raise ValueError("the realized top stacking does not match the selected registry configuration")
+    if top_choice in {"abc", "cba"} and top_analysis.sense != (1 if top_choice == "abc" else -1):
+        raise ValueError("the realized top stacking does not match the requested stacking sense")
 
     summary = contact_summary(
         bottom_analysis,
@@ -387,31 +413,32 @@ def stack_structures(bottom, top, *, gap: float, vacuum: float):
     bottom_positions, bottom_counts, bottom_species, bottom_flags = group_by_species(bottom, bottom_direct, bottom.selective_flags)
     top_positions, top_counts, top_species, top_flags = group_by_species(top, top_direct, top.selective_flags)
 
-    species = []
-    counts = []
-    grouped_flags = []
-    grouped_positions = []
     all_species = bottom_species + [symbol for symbol in top_species if symbol not in bottom_species]
+    sources = ((bottom_species, bottom_counts, bottom_positions, bottom_flags),
+               (top_species, top_counts, top_positions, top_flags))
+    block_maps = []
+    for current_species, current_counts, _, _ in sources:
+        offset = 0
+        blocks = {}
+        for symbol, count in zip(current_species, current_counts):
+            blocks[symbol] = (offset, count)
+            offset += count
+        block_maps.append(blocks)
+    natoms = sum(bottom_counts) + sum(top_counts)
+    positions = np.empty((natoms, 3) if natoms else (0,), dtype=float)
+    flags_out = [] if bottom_flags or top_flags else None
+    counts = []
+    cursor = 0
     for symbol in all_species:
-        symbol_positions = []
-        symbol_flags = []
-        for current_species, current_counts, current_positions, current_flags in (
-            (bottom_species, bottom_counts, bottom_positions, bottom_flags),
-            (top_species, top_counts, top_positions, top_flags),
-        ):
-            offset = 0
-            for species_name, count in zip(current_species, current_counts):
-                block = current_positions[offset : offset + count]
-                block_flags = None if current_flags is None else current_flags[offset : offset + count]
-                if species_name == symbol:
-                    symbol_positions.extend(np.array(item, dtype=float) for item in block)
-                    if block_flags is not None:
-                        symbol_flags.extend(tuple(item) for item in block_flags)
-                offset += count
-        if symbol_positions:
-            species.append(symbol)
-            counts.append(len(symbol_positions))
-            grouped_positions.extend(symbol_positions)
-            grouped_flags.extend(symbol_flags)
-    flags_out = grouped_flags if grouped_flags else None
-    return final_lattice, np.array(grouped_positions, dtype=float), counts, species, flags_out
+        total = 0
+        for (_, _, current_positions, current_flags), blocks in zip(sources, block_maps):
+            start, count = blocks.get(symbol, (0, 0))
+            if count:
+                positions[cursor:cursor + count] = current_positions[start:start + count]
+                if flags_out is not None:
+                    flags_out.extend(current_flags[start:start + count] if current_flags is not None
+                                     else [("T", "T", "T")] * count)
+                cursor += count
+                total += count
+        counts.append(total)
+    return final_lattice, positions, counts, all_species, flags_out

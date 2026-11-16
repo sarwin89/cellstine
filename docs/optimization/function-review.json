@@ -8587,10 +8587,10 @@
       "qualified_name": "_gauss_reduce",
       "line": 71,
       "end_line": 87,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "deferred—with reason",
-      "reason": "Fresh-copy two-row reduction preserves original tie multiplier and row ordering. Investigated fixed64-iteration return and norm<=1e-18 early exit: neither certifies a reduced result for arbitrary finite magnitude/conditioning. Ordinary callers retain behavior, but arbitrary-domain convergence guarantee remains explicitly deferred; no new demonstrated ordinary failure asserted.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Re-read swap, norm cutoff, shared tie multiplier and final ordering. AST unchanged. Fixed 64 iterations and 1e-18 cutoff still do not certify arbitrary-conditioning convergence; retain investigated deferral, without asserting a newly demonstrated ordinary-input failure.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::_integer_coefficients",
@@ -8598,10 +8598,10 @@
       "qualified_name": "_integer_coefficients",
       "line": 90,
       "end_line": 101,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Solves basis.T, rounds once and checks Cartesian residual with the original componentwise tolerance before native integer conversion. Singular solve returnsNone. Layer/coset/registry callers supply finite physical bases and use None as rejection; no arithmetic or repeated-solve optimization warranted. Arbitrary nonfinite/overflowing external inputs are not newly certified.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Solve basis.T, round and test physical residual before integer conversion; singular solve returns None. Valid physical-basis callers interpret None as rejection. No arithmetic changes or new overflow-domain guarantee.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::_reduce_modulo_lattice",
@@ -8609,10 +8609,10 @@
       "qualified_name": "_reduce_modulo_lattice",
       "line": 104,
       "end_line": 115,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Complete body preserves initial rounded representative, ordered nine local shifts, mutable-best walk and strict1e-12 improvement rule. Current documentation correctly promises a short representative under the caller Gauss-reduced basis; both supplied-hollow and registry paths provide that basis. Do not claim arbitrary-unreduced-basis closest-vector completeness.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Original rounded representative, ordered nine-neighbour mutable-best updates and 1e-12 strict threshold retained. Supplied-gauge and registry callers use the reduced layer basis; no arbitrary-basis closest-vector claim.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::_layer_point_lattice",
@@ -8620,10 +8620,10 @@
       "qualified_name": "_layer_point_lattice",
       "line": 118,
       "end_line": 167,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "deferred—with reason",
-      "reason": "Reviewed all9 image offsets per point, norm filtering, stable norm sort, first noncollinear pair, reduction, cell/difference membership and covolume/site-count checks. These validate a found candidate but finite image discovery and9N object allocation/sort do not establish arbitrary-supercell primitive completeness/resource suitability. Keep that investigated limitation deferred. Corrected documentation accurately states geometry-only input; no speculative chemical policy change is proposed.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Reviewed nine images per point, stable norm ordering, first independent pair, reduction, membership and covolume checks. Finite candidate discovery and 9N Python-vector allocation remain limitations for arbitrary supercells; preserve deferral.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::_layer_point_lattice.<lambda>@140:24",
@@ -8631,10 +8631,10 @@
       "qualified_name": "_layer_point_lattice.<lambda>@140:24",
       "line": 140,
       "end_line": 140,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Squared-norm key retains stable input/image ordering for equal lengths; no hidden mutation or extra scan. Candidate-discovery limitations belong to the owning algorithm, not this key.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Squared-norm key preserves deterministic stable candidate ordering without mutation; discovery/resource limitation belongs to enclosing algorithm.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::_hollow_generator",
@@ -8642,10 +8642,10 @@
       "qualified_name": "_hollow_generator",
       "line": 170,
       "end_line": 194,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Reduced basis length/equal-length and60degree cosine checks, sign adjustment and upper-half-plane choice preserve the original triangular hollow convention. Checked its use in gauge classification: the primitive reduction limitation is separate; no additional defect identified in this fixed-size geometry body.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Reduced triangular basis, length and cosine tolerances, obtuse-to-acute sign and half-plane orientation retained. Supplies one of the two nonzero hollow cosets; actual reversal validates the incoming gauge separately.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::_coset_index",
@@ -8653,10 +8653,10 @@
       "qualified_name": "_coset_index",
       "line": 197,
       "end_line": 205,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Tries exactly0,1,2 multiples in that order using integer-coefficient Cartesian residual; preserves first accepted coset and None otherwise. No chemical assumptions or allocations beyond tiny vectors.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Tests residues 0,1,2 in order through physical residual membership and returns None when none matches; no mutation or altered tolerance.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::StackingAnalysis.layer_count",
@@ -8664,10 +8664,10 @@
       "qualified_name": "StackingAnalysis.layer_count",
       "line": 238,
       "end_line": 239,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Returns immutable layer-tuple length; matches summary and registry consumers.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Returns tuple cardinality directly; candidate reversal explicitly compares this count.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::StackingAnalysis.bottom_coset",
@@ -8675,10 +8675,10 @@
       "qualified_name": "StackingAnalysis.bottom_coset",
       "line": 242,
       "end_line": 243,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Returns first layer coset orNone for empty analyses; assembly checks close-packed status before using contact cosets.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Empty-safe first-layer coset; contact summary handles missing value.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::StackingAnalysis.top_coset",
@@ -8686,10 +8686,10 @@
       "qualified_name": "StackingAnalysis.top_coset",
       "line": 246,
       "end_line": 247,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Returns last layer coset orNone; matches bottom-slab contact convention in assembly.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Empty-safe last-layer coset; contact summary handles missing value.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::StackingAnalysis.bottom_label",
@@ -8697,10 +8697,10 @@
       "qualified_name": "StackingAnalysis.bottom_label",
       "line": 250,
       "end_line": 251,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Returns first label or? for empty report without fabricating a physical coset.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "First label or question-mark sentinel, unchanged immutable-layer access.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::StackingAnalysis.top_label",
@@ -8708,10 +8708,10 @@
       "qualified_name": "StackingAnalysis.top_label",
       "line": 254,
       "end_line": 255,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Returns last label or?; registry contact-label consumers use bottom top-label as intended.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Last label or question-mark sentinel, unchanged immutable-layer access.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::StackingAnalysis.sense_label",
@@ -8719,10 +8719,10 @@
       "qualified_name": "StackingAnalysis.sense_label",
       "line": 258,
       "end_line": 259,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Delegates scalar sense label; no independent gauge or cached state.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Delegates numeric sense to the common label mapping; returned realized analysis now drives summaries.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::StackingAnalysis.reversible",
@@ -8730,10 +8730,10 @@
       "qualified_name": "StackingAnalysis.reversible",
       "line": 262,
       "end_line": 265,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Checks whether any increment differs from zero modulo3. This is literal sequence negation under the established gauge, used to omit unchanged monolayer/all-eclipsed registry choices; it does not certify that every geometric reflection negates that sequence.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Any nonzero modulo-three increment identifies a changed word; uniform, HCP and mixed words treated by full increment sequence.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::StackingAnalysis.as_dict",
@@ -8741,10 +8741,10 @@
       "qualified_name": "StackingAnalysis.as_dict",
       "line": 267,
       "end_line": 280,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Fresh JSON-ready scalar/list summary preserves exact schema, integer coercions, layer heights/counts and labels; all fields are computed from the analysis rather than reflected-structure assumptions.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Fresh scalar/list summary retains all fields and layer order; serializes realized analysis rather than a requested label.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::sense_label",
@@ -8752,10 +8752,10 @@
       "qualified_name": "sense_label",
       "line": 283,
       "end_line": 290,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Positive integer sense mapsABC, negativeCBA and zero mixed, preserving existing coercion and workflow output strings.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Positive/negative/zero integer mapping remains ABC/CBA/mixed; no new gauge assumptions.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::group_layers",
@@ -8763,10 +8763,10 @@
       "qualified_name": "group_layers",
       "line": 293,
       "end_line": 306,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Empty positions return[]; otherwise delegates surface-normal heights and shared layer_partition using supplied tolerance. Reviewed sequence consumer and orientation/left-handed tests; no duplicate local grouping policy or new mutation.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Empty input returns empty groups; nonempty coordinates use shared normal-heights and layer partition tolerance. Mirror leaves normal heights unchanged for normalized slabs.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::_plane_axes",
@@ -8774,10 +8774,10 @@
       "qualified_name": "_plane_axes",
       "line": 309,
       "end_line": 321,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "For unit normals from surface_normal, reference switch avoids nearparallel projection, normalization and cross product produce a common right-handed in-plane frame independent of cell basis. All current callers use that unit-normal source.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Constructs normalized in-plane axes from surface normal alone, preserving a shared frame across distinct cell bases.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::_inplane",
@@ -8785,10 +8785,10 @@
       "qualified_name": "_inplane",
       "line": 324,
       "end_line": 328,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Projects out the normal then resolves in shared axes using new arrays; row-basis convention matches Cartesian positions/cell callers and does not change source coordinates.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Removes normal projection then expresses planar vectors in the normal-defined axes; coordinate and cell analyses use the same convention.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::_not_close_packed",
@@ -8796,10 +8796,10 @@
       "qualified_name": "_not_close_packed",
       "line": 331,
       "end_line": 351,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Builds immutable unknown-label layers preserving actual heights and sorted atom indices while clearing cosets/gauge/increments. Does not silently lose layers or invent close-packed information on rejected discovery.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Preserves sorted atom indices and layer census while explicitly clearing sequence, gauge and basis; callers refuse active requests.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::analyse_stacking",
@@ -8807,10 +8807,10 @@
       "qualified_name": "analyse_stacking",
       "line": 354,
       "end_line": 467,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Independently traced equal counts, bottom triangular lattice, per-layer compatible first vector, anchors, optional shared hollow validation, relative increments, origin gauge, sense and Cartesian/direct hollow mapping.60degree counterexample is correctly classified before/after reflection; no caller-level blanket deferral from limited primitive discovery. Redundant bottom-layer discovery is a small possible optimization, not required. No demonstrated first-vector falsepositive or chemical-equivalence defect asserted.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Re-read layer cardinality, primitive discovery, triangular hollow, supplied-gauge compatibility, adjacent coset increments and sense construction. Own-gauge first step remains positive; externally supplied gauge preserves opposite sense. Numerical/primitive limitations remain attached to their owning algorithms.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::_inplane_gram",
@@ -8818,10 +8818,10 @@
       "qualified_name": "_inplane_gram",
       "line": 474,
       "end_line": 476,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Converts input to float, selects first two full3D row vectors and multiplies by transpose exactly as baseline. Constant2x2 result and no input mutation.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Two in-plane lattice rows and Gram product preserved; normalized workflow geometry supplies valid plane.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::_mirror_candidate_rows",
@@ -8829,10 +8829,10 @@
       "qualified_name": "_mirror_candidate_rows",
       "line": 479,
       "end_line": 565,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "optimized—verified",
-      "reason": "Exact rational SPD/error setup, strict inner and closed outer integer inequalities, outward square roots and swapped coordinate mapping were inspected.64epsilon/tiny diagonal envelope conservatively covers two length-two dot stages and target interval expands subtraction rounding. New guards preserve legacy fallback for nonfinite/asymmetric/nonpositive/unresolved/broad inputs or nonexact coordinates. Smaller-axis scan plus65536 range,2401 row and2401 pair bounds resolves the observed infeasible scan; guards execute before list growth/product. Sorting restores original row order. Completeness is claimed only when helper returns rows, not None.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Re-read finite/symmetric/positive metric validation, exact rational outward annulus bounds, swapped scan, row/pair budgets and legacy fallback. New selector consumes existing deterministic matrices without changing candidate completeness domain. Retain prior optimization: full current body is AST-identical to the validated predecessor, with current caller/readback verification.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::inplane_mirror_matrices",
@@ -8840,10 +8840,10 @@
       "qualified_name": "inplane_mirror_matrices",
       "line": 568,
       "end_line": 592,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "optimized—verified",
-      "reason": "Final int(round(np.linalg.det(matrix))) and componentwise matrix@gram@matrix.T residual are unchanged, including tolerance scaling. Candidate rows reduce ordinary determinant calls; fallback product has original[-3,3]^4 order. Each candidate is a fresh writable integer array and final lex sort preserves ordinary complete-set order. General mirror enumeration is correct within documented bounded search domain; final documentation now correctly distinguishes geometric reflection from hollow-coset reversal; selection remains the explicit semantic deferral.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Original bounded candidates/fallback, determinant -1 and final Gram residual tests retained; lexicographic sorting supplies deterministic first actual reversal. Retain prior optimization: full current body is AST-identical to the validated predecessor, with current caller/readback verification.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::inplane_mirror_matrices.<lambda>@591:22",
@@ -8851,10 +8851,10 @@
       "qualified_name": "inplane_mirror_matrices.<lambda>@591:22",
       "line": 591,
       "end_line": 591,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Flattens row-major integers into tuple for lex sort, preserving first default matrix for unchanged ordinary sets; no allocation alias can affect returned arrays.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Integer row-major tuple retains deterministic ordering and ordinary default selection.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::mirror_structure",
@@ -8862,10 +8862,10 @@
       "qualified_name": "mirror_structure",
       "line": 595,
       "end_line": 625,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
-      "status": "deferred—with reason",
-      "reason": "Default uses first lex mirror; direct positions are copied and transformed by row convention, record.copy retains species/counts/flags and shallow metadata semantics, and Cartesian coordinates are recomputed in unchanged lattice. This is an isometry for normalized ab-plane/perpendicular-c inputs. Independently proved ordinary60degree default leaves hollow coset/sense unchanged which previously contradicted the reversal claim; final docstring now states that distinction accurately; preserve generic default now but explicitly defer sense-changing selection. Explicit invalid supplied-matrix validation and general nonnormalized geometry hardening remain outside this bounded enumeration change.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
+      "status": "reviewed—unchanged",
+      "reason": "AST unchanged geometric default is intentionally first sorted lattice mirror. Copies direct coordinates and record, preserves flags/header and shallow metadata semantics, and recomputes Cartesian coordinates. Prior high-level CBA defect is now closed by _reverse_stacking; no reason to retain this body as deferred for that solved issue.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::shift_structure_inplane",
@@ -8873,10 +8873,10 @@
       "qualified_name": "shift_structure_inplane",
       "line": 628,
       "end_line": 640,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Creates new3-vector, forces c shift0, copies direct positions/record and recomputes Cartesian positions, preserving flags/headers. Current registry caller supplies length3 values. Arbitrary malformed cardinality is an API-hardening consideration, not a demonstrated valid-caller defect.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Copies direct coordinates and record, forces zero c shift and recomputes Cartesian values. Registry supplies a three-component shift; original metadata/flag copy semantics preserved.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::normalise_stacking_choice",
@@ -8884,32 +8884,43 @@
       "qualified_name": "normalise_stacking_choice",
       "line": 643,
       "end_line": 655,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "All keep/mirror/abc/cba aliases, punctuation stripping and unknown ValueError remain fixed and consistent with workflow selection; no optimization needed.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Keep/mirror/ABC/CBA aliases, punctuation stripping and unknown-choice ValueError retained; all callers normalize before selecting.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
+    },
+    {
+      "id": "src/cellstine/interface/surface/stacking.py::_reverse_stacking",
+      "path": "src/cellstine/interface/surface/stacking.py",
+      "qualified_name": "_reverse_stacking",
+      "line": 658,
+      "end_line": 679,
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
+      "status": "optimized—verified",
+      "reason": "New helper rejects non-close-packed input, uses incoming analysis gauge and exact modulo-three negation of every increment, tries sorted geometric mirrors, validates actual close-packed analysis and layer count, and returns the first realization or clear ValueError. Internal callers supply analysis of this record in the same gauge.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::apply_relative_stacking",
       "path": "src/cellstine/interface/surface/stacking.py",
       "qualified_name": "apply_relative_stacking",
-      "line": 658,
-      "end_line": 703,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
-      "status": "reviewed—unchanged",
-      "reason": "Resolved keep/alreadydesired return original record as documented; non-close-packed, missing gauge and mixed sense fail explicitly. Reflection is reanalysed in the same gauge and requested sense is checked, so the60degree default-selection limitation is correctly refused rather than silently reported as success. Caller logic is reviewed independently; selection capability remains the mirror deferral.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "line": 682,
+      "end_line": 729,
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
+      "status": "optimized—verified",
+      "reason": "Keep and already-requested senses retain original object. Missing gauge, non-close-packed and mixed-word explicit-sense requests refuse clearly. New helper fixes 60-degree same-coset first mirror; standalone mirror deliberately reanalyses in its own gauge; explicit requested sense is checked before return.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/stacking.py::registry_shift_direct",
       "path": "src/cellstine/interface/surface/stacking.py",
       "qualified_name": "registry_shift_direct",
-      "line": 706,
-      "end_line": 743,
-      "module_sha256": "a3a3227966e5308784b9060e5a88238364ece4aae1afde2a0601f7d94aa0bd7a",
+      "line": 732,
+      "end_line": 769,
+      "module_sha256": "a66544f2c6bbff3e337c5c6e9b83478cc2e1d0c45fcbe59378206c66d3e86620",
       "status": "reviewed—unchanged",
-      "reason": "Requires close-packed analyses; shared-cell precondition is explicit. Uses bottom top-layer/top bottom-layer anchors, modulo3 requested contact, exact-zero fast path when already equivalent and reduced-basis short shift otherwise. Canonical frame back-conversion and unchanged c component match shift_structure_inplane; normal gauge/origin invariants are preserved.",
-      "evidence": "docs/optimization/part-06d-stacking-mirrors.md;30complete source-hashed independent body reviews;97focused then3782full/4skips/81warnings on286Pythonfreeze;180scalar original final predicates/15exact integer conjugations/ordinary compound default byte equality;interleaved timings and allocation;wheel/sdist/Twine/three installed native workflows;threeexplicit investigated deferrals including Important60degree assemblyCBA defect;final support sdist and exact-headCI/artifact gate next runtime edits"
+      "reason": "Uses actual interfacial anchors, bottom reduced basis and supplied shared hollow; zero-shift equivalence fast path and modulo-three target remain unchanged. Plane-frame conversion and in-plane translation preserve increments.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface.py::_miller_token",
@@ -9543,110 +9554,110 @@
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "parse_miller_notation",
       "line": 39,
-      "end_line": 71,
-      "module_sha256": "613b8554a2ae8e80851b209fb56adb7341f048aebc02fbf8c07e4565eed3fc74",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "end_line": 73,
+      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
+      "status": "optimized—verified",
+      "reason": "Sequence conversion and length check now reject all-zero tuple/list/array consistently with compact/separated strings. Existing integer-cast policy and compact x notation retained.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::group_by_species",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "group_by_species",
-      "line": 74,
-      "end_line": 98,
-      "module_sha256": "613b8554a2ae8e80851b209fb56adb7341f048aebc02fbf8c07e4565eed3fc74",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 76,
+      "end_line": 115,
+      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
+      "status": "optimized—verified",
+      "reason": "Validates nonempty labels, matching header lengths, nonnegative integer-cast counts, total position cardinality and flag cardinality before atom-scaled allocation. Positive header blocks preserve first positive species and per-species order, including duplicate and zero headers. Output coordinates and flag tuples are owned; zero atoms retain shape (0,) and original None/list flag convention.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::contact_summary",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "contact_summary",
-      "line": 101,
-      "end_line": 143,
-      "module_sha256": "613b8554a2ae8e80851b209fb56adb7341f048aebc02fbf8c07e4565eed3fc74",
+      "line": 118,
+      "end_line": 160,
+      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Re-read requested delta modulo three, bottom last-step classification, realized sense/word and mirror fields. Active registry summaries use the selected delta and actual analyses. Existing passive-origin reporting limitation explicitly recorded outside this plan. Coordinator investigation additionally confirms existing passive contact-origin misclassification against predecessor: top translations0,h,2h require deltas1,2,0, but report1,1,1. Label-only summary/record-owning reporting needs dedicated registry-phase correction before release readiness; coordinates are unchanged. Evidence: part06e-passive-registry-probe.json. This overrides the review disposition explicitly rather than silently certifying that domain.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::realised_stacking_summary",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "realised_stacking_summary",
-      "line": 146,
-      "end_line": 163,
-      "module_sha256": "613b8554a2ae8e80851b209fb56adb7341f048aebc02fbf8c07e4565eed3fc74",
+      "line": 163,
+      "end_line": 180,
+      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Bottom analysis fixes gauge, top is checked in that gauge, and unavailable analysis raises for the passive caller to omit summary. Existing passive contact-origin policy is unchanged and explicitly scoped out. Coordinator investigation additionally confirms existing passive contact-origin misclassification against predecessor: top translations0,h,2h require deltas1,2,0, but report1,1,1. Label-only summary/record-owning reporting needs dedicated registry-phase correction before release readiness; coordinates are unchanged. Evidence: part06e-passive-registry-probe.json. This overrides the review disposition explicitly rather than silently certifying that domain.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::prepare_stacking",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "prepare_stacking",
-      "line": 166,
-      "end_line": 298,
-      "module_sha256": "613b8554a2ae8e80851b209fb56adb7341f048aebc02fbf8c07e4565eed3fc74",
+      "line": 183,
+      "end_line": 324,
+      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Re-read passive path, bottom absolute-sense rejection, shared gauge, interchangeability enumeration, index/contact selection conflicts and both mirror choices. New selector realizes both words, reuses unchanged/returned analyses, checks top increments after registry translation and validates explicit final ABC/CBA. No requested-sense success is returned after an unavailable reversal. Coordinator investigation additionally confirms existing passive contact-origin misclassification against predecessor: top translations0,h,2h require deltas1,2,0, but report1,1,1. Label-only summary/record-owning reporting needs dedicated registry-phase correction before release readiness; coordinates are unchanged. Evidence: part06e-passive-registry-probe.json. This overrides the review disposition explicitly rather than silently certifying that domain.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::reported_kind",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "reported_kind",
-      "line": 301,
-      "end_line": 305,
-      "module_sha256": "613b8554a2ae8e80851b209fb56adb7341f048aebc02fbf8c07e4565eed3fc74",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 327,
+      "end_line": 331,
+      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
+      "status": "reviewed—unchanged",
+      "reason": "Preserves stored kind default and detected suffix; constant-size metadata presentation.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::slab_vacuum_thickness",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "slab_vacuum_thickness",
-      "line": 308,
-      "end_line": 316,
-      "module_sha256": "613b8554a2ae8e80851b209fb56adb7341f048aebc02fbf8c07e4565eed3fc74",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 334,
+      "end_line": 342,
+      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
+      "status": "reviewed—unchanged",
+      "reason": "Uses c-z extent and occupied z span with empty guard; Interface.build calls after normalization. No general tilted-cell claim.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::stacked_cartesian",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "stacked_cartesian",
-      "line": 319,
-      "end_line": 346,
-      "module_sha256": "613b8554a2ae8e80851b209fb56adb7341f048aebc02fbf8c07e4565eed3fc74",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 345,
+      "end_line": 372,
+      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
+      "status": "reviewed—unchanged",
+      "reason": "Copies both Cartesian arrays, computes original extrema/thickness/base arithmetic and final c vector, and rejects nonpositive cell length. Arithmetic order and caller ownership unchanged.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::interface_contact_report",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "interface_contact_report",
-      "line": 349,
-      "end_line": 370,
-      "module_sha256": "613b8554a2ae8e80851b209fb56adb7341f048aebc02fbf8c07e4565eed3fc74",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 375,
+      "end_line": 396,
+      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
+      "status": "reviewed—unchanged",
+      "reason": "Retains separate bottom/top Cartesian geometry and species for periodic contact reporting. Direct build invokes only after stack_structures header validation; standalone permissive-label policy remains external to grouping validation.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/assembly.py::stack_structures",
       "path": "src/cellstine/interface/workflow/assembly.py",
       "qualified_name": "stack_structures",
-      "line": 373,
-      "end_line": 417,
-      "module_sha256": "613b8554a2ae8e80851b209fb56adb7341f048aebc02fbf8c07e4565eed3fc74",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 399,
+      "end_line": 444,
+      "module_sha256": "181427422a6a026e39c10dae07ba2432ad0a336f45e3bb3505030c8ced76f6f1",
+      "status": "optimized—verified",
+      "reason": "Both original Cartesian-to-direct operations and arithmetic retained. Grouped-header maps remove repeated per-species source rescans and per-atom NumPy copies; output is preallocated with species order bottom first then new top labels. Each species emits bottom then top atoms and aligned flags, filling unflagged source sites with TTT. Both-empty output retains (0,) and flags None.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/build.py::build",
@@ -9665,10 +9676,10 @@
       "qualified_name": "_contact_summary",
       "line": 50,
       "end_line": 69,
-      "module_sha256": "ac9e41f49a91a81328c30e5a8d67676c8f6d6fd74406270232e509d7358c3718",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "eb00709c59a5394246cfb084c46ec2acb30fa1473e659f526a2ea3705fd91610",
+      "status": "reviewed—unchanged",
+      "reason": "Optional distance/pair and warning list are copied into presentation fields with original rounding; no caller or schema change.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/interface.py::Interface.__init__",
@@ -9676,10 +9687,10 @@
       "qualified_name": "Interface.__init__",
       "line": 77,
       "end_line": 81,
-      "module_sha256": "ac9e41f49a91a81328c30e5a8d67676c8f6d6fd74406270232e509d7358c3718",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "eb00709c59a5394246cfb084c46ec2acb30fa1473e659f526a2ea3705fd91610",
+      "status": "reviewed—unchanged",
+      "reason": "Base initialization followed by converter with shared dependency manager, normalizer and writer; no hidden state changes introduced.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/interface.py::Interface._detected_input_kind",
@@ -9687,10 +9698,10 @@
       "qualified_name": "Interface._detected_input_kind",
       "line": 83,
       "end_line": 96,
-      "module_sha256": "ac9e41f49a91a81328c30e5a8d67676c8f6d6fd74406270232e509d7358c3718",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "eb00709c59a5394246cfb084c46ec2acb30fa1473e659f526a2ea3705fd91610",
+      "status": "reviewed—unchanged",
+      "reason": "Reads without canonicalization and compares surface-normal vacuum to threshold; source file not written.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/interface.py::Interface._resolve_surface_input",
@@ -9698,10 +9709,10 @@
       "qualified_name": "Interface._resolve_surface_input",
       "line": 98,
       "end_line": 143,
-      "module_sha256": "ac9e41f49a91a81328c30e5a8d67676c8f6d6fd74406270232e509d7358c3718",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "eb00709c59a5394246cfb084c46ec2acb30fa1473e659f526a2ea3705fd91610",
+      "status": "reviewed—unchanged",
+      "reason": "Manifest artifact, detected or explicit slab, invalid kind and bulk Surface paths each retained. Generated bulk surfaces remain delegated and metadata preserved.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/interface.py::Interface._normalized_slab",
@@ -9709,10 +9720,10 @@
       "qualified_name": "Interface._normalized_slab",
       "line": 145,
       "end_line": 156,
-      "module_sha256": "ac9e41f49a91a81328c30e5a8d67676c8f6d6fd74406270232e509d7358c3718",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "eb00709c59a5394246cfb084c46ec2acb30fa1473e659f526a2ea3705fd91610",
+      "status": "reviewed—unchanged",
+      "reason": "Explicit in-place rewrite applies only to owned match-generated slab paths in current call graph; aligns plane and writes direct coordinates without wrapping.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/interface.py::Interface.build",
@@ -9720,76 +9731,76 @@
       "qualified_name": "Interface.build",
       "line": 158,
       "end_line": 324,
-      "module_sha256": "ac9e41f49a91a81328c30e5a8d67676c8f6d6fd74406270232e509d7358c3718",
+      "module_sha256": "eb00709c59a5394246cfb084c46ec2acb30fa1473e659f526a2ea3705fd91610",
       "status": "optimized—verified",
-      "reason": "Reserves default stack POSCAR while retaining strain/registry/stacking/contact calculations and writer/result fields; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "AST-identical to base and independently re-read end to end. Prior reserved-default-output optimization remains intact, with strain threshold, normalized shared cell, prepare_stacking then validated grouping before contact expansion, full flag assignment, wrapped writer and unchanged manifest/result schema. Retain prior optimized status rather than blanket module-change deferral. Retain prior optimization: full current body is AST-identical to the validated predecessor, with current caller/readback verification.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/interface.py::Interface._mirrored_slab_copy",
       "path": "src/cellstine/interface/workflow/interface.py",
       "qualified_name": "Interface._mirrored_slab_copy",
       "line": 326,
-      "end_line": 337,
-      "module_sha256": "ac9e41f49a91a81328c30e5a8d67676c8f6d6fd74406270232e509d7358c3718",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "end_line": 339,
+      "module_sha256": "eb00709c59a5394246cfb084c46ec2acb30fa1473e659f526a2ea3705fd91610",
+      "status": "optimized—verified",
+      "reason": "Normalizes a source read in memory, analyses once, selects actual same-gauge reversal and writes a distinct run-owned file with reversed-stage comment; original source bytes and selective flags preserved by copy/writer path.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/interface.py::Interface._build_from_match",
       "path": "src/cellstine/interface/workflow/interface.py",
       "qualified_name": "Interface._build_from_match",
-      "line": 339,
-      "end_line": 458,
-      "module_sha256": "ac9e41f49a91a81328c30e5a8d67676c8f6d6fd74406270232e509d7358c3718",
+      "line": 341,
+      "end_line": 460,
+      "module_sha256": "eb00709c59a5394246cfb084c46ec2acb30fa1473e659f526a2ea3705fd91610",
       "status": "optimized—verified",
-      "reason": "Reserves matched-interface default after recorded atom-count validation; retains scientific construction, descriptor, flags and selected-path schema; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "AST-identical to base and independently re-read end to end. Rejects meaningless absolute senses for twisted cells, routes each mirror through corrected copy helper, delegates scientific construction, validates recorded atom count and retains reserved default output, writer, manifests and fields. Prior optimized status remains justified; runtime checkpoint belongs to coordinator. Retain prior optimization: full current body is AST-identical to the validated predecessor, with current caller/readback verification.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/interface.py::Interface.registries",
       "path": "src/cellstine/interface/workflow/interface.py",
       "qualified_name": "Interface.registries",
-      "line": 460,
-      "end_line": 582,
-      "module_sha256": "ac9e41f49a91a81328c30e5a8d67676c8f6d6fd74406270232e509d7358c3718",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 462,
+      "end_line": 584,
+      "module_sha256": "eb00709c59a5394246cfb084c46ec2acb30fa1473e659f526a2ea3705fd91610",
+      "status": "reviewed—unchanged",
+      "reason": "Normalizes/strains slabs for shared-gauge analysis, rejects incompatible input and enumerates options with interchangeability; writes consistent document/count/table fields. Abstract option table does not certify cell mirror realizability, which build now explicitly checks.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/interface.py::Interface._prune_unused_pair_searches",
       "path": "src/cellstine/interface/workflow/interface.py",
       "qualified_name": "Interface._prune_unused_pair_searches",
-      "line": 585,
-      "end_line": 605,
-      "module_sha256": "ac9e41f49a91a81328c30e5a8d67676c8f6d6fd74406270232e509d7358c3718",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 587,
+      "end_line": 607,
+      "module_sha256": "eb00709c59a5394246cfb084c46ec2acb30fa1473e659f526a2ea3705fd91610",
+      "status": "reviewed—unchanged",
+      "reason": "Resolves referenced results parents, inspects only pair_* directories in new run root and removes unreferenced generated searches. Current match caller supplies owned stage root; no broader cleanup introduced.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/interface.py::Interface.match",
       "path": "src/cellstine/interface/workflow/interface.py",
       "qualified_name": "Interface.match",
-      "line": 607,
-      "end_line": 770,
-      "module_sha256": "ac9e41f49a91a81328c30e5a8d67676c8f6d6fd74406270232e509d7358c3718",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 609,
+      "end_line": 772,
+      "module_sha256": "eb00709c59a5394246cfb084c46ec2acb30fa1473e659f526a2ea3705fd91610",
+      "status": "reviewed—unchanged",
+      "reason": "Re-read input grids, slab cache calls, all pair searches, sorted limit, pruning, document and manifest/preview. No new optimization or duplicate-suite claim; source identical and new Miller validation is reached through existing calls.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/interface.py::Interface.match.slab_for",
       "path": "src/cellstine/interface/workflow/interface.py",
       "qualified_name": "Interface.match.slab_for",
-      "line": 667,
-      "end_line": 684,
-      "module_sha256": "ac9e41f49a91a81328c30e5a8d67676c8f6d6fd74406270232e509d7358c3718",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 669,
+      "end_line": 686,
+      "module_sha256": "eb00709c59a5394246cfb084c46ec2acb30fa1473e659f526a2ea3705fd91610",
+      "status": "reviewed—unchanged",
+      "reason": "Cache key includes side, Miller text and layer count; miss creates a slab at run-owned side path, normalizes once and caches returned path. Nested callable independently reviewed and AST-identical.",
+      "evidence": "docs/optimization/part-06e-interface-assembly.md;53complete independent body reviews and coordinator declined-scope rulings;144focused then3814full/4skips/81warnings on287Pythonfreeze;interleaved timing/allocation and exactaccepted grouping/stack/preparation fields;corrected CBA/flags independentoracles;wheel/sdist/Twine/three installed native direct+matched-slab/parallel workflows;five explicit investigated dispositions including passive registry-reporting followup;final support sdist and exact-headCI/artifact gate next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/lattice_match.py::MatchRequest.__post_init__",

@@ -330,7 +330,9 @@ class Interface(Base):
         analysis = stacking_mod.analyse_stacking(record)
         if not analysis.close_packed:
             raise ValueError(f"the {side} slab is not close packed: {analysis.reason}")
-        mirrored = stacking_mod.mirror_structure(record)
+        mirrored, _ = stacking_mod._reverse_stacking(
+            record, analysis, reference_hollow=analysis.hollow_cartesian
+        )
         mirrored.comment = restage_comment(record.comment, "interface build", "stacking reversed")
         destination = Path(run_dir) / f"{side}_{Path(path).stem}_mirrored.vasp"
         self.vasp_io.write(mirrored, str(destination), positions_are_cartesian=False, wrap_positions=True)

@@ -655,6 +655,30 @@ def normalise_stacking_choice(choice: str | None) -> str:
     raise ValueError(f"unknown stacking choice {choice!r}; use keep, mirror, abc, or cba")
 
 
+def _reverse_stacking(
+    record,
+    analysis: StackingAnalysis,
+    *,
+    reference_hollow: Sequence[float] | None = None,
+    layer_tolerance: float = LAYER_TOLERANCE,
+):
+    """Select a mirror by realized increment reversal in one fixed gauge."""
+
+    if not analysis.close_packed:
+        raise ValueError(f"cannot reverse a slab that is not close packed: {analysis.reason}")
+    gauge = analysis.hollow_cartesian if reference_hollow is None else reference_hollow
+    expected = tuple((-int(value)) % 3 for value in analysis.increments)
+    for matrix in inplane_mirror_matrices(record.lattice):
+        mirrored = mirror_structure(record, matrix=matrix)
+        actual = analyse_stacking(
+            mirrored, layer_tolerance=layer_tolerance, hollow_cartesian=gauge
+        )
+        if (actual.close_packed and actual.layer_count == analysis.layer_count
+                and actual.increments == expected):
+            return mirrored, actual
+    raise ValueError("no in-plane lattice mirror realizes the reversed stacking sequence in this cell")
+
+
 def apply_relative_stacking(
     record,
     choice: str,
@@ -694,10 +718,12 @@ def apply_relative_stacking(
             )
         if analysis.sense == (1 if resolved == "abc" else -1):
             return record, analysis, False
-    mirrored = mirror_structure(record)
-    mirrored_analysis = analyse_stacking(
-        mirrored, layer_tolerance=layer_tolerance, hollow_cartesian=reference_hollow
+    mirrored, mirrored_analysis = _reverse_stacking(
+        record, analysis, reference_hollow=reference_hollow, layer_tolerance=layer_tolerance
     )
+    if reference_hollow is None:
+        # Standalone slabs retain their own gauge in the returned analysis.
+        mirrored_analysis = analyse_stacking(mirrored, layer_tolerance=layer_tolerance)
     if resolved in {"abc", "cba"} and mirrored_analysis.sense != (1 if resolved == "abc" else -1):
         raise ValueError("mirroring the slab did not reverse its stacking sense as expected")
     return mirrored, mirrored_analysis, True
