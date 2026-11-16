@@ -8357,9 +8357,9 @@
       "line": 205,
       "end_line": 302,
       "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
-      "status": "reviewed—unchanged",
-      "reason": "Keep layer detection, nearest bonds, planar hollows, subsurface classification and optional report writeback.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "status": "deferred—with reason",
+      "reason": "Complete actual caller read by reviewer/coordinator. F1/F2 concrete preexisting P2 witnesses: profile-only close-packing labels can misclassify oblique slabs; raw fractional in-plane extraction loses c-parallel contribution on accepted tilted-c input. Resource/dedup changes do not introduce these errors. Correct classification/projection in a priority owning-backend follow-up before publication; do not certify arbitrary accepted slab geometry.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::write_surface_poscar",
@@ -8929,9 +8929,9 @@
       "line": 21,
       "end_line": 22,
       "module_sha256": "69bcd95e2ed63685ac48d6271464a7e4b885cbdec1fe8e2b3af90d786a17580b",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Integer Miller labels including negative m marker used solely for filename construction; no geometric meaning inferred from compact token.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface.py::_surface_descriptor",
@@ -8940,9 +8940,9 @@
       "line": 25,
       "end_line": 41,
       "module_sha256": "69bcd95e2ed63685ac48d6271464a7e4b885cbdec1fe8e2b3af90d786a17580b",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Describes actual built repeats or explicit matrix with safe stem/vacuum tokens. Backend normalizes matrix to ordinary tuple, so existing truthiness condition is valid for actual caller.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface.py::_stacking_sequence",
@@ -8951,9 +8951,9 @@
       "line": 44,
       "end_line": 47,
       "module_sha256": "69bcd95e2ed63685ac48d6271464a7e4b885cbdec1fe8e2b3af90d786a17580b",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Thin forwarding to physical stacking_sequence result word; full dependency read, including exact periodic matching and existing modulo26 alphabet semantics.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface.py::Surface.__init__",
@@ -8962,9 +8962,9 @@
       "line": 53,
       "end_line": 55,
       "module_sha256": "69bcd95e2ed63685ac48d6271464a7e4b885cbdec1fe8e2b3af90d786a17580b",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Passes workflow/backend/dependency options to Interface then creates converter with same dependency manager; no behavior change.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface.py::Surface.surface",
@@ -8974,8 +8974,8 @@
       "end_line": 180,
       "module_sha256": "69bcd95e2ed63685ac48d6271464a7e4b885cbdec1fe8e2b3af90d786a17580b",
       "status": "optimized—verified",
-      "reason": "Reserves actual default slab/site destinations while preserving descriptor, builder, stacking/termination and selected-path report schemas; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Complete body read: builds structure before descriptor reservation, optionally analyzes sites, reads written slab for stacking, reads bulk species, records terminations/manifest/result. Existing explicit sites_output_path triggers report even without analyse_sites. No parameter/output-schema changes in batch; scientific limitations belong to backend.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface.py::Surface.sites",
@@ -8985,8 +8985,8 @@
       "end_line": 221,
       "module_sha256": "69bcd95e2ed63685ac48d6271464a7e4b885cbdec1fe8e2b3af90d786a17580b",
       "status": "optimized—verified",
-      "reason": "Reserves actual default site JSON destination; preserves site selection, summary, source path and explicit file semantics; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Complete body read: resolves path/artifact, owns run/output naming, forwards tolerance and side, writes report manifest/summary/preview. Actual CLI forwarding read. Integration test verifies physical report, manifest equality and unchanged source; inherited general-slab caveats F1/F2 retained.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_cell.py::_translation_maps_structure",
@@ -9267,166 +9267,188 @@
       "id": "src/cellstine/interface/surface/surface_sites.py::_cluster_projection_levels",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_cluster_projection_levels",
-      "line": 21,
-      "end_line": 29,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 24,
+      "end_line": 32,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "status": "reviewed—unchanged",
+      "reason": "Delegates full height grouping to shared flip-invariant single-linkage partition; float conversion and bottom-first contract retained.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_inplane_cartesian_from_uv",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_inplane_cartesian_from_uv",
-      "line": 32,
-      "end_line": 34,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 35,
+      "end_line": 37,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "status": "reviewed—unchanged",
+      "reason": "Uses fixed u*a+v*b elementwise arithmetic; no mutation; exact arithmetic reference used by distance matrix.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_deduplicate_uv_points",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_deduplicate_uv_points",
-      "line": 37,
-      "end_line": 63,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 40,
+      "end_line": 65,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "status": "optimized—verified",
+      "reason": "Modulo makes owned points. Exact unique first indices are restored to input order; exact repetitions have identical greedy decisions for finite nonnegative tolerance. Preallocation reads only initialized prefix and returns stable first accepted representatives. Literal tiny/default-tolerance regressions demonstrate intended rounded-prefilter repair.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_expanded_periodic_arrays",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_expanded_periodic_arrays",
-      "line": 66,
-      "end_line": 90,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 68,
+      "end_line": 92,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "status": "reviewed—unchanged",
+      "reason": "Base-major/shift-major images retained; reach uses reciprocal proof plus one for wrapped endpoints. Expanded-image memory remains proportional to points times shift count and is expressly outside temporary pair budget; no neighbor cap.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_uv_to_cartesian",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_uv_to_cartesian",
-      "line": 93,
-      "end_line": 100,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 95,
+      "end_line": 102,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "status": "reviewed—unchanged",
+      "reason": "Batched scaled-row addition matches scalar arithmetic for arbitrary leading dimensions; no matrix multiply reassociation introduced.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_anchor_image_distance_matrix",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_anchor_image_distance_matrix",
-      "line": 103,
-      "end_line": 111,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 105,
+      "end_line": 113,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "status": "reviewed—unchanged",
+      "reason": "Dense private helper body/API unchanged. Norm axis matches anchor/image axes. Historical nine-images doc example is narrower than basis/cutoff callers; not relied upon for completeness.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+    },
+    {
+      "id": "src/cellstine/interface/surface/surface_sites.py::_anchor_image_distance_blocks",
+      "path": "src/cellstine/interface/surface/surface_sites.py",
+      "qualified_name": "_anchor_image_distance_blocks",
+      "line": 116,
+      "end_line": 132,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "status": "optimized—verified",
+      "reason": "For rows fitting budget, complete contiguous image rows and contiguous anchor slices yield global anchor-major/image-major order. Oversize image row uses one anchor before advancing images then next anchor. Each matrix pair product <=65536; empty expansion produces empty matrices without division by zero. No output/image cap.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+    },
+    {
+      "id": "src/cellstine/interface/surface/surface_sites.py::_pair_displacement_blocks",
+      "path": "src/cellstine/interface/surface/surface_sites.py",
+      "qualified_name": "_pair_displacement_blocks",
+      "line": 135,
+      "end_line": 156,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "status": "optimized—verified",
+      "reason": "Small path preserves former triu indexing. Large path walks first index then successive second indices into fixed 65536x2 storage. Full and partial slices are processed synchronously by sole caller before reused storage is overwritten. No pair omitted or repeated; current private generator does not promise independently owned collected yields.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_nearest_neighbor_distance",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_nearest_neighbor_distance",
-      "line": 114,
-      "end_line": 138,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 159,
+      "end_line": 183,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "status": "optimized—verified",
+      "reason": "Shortest self-translation initializes bound; all distinct pair distances >1e-8 are reduced by min across batches. Duplicate/self exclusions and empty/nonfinite result exception retained. Core minimum-image implementation uses common reduced basis and per-row exact candidate minimization; chunk maximum only changes safe search-box width, not physical answer.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_top_layer_coordination_counts",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_top_layer_coordination_counts",
-      "line": 141,
-      "end_line": 149,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 186,
+      "end_line": 196,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "status": "optimized—verified",
+      "reason": "Expands every proven-needed image then sums identical >1e-8 and <=cutoff+1e-12 mask into int64 counts. Multirow and image-subrow start offsets target correct rows; Python-int list output retained. Counts fit practical addressable arrays.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_find_bridge_sites",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_find_bridge_sites",
-      "line": 152,
-      "end_line": 164,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 199,
+      "end_line": 213,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "status": "optimized—verified",
+      "reason": "nonzero visits each block in row-major order; scheduler preserves full global traversal. Offset indices map to original anchor/image arrays. Midpoint expression and modulo unchanged; concatenate preserves order before existing greedy physical dedup. Accumulated accepted midpoint/output memory is not universally bounded.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_projection_layer_points",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_projection_layer_points",
-      "line": 167,
-      "end_line": 186,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
+      "line": 216,
+      "end_line": 235,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Full projection groups sorted stably exposed inward. Optional integer max_layers slice unchanged. Positions are copied/modded and group index order retained. Accepted skew-c limitation is recorded as F2. Investigated preexisting P2: F2: raw direct[:2] misses the c-parallel contribution for accepted tilted-c slabs. Actual atom Cartesian[1,.6,7.2] becomes a reported top at[.4,.6,7.2]. Existing geometry limitation; correct planar projection in the owning backend before publication.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
-      "id": "src/cellstine/interface/surface/surface_sites.py::_projection_layer_points.<lambda>@180:33",
+      "id": "src/cellstine/interface/surface/surface_sites.py::_projection_layer_points.<lambda>@229:33",
       "path": "src/cellstine/interface/surface/surface_sites.py",
-      "qualified_name": "_projection_layer_points.<lambda>@180:33",
-      "line": 180,
-      "end_line": 180,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "qualified_name": "_projection_layer_points.<lambda>@229:33",
+      "line": 229,
+      "end_line": 229,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "status": "reviewed—unchanged",
+      "reason": "Pure scalar center key; stable sorting and reverse-side order are retained.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_subsurface_depth_below",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_subsurface_depth_below",
-      "line": 189,
-      "end_line": 207,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 238,
+      "end_line": 256,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "status": "reviewed—unchanged",
+      "reason": "All subsurface layers searched shallowest first with exact planar minimum-image distance; first qualifying depth, skips empty, returns None if no match. Tolerance is physical distance. Depends on layer UV projection premise in F2.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_is_close_packed_stacking",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_is_close_packed_stacking",
-      "line": 210,
-      "end_line": 231,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
+      "line": 259,
+      "end_line": 280,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "All branches read: >=3 planes, equal counts, positive mean spacing and relative maximum spacing deviation. This is only a count/spacing heuristic; concrete false positive F1 prevents universal close-packed certification. Investigated preexisting P2: F1: equally populated/equally spaced layers do not establish physical triangular packing; actual oblique2x3/70degree witness emits hcp_hollow with top coordination2. Existing heuristic/naming limitation; define and verify physical classification before publication.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_classify_hollow",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_classify_hollow",
-      "line": 234,
-      "end_line": 247,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 283,
+      "end_line": 296,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "status": "reviewed—unchanged",
+      "reason": "Fourfold/generic high-coordinate precedence retained, then layer-depth hcp/fcc labels when heuristic true. F1 confirms inherited false naming when close_packed flag lacks planar-packing proof.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_site_from_uv",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_site_from_uv",
-      "line": 250,
-      "end_line": 270,
-      "module_sha256": "230fcd5a7c02cdc504254dc4d4406fdbd20eaac3f6a4b0e9b8a2ee9b4f05e114",
+      "line": 299,
+      "end_line": 319,
+      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
       "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "reason": "Serializes scalar Cartesian/direct positions and nullable physical metadata without mutation; unchanged. F2 confirms inherited missing parallel-c contribution for accepted tilted-c slabs. Investigated preexisting P2: F2: reconstruction is correct only when its supplied UV already represents physical planar projection. Current caller supplies raw fractions for tilted-c slabs, causing an actual .6angstrom lateral site error. Existing caller/geometry limitation; priority follow-up before publication.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_supercell.py::repeat_structure_inplane",
@@ -9688,9 +9710,9 @@
       "line": 8,
       "end_line": 9,
       "module_sha256": "0f627e02fccccb994a72ef1a4ec63ed4a5a0ea804f5a05369300764ccf395578",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Complete body instantiates Interface and returns its build result, forwarding kwargs/exceptions unchanged. Actual Interface.build signature/delegation read; no batch behavior change.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/workflow/interface.py::_contact_summary",
@@ -10051,9 +10073,9 @@
       "line": 8,
       "end_line": 9,
       "module_sha256": "c67000b3e95bdcc47f06273e2318c2ae228d9908e1f0b0b6323ada4405f98c28",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Complete body instantiates Interface and returns its match result, forwarding kwargs/exceptions unchanged. Actual Interface.match signature/surface workflow construction read; no batch behavior change.",
+      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/io/converters.py::StructureConverter.__init__",

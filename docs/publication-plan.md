@@ -30,6 +30,8 @@ in release notes and schema/consumer review; scripts must not assume every
 close-packed pair has an ideal discrete contact. The legacy label-only
 `contact_summary` helper retains its existing inference and signature.
 
+Part06g identified two concrete accepted-input scientific follow-ups: count/spacing-only hollow naming can mislabel oblique planes, and raw fractional in-plane coordinates omit a tilted third vector's lateral contribution to site positions. The exact witnesses and four owning-body dispositions are in [Part06g](optimization/part-06g-surface-site-resources.md). Resolve the owning-backend projection and physical classification criteria before publication/final goal closure; resource optimization and green regression checks do not establish arbitrary-slab correctness.
+
 ## Artifact validation
 
 Build fresh wheel and source distribution from the frozen candidate; keep release artifacts separate from prior local builds:

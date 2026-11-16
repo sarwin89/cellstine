@@ -18,6 +18,9 @@ from ...io import native as io_mod
 from .surface_types import AdsorptionSite
 
 
+_SITE_PAIR_BLOCK = 65536
+
+
 def _cluster_projection_levels(values: np.ndarray, tolerance: float) -> list[tuple[float, list[int]]]:
     """Group atoms into atomic planes, bottom first, exactly as the rest of the
     package does (``core.layers.layer_partition``).
@@ -40,26 +43,25 @@ def _deduplicate_uv_points(points_uv: Sequence[np.ndarray], lattice: np.ndarray,
         return []
     basis_2d = np.asarray(lattice, dtype=float)[:2]
     stacked = np.asarray(points, dtype=float)
-    # Collapse exact (to ~1e-9) duplicate points first, preserving first
-    # occurrence. This is far finer than ``tolerance`` so it cannot merge
-    # genuinely distinct sites, but the candidate lists are dominated by exact
-    # repeats (the same site found from many anchors), so it removes the bulk of
-    # the work before the greedy minimum-image pass.
+    # Only exact duplicates are interchangeable in the ordered greedy pass.
+    # Even tiny rounded differences can straddle another kept site's tolerance.
     if stacked.shape[0] > 1:
-        _, first_occurrence = np.unique(np.round(stacked, 9), axis=0, return_index=True)
+        _, first_occurrence = np.unique(stacked, axis=0, return_index=True)
         order = np.sort(first_occurrence)
         candidates = stacked[order]
     else:
         candidates = stacked
     kept: list[np.ndarray] = []
-    kept_array = np.empty((0, 2), dtype=float)
+    kept_array = np.empty((len(candidates), 2), dtype=float)
+    count = 0
     for point in candidates:
-        if kept_array.shape[0]:
-            distances = plane_minimum_image_distances(basis_2d, point[None, :] - kept_array)
+        if count:
+            distances = plane_minimum_image_distances(basis_2d, point[None, :] - kept_array[:count])
             if np.any(distances <= tolerance):
                 continue
         kept.append(point)
-        kept_array = np.vstack((kept_array, point[None, :]))
+        kept_array[count] = point
+        count += 1
     return kept
 
 
@@ -111,6 +113,49 @@ def _anchor_image_distance_matrix(points: np.ndarray, expanded: np.ndarray, latt
     return np.linalg.norm(cartesian, axis=2)
 
 
+def _anchor_image_distance_blocks(points, expanded, lattice):
+    """Yield bounded matrices in global anchor-major / image-major order.
+
+    Full image rows stay together when possible. If a single row exceeds the
+    pair budget, visit one anchor at a time and split its images instead.
+    Expanded images and accepted output storage are separate from this budget.
+    """
+
+    if len(expanded) <= _SITE_PAIR_BLOCK:
+        step = max(1, _SITE_PAIR_BLOCK // max(1, len(expanded)))
+        for start in range(0, len(points), step):
+            yield start, 0, _anchor_image_distance_matrix(points[start:start + step], expanded, lattice)
+    else:
+        for start in range(len(points)):
+            for image in range(0, len(expanded), _SITE_PAIR_BLOCK):
+                yield start, image, _anchor_image_distance_matrix(
+                    points[start:start + 1], expanded[image:image + _SITE_PAIR_BLOCK], lattice)
+
+
+def _pair_displacement_blocks(points):
+    """Yield distinct-atom displacements in upper-triangle order, bounded in size."""
+
+    size = len(points)
+    if size * (size - 1) // 2 <= _SITE_PAIR_BLOCK:
+        rows, columns = np.triu_indices(size, k=1)
+        yield points[rows] - points[columns]
+        return
+    block = np.empty((_SITE_PAIR_BLOCK, 2), dtype=float)
+    used = 0
+    for first in range(size - 1):
+        start = first + 1
+        while start < size:
+            count = min(size - start, _SITE_PAIR_BLOCK - used)
+            block[used:used + count] = points[first] - points[start:start + count]
+            used += count
+            start += count
+            if used == _SITE_PAIR_BLOCK:
+                yield block
+                used = 0
+    if used:
+        yield block[:used]
+
+
 def _nearest_neighbor_distance(points_uv: np.ndarray, lattice: np.ndarray) -> float:
     """Return the shortest in-plane distance between two surface atoms.
 
@@ -128,11 +173,11 @@ def _nearest_neighbor_distance(points_uv: np.ndarray, lattice: np.ndarray) -> fl
     basis_2d = np.asarray(lattice, dtype=float)[:2]
     shortest = shortest_plane_vector_length(basis_2d)
     if points.shape[0] > 1:
-        rows, columns = np.triu_indices(points.shape[0], k=1)
-        pairs = plane_minimum_image_distances(basis_2d, points[rows] - points[columns])
-        distinct = pairs[pairs > 1e-8]
-        if distinct.size:
-            shortest = min(shortest, float(distinct.min()))
+        for displacements in _pair_displacement_blocks(points):
+            pairs = plane_minimum_image_distances(basis_2d, displacements)
+            distinct = pairs[pairs > 1e-8]
+            if distinct.size:
+                shortest = min(shortest, float(distinct.min()))
     if not np.isfinite(shortest) or shortest <= 1e-8:
         raise ValueError("could not determine an in-plane nearest-neighbour distance from the top surface atoms")
     return float(shortest)
@@ -144,9 +189,11 @@ def _top_layer_coordination_counts(points_uv: np.ndarray, lattice: np.ndarray, n
     )
     if points.shape[0] == 0:
         return []
-    distances = _anchor_image_distance_matrix(points, expanded, lattice)
-    within = (distances > 1e-8) & (distances <= neighbour_cutoff + 1e-12)
-    return [int(value) for value in within.sum(axis=1)]
+    counts = np.zeros(len(points), dtype=np.int64)
+    for start, _, distances in _anchor_image_distance_blocks(points, expanded, lattice):
+        within = (distances > 1e-8) & (distances <= neighbour_cutoff + 1e-12)
+        counts[start:start + len(distances)] += within.sum(axis=1)
+    return counts.tolist()
 
 
 def _find_bridge_sites(points_uv: np.ndarray, lattice: np.ndarray, neighbour_cutoff: float) -> list[np.ndarray]:
@@ -155,13 +202,15 @@ def _find_bridge_sites(points_uv: np.ndarray, lattice: np.ndarray, neighbour_cut
     )
     if points.shape[0] == 0:
         return []
-    distances = _anchor_image_distance_matrix(points, expanded, lattice)
-    within = (distances > 1e-8) & (distances <= neighbour_cutoff + 1e-12)
-    anchor_idx, image_idx = np.nonzero(within)
-    if anchor_idx.size == 0:
+    midpoints = []
+    for start, image, distances in _anchor_image_distance_blocks(points, expanded, lattice):
+        within = (distances > 1e-8) & (distances <= neighbour_cutoff + 1e-12)
+        anchor_idx, image_idx = np.nonzero(within)
+        if anchor_idx.size:
+            midpoints.append(np.mod(0.5 * (points[start + anchor_idx] + expanded[image + image_idx]), 1.0))
+    if not midpoints:
         return []
-    midpoints = np.mod(0.5 * (points[anchor_idx] + expanded[image_idx]), 1.0)
-    return _deduplicate_uv_points(list(midpoints), lattice)
+    return _deduplicate_uv_points(np.concatenate(midpoints), lattice)
 
 
 def _projection_layer_points(
