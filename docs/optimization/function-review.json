@@ -874,78 +874,89 @@
       "id": "src/cellstine/adsorbate/adsorbate.py::_contact_summary",
       "path": "src/cellstine/adsorbate/adsorbate.py",
       "qualified_name": "_contact_summary",
-      "line": 27,
-      "end_line": 49,
-      "module_sha256": "b1c3450b127ef9e4541cbd29754ac18d76ad66bee5a055821127db8b22ae6b59",
+      "line": 28,
+      "end_line": 50,
+      "module_sha256": "d7d2a2f887403b7906c0c134d577359cb3f16a88d0e89700a6dfc78ed447af3d",
       "status": "reviewed—unchanged",
-      "reason": "Finite molecule/substrate and periodic-image contacts and warning projection remain independent of result persistence.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Only finite distances emitted, species pair/warnings behavior stable; no placement arithmetic performed.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
+    },
+    {
+      "id": "src/cellstine/adsorbate/adsorbate.py::_manifest_sequence",
+      "path": "src/cellstine/adsorbate/adsorbate.py",
+      "qualified_name": "_manifest_sequence",
+      "line": 53,
+      "end_line": 68,
+      "module_sha256": "d7d2a2f887403b7906c0c134d577359cb3f16a88d0e89700a6dfc78ed447af3d",
+      "status": "optimized—verified",
+      "reason": "None stays empty list; exact built-in int/float/bool preserved, numeric ABC conversion normalizes NumPy numeric scalar values, item fallback covers NumPy bool. Sequence order maintained and no truth test performed on array.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/adsorbate.py::Adsorbate.__init__",
       "path": "src/cellstine/adsorbate/adsorbate.py",
       "qualified_name": "Adsorbate.__init__",
-      "line": 62,
-      "end_line": 65,
-      "module_sha256": "b1c3450b127ef9e4541cbd29754ac18d76ad66bee5a055821127db8b22ae6b59",
+      "line": 81,
+      "end_line": 84,
+      "module_sha256": "d7d2a2f887403b7906c0c134d577359cb3f16a88d0e89700a6dfc78ed447af3d",
       "status": "reviewed—unchanged",
-      "reason": "Superclass initialization and converter/VASP adapter construction remain unchanged and preserve workflow inheritance.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Existing Base initialization and converter/VASP writer setup retained.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/adsorbate.py::Adsorbate._resolve_substrate",
       "path": "src/cellstine/adsorbate/adsorbate.py",
       "qualified_name": "Adsorbate._resolve_substrate",
-      "line": 67,
-      "end_line": 106,
-      "module_sha256": "b1c3450b127ef9e4541cbd29754ac18d76ad66bee5a055821127db8b22ae6b59",
-      "status": "reviewed—unchanged",
-      "reason": "Existing slab expansion versus bulk Surface dispatch preserves repetitions, geometry arguments and provenance.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "line": 86,
+      "end_line": 125,
+      "module_sha256": "d7d2a2f887403b7906c0c134d577359cb3f16a88d0e89700a6dfc78ed447af3d",
+      "status": "optimized—verified",
+      "reason": "Slab expansion forwarding unchanged. Bulk Miller default now uses explicit None/length, accepting annotated NumPy sequence while preserving empty and string behavior; Surface parser converts to built-in ints.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/adsorbate.py::Adsorbate._expand_slab_substrate",
       "path": "src/cellstine/adsorbate/adsorbate.py",
       "qualified_name": "Adsorbate._expand_slab_substrate",
-      "line": 108,
-      "end_line": 161,
-      "module_sha256": "b1c3450b127ef9e4541cbd29754ac18d76ad66bee5a055821127db8b22ae6b59",
+      "line": 127,
+      "end_line": 180,
+      "module_sha256": "d7d2a2f887403b7906c0c134d577359cb3f16a88d0e89700a6dfc78ed447af3d",
       "status": "optimized—verified",
-      "reason": "In-plane repeats/matrix application, reserved output and selective-flag preservation do not depend on bilayer result encoding.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Optional matrix converts through explicit None to integer list before truth usage; valid NumPy matrix passes. Repeat then matrix application, flags/write behavior and metadata preserved.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/adsorbate.py::Adsorbate.place",
       "path": "src/cellstine/adsorbate/adsorbate.py",
       "qualified_name": "Adsorbate.place",
-      "line": 163,
-      "end_line": 280,
-      "module_sha256": "b1c3450b127ef9e4541cbd29754ac18d76ad66bee5a055821127db8b22ae6b59",
+      "line": 182,
+      "end_line": 299,
+      "module_sha256": "d7d2a2f887403b7906c0c134d577359cb3f16a88d0e89700a6dfc78ed447af3d",
       "status": "optimized—verified",
-      "reason": "Molecule conversion, substrate resolution, placement arguments and contact/manifest outputs remain unchanged.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Backend/run preparation and substrate/molecule conversion retained; matrix manifest now plain scalar sequence, preserving built-in values and schema/order. All placement options still forwarded with established casts.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/adsorbate.py::Adsorbate.move",
       "path": "src/cellstine/adsorbate/adsorbate.py",
       "qualified_name": "Adsorbate.move",
-      "line": 282,
-      "end_line": 350,
-      "module_sha256": "b1c3450b127ef9e4541cbd29754ac18d76ad66bee5a055821127db8b22ae6b59",
+      "line": 301,
+      "end_line": 369,
+      "module_sha256": "d7d2a2f887403b7906c0c134d577359cb3f16a88d0e89700a6dfc78ed447af3d",
       "status": "optimized—verified",
-      "reason": "Coordinate/rotation forwarding, reserved destination and contact/vacuum reporting are unchanged.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Filename target iterator and transform forwarding accept array input; manifest normalization avoids ambiguous array truth and non-JSON numeric scalars. Result metadata and output naming retained.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/adsorbate.py::Adsorbate.assemble",
       "path": "src/cellstine/adsorbate/adsorbate.py",
       "qualified_name": "Adsorbate.assemble",
-      "line": 352,
-      "end_line": 419,
-      "module_sha256": "b1c3450b127ef9e4541cbd29754ac18d76ad66bee5a055821127db8b22ae6b59",
+      "line": 371,
+      "end_line": 438,
+      "module_sha256": "d7d2a2f887403b7906c0c134d577359cb3f16a88d0e89700a6dfc78ed447af3d",
       "status": "optimized—verified",
-      "reason": "Normalizes format before side effects, forwards it to run_find, and consistently selects NPZ/JSON artifact and manifest parameter without changing target geometry.",
-      "evidence": "docs/optimization/part-05f-npz-default.md; independent whole-function review; 407 focused tests including16new cases plus5 correctedfixture cases; 3665full-scope tests/4skips; 3663initial+2isolatedreruns, no clean singlelocalfullrun; 283frozenPythonfiles; wheel/sdist/Twine,144runtimearchivebytes and3installedenvs; source-hashed3sample production benchmark, complete output comparisons and allocation probes; exact-head16jobCI/artifact required before next production batch."
+      "reason": "Existing synthetic assembly target, search forwarding, results-format selection and preview/manifest outputs retained; unrelated b_length truth policy unchanged.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/assemble.py::assemble",
@@ -954,229 +965,240 @@
       "line": 8,
       "end_line": 9,
       "module_sha256": "82a24b1a69a2b790ff10d43adcb2ba6eb962f6dbeb6b23841cbcbc23a163d9b5",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Functional facade delegates to Molecule().assemble; inherited Adsorbate implementation in scope.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::MoleculeSelection.molecule_atom_count",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "MoleculeSelection.molecule_atom_count",
-      "line": 61,
-      "end_line": 62,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 64,
+      "end_line": 65,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "reviewed—unchanged",
+      "reason": "Constant-time length of immutable selected-index tuple retained.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::MoleculeSelection.substrate_atom_count",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "MoleculeSelection.substrate_atom_count",
-      "line": 65,
-      "end_line": 66,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 68,
+      "end_line": 69,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "reviewed—unchanged",
+      "reason": "Constant-time length of immutable substrate-index tuple retained.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::_species_disjoint_split",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "_species_disjoint_split",
-      "line": 122,
-      "end_line": 161,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 125,
+      "end_line": 172,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "optimized—verified",
+      "reason": "Ascending candidate gaps and unchanged argsort preserve first accepted split. shared counts exactly the species present in both moved prefix and upper suffix: first prefix encounter increments, final suffix removal decrements. Cursor traverses skipped gaps once. At shared==0, prefix mask equals predecessor species-membership mask. Cutoff/gap arithmetic and fallback untouched.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::center_of_mass_cartesian",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "center_of_mass_cartesian",
-      "line": 164,
-      "end_line": 169,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 175,
+      "end_line": 185,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "optimized—verified",
+      "reason": "Existing species_masses lookup and mass reduction occur in original order; valid (N,3) multiplication and reduction arithmetic preserved. Shape/cardinality and finite positions now reject silent broadcasting and NaNs explicitly; unknown-species behavior retained.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::identify_top_group",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "identify_top_group",
-      "line": 172,
-      "end_line": 236,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 188,
+      "end_line": 252,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "reviewed—unchanged",
+      "reason": "Shared-normal heights, argsort, largest-gap fallback, explicit cutoff and returned original atom indices retained; cumulative helper only replaces repeated set scanning. COM uses consistent selected species/positions.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::identify_top_molecule",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "identify_top_molecule",
-      "line": 239,
-      "end_line": 247,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 255,
+      "end_line": 263,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "reviewed—unchanged",
+      "reason": "Public alias forwards all cutoff/min_gap options to unchanged selection semantics.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::_resolve_target_cartesian",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "_resolve_target_cartesian",
-      "line": 250,
-      "end_line": 282,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 266,
+      "end_line": 298,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "reviewed—unchanged",
+      "reason": "Optional mutually exclusive two/three-component targets resolved through explicit None checks; Cartesian/direct conversions and preservation of omitted third component unchanged.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
+    },
+    {
+      "id": "src/cellstine/adsorbate/placement/operations.py::_molecule_rotation",
+      "path": "src/cellstine/adsorbate/placement/operations.py",
+      "qualified_name": "_molecule_rotation",
+      "line": 301,
+      "end_line": 307,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "optimized—verified",
+      "reason": "Converts each requested scalar once, rejects all nonfinite angles and retains exact no-matrix path for signed/unsigned zero. Nonzero values delegate same yaw/pitch/roll ordering.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::_transform_molecule_cartesian",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "_transform_molecule_cartesian",
-      "line": 285,
-      "end_line": 305,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 310,
+      "end_line": 330,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "optimized—verified",
+      "reason": "COM, pivot translation then rotation about pivot keep original operation order; new shared angle helper prevents silent NaN rotation bypass.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::_normalise_reframe_axes",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "_normalise_reframe_axes",
-      "line": 308,
-      "end_line": 325,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 333,
+      "end_line": 358,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "optimized—verified",
+      "reason": "Handles None before hash-based membership, so list/NumPy sequences are valid. String separators are explicit; unsupported tokens reject instead of silently filtering. Stable first-axis order and duplicate removal retained.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::_surface_outward_normal",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "_surface_outward_normal",
-      "line": 328,
-      "end_line": 332,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 361,
+      "end_line": 365,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "reviewed—unchanged",
+      "reason": "Validates face then uses shared +c normal or its negation; unchanged.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::_estimate_inplane_repeats_for_molecule",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "_estimate_inplane_repeats_for_molecule",
-      "line": 335,
-      "end_line": 356,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 368,
+      "end_line": 389,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "optimized—verified",
+      "reason": "COM centering, same rotation order, Cartesian-to-direct span, nonnegative padding and ceil repeat policy unchanged for valid inputs; finite-angle validation shared with transform.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::_translate_molecule_to_site",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "_translate_molecule_to_site",
-      "line": 359,
-      "end_line": 397,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 392,
+      "end_line": 430,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "reviewed—unchanged",
+      "reason": "Normal height measures lowest outward atom clearance; COM in-plane alignment and rotation conventions retained. Top/bottom signs traced; no height/fit policy change.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::_contact_species",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "_contact_species",
-      "line": 400,
-      "end_line": 410,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 433,
+      "end_line": 443,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "reviewed—unchanged",
+      "reason": "Converts optional closest-contact species pair to strings; established contact report shape contract retained.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::_default_flag_list",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "_default_flag_list",
-      "line": 413,
-      "end_line": 414,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 446,
+      "end_line": 447,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "reviewed—unchanged",
+      "reason": "Unchanged compatibility helper retains immutable tuple repetition; optimized combine caller no longer allocates unused full defaults.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::_combine_substrate_and_molecule",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "_combine_substrate_and_molecule",
-      "line": 417,
-      "end_line": 478,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 450,
+      "end_line": 512,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "optimized—verified",
+      "reason": "Cartesian concatenation, coordinate conversions, reframing and molecule-index extraction unchanged. One-pass species dictionary preserves encounter order inside each header-defined group, duplicate header coalescing and zero-count headers. Flags emitted in identical reordered atom order, with missing side receiving TTT; explicit flags preserved as tuples.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::_unwrap_periodic_axis_with_start",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "_unwrap_periodic_axis_with_start",
-      "line": 481,
-      "end_line": 502,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 515,
+      "end_line": 536,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "reviewed—unchanged",
+      "reason": "Largest empty arc and original multi-image span escape condition retained, including first-argmax tie selection.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::_reframe_direct_positions",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "_reframe_direct_positions",
-      "line": 505,
-      "end_line": 535,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 539,
+      "end_line": 569,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
+      "status": "reviewed—unchanged",
+      "reason": "Owned coordinate copy, per-axis unwrap/center and in-plane periodic wrapping unchanged; molecule span over one rejects as before.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::transform_top_molecule",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "transform_top_molecule",
-      "line": 538,
-      "end_line": 651,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
+      "line": 572,
+      "end_line": 685,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
       "status": "optimized—verified",
-      "reason": "Protects direct API default filename without resolving an occupied leaf first; scientific transformation, selective flags and result metadata remain unchanged; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Selection, target resolution, vacuum fit, coordinate reframing, contacts, file naming, selective flags and return schema traced end-to-end; new validation/axis handling flows through existing helpers.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::place_molecule_on_site",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "place_molecule_on_site",
-      "line": 654,
-      "end_line": 817,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
+      "line": 688,
+      "end_line": 851,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
       "status": "optimized—verified",
-      "reason": "Protects direct placement default; retains site order, geometry, contacts, vacuum, species/flags and output schema; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Site selection uses corrected backend; repeat estimate, rotated molecule clearance, optional vacuum growth and combined flags/order remain through unchanged workflow. Contacts and coverage/return metadata preserved.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/operations.py::shift_top_layer",
       "path": "src/cellstine/adsorbate/placement/operations.py",
       "qualified_name": "shift_top_layer",
-      "line": 820,
-      "end_line": 866,
-      "module_sha256": "4c10ca16dda718d947f2c79ae197a81d7bec26212d0fba32cc2f06821ec45816",
+      "line": 854,
+      "end_line": 900,
+      "module_sha256": "b00c5995b030929938397722c99e6cf771d3892b2338ba9b0dc06b7b8cb42a23",
       "status": "optimized—verified",
-      "reason": "Protects direct default layer-shift filename; preserves selected indices, coordinate shift, flags, writer args and selected-path result; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "Original top-group indices receive resolved direct shift; writer flags, filename and LayerShiftRun schema unchanged.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/placement/place.py::place",
@@ -1185,9 +1207,9 @@
       "line": 8,
       "end_line": 9,
       "module_sha256": "ba3ef267792d9eae321fd00d4452aa17c943034044e830c135ab7a1e2d8cefd2",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Functional facade delegates to Molecule().place; inherited Adsorbate implementation in scope.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/adsorbate/transform/move.py::move",
@@ -1196,9 +1218,9 @@
       "line": 8,
       "end_line": 9,
       "module_sha256": "f26e6dea5624e0a935ea15165ec36e739d9a121b0ef90223b2b4e427407ae38e",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Functional facade delegates to Molecule().move; inherited Adsorbate implementation in scope.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/cli/argtypes.py::LegacyMoireFindAction.__call__",
@@ -8290,10 +8312,10 @@
       "qualified_name": "_site_report_to_dict",
       "line": 138,
       "end_line": 162,
-      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "module_sha256": "103de4504b3c6f013d8e60ea4e3e94fb511764e187873db5230da172d0b89c53",
       "status": "reviewed—unchanged",
-      "reason": "Keep site/group order, coordinates and optional coordination/radius/depth fields.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Stable per-type append order and optional coordination/radius/depth fields retained; all NumPy values converted to JSON-compatible built-ins without modifying run.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::write_site_report_json",
@@ -8301,10 +8323,10 @@
       "qualified_name": "write_site_report_json",
       "line": 165,
       "end_line": 171,
-      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "module_sha256": "103de4504b3c6f013d8e60ea4e3e94fb511764e187873db5230da172d0b89c53",
       "status": "optimized—verified",
-      "reason": "Use bounded encoding with native newline and final newline; retain parent/path behavior.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Creates parent and writes UTF-8 indented report through shared writer; output-path behavior unchanged.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::canonical_site_type",
@@ -8312,10 +8334,10 @@
       "qualified_name": "canonical_site_type",
       "line": 174,
       "end_line": 179,
-      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "module_sha256": "103de4504b3c6f013d8e60ea4e3e94fb511764e187873db5230da172d0b89c53",
       "status": "reviewed—unchanged",
-      "reason": "Keep aliases and unsupported-type diagnostics.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "String-normalized alias lookup and explicit unsupported-value error retained.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::sorted_sites_for_type",
@@ -8323,10 +8345,10 @@
       "qualified_name": "sorted_sites_for_type",
       "line": 182,
       "end_line": 186,
-      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "module_sha256": "103de4504b3c6f013d8e60ea4e3e94fb511764e187873db5230da172d0b89c53",
       "status": "reviewed—unchanged",
-      "reason": "Keep canonical filtering and rounded-coordinate order.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Filters before stable three-component rounded direct-coordinate sort; 1-based selection consumer unchanged.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::sorted_sites_for_type.<lambda>@185:22",
@@ -8334,10 +8356,10 @@
       "qualified_name": "sorted_sites_for_type.<lambda>@185:22",
       "line": 185,
       "end_line": 185,
-      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "module_sha256": "103de4504b3c6f013d8e60ea4e3e94fb511764e187873db5230da172d0b89c53",
       "status": "reviewed—unchanged",
-      "reason": "Keep twelve-decimal coordinate sorting and stable ties.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Lexicographic rounded direct tuple remains unchanged; location-specific lambda ID mapped structurally to predecessor.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::select_adsorption_site",
@@ -8345,43 +8367,54 @@
       "qualified_name": "select_adsorption_site",
       "line": 189,
       "end_line": 202,
-      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "module_sha256": "103de4504b3c6f013d8e60ea4e3e94fb511764e187873db5230da172d0b89c53",
       "status": "reviewed—unchanged",
-      "reason": "Keep one-based index validation and missing/out-of-range diagnostics.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Checks 1-based positive and upper bounds; empty-type report remains explicit; returns stable sorted element.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
+    },
+    {
+      "id": "src/cellstine/interface/surface/backend.py::_site_plane_coordinates",
+      "path": "src/cellstine/interface/surface/backend.py",
+      "qualified_name": "_site_plane_coordinates",
+      "line": 205,
+      "end_line": 226,
+      "module_sha256": "103de4504b3c6f013d8e60ea4e3e94fb511764e187873db5230da172d0b89c53",
+      "status": "optimized—verified",
+      "reason": "For row-scaled a/sA and b/sB, signed area uses the shared +c-oriented normal; dual contractions divided by signed area and individual row scales give coefficients of c_parallel. Adding w times those coefficients restores physical planar UV for all layers. Exact zero avoids changing common-path arithmetic; no new geometric threshold. Empty input propagates to established no-layers error; valid full-rank finite cell precondition retained.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::find_adsorption_sites",
       "path": "src/cellstine/interface/surface/backend.py",
       "qualified_name": "find_adsorption_sites",
-      "line": 205,
-      "end_line": 302,
-      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
-      "status": "deferred—with reason",
-      "reason": "Complete actual caller read by reviewer/coordinator. F1/F2 concrete preexisting P2 witnesses: profile-only close-packing labels can misclassify oblique slabs; raw fractional in-plane extraction loses c-parallel contribution on accepted tilted-c input. Resource/dedup changes do not introduce these errors. Correct classification/projection in a priority owning-backend follow-up before publication; do not certify arbitrary accepted slab geometry.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "line": 229,
+      "end_line": 340,
+      "module_sha256": "103de4504b3c6f013d8e60ea4e3e94fb511764e187873db5230da172d0b89c53",
+      "status": "optimized—verified",
+      "reason": "All actual layers receive corrected physical planar UV before periodic wrapping. Existing count/spacing profile remains necessary; exposed-plane certification directly calls established _inplane, _layer_point_lattice and _hollow_generator with existing POSITION_TOLERANCE. The selected atom set is authoritative: no synthetic height regrouping or second layer_tolerance is applied, resolving the concrete rotated2x2 zero-tolerance regression without a new tolerance. No buried registry-word constraint is introduced. Actual lower-layer depths determine names; site append order, counts and immutable caller geometry preserved.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::write_surface_poscar",
       "path": "src/cellstine/interface/surface/backend.py",
       "qualified_name": "write_surface_poscar",
-      "line": 305,
-      "end_line": 324,
-      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "line": 343,
+      "end_line": 362,
+      "module_sha256": "103de4504b3c6f013d8e60ea4e3e94fb511764e187873db5230da172d0b89c53",
       "status": "reviewed—unchanged",
-      "reason": "Keep unwrapped slab coordinates, flags, Miller provenance and explicit path behavior.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Preserves coordinate wrapping policy, selective flags, source lattice and staged Miller metadata.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/backend.py::build_surface",
       "path": "src/cellstine/interface/surface/backend.py",
       "qualified_name": "build_surface",
-      "line": 327,
-      "end_line": 393,
-      "module_sha256": "b1529b86f8849a2d3f78accb625c48d19b3e9c88e6e5dbca0c1ac73c626c2868",
+      "line": 365,
+      "end_line": 431,
+      "module_sha256": "103de4504b3c6f013d8e60ea4e3e94fb511764e187873db5230da172d0b89c53",
       "status": "optimized—verified",
-      "reason": "Retain the prior verified optimization: Keep structure construction, default reservations and optional site-report path/count handling.",
-      "evidence": "docs/optimization/part-05b-persistence.md; whole-function/caller review of108production+13benchmark functions;273focused,32independent and3406full tests;3sample comparative byte/read/resource benchmark;onebuild/Twine and3installedenvs;263runtime/test/otherPythonfrozen plus2separatelyverifiedUTF8benchmark fixes."
+      "reason": "Builder arguments, repeat/matrix resolution, output reservation, optional site report and SurfaceRun field conversions remain unchanged.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/registry.py::mirror_configuration",
@@ -9269,10 +9302,10 @@
       "qualified_name": "_cluster_projection_levels",
       "line": 24,
       "end_line": 32,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
       "status": "reviewed—unchanged",
-      "reason": "Delegates full height grouping to shared flip-invariant single-linkage partition; float conversion and bottom-first contract retained.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "reason": "Shared flip-invariant layer_partition delegation retained; no custom grouping tolerance introduced.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_inplane_cartesian_from_uv",
@@ -9280,10 +9313,10 @@
       "qualified_name": "_inplane_cartesian_from_uv",
       "line": 35,
       "end_line": 37,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
       "status": "reviewed—unchanged",
-      "reason": "Uses fixed u*a+v*b elementwise arithmetic; no mutation; exact arithmetic reference used by distance matrix.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "reason": "Elementwise u*a+v*b reconstruction remains the physical-UV scalar reference.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_deduplicate_uv_points",
@@ -9291,10 +9324,10 @@
       "qualified_name": "_deduplicate_uv_points",
       "line": 40,
       "end_line": 65,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
       "status": "optimized—verified",
-      "reason": "Modulo makes owned points. Exact unique first indices are restored to input order; exact repetitions have identical greedy decisions for finite nonnegative tolerance. Preallocation reads only initialized prefix and returns stable first accepted representatives. Literal tiny/default-tolerance regressions demonstrate intended rounded-prefilter repair.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "reason": "Exact-unique first occurrences are restored to input order before unchanged greedy physical-distance acceptance; initialized prefix only is read. Periodic modulo and existing tolerance remain unchanged.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_expanded_periodic_arrays",
@@ -9302,10 +9335,10 @@
       "qualified_name": "_expanded_periodic_arrays",
       "line": 68,
       "end_line": 92,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
       "status": "reviewed—unchanged",
-      "reason": "Base-major/shift-major images retained; reach uses reciprocal proof plus one for wrapped endpoints. Expanded-image memory remains proportional to points times shift count and is expressly outside temporary pair budget; no neighbor cap.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "reason": "Preserves base-major then shift-major ordering and proven reciprocal reach plus one; legacy basis-free 3x3 branch remains. Expanded-image storage is not bounded by pair block budget.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_uv_to_cartesian",
@@ -9313,10 +9346,10 @@
       "qualified_name": "_uv_to_cartesian",
       "line": 95,
       "end_line": 102,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
       "status": "reviewed—unchanged",
-      "reason": "Batched scaled-row addition matches scalar arithmetic for arbitrary leading dimensions; no matrix multiply reassociation introduced.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "reason": "Batched elementwise operations preserve scalar multiplication/addition order and supply physical Cartesian plane points for the direct exposed-layer lattice certificate.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_anchor_image_distance_matrix",
@@ -9324,10 +9357,10 @@
       "qualified_name": "_anchor_image_distance_matrix",
       "line": 105,
       "end_line": 113,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
       "status": "reviewed—unchanged",
-      "reason": "Dense private helper body/API unchanged. Norm axis matches anchor/image axes. Historical nine-images doc example is narrower than basis/cutoff callers; not relied upon for completeness.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "reason": "Same pairwise UV subtraction and Euclidean Cartesian norm; reads arrays only.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_anchor_image_distance_blocks",
@@ -9335,10 +9368,10 @@
       "qualified_name": "_anchor_image_distance_blocks",
       "line": 116,
       "end_line": 132,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
       "status": "optimized—verified",
-      "reason": "For rows fitting budget, complete contiguous image rows and contiguous anchor slices yield global anchor-major/image-major order. Oversize image row uses one anchor before advancing images then next anchor. Each matrix pair product <=65536; empty expansion produces empty matrices without division by zero. No output/image cap.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "reason": "Full rows chunk where possible; oversized rows split images while preserving global anchor/image order and initialized counts.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_pair_displacement_blocks",
@@ -9346,10 +9379,10 @@
       "qualified_name": "_pair_displacement_blocks",
       "line": 135,
       "end_line": 156,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
       "status": "optimized—verified",
-      "reason": "Small path preserves former triu indexing. Large path walks first index then successive second indices into fixed 65536x2 storage. Full and partial slices are processed synchronously by sole caller before reused storage is overwritten. No pair omitted or repeated; current private generator does not promise independently owned collected yields.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "reason": "Preserves upper-triangle distinct-pair order across fixed storage chunks; yielded reuse is consumed synchronously by nearest-distance caller.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_nearest_neighbor_distance",
@@ -9357,10 +9390,10 @@
       "qualified_name": "_nearest_neighbor_distance",
       "line": 159,
       "end_line": 183,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
       "status": "optimized—verified",
-      "reason": "Shortest self-translation initializes bound; all distinct pair distances >1e-8 are reduced by min across batches. Duplicate/self exclusions and empty/nonfinite result exception retained. Core minimum-image implementation uses common reduced basis and per-row exact candidate minimization; chunk maximum only changes safe search-box width, not physical answer.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "reason": "Uses shortest periodic lattice translation plus distinct-atom periodic distances; existing 1e-8 distinctness threshold and exact plane routines retained.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_top_layer_coordination_counts",
@@ -9368,10 +9401,10 @@
       "qualified_name": "_top_layer_coordination_counts",
       "line": 186,
       "end_line": 196,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
       "status": "optimized—verified",
-      "reason": "Expands every proven-needed image then sums identical >1e-8 and <=cutoff+1e-12 mask into int64 counts. Multirow and image-subrow start offsets target correct rows; Python-int list output retained. Counts fit practical addressable arrays.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "reason": "Counts periodic nonzero neighbors with unchanged cutoff slack across chunks; per-anchor accumulation and return type preserved.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_find_bridge_sites",
@@ -9379,76 +9412,76 @@
       "qualified_name": "_find_bridge_sites",
       "line": 199,
       "end_line": 213,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
       "status": "optimized—verified",
-      "reason": "nonzero visits each block in row-major order; scheduler preserves full global traversal. Offset indices map to original anchor/image arrays. Midpoint expression and modulo unchanged; concatenate preserves order before existing greedy physical dedup. Accumulated accepted midpoint/output memory is not universally bounded.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "reason": "Ordered nonzero neighbor midpoints concatenate in anchor/image order before existing greedy periodic dedup; no cap added.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_projection_layer_points",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_projection_layer_points",
       "line": 216,
-      "end_line": 235,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
-      "status": "deferred—with reason",
-      "reason": "Full projection groups sorted stably exposed inward. Optional integer max_layers slice unchanged. Positions are copied/modded and group index order retained. Accepted skew-c limitation is recorded as F2. Investigated preexisting P2: F2: raw direct[:2] misses the c-parallel contribution for accepted tilted-c slabs. Actual atom Cartesian[1,.6,7.2] becomes a reported top at[.4,.6,7.2]. Existing geometry limitation; correct planar projection in the owning backend before publication.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "end_line": 238,
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
+      "status": "reviewed—unchanged",
+      "reason": "All shared groups ordered from requested face; now explicitly documents physical-UV precondition owned by backend. Full reported layer count and optional cap remain unchanged. Runtime computation unchanged; clarified input/profile contract and corrected owning caller resolve prior F1/F2 disposition. Not a standalone physical packing certificate or arbitrary raw fractional projection.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
-      "id": "src/cellstine/interface/surface/surface_sites.py::_projection_layer_points.<lambda>@229:33",
+      "id": "src/cellstine/interface/surface/surface_sites.py::_projection_layer_points.<lambda>@232:33",
       "path": "src/cellstine/interface/surface/surface_sites.py",
-      "qualified_name": "_projection_layer_points.<lambda>@229:33",
-      "line": 229,
-      "end_line": 229,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "qualified_name": "_projection_layer_points.<lambda>@232:33",
+      "line": 232,
+      "end_line": 232,
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
       "status": "reviewed—unchanged",
-      "reason": "Pure scalar center key; stable sorting and reverse-side order are retained.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "reason": "Unchanged projection-level sort key; moved line ID reconciled by structural AST hash.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_subsurface_depth_below",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_subsurface_depth_below",
-      "line": 238,
-      "end_line": 256,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "line": 241,
+      "end_line": 259,
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
       "status": "reviewed—unchanged",
-      "reason": "All subsurface layers searched shallowest first with exact planar minimum-image distance; first qualifying depth, skips empty, returns None if no match. Tolerance is physical distance. Depends on layer UV projection premise in F2.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "reason": "Returns first actual lower-layer periodic match in exposed-face order with caller-established physical match tolerance.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_is_close_packed_stacking",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_is_close_packed_stacking",
-      "line": 259,
-      "end_line": 280,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
-      "status": "deferred—with reason",
-      "reason": "All branches read: >=3 planes, equal counts, positive mean spacing and relative maximum spacing deviation. This is only a count/spacing heuristic; concrete false positive F1 prevents universal close-packed certification. Investigated preexisting P2: F1: equally populated/equally spaced layers do not establish physical triangular packing; actual oblique2x3/70degree witness emits hcp_hollow with top coordination2. Existing heuristic/naming limitation; define and verify physical classification before publication.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "line": 262,
+      "end_line": 281,
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
+      "status": "reviewed—unchanged",
+      "reason": "Equal layer populations and spacing profile retain original numerical thresholds; documentation correctly calls this necessary rather than a full physical certificate. Runtime computation unchanged; clarified input/profile contract and corrected owning caller resolve prior F1/F2 disposition. Not a standalone physical packing certificate or arbitrary raw fractional projection.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_classify_hollow",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_classify_hollow",
-      "line": 283,
-      "end_line": 296,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
+      "line": 284,
+      "end_line": 297,
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
       "status": "reviewed—unchanged",
-      "reason": "Fourfold/generic high-coordinate precedence retained, then layer-depth hcp/fcc labels when heuristic true. F1 confirms inherited false naming when close_packed flag lacks planar-packing proof.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "reason": "Fourfold-or-higher labels retain priority; certified triangular local plane plus actual first/second depth supplies hcp/fcc. Existing generic fallback remains.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_sites.py::_site_from_uv",
       "path": "src/cellstine/interface/surface/surface_sites.py",
       "qualified_name": "_site_from_uv",
-      "line": 299,
-      "end_line": 319,
-      "module_sha256": "a714b2388c35c3ed1197cd6876dbddd45fe734a03e5e39a76d0e745763ac314f",
-      "status": "deferred—with reason",
-      "reason": "Serializes scalar Cartesian/direct positions and nullable physical metadata without mutation; unchanged. F2 confirms inherited missing parallel-c contribution for accepted tilted-c slabs. Investigated preexisting P2: F2: reconstruction is correct only when its supplied UV already represents physical planar projection. Current caller supplies raw fractions for tilted-c slabs, causing an actual .6angstrom lateral site error. Existing caller/geometry limitation; priority follow-up before publication.",
-      "evidence": "docs/optimization/part-06g-surface-site-resources.md;25 independent complete bodies+1 unchanged caller reassessment;105 focused/3873 full/4 skips/81 warnings on290Python freeze;18new cases with scalar periodic/count/order,realkernel block guards,literal loss and written JSON/manifest oracles;11 warm interleaved predecessor timing/allocation cases with tiny-peer-probe overlap disclosed;wheel/sdist/Twine and3 installed native surface/registry/serial/process/thread workflows;4 explicit investigated dispositions for concrete preexisting oblique-label/tilted-c accepted-input errors;priority owning-backend fixes before publication/final closure;exact-headCI/artifact gates next runtime edits"
+      "line": 300,
+      "end_line": 322,
+      "module_sha256": "38e5d4d8eb9d3e72719e2b709b39ed07cbdc59b66da6bb0ec20ca0c64b33fb53",
+      "status": "reviewed—unchanged",
+      "reason": "Physical planar u*a+v*b plus normal height reconstructs Cartesian site; wrapped direct counterpart preserves periodic equivalence. Optional metadata casts unchanged. Runtime computation unchanged; clarified input/profile contract and corrected owning caller resolve prior F1/F2 disposition. Not a standalone physical packing certificate or arbitrary raw fractional projection.",
+      "evidence": "docs/optimization/part-06h-surface-placement.md;59 independently reviewed complete bodies;137 focused/3934 full/4 skips/81 warnings on292Python freeze;61new cases with physicalCartesian/periodic/writtenPOSCAR/manifest/scalar/order/flags/sourceownership oracles;10 quiet warm interleaved predecessor timing/allocation cases;small-caseCPU tradeoffs disclosed;wheel/sdist/Twine and3 installed physical surface/placement/native serial/process/thread workflows;four prior F1/F2 owning dispositions resolved with physical packing and signedplanarprojection;independent zero-layer-tolerance P2 corrected/retested/refreshed hashes;existing numerical/expanded-image/output limits retained;exact-headCI/artifact gates next runtime edits"
     },
     {
       "id": "src/cellstine/interface/surface/surface_supercell.py::repeat_structure_inplane",

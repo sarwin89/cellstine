@@ -223,6 +223,9 @@ def _projection_layer_points(
     """Return ``(projection, in-plane fractional points)`` for every atomic layer,
     ordered from the exposed surface inwards.  All layers are returned unless
     ``max_layers`` caps the list, so the reported layer count is the real one.
+
+    The first two input coordinates must describe the physical planar
+    projection; the owning backend includes any lateral contribution from c.
     """
 
     groups = _cluster_projection_levels(projections, tolerance)
@@ -257,13 +260,11 @@ def _subsurface_depth_below(
 
 
 def _is_close_packed_stacking(layers: Sequence[tuple[float, np.ndarray]], tolerance: float = 0.25) -> bool:
-    """True when the slab stacks like an fcc/hcp close-packed crystal: evenly
-    spaced layers each holding the same number of atoms.
+    """Test the equal-population, evenly spaced layer profile.
 
-    Only then do the names ``fcc_hollow`` and ``hcp_hollow`` mean anything.  A
-    buckled bilayer such as Si(111) fails the test, and its hollows are reported
-    generically together with the depth of the atom underneath, which is the
-    honest description.
+    This is a necessary profile check, not a triangular-packing certificate.
+    The owning backend also checks exposed-layer geometry before assigning
+    fcc/hcp hollow names. Buckled bilayers fail this profile test.
     """
 
     if len(layers) < 3:
@@ -307,6 +308,8 @@ def _site_from_uv(
     void_radius: float | None = None,
     subsurface_depth: int | None = None,
 ) -> AdsorptionSite:
+    """Reconstruct a site from physical planar UV and normal height."""
+
     cartesian = _inplane_cartesian_from_uv(uv, lattice) + float(plane_projection) * np.asarray(normal, dtype=float)
     direct = io_mod.wrap_direct(io_mod.cartesian_to_direct(cartesian.reshape(1, 3), lattice))[0]
     return AdsorptionSite(

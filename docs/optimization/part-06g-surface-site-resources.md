@@ -109,3 +109,13 @@ rows carry explicit F1/F2 investigated dispositions; those actual scientific
 issues require the priority owning-backend follow-up before final goal closure.
 
 No release, tag or package upload is authorized; the overall goal is incomplete.
+
+## Exact-head CI closure
+
+Dev `3337956cfdb1c59d21e000a34bdf5864c967d0c6` passed all 16 jobs in
+CI 43864731187. Downloaded coverage artifact 14225332908 has verified SHA256
+`439e9e9d1caf60805514dcd1fc486f88f163e7733f36fd5fbe721285131b8fbf`,
+matching head/job/module/statement sets. CI covered 14370/16012 statements and
+4083/5268 branches; the only local difference was the known prompts.py:501–502
+fallback, with no branch delta. Closure preceded Part06h runtime edits.
+Part06h subsequently resolves this report's F1/F2 owning-backend follow-ups.

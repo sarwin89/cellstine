@@ -30,7 +30,17 @@ in release notes and schema/consumer review; scripts must not assume every
 close-packed pair has an ideal discrete contact. The legacy label-only
 `contact_summary` helper retains its existing inference and signature.
 
-Part06g identified two concrete accepted-input scientific follow-ups: count/spacing-only hollow naming can mislabel oblique planes, and raw fractional in-plane coordinates omit a tilted third vector's lateral contribution to site positions. The exact witnesses and four owning-body dispositions are in [Part06g](optimization/part-06g-surface-site-resources.md). Resolve the owning-backend projection and physical classification criteria before publication/final goal closure; resource optimization and green regression checks do not establish arbitrary-slab correctness.
+Part06h resolves the two concrete Part06g accepted-input scientific defects:
+tilted third-vector lateral contributions now enter physical site coordinates,
+and fcc/hcp names require the existing exposed-plane triangular-lattice
+certificate as well as the layer profile. Real Cartesian/POSCAR/manifest
+readbacks, oblique-plane witnesses, rotated zero-tolerance cases and buried
+registry compatibility are covered in [Part06h](optimization/part-06h-surface-placement.md).
+These corrections use established packing tolerances; they do not certify
+arbitrary decorated/relaxed slabs or generalize all numerical domains. Include
+the corrected positions/labels and explicit invalid-input errors in release
+notes. Remaining ledger deferrals and final requirement-level audit still gate
+any future publication decision.
 
 ## Artifact validation
 

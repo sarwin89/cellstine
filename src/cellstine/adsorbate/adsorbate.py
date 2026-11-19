@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from numbers import Integral, Real
 from pathlib import Path
 from typing import Sequence
 
@@ -47,6 +48,24 @@ def _contact_summary(run) -> dict[str, object]:
     if notes:
         summary["warnings"] = list(notes)
     return summary
+
+
+def _manifest_sequence(values) -> list:
+    """Use plain scalar values for array inputs, preserving built-in values."""
+
+    if values is None:
+        return []
+    result = []
+    for value in values:
+        if type(value) in (int, float, bool):
+            result.append(value)
+        elif isinstance(value, Integral):
+            result.append(int(value))
+        elif isinstance(value, Real):
+            result.append(float(value))
+        else:
+            result.append(value.item() if hasattr(value, "item") else value)
+    return result
 
 
 class Adsorbate(MigrationPathMixin, Base):
@@ -96,7 +115,7 @@ class Adsorbate(MigrationPathMixin, Base):
             dependency_manager=self.dependency_manager,
         ).surface(
             bulk_poscar=substrate_path,
-            miller=miller or "1,1,1",
+            miller=miller if miller is not None and len(miller) else "1,1,1",
             layers=int(layers),
             vacuum=float(vacuum),
             repeat_a=int(repeat_a),
@@ -124,7 +143,7 @@ class Adsorbate(MigrationPathMixin, Base):
         """
 
         source = Path(substrate_path).resolve()
-        entries = [int(value) for value in supercell_matrix] if supercell_matrix else None
+        entries = [int(value) for value in supercell_matrix] if supercell_matrix is not None else None
         repeat_a = max(1, int(repeat_a))
         repeat_b = max(1, int(repeat_b))
         if repeat_a == 1 and repeat_b == 1 and not entries:
@@ -249,7 +268,7 @@ class Adsorbate(MigrationPathMixin, Base):
                 "surface_side": str(surface_side),
                 "substrate_repeat_a": int(substrate_repeat_a),
                 "substrate_repeat_b": int(substrate_repeat_b),
-                "substrate_supercell_matrix": list(substrate_supercell_matrix or []),
+                "substrate_supercell_matrix": _manifest_sequence(substrate_supercell_matrix),
                 "auto_repeat_substrate": bool(auto_repeat_substrate),
                 "fit_padding": float(fit_padding),
                 "preserve_vacuum": bool(preserve_vacuum),
@@ -327,7 +346,7 @@ class Adsorbate(MigrationPathMixin, Base):
             run_dir=run_dir,
             backend=backend,
             inputs={"poscar_path": str(Path(poscar_path).resolve())},
-            parameters={"target_cartesian": list(target_cartesian or []), "target_direct": list(target_direct or []), "rotation_deg": float(rotation_deg), "tilt_deg": float(tilt_deg), "roll_deg": float(roll_deg)},
+            parameters={"target_cartesian": _manifest_sequence(target_cartesian), "target_direct": _manifest_sequence(target_direct), "rotation_deg": float(rotation_deg), "tilt_deg": float(tilt_deg), "roll_deg": float(roll_deg)},
             artifacts={"output_poscar": run.output_path},
             summary={
                 "molecule_atom_count": run.molecule_atom_count,

@@ -57,7 +57,7 @@ from .surface_sites import (
 )
 from .sequence import shortest_repeating_prefix, stacking_sequence
 from .termination import TerminationReport, formula_unit, layer_species, termination_report
-from .stacking import surface_normal
+from .stacking import POSITION_TOLERANCE, _hollow_generator, _inplane, _layer_point_lattice, surface_normal
 from .surface_supercell import (
     _resolve_inplane_repeats,
     analyse_primitive_surface,
@@ -202,6 +202,30 @@ def select_adsorption_site(run: SiteAnalysisRun, site_type: str, site_index: int
     return filtered[index - 1]
 
 
+def _site_plane_coordinates(positions_direct, lattice, normal) -> np.ndarray:
+    """Return physical planar UV, including the third vector's lateral part.
+
+    Exactly zero coefficients retain the ordinary orthogonal-c input path.
+    Representable nonzero coefficients are kept, including roundoff-scale ones;
+    no additional physical tolerance is imposed on an actual cell tilt.
+    """
+
+    direct = np.asarray(positions_direct, dtype=float)
+    if not direct.size:
+        return direct
+    cell = np.asarray(lattice, dtype=float)
+    scales = np.max(np.abs(cell[:2]), axis=1)
+    scaled = cell[:2] / scales[:, None]
+    # The shared normal points towards c and can oppose a x b. Row scaling
+    # keeps the signed area in range without squaring an unscaled cross product.
+    area = float(np.cross(scaled[0], scaled[1]) @ normal)
+    dual = np.array([np.cross(scaled[1], normal), np.cross(normal, scaled[0])])
+    lateral = (dual @ cell[2]) / area / scales
+    if not np.any(lateral):
+        return direct[:, :2]
+    return direct[:, :2] + direct[:, 2, None] * lateral
+
+
 def find_adsorption_sites(
     structure_or_path: io_mod.PoscarData | str,
     *,
@@ -239,7 +263,8 @@ def find_adsorption_sites(
     lattice = np.asarray(structure.lattice, dtype=float)
     normal = surface_normal(lattice)
     projections = np.asarray(structure.positions_cartesian, dtype=float) @ normal
-    detected_layers = _projection_layer_points(structure.positions_direct, projections, surface_side, float(layer_tolerance))
+    planar_coordinates = _site_plane_coordinates(structure.positions_direct, lattice, normal)
+    detected_layers = _projection_layer_points(planar_coordinates, projections, surface_side, float(layer_tolerance))
     if not detected_layers:
         raise ValueError("could not detect any surface layers in the slab")
 
@@ -257,7 +282,20 @@ def find_adsorption_sites(
     hollows = find_planar_voids(lattice[:2], top_points_uv)
 
     lower_layers = detected_layers[1:]
-    close_packed = _is_close_packed_stacking(detected_layers)
+    close_packed = (
+        _is_close_packed_stacking(detected_layers)
+        and any(hollow.coordination == 3 for hollow in hollows)
+    )
+    if close_packed:
+        # Names describe local holes in the exposed triangular plane. A buried
+        # registry fault must not invalidate correct first/second-layer depths.
+        # The layer has already been selected at the requested height tolerance.
+        # Certify its planar lattice directly; do not regroup floating normal
+        # residues of a synthetic slab, especially when layer_tolerance is zero.
+        plane_cell = _inplane(lattice[:2], normal)
+        plane_points = _inplane(_uv_to_cartesian(top_points_uv, lattice[:2]), normal)
+        basis = _layer_point_lattice(plane_points, plane_cell, POSITION_TOLERANCE)
+        close_packed = basis is not None and _hollow_generator(basis, POSITION_TOLERANCE) is not None
     sites: list[AdsorptionSite] = []
     for uv in top_sites_uv:
         sites.append(_site_from_uv("top", uv, lattice, top_projection, normal))

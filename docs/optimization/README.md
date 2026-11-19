@@ -21,7 +21,18 @@ The generator preserves evidence only when the normalized source module is uncha
 
 Passing tests or obtaining high coverage never automatically marks a function reviewed. Completion must also check external dependencies/callers and the actual reasoning in each part report.
 
-At the Part06g local checkpoint, the ledger contains **1,230 functions**: **747 reviewed unchanged**, **320 optimized and verified**, **17 investigated deferrals** and **146 pending reviews**. Thus **1,084 functions have inspection evidence**; the project-wide goal remains incomplete. Part06g inspects 25 complete bodies, adds 23 inspection records and reassesses an existing caller. It fixes rounded ordered-dedup losses and bounds pair temporaries while preserving periodic counts and bridge order. The 105 affected tests, independent review, predecessor/scalar/literal oracles, frozen 3873-test full run (4 skips, 81 warnings), wheel/sdist/Twine and three installed environments pass. Final support archive readback and scoped dev push precede exact-head CI and downloaded coverage. Concrete existing oblique-label and tilted-c site-coordinate issues remain priority owning-backend fixes before publication or final goal closure. No release readiness or publication claim is made.
+At the Part06h local checkpoint, the ledger contains **1,233 functions**:
+**763 reviewed unchanged**, **331 optimized and verified**,
+**13 investigated deferrals** and **126 pending reviews**.
+Thus **1,107 functions have inspection evidence**. Part06h reviews 59 complete
+bodies, corrects physical tilted-cell site coordinates and oblique hollow naming,
+and reduces repeated placement gap/grouping work. The 137 affected tests,
+independent review, ten measured predecessor cases, frozen 3934-test full run
+(4 skips, 81 warnings), wheel/sdist/Twine and three installed environments
+pass. Small-case CPU tradeoffs and retained numerical limits are recorded in the
+report. Final support archive readback and scoped dev push precede exact-head CI
+and downloaded coverage. The project-wide goal remains incomplete; no release
+readiness or publication claim is made.
 
 ## Dependency order and evidence
 
@@ -55,6 +66,7 @@ The full sequence is in [the implementation plan](../superpowers/plans/2026-10-3
 | 06e | Realized stacking selection, mixed constraint alignment, bounded header grouping and block merging | [part-06e-interface-assembly.md](part-06e-interface-assembly.md) |
 | 06f | Actual registry-origin metadata, exact plane bijections and bounded prefix work | [part-06f-registry-sequence.md](part-06f-registry-sequence.md) |
 | 06g | Exact ordered site deduplication, bounded pair temporaries and surface workflow review | [part-06g-surface-site-resources.md](part-06g-surface-site-resources.md) |
+| 06h | Physical surface projection/packing, first-gap selection, stable grouping and NumPy workflow inputs | [part-06h-surface-placement.md](part-06h-surface-placement.md) |
 | Remaining | Numerical-domain follow-ups and remaining shared code, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
 
 Portable-format follow-up: [I/O measurements and optional NPZ plan](portable-io-options.md). The prototype investigation is followed by the production implementation and evidence in Part05d.
