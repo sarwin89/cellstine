@@ -59,6 +59,16 @@ Unrepresentable/nonfinite host search bounds are rejected explicitly; zero
 display limits report omitted sites rather than falsely claiming no discovery.
 No broader int64/floating-domain or universally bounded-memory claim is made.
 
+Part08c bounds temporary divacancy distance strips, retaining exact ordered
+accepted pairs and physical orbit metadata. Dense accepted-pair output can
+still be quadratic. Exact displayed atom-site IDs now take precedence over
+numeric atom_N fallback for manual divacancies; the old behavior could remove
+the wrong physical atom. Bare numbers/unmatched aliases retain their meaning.
+Include this correction in candidate release notes, together with clamped
+negative preview shown_sites and additive requested interstitial_saddles/
+preserve_vacuum boolean manifest fields. Saved analyses remain reused according
+to existing policy; those fields describe the request, not fresh enumeration.
+
 ## Artifact validation
 
 Build fresh wheel and source distribution from the frozen candidate; keep release artifacts separate from prior local builds:

@@ -126,3 +126,13 @@ an explicit investigated disposition; it is not mislabeled globally verified.
 Remaining pending work:16 defect sites/workflow bodies,23 visualization,
 12 CLI and21 benchmark helpers. No release readiness, main merge, tag or upload.
 The overall goal remains active and incomplete.
+
+## Exact-head CI closure
+
+Dev cda1bc5a588e754513a0dcf2e1f34fbad042c4ca passed all16 jobs of
+CI44522433664. Downloaded artifact14529048829 SHA256
+bacb7f68e1bd72405a44d5f02aca5b910fe030911089af81a2880082174f4407
+matches the head/job/digest and module statement sets. CI coverage is
+14549/16175 statements,4208/5378 branches. Only the known prompts.py501–502
+fallback differs from local coverage; no branch delta. This closes Part08b's
+gate before Part08c runtime edits. Overall review remains incomplete.

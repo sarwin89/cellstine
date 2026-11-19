@@ -21,20 +21,21 @@ The generator preserves evidence only when the normalized source module is uncha
 
 Passing tests or obtaining high coverage never automatically marks a function reviewed. Completion must also check external dependencies/callers and the actual reasoning in each part report.
 
-At the Part08b local checkpoint, the ledger contains **1,236 functions**:
-**805 reviewed unchanged**, **345 optimized and verified**,
-**14 investigated deferrals** and **72 pending reviews**.
-Thus **1,164 functions have inspection evidence**. Part08b reviews34 complete
-bodies, preallocates HNF outputs, bounds temporary host-vector grids and repairs
-zero-limit reporting. An introduced unrepresentable-radius false-empty edge was
-found, reproduced and corrected before renewed source/package gates. The130
-affected tests,34 new cases,34-body review,11 measured cases,70 parameter/20vector/
-12 selected-cell exact comparisons, corrected frozen 4028-test full run
-(4 skips,81 warnings), wheel/sdist/Twine and three installed environments
-pass. Existing secondary roundness shortlist32 is an investigated limitation;
-output storage and numerical limits remain explicit. Final archive readback/dev
-push precede exact-head CI/downloaded coverage. Pending:16 defect functions,
-23 visualization,12 CLI,21 benchmarks. The overall goal remains incomplete.
+At the Part08c local checkpoint, the ledger contains **1,237 functions**:
+**817 reviewed unchanged**, **350 optimized and verified**,
+**14 investigated deferrals** and **56 pending reviews**.
+Thus **1,181 functions have inspection evidence**. Part08c completes the16
+pending defect bodies and re-reviews8 generation bodies, adding1 private helper.
+It bounds pair-discovery temporaries, corrects manual displayed-site resolution
+that could remove the wrong atom, clamps preview counts and records requested
+saddle/vacuum options. The193 affected tests,44 new cases,25-body independent
+review,108 pair-array/12 complete-site predecessor comparisons,8 measured cases,
+frozen 4072-test full run (4 skips,81 warnings), wheel/sdist/Twine
+and three installed environments pass. Existing numeric/output-memory and
+secondary roundness limitations remain explicit. Final archive readback/dev push
+precedes exact-head CI/downloaded coverage. Part08b is closed at cda1bc5 with
+all16 CI44522433664 jobs and verified artifact14529048829.
+Pending:23 visualization,12 CLI,21 benchmark helpers. Overall work is incomplete.
 
 ## Dependency order and evidence
 
@@ -71,6 +72,7 @@ The full sequence is in [the implementation plan](../superpowers/plans/2026-10-3
 | 06h | Physical surface projection/packing, first-gap selection, stable grouping and NumPy workflow inputs | [part-06h-surface-placement.md](part-06h-surface-placement.md) |
 | 08a | Bounded plane requests, ordered orbit indexing, saved-input selection and physical defect generation | [part-08a-defect-selection-generation.md](part-08a-defect-selection-generation.md) |
 | 08b | Preallocated HNF arrays, bounded host-vector grids and honest presentation limits | [part-08b-supercell-resources.md](part-08b-supercell-resources.md) |
+| 08c | Bounded ordered divacancy discovery, correct displayed-site selection and workflow request metadata | [part-08c-defect-pair-resources.md](part-08c-defect-pair-resources.md) |
 | Remaining | Numerical-domain follow-ups and remaining shared code, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
 
 Portable-format follow-up: [I/O measurements and optional NPZ plan](portable-io-options.md). The prototype investigation is followed by the production implementation and evidence in Part05d.

@@ -18,10 +18,33 @@ from .analysis import (
     _atom_members,
     _layer_lookup,
     _nearest_layer_id,
-    _pairwise_minimum_image_distances,
     _serialise_site_id,
     _symmetry_groups_for_points,
 )
+
+
+def _divacancy_pairs(
+    direct: np.ndarray, lattice: np.ndarray, cutoff: float
+) -> list[tuple[int, int, float]]:
+    """Return accepted upper-triangle pairs in row-major order.
+
+    Bound distance strips to 65536 entries, or one linear row for larger
+    hosts. Accepted pair output can still be quadratic for a dense cutoff.
+    """
+
+    natoms = len(direct)
+    step = max(1, 65536 // max(1, natoms))
+    pairs: list[tuple[int, int, float]] = []
+    for start in range(0, natoms - 1, step):
+        stop = min(start + step, natoms - 1)
+        distances = geometry.pairwise_minimum_image_distances(
+            lattice, direct[start:stop], other_direct=direct[start + 1 :]
+        )
+        for offset, row in enumerate(distances):
+            upper = row[offset:]
+            for column in np.flatnonzero(upper <= cutoff):
+                pairs.append((start + offset, start + offset + 1 + int(column), float(upper[column])))
+    return pairs
 
 
 class DefectSiteEnumerationMixin:
@@ -314,14 +337,7 @@ class DefectSiteEnumerationMixin:
         lattice = np.asarray(record.lattice, dtype=float)
         direct = np.asarray(record.positions_direct, dtype=float)
 
-        distance_matrix = _pairwise_minimum_image_distances(direct, lattice)
-        row_idx, col_idx = np.triu_indices(natoms, k=1)
-        pair_distances = distance_matrix[row_idx, col_idx]
-        within = pair_distances <= float(divacancy_distance)
-        pairs = [
-            (int(i), int(j), float(d))
-            for i, j, d in zip(row_idx[within], col_idx[within], pair_distances[within])
-        ]
+        pairs = _divacancy_pairs(direct, lattice, float(divacancy_distance))
 
         if not pairs:
             return []

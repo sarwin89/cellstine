@@ -48,18 +48,19 @@ def _resolve_atom_index(analysis: DefectAnalysis, token: str) -> int | None:
 
     The two sites of a hand-picked divacancy may be spelled as plain atom
     numbers, as ``atom_7``, or as the identifier of an atom site of the
-    analysis.  Anything else is read as the number it ends with, which is how
-    every site identifier is built.
+    analysis. An exact site identifier names its representative before the
+    numeric alias fallback: orbit numbers need not be physical atom numbers.
+    Anything else is read as the number it ends with.
     """
 
     text = str(token).strip()
     if text.isdigit():
         return int(text)
-    if text.lower().startswith("atom_") and text[5:].isdigit():
-        return int(text[5:])
     for site in analysis.sites:
         if site.site_kind == "atom" and site.site_id == text:
             return None if site.representative_index is None else int(site.representative_index)
+    if text.lower().startswith("atom_") and text[5:].isdigit():
+        return int(text[5:])
     match = _TRAILING_NUMBER.search(text)
     return int(match.group()) if match else None
 
@@ -670,10 +671,12 @@ class DefectGenerationMixin:
                 "original_species": original_species,
                 "generate": generate,
                 "height": float(height),
+                "preserve_vacuum": bool(preserve_vacuum),
                 "surface_side": surface_side,
                 "layer_tolerance": float(layer_tolerance),
                 "symprec": float(symprec),
                 "divacancy_distance": float(divacancy_distance),
+                "interstitial_saddles": bool(interstitial_saddles),
                 "supercell": None if repeats is None else list(repeats),
                 "supercell_matrix": None if repeats is not None else matrix,
                 "min_image_distance": None if min_image_distance is None else float(min_image_distance),
