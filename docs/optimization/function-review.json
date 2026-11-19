@@ -7532,9 +7532,9 @@
       "line": 49,
       "end_line": 60,
       "module_sha256": "653e7336a1c0f8d2571d808815c43ee27075e5c8b86f18688e28c41558e026ce",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Unchanged reshape/cast and slab-kind selection of exact shortest-plane versus full lattice translation; retains current periodicity labels.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/dilution.py::dilution_report",
@@ -7543,9 +7543,9 @@
       "line": 63,
       "end_line": 94,
       "module_sha256": "653e7336a1c0f8d2571d808815c43ee27075e5c8b86f18688e28c41558e026ce",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Unchanged touched-atom lookup, at-least-one host denominator, strict distance<10/concentration>.05 heuristic boundaries, ordered note wording and fields.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/dilution.py::merge_notes",
@@ -7554,9 +7554,9 @@
       "line": 97,
       "end_line": 104,
       "module_sha256": "653e7336a1c0f8d2571d808815c43ee27075e5c8b86f18688e28c41558e026ce",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Unchanged copy plus first-new note append order; existing duplicates retained. Small expected lists do not justify new set policy without measurements.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/generation.py::_resolve_atom_index",
@@ -7564,10 +7564,10 @@
       "qualified_name": "_resolve_atom_index",
       "line": 46,
       "end_line": 64,
-      "module_sha256": "c74cf93ffaab578b3f5e1db7457cada154749c16993e7308e515208eb5d4bb73",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "1a85f17399f2f897e32380ed106babb4470b318f2008201da87ea9485dc149cf",
+      "status": "reviewed—unchanged",
+      "reason": "Unchanged raw digit/atom prefix/exact atom-site/trailing-number precedence, including exact site with absent representative returning None.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/generation.py::_resolve_atom_indices",
@@ -7575,164 +7575,197 @@
       "qualified_name": "_resolve_atom_indices",
       "line": 67,
       "end_line": 71,
-      "module_sha256": "c74cf93ffaab578b3f5e1db7457cada154749c16993e7308e515208eb5d4bb73",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "module_sha256": "1a85f17399f2f897e32380ed106babb4470b318f2008201da87ea9485dc149cf",
+      "status": "reviewed—unchanged",
+      "reason": "Unchanged order-preserving generator conversion and filtering of only unresolved None values.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
+    },
+    {
+      "id": "src/cellstine/defect/generation.py::_unexpanded_site_may_match",
+      "path": "src/cellstine/defect/generation.py",
+      "qualified_name": "_unexpanded_site_may_match",
+      "line": 74,
+      "end_line": 103,
+      "module_sha256": "1a85f17399f2f897e32380ed106babb4470b318f2008201da87ea9485dc149cf",
+      "status": "optimized—verified",
+      "reason": "Source reviewed new relevance helper. Existing complete members/adatom and exact base/representative/L/M IDs retained for original postfilter. Atom known-index requests match first; complete cardinality-known equivalence sets prove exclusion. Short/missing atom lists conservatively retain canonical unowned numeric requests for actionable metadata rejection. Ownership excludes only indices explicitly assigned by existing atom member records, using producer disjoint-orbit premise; no inference from scalar/pair/void metadata. Missing pair/void numeric ambiguity remains conservative.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/generation.py::_defect_atom_index",
       "path": "src/cellstine/defect/generation.py",
       "qualified_name": "_defect_atom_index",
-      "line": 74,
-      "end_line": 92,
-      "module_sha256": "c74cf93ffaab578b3f5e1db7457cada154749c16993e7308e515208eb5d4bb73",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 106,
+      "end_line": 124,
+      "module_sha256": "1a85f17399f2f897e32380ed106babb4470b318f2008201da87ea9485dc149cf",
+      "status": "reviewed—unchanged",
+      "reason": "Unchanged exact shared minimum-image kernel, stable first argmin and1e-6 match criterion; coincident-site ambiguity retained.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/generation.py::_defect_contact",
       "path": "src/cellstine/defect/generation.py",
       "qualified_name": "_defect_contact",
-      "line": 95,
-      "end_line": 119,
-      "module_sha256": "c74cf93ffaab578b3f5e1db7457cada154749c16993e7308e515208eb5d4bb73",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 127,
+      "end_line": 151,
+      "module_sha256": "1a85f17399f2f897e32380ed106babb4470b318f2008201da87ea9485dc149cf",
+      "status": "reviewed—unchanged",
+      "reason": "Unchanged no-target/empty/singleton exits, selected-index exclusion and aligned species/positions before shared exact contact solver.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/generation.py::DefectGenerationMixin._sites_for_generation",
       "path": "src/cellstine/defect/generation.py",
       "qualified_name": "DefectGenerationMixin._sites_for_generation",
-      "line": 125,
-      "end_line": 224,
-      "module_sha256": "c74cf93ffaab578b3f5e1db7457cada154749c16993e7308e515208eb5d4bb73",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 157,
+      "end_line": 267,
+      "module_sha256": "1a85f17399f2f897e32380ed106babb4470b318f2008201da87ea9485dc149cf",
+      "status": "optimized—verified",
+      "reason": "Whole caller reread. Manual divacancy precedence, kind/species filtering, complete-member expansion/post-ID filter/order/notes unchanged. Added prefilter only during explicit-ID layer/all expansion; complete member records remain on original path. For mixed missing atom metadata, ownership set is gathered solely from explicit atom member indices, avoiding irrelevant legacy rejection of a known selected atom while preventing silent omission of a possible unowned hidden numeric target. Real saved-input R1/R3 regressions inspected. Trusted analysis partition and source freshness limitations remain.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/generation.py::DefectGenerationMixin._generate_one",
       "path": "src/cellstine/defect/generation.py",
       "qualified_name": "DefectGenerationMixin._generate_one",
-      "line": 226,
-      "end_line": 358,
-      "module_sha256": "c74cf93ffaab578b3f5e1db7457cada154749c16993e7308e515208eb5d4bb73",
-      "status": "deferred—with reason",
-      "reason": "Source module changed; requires re-review",
-      "evidence": ""
+      "line": 269,
+      "end_line": 413,
+      "module_sha256": "1a85f17399f2f897e32380ed106babb4470b318f2008201da87ea9485dc149cf",
+      "status": "optimized—verified",
+      "reason": "Bounds/distinctness reject invalid converted 1-based edit indices. Existing normal validation/arithmetic precedes orientation+c, matching site geometry; scalar normal-height policy replaces global-z check with same1e-6 slack. Valid edit order/flags/regrouping and vacuum fit retained. No universal extreme-scale or invalid-input transaction claim.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/generation.py::DefectGenerationMixin.generate",
       "path": "src/cellstine/defect/generation.py",
       "qualified_name": "DefectGenerationMixin.generate",
-      "line": 360,
-      "end_line": 637,
-      "module_sha256": "c74cf93ffaab578b3f5e1db7457cada154749c16993e7308e515208eb5d4bb73",
+      "line": 415,
+      "end_line": 692,
+      "module_sha256": "1a85f17399f2f897e32380ed106babb4470b318f2008201da87ea9485dc149cf",
       "status": "optimized—verified",
-      "reason": "Reserves every automatically generated filename, including explicit directories; preserves site/replacement order, records, contacts, dilution and actual-path manifests; full-body/caller review, focused integration and frozen full suite pass",
-      "evidence": "docs/optimization/part-03c-safe-default-outputs.md"
+      "reason": "One changed case-normalized antisite discovery condition aligns existing lowercased dispatch; manifests/filenames retain caller spelling. Whole body still preserves cell option exclusivity, source ordering, selected/replacement loops, reserved outputs, contact/dilution summaries and manifest fields. Existing partial-output/failure ownership retained.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
+    },
+    {
+      "id": "src/cellstine/defect/layers.py::_selection_parts",
+      "path": "src/cellstine/defect/layers.py",
+      "qualified_name": "_selection_parts",
+      "line": 47,
+      "end_line": 86,
+      "module_sha256": "81dce1c7dbec8c22440f84bca4a3eea6a3cff1df1afc22d4c495049421acdf63",
+      "status": "optimized—verified",
+      "reason": "Extracts token conversion and aliases into compact range parts; converts all tokens before resolution, retains signed/reversed inclusive syntax and malformed-token handling. No range expansion here.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/layers.py::parse_layer_selection",
       "path": "src/cellstine/defect/layers.py",
       "qualified_name": "parse_layer_selection",
-      "line": 47,
-      "end_line": 91,
-      "module_sha256": "e1782907e3f9b61f7fd776129ca2aa95f4b9aa3226275134965a201588ca3d7b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 89,
+      "end_line": 96,
+      "module_sha256": "81dce1c7dbec8c22440f84bca4a3eea6a3cff1df1afc22d4c495049421acdf63",
+      "status": "optimized—verified",
+      "reason": "Expands compact parts into the same full tuple API; list.extend keeps standalone materialization and length-hint behavior. API remains intentionally proportional to requested public output.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/layers.py::resolve_layer_ids",
       "path": "src/cellstine/defect/layers.py",
       "qualified_name": "resolve_layer_ids",
-      "line": 94,
-      "end_line": 144,
-      "module_sha256": "e1782907e3f9b61f7fd776129ca2aa95f4b9aa3226275134965a201588ca3d7b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 99,
+      "end_line": 164,
+      "module_sha256": "81dce1c7dbec8c22440f84bca4a3eea6a3cff1df1afc22d4c495049421acdf63",
+      "status": "optimized—verified",
+      "reason": "Preserves keyword selection, sorted available ordinal positions, negative ordinals, duplicate IDs, and exact first-invalid/zero rules. Ascending range endpoint checks precede iteration; set dedup preserves sorted output. Input token storage remains proportional to request text.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/layers.py::member_layer_ids",
       "path": "src/cellstine/defect/layers.py",
       "qualified_name": "member_layer_ids",
-      "line": 147,
-      "end_line": 157,
-      "module_sha256": "e1782907e3f9b61f7fd776129ca2aa95f4b9aa3226275134965a201588ca3d7b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 167,
+      "end_line": 177,
+      "module_sha256": "81dce1c7dbec8c22440f84bca4a3eea6a3cff1df1afc22d4c495049421acdf63",
+      "status": "optimized—verified",
+      "reason": "Set accumulation replaces repeated membership scan; integer/None handling, representative fallback and sorted tuple retained for normal JSON metadata.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/layers.py::layer_ids_of",
       "path": "src/cellstine/defect/layers.py",
       "qualified_name": "layer_ids_of",
-      "line": 160,
-      "end_line": 163,
-      "module_sha256": "e1782907e3f9b61f7fd776129ca2aa95f4b9aa3226275134965a201588ca3d7b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 180,
+      "end_line": 183,
+      "module_sha256": "81dce1c7dbec8c22440f84bca4a3eea6a3cff1df1afc22d4c495049421acdf63",
+      "status": "reviewed—unchanged",
+      "reason": "Unchanged site-ID mapping, iterable consumption and member-layer helper delegation; duplicate IDs retain last entry as before.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/layers.py::_member_matches",
       "path": "src/cellstine/defect/layers.py",
       "qualified_name": "_member_matches",
-      "line": 166,
-      "end_line": 167,
-      "module_sha256": "e1782907e3f9b61f7fd776129ca2aa95f4b9aa3226275134965a201588ca3d7b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 186,
+      "end_line": 187,
+      "module_sha256": "81dce1c7dbec8c22440f84bca4a3eea6a3cff1df1afc22d4c495049421acdf63",
+      "status": "reviewed—unchanged",
+      "reason": "Unchanged integer membership test retained for existing callers despite optimized sites_by_layer no longer using it.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/layers.py::_site_for_layer",
       "path": "src/cellstine/defect/layers.py",
       "qualified_name": "_site_for_layer",
-      "line": 170,
-      "end_line": 187,
-      "module_sha256": "e1782907e3f9b61f7fd776129ca2aa95f4b9aa3226275134965a201588ca3d7b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 190,
+      "end_line": 207,
+      "module_sha256": "81dce1c7dbec8c22440f84bca4a3eea6a3cff1df1afc22d4c495049421acdf63",
+      "status": "reviewed—unchanged",
+      "reason": "Unchanged first member representative, pair-prefix/atom equivalent index handling, multiplicity, shallow dictionary copies and L-suffixed IDs.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
+    },
+    {
+      "id": "src/cellstine/defect/layers.py::_members_for_expansion",
+      "path": "src/cellstine/defect/layers.py",
+      "qualified_name": "_members_for_expansion",
+      "line": 210,
+      "end_line": 225,
+      "module_sha256": "81dce1c7dbec8c22440f84bca4a3eea6a3cff1df1afc22d4c495049421acdf63",
+      "status": "optimized—verified",
+      "reason": "Known existing members and intentional memberless adatoms retained. Missing multi-member orbits reject expansion. require_layers additionally rejects missing divacancy membership or nonadatom scalarNone: singleton pair cardinality does not reveal two-plane membership. Known scalar singletons can be synthesized only where sufficient; no automatic symmetry reanalysis.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/layers.py::sites_by_layer",
       "path": "src/cellstine/defect/layers.py",
       "qualified_name": "sites_by_layer",
-      "line": 190,
-      "end_line": 221,
-      "module_sha256": "e1782907e3f9b61f7fd776129ca2aa95f4b9aa3226275134965a201588ca3d7b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 228,
+      "end_line": 270,
+      "module_sha256": "81dce1c7dbec8c22440f84bca4a3eea6a3cff1df1afc22d4c495049421acdf63",
+      "status": "optimized—verified",
+      "reason": "Single pass member-plane index retains site/request/member order and duplicate requests; empty wanted behavior retained. require_layers=True prevents missing legacy pair data being misreported as unplaced. Complete metadata behavior and shallow-copy boundaries unchanged.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/layers.py::_site_for_member",
       "path": "src/cellstine/defect/layers.py",
       "qualified_name": "_site_for_member",
-      "line": 224,
-      "end_line": 241,
-      "module_sha256": "e1782907e3f9b61f7fd776129ca2aa95f4b9aa3226275134965a201588ca3d7b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 273,
+      "end_line": 290,
+      "module_sha256": "81dce1c7dbec8c22440f84bca4a3eea6a3cff1df1afc22d4c495049421acdf63",
+      "status": "reviewed—unchanged",
+      "reason": "Unchanged member-prefix ID, direct/cartesian field conversion, representative and pair indices, unit multiplicity and shallow member copy.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/layers.py::sites_by_member",
       "path": "src/cellstine/defect/layers.py",
       "qualified_name": "sites_by_member",
-      "line": 244,
-      "end_line": 284,
-      "module_sha256": "e1782907e3f9b61f7fd776129ca2aa95f4b9aa3226275134965a201588ca3d7b",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "line": 293,
+      "end_line": 347,
+      "module_sha256": "81dce1c7dbec8c22440f84bca4a3eea6a3cff1df1afc22d4c495049421acdf63",
+      "status": "optimized—verified",
+      "reason": "Complete member expansion/order unchanged; original IDs/objects of known legacy singletons retained with accurate note, avoiding an introduced base-ID compatibility break. Layer membership validation explicit when filtered; actual-expansion bool controls complete-expansion note. Memberless adatoms keep existing intended behavior.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/records.py::DefectAnalysis.to_dict",
@@ -7741,9 +7774,9 @@
       "line": 65,
       "end_line": 80,
       "module_sha256": "428c5982e745c8080e16af12bf2f1a1cd437315e54d19cea9313d71a804c7c4f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Unchanged v1 schema/field order, list/dict copies, integer scalar coercions and deep dataclass site serialization; no semantic validation/freshness certification added.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/records.py::DefectAnalysis.from_dict",
@@ -7752,9 +7785,9 @@
       "line": 83,
       "end_line": 101,
       "module_sha256": "428c5982e745c8080e16af12bf2f1a1cd437315e54d19cea9313d71a804c7c4f",
-      "status": "deferred—with reason",
-      "reason": "Pending dependency-ordered review; no review claim",
-      "evidence": ""
+      "status": "reviewed—unchanged",
+      "reason": "Unchanged defaults and coercions, direct DefectSite construction including optional missing members, and shallow container ownership; saved-input operation validation must occur in consumers.",
+      "evidence": "docs/optimization/part-08a-defect-selection-generation.md;24independently reviewed completebodies;202focused/3994full/4skips/81warnings on294Pythonfreeze;60newboundedrange/order/metadata/writtenphysicalPOSCAR/flags/sourceownershipcases;5995resolver+1199publicparser exactpredecessoroutcomes;4correctediterationguard predecessorreds;11quiet warm interleaved timing/allocationcases exactacceptedoutputs;allCPU/memorytradeoffsdisclosed;wheel/sdist/Twine+3installed savedinput/physicalgeneration/native serialprocess/threadworkflows;R1explicitselection/R2pairplane/R3incompletenumeric findings reproducedandresolved;trusteddisjointatommetadata,hostfreshness/corruptmember/numerical/outputlimitsretained;exactheadCI/artifact gate next runtimebatch"
     },
     {
       "id": "src/cellstine/defect/reporting.py::_void_text",

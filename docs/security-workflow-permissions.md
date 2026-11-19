@@ -27,3 +27,14 @@ The fix is prepared on `dev`. Alert closure on the default `main` branch still
 requires integration and a successful subsequent code scan there. No alert is
 dismissed manually, and a dev fix must not be described as GitHub-confirmed
 default-branch closure. No merge to main, release, tag or package upload occurs.
+
+## Verified dev CI closure
+
+Fix dev5fd5be33f892004b7d6934029adf1a1eb6cf943b passed all16 jobs in
+CI44479741997, including retained coverage upload with contents:read.
+Artifact14507809942 SHA256
+01155cfa9e6eb62b52b865cef9d537c29a05a5b470f157269651ba015c9ed4a6
+was verified against exact head/job and unchanged coverage:14451/16081
+statements,4138/5310 branches, zero delta from a18b2b8. All292 Python hashes
+were unchanged. This closes the dev configuration check; default-main alert
+closure still requires later integration/rescanning. No alert dismissal occurs.

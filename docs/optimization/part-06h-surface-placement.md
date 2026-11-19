@@ -154,3 +154,12 @@ No unchanged runtime/full/install/benchmark work is repeated locally. Fresh
 exact-head CI, including full supported-version suites, remains mandatory.
 
 No release, tag or package upload is authorized; the overall goal is incomplete.
+
+## Exact-head CI closure
+
+Corrected dev a18b2b8baaea4b874208a16f9a13aa618f5b40c5 passed all16 jobs in
+CI44477217790. Downloaded artifact14507627405 has verified SHA256
+f782daea039639697806bd396bd73fd86bf9f4349be62b95739e534447e3a4c4,
+matching head/job/module/statement sets. CI covers14451/16081 statements and
+4138/5310 branches; only known prompts.py:501–502 differs locally, no branch
+delta. Closure preceded the CI permissions fix and Part08a runtime work.

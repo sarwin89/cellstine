@@ -71,6 +71,38 @@ def _resolve_atom_indices(analysis: DefectAnalysis, tokens: Sequence[str]) -> li
     return [index for index in resolved if index is not None]
 
 
+def _unexpanded_site_may_match(
+    site: DefectSite, allowed: set[str], layer_ids: Sequence[int] | None, *, all_members: bool,
+    known_atom_indices: set[str],
+) -> bool:
+    """Skip only provably irrelevant legacy metadata before orbit validation."""
+
+    if site.members or site.site_kind == "adatom" or site.site_id in allowed:
+        return True
+    if all_members:
+        if any(token.startswith(site.site_id + "_M") for token in allowed):
+            return True
+    elif layer_ids is not None and any(f"{site.site_id}_L{int(layer):02d}" in allowed for layer in layer_ids):
+        return True
+    if site.representative_index is not None and str(site.representative_index) in allowed:
+        return True
+    if site.site_kind == "atom":
+        indices = {int(index) for index in site.equivalent_indices}
+        if site.representative_index is not None:
+            indices.add(int(site.representative_index))
+        if any(str(index) in allowed for index in indices):
+            return True
+        if len(indices) >= int(site.multiplicity):
+            return False
+    elif int(site.multiplicity) <= 1:
+        return site.representative_index is not None and str(site.representative_index) in allowed
+    # Incomplete atom lists and missing pair/void orbits leave numeric requests
+    # ambiguous. Explicit atom members belong to disjoint producer orbits, so
+    # their indices are already owned; no such inference is made for pairs.
+    return any(token not in known_atom_indices and token.lstrip("-").isdigit()
+               and str(int(token)) == token for token in allowed)
+
+
 def _defect_atom_index(record: StructureRecord, defect_direct: np.ndarray) -> int | None:
     """Locate the atom of ``record`` that sits at ``defect_direct``.
 
@@ -189,6 +221,17 @@ class DefectGenerationMixin:
             sites = [site for site in sites if site.species == str(species_filter)]
         notes: list[str] = []
         layer_ids = resolve_layer_ids(analysis.layers, layers)
+        if selected_ids is not None and (str(mode).lower() == "all" or layer_ids is not None):
+            allowed = set(selected_ids)
+            known_atom_indices = (
+                {str(int(index)) for site in sites for member in site.members
+                 for index in (member.get("indices") or [])}
+                if kind == "atom" and any(not site.members for site in sites) else set()
+            )
+            sites = [site for site in sites if _unexpanded_site_may_match(
+                site, allowed, layer_ids, all_members=str(mode).lower() == "all",
+                known_atom_indices=known_atom_indices,
+            )]
         if str(mode).lower() == "all":
             # Every equivalent copy in its own structure, restricted to the
             # selected planes when one was asked for.
@@ -251,6 +294,8 @@ class DefectGenerationMixin:
             if site.representative_index is None:
                 raise ValueError(f"{site.site_id} is not an atom site")
             remove_index = int(site.representative_index) - 1
+            if not 0 <= remove_index < len(atom_species):
+                raise ValueError(f"{site.site_id} atom index must be between 1 and {len(atom_species)}")
             keep = [index for index in range(len(atom_species)) if index != remove_index]
             return (
                 _record_from_atoms(
@@ -269,6 +314,10 @@ class DefectGenerationMixin:
                 raise ValueError(f"{site.site_id} does not have pair indices for divacancy generation")
             remove_1 = int(site.pair_indices[0]) - 1
             remove_2 = int(site.pair_indices[1]) - 1
+            if not (0 <= remove_1 < len(atom_species) and 0 <= remove_2 < len(atom_species)):
+                raise ValueError(f"{site.site_id} pair indices must be between 1 and {len(atom_species)}")
+            if remove_1 == remove_2:
+                raise ValueError(f"{site.site_id} pair indices must name distinct atoms")
             keep = [index for index in range(len(atom_species)) if index != remove_1 and index != remove_2]
             return (
                 _record_from_atoms(
@@ -288,8 +337,11 @@ class DefectGenerationMixin:
                 raise ValueError("substitution and antisite defects require --substitution-species or --species")
             if site.representative_index is None:
                 raise ValueError(f"{site.site_id} is not an atom site")
+            replace_index = int(site.representative_index) - 1
+            if not 0 <= replace_index < len(atom_species):
+                raise ValueError(f"{site.site_id} atom index must be between 1 and {len(atom_species)}")
             new_species = list(atom_species)
-            new_species[int(site.representative_index) - 1] = str(replacement)
+            new_species[replace_index] = str(replacement)
             return (
                 _record_from_atoms(
                     record,
@@ -301,7 +353,7 @@ class DefectGenerationMixin:
                     ),
                 ),
                 _safe_species_token(site.species, replacement),
-                np.array(direct[int(site.representative_index) - 1], dtype=float),
+                np.array(direct[replace_index], dtype=float),
             )
 
         if defect in {"interstitial", "adatom"}:
@@ -312,6 +364,8 @@ class DefectGenerationMixin:
             lattice_out = np.asarray(record.lattice, dtype=float)
             if defect == "adatom":
                 normal = _normal_from_lattice(record.lattice)
+                if float(np.dot(normal, np.asarray(record.lattice, dtype=float)[2])) < 0.0:
+                    normal = -normal
                 direction = 1.0 if str(surface_side).lower() == "top" else -1.0
                 cartesian = np.asarray(site.cartesian, dtype=float) + direction * normal * float(height)
                 host_cartesian = np.asarray(record.positions_cartesian, dtype=float)
@@ -329,16 +383,17 @@ class DefectGenerationMixin:
                     direct = fitted[:-1] @ inverse
                     insert_direct = fitted[-1] @ inverse
                 else:
-                    z_coords = record.positions_cartesian[:, 2]
-                    if z_coords.size > 0:
-                        z_min = float(np.min(z_coords))
-                        z_max = float(np.max(z_coords))
-                        c_length = float(np.linalg.norm(record.lattice[2]))
+                    projections = np.asarray(record.positions_cartesian, dtype=float) @ normal
+                    if projections.size > 0:
+                        lower = float(np.min(projections))
+                        upper = float(np.max(projections))
+                        cell_height = abs(float(np.dot(np.asarray(record.lattice, dtype=float)[2], normal)))
+                        projected = float(np.dot(cartesian, normal))
                         if str(surface_side).lower() == "top":
-                            if cartesian[2] > z_min + c_length + 1e-6:
+                            if projected > lower + cell_height + 1e-6:
                                 raise ValueError("adatom height lies outside the current cell; increase vacuum or lower --height")
                         else:
-                            if cartesian[2] < z_max - c_length - 1e-6:
+                            if projected < upper - cell_height - 1e-6:
                                 raise ValueError("adatom height lies outside the current cell; increase vacuum or lower --height")
                     insert_direct = cartesian @ np.linalg.inv(np.asarray(record.lattice, dtype=float))
             return (
@@ -513,7 +568,7 @@ class DefectGenerationMixin:
 
         for site in selected_sites:
             target_substitutions = [substitution_species or species]
-            if defect_type == "antisite" and not (substitution_species or species):
+            if str(defect_type).lower() == "antisite" and not (substitution_species or species):
                 unique_host_species = list(dict.fromkeys(expand_species(record.species, record.counts)))
                 if len(unique_host_species) < 2:
                     raise ValueError(

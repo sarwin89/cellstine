@@ -42,6 +42,15 @@ the corrected positions/labels and explicit invalid-input errors in release
 notes. Remaining ledger deferrals and final requirement-level audit still gate
 any future publication decision.
 
+Part08a preserves unfiltered legacy inequivalent generation and known singleton
+IDs, but expansion of unavailable multi-member orbit geometry now requires
+reanalysis rather than partial output or a false completeness note. Explicit
+complete selections remain usable alongside unrelated legacy records. Invalid
+1-based edit indices/duplicate pairs now fail; negative-c adatom direction and
+rotated/tilted normal-height bounds are corrected at existing tolerances.
+Include these scientific/error-behavior corrections in candidate release notes;
+metadata trust, host freshness and numerical domains remain documented limits.
+
 ## Artifact validation
 
 Build fresh wheel and source distribution from the frozen candidate; keep release artifacts separate from prior local builds:
