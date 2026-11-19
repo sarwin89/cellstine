@@ -96,14 +96,32 @@ def test_buried_registry_fault_does_not_remove_correct_local_hollow_names():
     assert report.site_counts == {"top": 1, "bridge": 3, "fcc_hollow": 1, "hcp_hollow": 1}
 
 
-def test_zero_layer_tolerance_does_not_regroup_the_selected_rotated_plane():
+def test_zero_layer_tolerance_does_not_regroup_the_selected_rotated_plane(monkeypatch):
     angle = .2
     rotation = np.array([[1., 0., 0.], [0., np.cos(angle), -np.sin(angle)],
                          [0., np.sin(angle), np.cos(angle)]])
     cell = np.array([[4., 0., 0.], [2., 2. * np.sqrt(3.), 0.], [0., 0., 12.]]) @ rotation.T
     direct = np.array([[i/2 + layer/6, j/2 + layer/6, .2 + .2 * layer]
                        for layer in range(3) for i, j in product(range(2), repeat=2)])
+    # Isolate certification of an already-selected plane. With exactly zero
+    # tolerance, initial Cartesian dot-product roundoff can itself split this
+    # rotated fixture differently across BLAS/NumPy/platforms. That upstream
+    # behavior is unchanged and is not the regression under test.
+    select_layers = backend._projection_layer_points
+    selection_calls = []
+
+    def selected_planes(uv, projections, side, tolerance):
+        selection_calls.append(tolerance)
+        return select_layers(uv, projections, side, 1e-10)
+
+    def regrouping_is_a_regression(*args, **kwargs):
+        pytest.fail("packing certification must not regroup selected layer heights")
+
+    from cellstine.interface.surface import stacking
+    monkeypatch.setattr(backend, "_projection_layer_points", selected_planes)
+    monkeypatch.setattr(stacking, "group_layers", regrouping_is_a_regression)
     report = backend.find_adsorption_sites(_record(cell, direct), layer_tolerance=0.)
+    assert selection_calls == [0.]
     assert report.detected_layer_count == 3
     assert report.site_counts == {"top": 4, "bridge": 12, "hcp_hollow": 4, "fcc_hollow": 4}
 

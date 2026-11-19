@@ -104,8 +104,9 @@ parameter is introduced. No release readiness is claimed.
 ## Local checkpoint
 
 The frozen full run passed **3934 tests**, skipped 4,
-with 81 warnings in 906.48s. All **292 Python files**
-retain their frozen bytes. Local coverage is **14449/16081
+with 81 warnings in 906.48s on **292 frozen Python files**.
+Runtime bytes remain unchanged; the test-only CI correction below follows that
+run. Local coverage is **14449/16081
 statements** and **4138/5310 branches**.
 Native thread environment variables were set to 1 before NumPy for verification;
 runtime defaults are unchanged. Full-run elapsed differences are not attributed
@@ -127,5 +128,29 @@ evidence**, **763 reviewed unchanged**,
 The 59-body scope covers 56 predecessor bodies and 3 new helpers, adds 23
 inspection records, resolves four prior investigated dispositions, and records
 the unchanged moved lambda by its current ID. Evidence is module-hash scoped.
+
+## CI test portability correction
+
+Initial dev `901530f` exposed a platform-sensitive assumption in the new
+zero-tolerance test. Minimum NumPy on Windows and macOS reported five initial
+height groups rather than three: exact-zero grouping can separate Cartesian
+dot-product roundoff differently by NumPy/BLAS/platform. The production initial
+layer-selection algorithm is unchanged; its tolerance must not be widened to
+satisfy this fixture.
+
+The corrected test explicitly supplies stable, already-selected planes through
+the real selector, verifies that its caller requested zero exactly once, and
+fails if packing certification calls the synthetic height grouper. It retains
+the complete four-top/twelve-bridge/four-hcp/four-fcc physical assertions. This
+deterministically detects the removed regrouping regression without claiming
+portable exact-zero initial plane membership. Other physical integration tests
+continue to use normal unmodified selection.
+
+An independent source review approved this boundary and refreshed test hashes;
+all seven source-module hashes and 59 body reviews remain unchanged. The revised
+affected batch passed **93 tests in 3.55s**. Only one test file and this report
+change after the full run; the archive is refreshed for those support bytes.
+No unchanged runtime/full/install/benchmark work is repeated locally. Fresh
+exact-head CI, including full supported-version suites, remains mandatory.
 
 No release, tag or package upload is authorized; the overall goal is incomplete.
