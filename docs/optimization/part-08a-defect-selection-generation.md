@@ -149,3 +149,12 @@ benchmark helpers; the13 prior investigated limitations remain separate.
 
 No release readiness, publication, tag, main merge or package upload is claimed.
 The overall goal remains active and incomplete.
+
+## Exact-head CI closure
+
+Dev e01be6f63e8d5b66e85ed289f145a6956915b706 passed all16 CI44513902716
+jobs. Artifact14525346664 SHA256
+83967cb5cb0ffa18bba06e1a5000e023678526e69bbb15922dfdcaea5c02389f
+was downloaded and verified against head/job/digest/module/statement sets.
+CI covers14532/16158 statements and4198/5368 branches; only known
+prompts.py501–502 differs locally, with no branch delta. Closure preceded08b.

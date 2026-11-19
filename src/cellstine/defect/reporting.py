@@ -85,7 +85,7 @@ class DefectReportingMixin:
 
         rows = list(analysis.sites)
         shown = rows[: max(0, int(limit))]
-        if not shown:
+        if not rows:
             return "No defect sites were detected."
         lines = [
             f"Defect sites for {Path(analysis.structure_path).name} ({analysis.structure_kind}, backend={analysis.backend})",

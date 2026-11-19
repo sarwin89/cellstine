@@ -21,19 +21,20 @@ The generator preserves evidence only when the normalized source module is uncha
 
 Passing tests or obtaining high coverage never automatically marks a function reviewed. Completion must also check external dependencies/callers and the actual reasoning in each part report.
 
-At the Part08a local checkpoint, the ledger contains **1,236 functions**:
-**776 reviewed unchanged**, **341 optimized and verified**,
-**13 investigated deferrals** and **106 pending reviews**.
-Thus **1,130 functions have inspection evidence**. Part08a reviews24 complete
-bodies, bounds unavailable plane requests, indexes orbit planes, fixes saved-input
-selection/incomplete-orbit handling and validates physical defect generation.
-The202 affected tests,60 new cases,24-body independent review,11 measured cases,
-5995 resolver/1199 parser comparisons, frozen 3994-test full run
+At the Part08b local checkpoint, the ledger contains **1,236 functions**:
+**805 reviewed unchanged**, **345 optimized and verified**,
+**14 investigated deferrals** and **72 pending reviews**.
+Thus **1,164 functions have inspection evidence**. Part08b reviews34 complete
+bodies, preallocates HNF outputs, bounds temporary host-vector grids and repairs
+zero-limit reporting. An introduced unrepresentable-radius false-empty edge was
+found, reproduced and corrected before renewed source/package gates. The130
+affected tests,34 new cases,34-body review,11 measured cases,70 parameter/20vector/
+12 selected-cell exact comparisons, corrected frozen 4028-test full run
 (4 skips,81 warnings), wheel/sdist/Twine and three installed environments
-pass. CPU/memory tradeoffs and trusted-metadata/numerical limits remain explicit.
-Final archive readback/dev push precede exact-head CI and downloaded coverage.
-Pending:50 defect functions,23 visualization,12 CLI,21 benchmarks. The overall
-goal remains incomplete; no release readiness or publication claim is made.
+pass. Existing secondary roundness shortlist32 is an investigated limitation;
+output storage and numerical limits remain explicit. Final archive readback/dev
+push precede exact-head CI/downloaded coverage. Pending:16 defect functions,
+23 visualization,12 CLI,21 benchmarks. The overall goal remains incomplete.
 
 ## Dependency order and evidence
 
@@ -69,6 +70,7 @@ The full sequence is in [the implementation plan](../superpowers/plans/2026-10-3
 | 06g | Exact ordered site deduplication, bounded pair temporaries and surface workflow review | [part-06g-surface-site-resources.md](part-06g-surface-site-resources.md) |
 | 06h | Physical surface projection/packing, first-gap selection, stable grouping and NumPy workflow inputs | [part-06h-surface-placement.md](part-06h-surface-placement.md) |
 | 08a | Bounded plane requests, ordered orbit indexing, saved-input selection and physical defect generation | [part-08a-defect-selection-generation.md](part-08a-defect-selection-generation.md) |
+| 08b | Preallocated HNF arrays, bounded host-vector grids and honest presentation limits | [part-08b-supercell-resources.md](part-08b-supercell-resources.md) |
 | Remaining | Numerical-domain follow-ups and remaining shared code, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
 
 Portable-format follow-up: [I/O measurements and optional NPZ plan](portable-io-options.md). The prototype investigation is followed by the production implementation and evidence in Part05d.

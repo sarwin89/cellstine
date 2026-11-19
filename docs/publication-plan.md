@@ -51,6 +51,14 @@ rotated/tilted normal-height bounds are corrected at existing tolerances.
 Include these scientific/error-behavior corrections in candidate release notes;
 metadata trust, host freshness and numerical domains remain documented limits.
 
+Part08b preserves HNF order, maximum image-distance selection and existing
+secondary ranking policy while reducing temporary storage. The32-candidate
+roundness shortlist is an investigated limitation, so do not advertise global
+secondary-roundness optimality or arbitrary enumeration-order independence.
+Unrepresentable/nonfinite host search bounds are rejected explicitly; zero
+display limits report omitted sites rather than falsely claiming no discovery.
+No broader int64/floating-domain or universally bounded-memory claim is made.
+
 ## Artifact validation
 
 Build fresh wheel and source distribution from the frozen candidate; keep release artifacts separate from prior local builds:
