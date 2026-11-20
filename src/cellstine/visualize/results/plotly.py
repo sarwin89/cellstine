@@ -13,6 +13,7 @@ import numpy as np
 from ...moire.builder import generator as generator_backend
 from ...moire.search.results import read_results
 from ...core.outputs import reserve_default_file
+from ...core.jsonio import _dumps_inline_json
 
 DEFAULT_OUTPUT_DIR = Path("output")
 PLOTLY_CDN = "https://cdn.plot.ly/plotly-2.35.2.min.js"
@@ -171,9 +172,9 @@ def _build_html(frames: Sequence[dict[str, object]], title: str) -> str:
 
     initial_data = frame_payload[0]["data"]
     initial_title = frame_payload[0]["layout"]["title"]["text"]
-    serialized_initial = json.dumps(initial_data)
-    serialized_frames = json.dumps(frame_payload)
-    slider_steps = json.dumps(
+    serialized_initial = _dumps_inline_json(initial_data)
+    serialized_frames = _dumps_inline_json(frame_payload)
+    slider_steps = _dumps_inline_json(
         [
             {
                 "label": frame["name"],
@@ -285,7 +286,7 @@ def _build_html(frames: Sequence[dict[str, object]], title: str) -> str:
     const frames = {serialized_frames};
     const sliderSteps = {slider_steps};
     const layout = {{
-      title: {{ text: {json.dumps(initial_title)}, x: 0.02, xanchor: "left" }},
+      title: {{ text: {_dumps_inline_json(initial_title)}, x: 0.02, xanchor: "left" }},
       paper_bgcolor: "rgba(0,0,0,0)",
       plot_bgcolor: "rgba(0,0,0,0)",
       margin: {{ l: 0, r: 0, t: 72, b: 0 }},

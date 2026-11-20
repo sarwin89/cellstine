@@ -123,3 +123,12 @@ bodies, adding17 newly inspected bodies including1 new private helper.
 Remaining pending: visualization23, CLI12 and benchmark helpers21. Final
 requirement-level audit and unresolved-limitations report still gate completion.
 No release readiness claim, main merge, tag or package publication.
+
+## Exact-head CI closure
+
+Dev7466c93b76c9a63560664b95c578320d1ae4508c passed all16 CI44530971712
+jobs. Downloaded artifact14535286392 SHA256
+5511716a4d3af9dd58d6bcae56685722a9a7907491ac0832c04f355e98e3cd68
+matches the exact head/job/digest/module/statement sets. CI14595/16183
+statements,4232/5384 branches; only known prompts.py501-502 differed from local
+coverage with no branch delta. This gate closed before Part09 runtime edits.

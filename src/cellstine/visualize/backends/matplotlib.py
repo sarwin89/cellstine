@@ -123,11 +123,14 @@ _COVALENT_RADII_ANGSTROM = {
 }
 
 
-def _pyplot():
+def _pyplot(*, show: bool = False):
+    """Use Agg for exports; respect the configured backend when showing."""
+
     try:
         import matplotlib
 
-        matplotlib.use("Agg", force=True)
+        if not show:
+            matplotlib.use("Agg", force=True)
         import matplotlib.pyplot as plt
 
         return plt
@@ -302,7 +305,7 @@ def plot_structure_multiview(
     is a rotation and therefore moves no atom relative to another.
     """
 
-    plt = _pyplot()
+    plt = _pyplot(show=show)
     positions = np.asarray(record.positions_cartesian, dtype=float)
     lattice = np.asarray(record.lattice, dtype=float)
     if direction is None:
@@ -328,75 +331,77 @@ def plot_structure_multiview(
     colors = {symbol: _PALETTE[index % len(_PALETTE)] for index, symbol in enumerate(unique_species)}
 
     fig = plt.figure(figsize=(13, 10), constrained_layout=True)
-    heading = title or record.comment or "CELLSTINE structure view"
-    if direction is not None:
-        heading = f"{heading}  |  observed along the {direction.label}"
-    fig.suptitle(heading, fontsize=15, fontweight="bold")
-    axes_2d = [
-        (fig.add_subplot(2, 2, 1), (0, 1), *panel_names[0]),
-        (fig.add_subplot(2, 2, 2), (0, 2), *panel_names[1]),
-        (fig.add_subplot(2, 2, 3), (1, 2), *panel_names[2]),
-    ]
+    try:
+        heading = title or record.comment or "CELLSTINE structure view"
+        if direction is not None:
+            heading = f"{heading}  |  observed along the {direction.label}"
+        fig.suptitle(heading, fontsize=15, fontweight="bold")
+        axes_2d = [
+            (fig.add_subplot(2, 2, 1), (0, 1), *panel_names[0]),
+            (fig.add_subplot(2, 2, 2), (0, 2), *panel_names[1]),
+            (fig.add_subplot(2, 2, 3), (1, 2), *panel_names[2]),
+        ]
 
-    handles_by_species: dict[str, object] = {}
-    for ax, projection, panel_title, x_label, y_label in axes_2d:
-        depth_axis = 3 - projection[0] - projection[1]
-        drawn = species_depth_order(species, positions, depth_axis, unique_species)
-        for depth_index, symbol in enumerate(drawn):
+        handles_by_species: dict[str, object] = {}
+        for ax, projection, panel_title, x_label, y_label in axes_2d:
+            depth_axis = 3 - projection[0] - projection[1]
+            drawn = species_depth_order(species, positions, depth_axis, unique_species)
+            for depth_index, symbol in enumerate(drawn):
+                mask = species == symbol
+                handle = ax.scatter(
+                    positions[mask, projection[0]],
+                    positions[mask, projection[1]],
+                    s=_marker_size(str(symbol), projection="2d"),
+                    alpha=0.9,
+                    label=f"{symbol} (r={_atomic_radius(str(symbol)):.2f} A)",
+                    color=colors[str(symbol)],
+                    edgecolor="white",
+                    linewidth=0.55,
+                    zorder=3 + depth_index,
+                )
+                handles_by_species.setdefault(str(symbol), handle)
+            _draw_projected_cell(ax, lattice, projection, label="unit cell")
+            _set_equal_2d(ax, positions[:, projection[0]], positions[:, projection[1]])
+            ax.set_title(panel_title)
+            ax.set_xlabel(x_label)
+            ax.set_ylabel(y_label)
+            ax.grid(True, linewidth=0.4, alpha=0.35)
+
+        ax_3d = fig.add_subplot(2, 2, 4, projection="3d")
+        for symbol in unique_species:
             mask = species == symbol
-            handle = ax.scatter(
-                positions[mask, projection[0]],
-                positions[mask, projection[1]],
-                s=_marker_size(str(symbol), projection="2d"),
+            ax_3d.scatter(
+                positions[mask, 0],
+                positions[mask, 1],
+                positions[mask, 2],
+                s=_marker_size(str(symbol), projection="3d"),
                 alpha=0.9,
                 label=f"{symbol} (r={_atomic_radius(str(symbol)):.2f} A)",
                 color=colors[str(symbol)],
                 edgecolor="white",
-                linewidth=0.55,
-                zorder=3 + depth_index,
+                linewidth=0.45,
             )
-            handles_by_species.setdefault(str(symbol), handle)
-        _draw_projected_cell(ax, lattice, projection, label="unit cell")
-        _set_equal_2d(ax, positions[:, projection[0]], positions[:, projection[1]])
-        ax.set_title(panel_title)
-        ax.set_xlabel(x_label)
-        ax.set_ylabel(y_label)
-        ax.grid(True, linewidth=0.4, alpha=0.35)
+        _draw_3d_cell(ax_3d, lattice)
+        _set_equal_3d(ax_3d, positions, _cell_corners(lattice))
+        ax_3d.set_title("3D overview")
+        ax_3d.set_xlabel(axis_labels[0])
+        ax_3d.set_ylabel(axis_labels[1])
+        ax_3d.set_zlabel(axis_labels[2])
+        ax_3d.view_init(elev=22, azim=-55)
 
-    ax_3d = fig.add_subplot(2, 2, 4, projection="3d")
-    for symbol in unique_species:
-        mask = species == symbol
-        ax_3d.scatter(
-            positions[mask, 0],
-            positions[mask, 1],
-            positions[mask, 2],
-            s=_marker_size(str(symbol), projection="3d"),
-            alpha=0.9,
-            label=f"{symbol} (r={_atomic_radius(str(symbol)):.2f} A)",
-            color=colors[str(symbol)],
-            edgecolor="white",
-            linewidth=0.45,
-        )
-    _draw_3d_cell(ax_3d, lattice)
-    _set_equal_3d(ax_3d, positions, _cell_corners(lattice))
-    ax_3d.set_title("3D overview")
-    ax_3d.set_xlabel(axis_labels[0])
-    ax_3d.set_ylabel(axis_labels[1])
-    ax_3d.set_zlabel(axis_labels[2])
-    ax_3d.view_init(elev=22, azim=-55)
+        # The panels draw the species in depth order, which differs from panel to
+        # panel; the legend keeps the order of the file so it reads the same way.
+        handles = [handles_by_species[str(symbol)] for symbol in unique_species]
+        labels = [f"{symbol} (r={_atomic_radius(str(symbol)):.2f} A)" for symbol in unique_species]
+        fig.legend(handles, labels, loc="lower center", ncol=min(len(labels), 6), frameon=True)
 
-    # The panels draw the species in depth order, which differs from panel to
-    # panel; the legend keeps the order of the file so it reads the same way.
-    handles = [handles_by_species[str(symbol)] for symbol in unique_species]
-    labels = [f"{symbol} (r={_atomic_radius(str(symbol)):.2f} A)" for symbol in unique_species]
-    fig.legend(handles, labels, loc="lower center", ncol=min(len(labels), 6), frameon=True)
-
-    output = Path(output_path).resolve()
-    output.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output, dpi=220, bbox_inches="tight")
-    if show:  # pragma: no cover - interactive user convenience
-        plt.show()
-    plt.close(fig)
+        output = Path(output_path).resolve()
+        output.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(output, dpi=220, bbox_inches="tight")
+        if show:  # pragma: no cover - interactive user convenience
+            plt.show()
+    finally:
+        plt.close(fig)
     return MatplotlibRun(output_path=output, item_count=record.natoms, visualization_type="structure_multiview")
 
 
@@ -406,6 +411,10 @@ def _read_moire_summary(
     """Return plotting rows copied from validated native Gram JSON v2."""
 
     payload = read_results(results_file)
+    candidates = payload["candidates"]
+    if indices is not None:
+        wanted = {int(index) for index in indices}
+        candidates = [candidate for candidate in candidates if int(candidate["index"]) in wanted]
     rows = [
         {
             "index": candidate["index"],
@@ -428,11 +437,8 @@ def _read_moire_summary(
             "bottom_matrix": candidate["bottom_matrix"],
             "shared_lattice": candidate["shared_lattice"],
         }
-        for candidate in payload["candidates"]
+        for candidate in candidates
     ]
-    if indices is not None:
-        wanted = {int(index) for index in indices}
-        rows = [row for row in rows if int(row["index"]) in wanted]
     if not rows:
         raise ValueError("no candidates were selected for visualization")
     return "bilayer", rows, payload
@@ -448,7 +454,7 @@ def plot_moire_summary(
 ) -> MatplotlibRun:
     """Write a static summary plot for validated native Gram JSON v1."""
 
-    plt = _pyplot()
+    plt = _pyplot(show=show)
     results_type, rows, payload = _read_moire_summary(results_file, indices)
     indexes = np.asarray([row["index"] for row in rows], dtype=float)
     ranks = np.asarray([row["rank"] for row in rows], dtype=float)
@@ -462,95 +468,98 @@ def plot_moire_summary(
     atoms = np.asarray([row["atom_count"] for row in rows], dtype=float)
     pareto = np.asarray([row["pareto_optimal"] for row in rows], dtype=bool)
 
-    fig, axes = plt.subplots(2, 2, figsize=(12, 9), constrained_layout=True)
-    metadata = payload["metadata"]
-    search = payload["search"]
-    resolved_title = title or (
-        f"CELLSTINE {results_type} Gram commensuration summary "
-        f"({metadata['engine']}, max length {float(search['max_length']):g} Angstrom)"
-    )
-    fig.suptitle(resolved_title, fontsize=15, fontweight="bold")
+    fig = plt.figure(figsize=(12, 9), constrained_layout=True)
+    try:
+        axes = fig.subplots(2, 2)
+        metadata = payload["metadata"]
+        search = payload["search"]
+        resolved_title = title or (
+            f"CELLSTINE {results_type} Gram commensuration summary "
+            f"({metadata['engine']}, max length {float(search['max_length']):g} Angstrom)"
+        )
+        fig.suptitle(resolved_title, fontsize=15, fontweight="bold")
 
-    scatter = axes[0, 0].scatter(angles, relative_strain_percent, c=atoms, cmap="viridis", s=48, edgecolor="white", linewidth=0.4)
-    axes[0, 0].set_title("Relative principal strain by twist angle")
-    axes[0, 0].set_xlabel("twist angle (degrees)")
-    axes[0, 0].set_ylabel("max |relative principal strain| (%)")
-    axes[0, 0].grid(True, linewidth=0.4, alpha=0.35)
-    colorbar = fig.colorbar(scatter, ax=axes[0, 0])
-    colorbar.set_label("total atoms")
+        scatter = axes[0, 0].scatter(angles, relative_strain_percent, c=atoms, cmap="viridis", s=48, edgecolor="white", linewidth=0.4)
+        axes[0, 0].set_title("Relative principal strain by twist angle")
+        axes[0, 0].set_xlabel("twist angle (degrees)")
+        axes[0, 0].set_ylabel("max |relative principal strain| (%)")
+        axes[0, 0].grid(True, linewidth=0.4, alpha=0.35)
+        colorbar = fig.colorbar(scatter, ax=axes[0, 0])
+        colorbar.set_label("total atoms")
 
-    axes[0, 1].bar(indexes, bottom_atoms, color="#264653", label="bottom atoms")
-    axes[0, 1].bar(indexes, top_atoms, bottom=bottom_atoms, color="#e76f51", label="top atoms")
-    axes[0, 1].set_title("Candidate atom counts")
-    axes[0, 1].set_xlabel("candidate index")
-    axes[0, 1].set_ylabel("atoms")
-    axes[0, 1].grid(True, axis="y", linewidth=0.4, alpha=0.35)
-    axes[0, 1].legend()
+        axes[0, 1].bar(indexes, bottom_atoms, color="#264653", label="bottom atoms")
+        axes[0, 1].bar(indexes, top_atoms, bottom=bottom_atoms, color="#e76f51", label="top atoms")
+        axes[0, 1].set_title("Candidate atom counts")
+        axes[0, 1].set_xlabel("candidate index")
+        axes[0, 1].set_ylabel("atoms")
+        axes[0, 1].grid(True, axis="y", linewidth=0.4, alpha=0.35)
+        axes[0, 1].legend()
 
-    for mask, color, label in (
-        (pareto, "#2a9d8f", "Pareto optimal"),
-        (~pareto, "#8d99ae", "non-Pareto"),
-    ):
-        if np.any(mask):
-            axes[1, 0].scatter(
-                ranks[mask],
-                relative_strain_percent[mask],
-                c=color,
-                s=52,
-                edgecolor="white",
-                linewidth=0.4,
-                label=label,
-            )
-    axes[1, 0].axhline(
-        100.0 * (float(search["top_strain"]) + float(search["bottom_strain"])),
-        color="#e76f51",
-        linestyle="--",
-        linewidth=1.0,
-        label="combined strain budget",
-    )
-    axes[1, 0].set_title("Rank and Pareto status")
-    axes[1, 0].set_xlabel("rank")
-    axes[1, 0].set_ylabel("max |relative principal strain| (%)")
-    axes[1, 0].grid(True, linewidth=0.4, alpha=0.35)
-    axes[1, 0].legend(fontsize=8)
+        for mask, color, label in (
+            (pareto, "#2a9d8f", "Pareto optimal"),
+            (~pareto, "#8d99ae", "non-Pareto"),
+        ):
+            if np.any(mask):
+                axes[1, 0].scatter(
+                    ranks[mask],
+                    relative_strain_percent[mask],
+                    c=color,
+                    s=52,
+                    edgecolor="white",
+                    linewidth=0.4,
+                    label=label,
+                )
+        axes[1, 0].axhline(
+            100.0 * (float(search["top_strain"]) + float(search["bottom_strain"])),
+            color="#e76f51",
+            linestyle="--",
+            linewidth=1.0,
+            label="combined strain budget",
+        )
+        axes[1, 0].set_title("Rank and Pareto status")
+        axes[1, 0].set_xlabel("rank")
+        axes[1, 0].set_ylabel("max |relative principal strain| (%)")
+        axes[1, 0].grid(True, linewidth=0.4, alpha=0.35)
+        axes[1, 0].legend(fontsize=8)
 
-    first = rows[0]
-    certification = (
-        "borderline"
-        if first["loewner_borderline"]
-        else "certified"
-        if first["loewner_certified"]
-        else "uncertified"
-    )
-    axes[1, 1].axis("off")
-    axes[1, 1].set_title("Selected candidate provenance")
-    axes[1, 1].text(
-        0.0,
-        1.0,
-        "\n".join(
-            [
-                f"candidate {int(first['index'])}, rank {int(first['rank'])}, "
-                f"Pareto={bool(first['pareto_optimal'])}",
-                f"Loewner certification: {certification}",
-                f"top matrix: {first['top_matrix']}",
-                f"bottom matrix: {first['bottom_matrix']}",
-                f"shared lattice: {first['shared_lattice']}",
-                f"symmetric used={metadata['symmetric_used']}; "
-                f"fallback={metadata['symmetric_fallback'] or 'none'}",
-            ]
-        ),
-        transform=axes[1, 1].transAxes,
-        va="top",
-        ha="left",
-        fontsize=9,
-        family="monospace",
-        wrap=True,
-    )
+        first = rows[0]
+        certification = (
+            "borderline"
+            if first["loewner_borderline"]
+            else "certified"
+            if first["loewner_certified"]
+            else "uncertified"
+        )
+        axes[1, 1].axis("off")
+        axes[1, 1].set_title("Selected candidate provenance")
+        axes[1, 1].text(
+            0.0,
+            1.0,
+            "\n".join(
+                [
+                    f"candidate {int(first['index'])}, rank {int(first['rank'])}, "
+                    f"Pareto={bool(first['pareto_optimal'])}",
+                    f"Loewner certification: {certification}",
+                    f"top matrix: {first['top_matrix']}",
+                    f"bottom matrix: {first['bottom_matrix']}",
+                    f"shared lattice: {first['shared_lattice']}",
+                    f"symmetric used={metadata['symmetric_used']}; "
+                    f"fallback={metadata['symmetric_fallback'] or 'none'}",
+                ]
+            ),
+            transform=axes[1, 1].transAxes,
+            va="top",
+            ha="left",
+            fontsize=9,
+            family="monospace",
+            wrap=True,
+        )
 
-    output = Path(output_path).resolve()
-    output.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output, dpi=220, bbox_inches="tight")
-    if show:  # pragma: no cover - interactive user convenience
-        plt.show()
-    plt.close(fig)
+        output = Path(output_path).resolve()
+        output.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(output, dpi=220, bbox_inches="tight")
+        if show:  # pragma: no cover - interactive user convenience
+            plt.show()
+    finally:
+        plt.close(fig)
     return MatplotlibRun(output_path=output, item_count=len(rows), visualization_type=f"{results_type}_summary")

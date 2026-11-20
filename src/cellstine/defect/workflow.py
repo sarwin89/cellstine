@@ -249,8 +249,9 @@ class Defect(
 
         The cell is chosen for the distance it puts between the defect and its
         periodic images, not for the number of atoms: every sublattice of the
-        host lattice of a given index is enumerated in Hermite normal form and
-        the roundest one wins, which is usually not a plain repeat.  With
+        host lattice of a given index is enumerated in Hermite normal form.
+        Image separation is ranked first, followed by a heuristic shape
+        tie-breaker; the result need not be a plain repeat. With
         ``min_image_distance`` the smallest cell that reaches the requested
         separation is written; with ``max_cells`` the best cell of at most that
         many host cells is written instead.  A slab is treated as periodic in

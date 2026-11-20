@@ -72,3 +72,14 @@ def write_indented_json(handle: TextIO, value: Any, *, allow_nan: bool = True) -
         handle.write(json.dumps(value, indent=2, allow_nan=allow_nan))
     else:
         json.dump(value, handle, indent=2, allow_nan=allow_nan)
+
+
+def _dumps_inline_json(value: Any) -> str:
+    """Encode JSON without literal HTML raw-script delimiters.
+
+    HTML parses script boundaries before JavaScript parses quoted strings.
+    Escaping every less-than sign keeps those boundaries out of data while
+    preserving the value decoded by JavaScript (including rich-text labels).
+    """
+
+    return json.dumps(value).replace("<", "\\u003c")

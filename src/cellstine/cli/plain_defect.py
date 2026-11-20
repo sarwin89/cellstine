@@ -131,8 +131,9 @@ def add_defect_group(groups: argparse._SubParsersAction[argparse.ArgumentParser]
             "Choose and write the host supercell a point defect should be made in. The cell is "
             "chosen for the distance it puts between the defect and its periodic images, not for "
             "the number of atoms: every sublattice of the host lattice of a given size is "
-            "enumerated in Hermite normal form and the roundest one wins, which is usually not a "
-            "plain repeat. A slab is measured in the plane only, since vacuum already separates "
+            "enumerated in Hermite normal form. Image separation is ranked first, followed by a "
+            "heuristic shape tie-breaker; the result need not be a plain repeat. "
+            "A slab is measured in the plane only, since vacuum already separates "
             "its images along c."
         ),
     )

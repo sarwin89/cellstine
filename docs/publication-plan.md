@@ -14,7 +14,7 @@ Part03b identified release follow-ups in [the shared-infrastructure report](opti
 
 The user-authorized [portable I/O follow-up](optimization/portable-io-options.md) plans optional versioned no-pickle NPZ while retaining JSON compatibility. Before including it in a candidate, verify archive validation, exact values/order, legacy JSON consumers, manifest routing, generation/plot readbacks and Windows/Linux/macOS tests with supported Python/NumPy combinations. Part05d commit8bfcf17 passed local full/package/installed checks and all16 exact-head CI41777781487 jobs. All nine Windows/Linux/macOS format lanes passed36cases each (2optional-render skips), with NumPy1.26.4/2.2.6/2.5.4 tested across their designated Python versions. Coverage artifact13298477050 has verified head and ZIPdigest; supported-platform format execution is established for this checkpoint, not every future candidate or optional dependency. Reassess the version proposal if the final candidate adds this new format capability.
 
-Read-only public metadata check on 2026-10-30: `https://pypi.org/pypi/cellstine/json` returned HTTP 404. No public version history was read back. This does not establish project-name availability or maintainer access, and no account or publisher configuration was changed. If a new project is required, PyPI documents a [pending trusted publisher](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/); configuring one does not reserve the name, so availability must still be checked at the later authorized publication step.
+Read-only public metadata checks on 2026-10-30 and 2026-11-20: `https://pypi.org/pypi/cellstine/json` returned HTTP 404. No public version history was read back. This does not establish project-name availability or maintainer access, and no account or publisher configuration was changed. If a new project is required, PyPI documents a [pending trusted publisher](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/); configuring one does not reserve the name, so availability must still be checked at the later authorized publication step.
 
 The2026-11-05 user-authorized NPZ default changes the default bilayer and
 assembly filename/artifact to `results.npz`/`results_npz`. Preserve explicit JSON
@@ -68,6 +68,16 @@ Include this correction in candidate release notes, together with clamped
 negative preview shown_sites and additive requested interstitial_saddles/
 preserve_vacuum boolean manifest fields. Saved analyses remain reused according
 to existing policy; those fields describe the request, not fresh enumeration.
+
+Part09 repairs HTML raw-script data boundaries, repeated marker/selected-row
+preparation, figure cleanup and the configured-backend --show policy. Default
+static export retains Agg; requesting show does not guarantee a GUI on a
+headless or previously configured Agg process. The independent reference now
+handles admitted-vector empty searches. Scientific supercell docs describe the
+existing shape heuristic accurately, without changing its algorithm. Include
+these correctness/resource changes in release notes. The comprehensive
+[release preparation audit](optimization/release-preparation-audit.md) keeps all
+14 investigated source limitations and the separate main-alert boundary visible.
 
 ## Artifact validation
 

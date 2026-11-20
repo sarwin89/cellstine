@@ -88,7 +88,7 @@ def _short_vectors(basis: np.ndarray, radius: float) -> np.ndarray:
             vector = basis @ np.array([i, j], dtype=float)
             if float(vector @ vector) <= radius * radius * (1.0 + 1e-12):
                 keep.append((i, j))
-    return np.asarray(keep, dtype=np.int64)
+    return np.asarray(keep, dtype=np.int64).reshape(-1, 2)
 
 
 def _right_handed_pairs(coefficients: np.ndarray) -> np.ndarray:

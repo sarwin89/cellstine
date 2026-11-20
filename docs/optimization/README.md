@@ -21,21 +21,23 @@ The generator preserves evidence only when the normalized source module is uncha
 
 Passing tests or obtaining high coverage never automatically marks a function reviewed. Completion must also check external dependencies/callers and the actual reasoning in each part report.
 
-At the Part08c local checkpoint, the ledger contains **1,237 functions**:
-**817 reviewed unchanged**, **350 optimized and verified**,
-**14 investigated deferrals** and **56 pending reviews**.
-Thus **1,181 functions have inspection evidence**. Part08c completes the16
-pending defect bodies and re-reviews8 generation bodies, adding1 private helper.
-It bounds pair-discovery temporaries, corrects manual displayed-site resolution
-that could remove the wrong atom, clamps preview counts and records requested
-saddle/vacuum options. The193 affected tests,44 new cases,25-body independent
-review,108 pair-array/12 complete-site predecessor comparisons,8 measured cases,
-frozen 4072-test full run (4 skips,81 warnings), wheel/sdist/Twine
-and three installed environments pass. Existing numeric/output-memory and
-secondary roundness limitations remain explicit. Final archive readback/dev push
-precedes exact-head CI/downloaded coverage. Part08b is closed at cda1bc5 with
-all16 CI44522433664 jobs and verified artifact14529048829.
-Pending:23 visualization,12 CLI,21 benchmark helpers. Overall work is incomplete.
+At the Part09 local checkpoint the ledger contains **1,238 functions**, all with
+inspection evidence: **865 reviewed unchanged**, **359 optimized and verified**,
+**14 investigated deferrals**, **0 pending reviews**. Part09 independently reviews
+96 complete bodies, including the final56 pending bodies and one new helper.
+The201 affected tests,41 new cases, refreshed peer review,6 quiet measured cases,
+explicit byte/value/PNG/AST predecessor comparisons, frozen 4113-test full run
+(4 skips,81 dependency warnings), wheel/sdist/Twine and three installed
+environments pass. Exact-head CI/downloaded coverage is a separate commit gate.
+
+Function inspection is complete. The [release preparation audit](release-preparation-audit.md)
+records initial/current behavior, measured improvements, all14 concrete retained
+limitations, the main-versus-dev security boundary and publication scope. It
+does not turn investigated limitations into correctness claims. Final artifact
+readback, dev CI and the requirement-level completion audit remain separately
+verifiable; publication, main integration and version selection are future
+maintainer actions. Part08c is closed with all16 CI44530971712 jobs and verified
+artifact14535286392 before this batch's source changes.
 
 ## Dependency order and evidence
 
@@ -73,7 +75,8 @@ The full sequence is in [the implementation plan](../superpowers/plans/2026-10-3
 | 08a | Bounded plane requests, ordered orbit indexing, saved-input selection and physical defect generation | [part-08a-defect-selection-generation.md](part-08a-defect-selection-generation.md) |
 | 08b | Preallocated HNF arrays, bounded host-vector grids and honest presentation limits | [part-08b-supercell-resources.md](part-08b-supercell-resources.md) |
 | 08c | Bounded ordered divacancy discovery, correct displayed-site selection and workflow request metadata | [part-08c-defect-pair-resources.md](part-08c-defect-pair-resources.md) |
-| Remaining | Numerical-domain follow-ups and remaining shared code, moire, interfaces, adsorbates, defects, symmetry, visualization and CLI/support | Pending dependency-ordered review |
+| 09 | Complete visualization/CLI/reference review, inline data boundaries, owned figures and selected-row resources | [part-09-final-source-review.md](part-09-final-source-review.md) |
+| Final audit | Inspection evidence for every callable, retained limitations and release/publication boundaries | [release-preparation-audit.md](release-preparation-audit.md) |
 
 Portable-format follow-up: [I/O measurements and optional NPZ plan](portable-io-options.md). The prototype investigation is followed by the production implementation and evidence in Part05d.
 

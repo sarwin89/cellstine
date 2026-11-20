@@ -14,12 +14,12 @@ of index ``n`` is the row span of exactly one integer matrix in Hermite normal
 form: upper triangular, positive diagonal with product ``n``, and every
 off-diagonal entry reduced modulo the diagonal entry of its column.  Enumerating
 those matrices therefore enumerates the possible supercells once each, with no
-sublattice missed and none repeated, and the best of them is the roundest cell
-of that size.  The result is usually *not* a diagonal repeat: an fcc primitive
-cell repeated ``2x2x2`` separates the images by 2 a, while the eight-cell
-sublattice that gives the conventional cubic cell doubled separates them by
-``2 a / sqrt 2 * sqrt 2`` -- the search finds whichever is larger without being
-told about the crystal system.
+sublattice missed and none repeated. Image separation is ranked first; shape
+is a heuristic secondary tie-breaker. A useful choice need not be a diagonal
+repeat: four fcc primitive cells can form the conventional cubic cell, whose
+image separation is ``a``. Four-cell diagonal repeats retain a shortest
+translation of ``a / sqrt 2``. The search uses the actual lattice rather than
+being told about the crystal system.
 
 Two things keep the answer honest rather than merely arithmetic:
 
@@ -483,16 +483,18 @@ def reduced_supercell_matrix(
 def _roundest(
     lattice: np.ndarray, matrices: Sequence[np.ndarray], *, plane: bool
 ) -> np.ndarray:
-    """Pick the roundest cell among sublattices with the same shortest vector.
+    """Rank a shape shortlist among cells with the same shortest vector.
 
     Several sublattices of an index often share the same image separation --
     for face-centred cubic aluminium four primitive cells reach ``a`` in more
     than one way -- and they are not equally good cells to compute in.  The one
-    kept is the most orthogonal: since they all enclose the same volume, that is
-    the one whose reduced basis vectors have the smallest product, by Hadamard's
-    inequality, and then the shortest longest vector.  Ties left after that are
-    broken by the entries of the matrix, so the answer never depends on the
-    order the candidates were enumerated in.
+    kept minimizes the reduced basis-vector product within the shortlist,
+    followed by its longest vector and absolute matrix entries. At fixed
+    volume the product measures orthogonality by Hadamard's inequality.
+    Larger sets are first shortlisted by unreduced basis-vector product.
+    That cheap score does not certify global reduced-basis roundness, and
+    shortlist ties can depend on enumeration order. Image separation is
+    selected separately and is not replaced by this secondary heuristic.
     """
 
     array = as_lattice(lattice)
