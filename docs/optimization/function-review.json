@@ -865,10 +865,10 @@
       "qualified_name": "__getattr__",
       "line": 52,
       "end_line": 59,
-      "module_sha256": "0c9bb0a223cf2d75f7a685bdf841155e416070b94fa898f42e190533d3e449f4",
+      "module_sha256": "b4f86fa36f0f47435a8bef67426196f0c1187eb62c0af4d0b5c79d61c0067a77",
       "status": "reviewed—unchanged",
       "reason": "Recognized public names import lazily and cache only successful lookups; missing names raise AttributeError. Current mapping and __all__ agree on all19 exported names; imported dependency failures propagate unchanged.",
-      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain"
+      "evidence": "docs/optimization/part-03h-shared-record-surface.md;65complete callable independent source-hashed reviews;753focused/1skip on frozen runtime plus3752full/4skips/81warnings;285Pythonfreeze; exact predecessor/physical oracles and interleaved timing/allocation evidence;wheel/sdist/Twine/3installedenvs;final support sdist refresh and exact-headCI artifact before next runtime batch;seven explicit investigated algorithm deferrals remain; v3.1.0 metadata update leaves the callable body unchanged"
     },
     {
       "id": "src/cellstine/adsorbate/adsorbate.py::_contact_summary",

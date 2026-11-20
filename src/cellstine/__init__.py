@@ -46,7 +46,7 @@ __all__ = [
     "VisualizationRun",
 ]
 
-__version__ = "3.0.2"
+__version__ = "3.1.0"
 
 
 def __getattr__(name: str):
