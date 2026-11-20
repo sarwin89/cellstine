@@ -11,6 +11,8 @@ This folder contains the public documentation for CELLSTINE. Start with the quic
 - [Technical algorithms map](technical/algorithms.md)
 - [Moire search performance](moire-performance.md)
 - [Release checklist](release.md)
+- [Release preparation audit and known limitations](optimization/release-preparation-audit.md)
+- [Package publication plan](publication-plan.md)
 
 ## Workflows
 
