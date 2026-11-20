@@ -54,7 +54,9 @@ Both static renderers now close their own figure in finally through plotting,
 export and show. An existing summary construction leak was caught during peer
 review: plt.subplots registered a figure before try. It is now created first,
 with fig.subplots protected inside try. Save, show and construction failures
-propagate and leave caller-owned figures open.
+propagate; cleanup closes only the figure returned to this renderer, without
+calling close("all"). The established backend-selection policy remains
+process-global, distinct from owned-figure cleanup.
 
 Review also confirmed a preexisting --show bug: unconditional forceAgg defeated
 the documented GUI request. Default export still selects Agg; requested show
@@ -147,3 +149,21 @@ separate required evidence; their status must be read from that commit rather
 than inferred from this source-tree report. The completion readback also checks
 the objective requirement by requirement. No main merge, tag, upload, publisher
 configuration or release is authorized by these local gates.
+
+## Final source checkpoint closure (2026-11-20)
+
+Runtime source commit `37d2137dbe24216701f5b7c706c1ebd051175ef3` passed all16 jobs of
+[CI44666671915](https://github.com/sarwin89/cellstine/actions/runs/44666671915).
+Downloaded coverage artifact14599036843 SHA256
+`114e2048d98dbafa2ab88ae5be103a67d8efa619f92e889c78fc63cf45346afc` matches the head/job/digest/module/statement sets.
+CI coverage:14606/16192 statements,4237/5386 branches; only the known
+prompts.py501-502 fallback differs from local coverage, with no branch delta.
+The canonical ledger contains1238 inspected callables,0 pending and14 concrete
+investigated deferrals. Full source4113tests/4skips/81warnings,201affected cases,
+independent96-body review and package/installed/readback gates passed.
+
+The documentation closure records those results and retains the same299
+Python source hashes. Completion for the latest dev head also requires its
+own CI/readback; neither this source checkpoint nor its coverage percentage
+certifies the14 retained numerical/surface limitations. No main merge,
+publication, publisher configuration, tag or release was performed.

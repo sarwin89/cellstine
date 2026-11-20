@@ -55,7 +55,7 @@ shape to(0,2), keeping brute-force arithmetic independent of production search.
   focused/full coverage/build/Twine/3installed/native/HTML data readbacks, then
   scoped ledger/report/publish-plan updates and final support-only sdist/raw
   archive comparison. Add portable/minimum NumPy coverage for new regressions.
-- [ ] Scoped commit and push dev;16 exact-head CI/downloaded coverage closure.
+- [x] Scoped commit and push dev;16 exact-head CI/downloaded coverage closure.
   Only afterward perform the final requirement-by-requirement audit, re-query
   GitHub scan alert state, inspect14 investigated limitations, source/package/
   documentation boundaries, publication plan and initial-versus-current report.
@@ -66,4 +66,22 @@ release, PyPI/TestPyPI upload, alert dismissal or artifact publication.
 
 Review confirmed --show was defeated by unconditional Agg. Keep default headless export; pass requested show policy to _pyplot so configured interactive backends can be used. Headless/previously configured Agg remains Agg; no promise of GUI backend restoration. Add backend-selection and renderer-forwarding regressions.
 
-Local299-Python full/package/installed gates pass; scoped integration, exact-headCI/artifact and final objective audit remain separate.
+Local299-Python full/package/installed gates, runtime integration, exact-head16CI/artifact and source objective audit pass; final documentation/archive/latest-head readback is recorded separately.
+
+## Final source checkpoint closure (2026-11-20)
+
+Runtime source commit `37d2137dbe24216701f5b7c706c1ebd051175ef3` passed all16 jobs of
+[CI44666671915](https://github.com/sarwin89/cellstine/actions/runs/44666671915).
+Downloaded coverage artifact14599036843 SHA256
+`114e2048d98dbafa2ab88ae5be103a67d8efa619f92e889c78fc63cf45346afc` matches the head/job/digest/module/statement sets.
+CI coverage:14606/16192 statements,4237/5386 branches; only the known
+prompts.py501-502 fallback differs from local coverage, with no branch delta.
+The canonical ledger contains1238 inspected callables,0 pending and14 concrete
+investigated deferrals. Full source4113tests/4skips/81warnings,201affected cases,
+independent96-body review and package/installed/readback gates passed.
+
+The documentation closure records those results and retains the same299
+Python source hashes. Completion for the latest dev head also requires its
+own CI/readback; neither this source checkpoint nor its coverage percentage
+certifies the14 retained numerical/surface limitations. No main merge,
+publication, publisher configuration, tag or release was performed.

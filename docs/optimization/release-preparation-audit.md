@@ -110,11 +110,39 @@ The canonical ledger now records **1238 functions with inspection evidence**:
 **14 investigated deferrals**, **0 pending**. This batch reviews96 bodies and
 adds57 newly inspected bodies, including one private helper. All-function
 inspection is complete; it does not remove the14 documented limitations or
-certify an unrestricted release. [The comprehensive audit](release-preparation-audit.md)
-describes the initial/current boundaries and outstanding maintainer decisions.
+certify an unrestricted release. The sections above describe the initial/current boundaries and outstanding maintainer decisions.
 
 For a candidate commit, all16 exact-head CI jobs and downloaded coverage remain
 separate required evidence; their status must be read from that commit rather
 than inferred from this source-tree report. The completion readback also checks
 the objective requirement by requirement. No main merge, tag, upload, publisher
 configuration or release is authorized by these local gates.
+
+## Final source checkpoint closure (2026-11-20)
+
+Runtime source commit `37d2137dbe24216701f5b7c706c1ebd051175ef3` passed all16 jobs of
+[CI44666671915](https://github.com/sarwin89/cellstine/actions/runs/44666671915).
+Downloaded coverage artifact14599036843 SHA256
+`114e2048d98dbafa2ab88ae5be103a67d8efa619f92e889c78fc63cf45346afc` matches the head/job/digest/module/statement sets.
+CI coverage:14606/16192 statements,4237/5386 branches; only the known
+prompts.py501-502 fallback differs from local coverage, with no branch delta.
+The canonical ledger contains1238 inspected callables,0 pending and14 concrete
+investigated deferrals. Full source4113tests/4skips/81warnings,201affected cases,
+independent96-body review and package/installed/readback gates passed.
+
+The documentation closure records those results and retains the same299
+Python source hashes. Completion for the latest dev head also requires its
+own CI/readback; neither this source checkpoint nor its coverage percentage
+certifies the14 retained numerical/surface limitations. No main merge,
+publication, publisher configuration, tag or release was performed.
+
+The public API source audit retained all19 export names/routes and found no
+missing or reordered parameter bindings across115 public methods. Existing
+public dataclass field order is retained. This is a binding audit, not a claim
+of arbitrary semantic equivalence: the authorized NPZ default migration and
+intentional scientific/error corrections are documented separately.
+
+Local package statement coverage expanded from Part01's12044/13948(86.35%)
+to14604/16192(90.19%); branch coverage from3052/4332(70.45%) to
+4237/5386(78.67%). Source/test scope expanded, so these are coverage records,
+not an end-to-end speed or scientific correctness guarantee.
