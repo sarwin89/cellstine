@@ -89,6 +89,8 @@ def execute_namespace(args):
                 bottom_strain=bottom_strain,
                 min_length=args.min_length,
                 max_atoms=args.max_atoms,
+                max_candidates=args.max_candidates,
+                results_format=args.results_format,
                 max_aspect_ratio=args.max_cell_aspect_ratio,
                 min_cell_angle_deg=args.min_cell_angle,
                 max_cell_angle_deg=args.max_cell_angle,
@@ -108,6 +110,7 @@ def execute_namespace(args):
                 interlayer_distance=args.interlayer_distance,
                 vacuum=args.vacuum,
                 workers=args.workers,
+                parallel_backend=args.parallel_backend,
                 output_dir=args.output_dir,
             )
         if args.stage == "stack-search":
@@ -223,6 +226,7 @@ def execute_namespace(args):
                 top_strain=args.top_strain,
                 bottom_strain=args.bottom_strain,
                 preview_limit=args.preview_limit,
+                results_format=args.results_format,
             )
         if args.stage == "kpath":
             spacing = args.spacing

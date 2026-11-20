@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import json
 from html import escape
 from pathlib import Path
 
 import numpy as np
 
 from ...core.directions import ViewDirection
+from ...core.jsonio import _dumps_inline_json
 from ...core.species import expand_species
 from ...io.models import StructureRecord
 from .matplotlib import _atomic_radius
@@ -95,7 +95,11 @@ def write_structure_html(
             }
         },
     }
-    payload["atoms"]["size"] = [max(7.0, min(22.0, 9.0 * _atomic_radius(symbol))) for symbol in payload["atoms"]["text"]]
+    sizes = {
+        symbol: max(7.0, min(22.0, 9.0 * _atomic_radius(symbol)))
+        for symbol in dict.fromkeys(payload["atoms"]["text"])
+    }
+    payload["atoms"]["size"] = [sizes[symbol] for symbol in payload["atoms"]["text"]]
     html = f"""<!doctype html>
 <html lang="en">
 <head>
@@ -106,7 +110,7 @@ def write_structure_html(
 <body>
   <div id="viewer" style="width:100%;height:90vh;"></div>
   <script>
-    const payload = {json.dumps(payload)};
+    const payload = {_dumps_inline_json(payload)};
     const traces = [
       {{
         type: "scatter3d",

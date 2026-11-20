@@ -144,9 +144,17 @@ def _unique_masks(masks: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
 def _fixing_masks(points: np.ndarray, operations: np.ndarray, tolerance: float = 1e-8) -> np.ndarray:
     """Return, for each point, which operations fix it modulo a lattice vector."""
 
-    images = np.einsum("pj,kjl->pkl", np.asarray(points, dtype=float), operations.astype(float))
-    residual = images - np.asarray(points, dtype=float)[:, None, :]
-    return np.all(np.abs(residual - np.rint(residual)) <= tolerance, axis=2)
+    coordinates = np.asarray(points, dtype=float)
+    matrices = operations.astype(float)
+    result = np.empty((len(coordinates), len(matrices)), dtype=bool)
+    block_size = max(1, min(4096, 65536 // max(len(matrices), 1)))
+    # One empty slice retains einsum's existing validation for empty inputs.
+    for start in range(0, max(len(coordinates), 1), block_size):
+        section = coordinates[start : start + block_size]
+        images = np.einsum("pj,kjl->pkl", section, matrices)
+        residual = images - section[:, None, :]
+        result[start : start + block_size] = np.all(np.abs(residual - np.rint(residual)) <= tolerance, axis=2)
+    return result
 
 
 def _stratum_dimensions(points: np.ndarray, operations: np.ndarray) -> np.ndarray:
@@ -250,6 +258,25 @@ def segment_strata(
 _STRATA_CACHE: dict[bytes, tuple[np.ndarray, np.ndarray, list[np.ndarray | None]]] = {}
 
 
+def _copy_grid_result(
+    result: tuple[np.ndarray, np.ndarray, list[np.ndarray | None]],
+) -> tuple[np.ndarray, np.ndarray, list[np.ndarray | None]]:
+    """Keep cached directions private while retaining writable caller copies."""
+    copies: dict[int, np.ndarray] = {}
+    directions: list[np.ndarray | None] = []
+    for direction in result[2]:
+        if direction is None:
+            directions.append(None)
+            continue
+        identity = id(direction)
+        copied = copies.get(identity)
+        if copied is None:
+            copied = direction.copy()
+            copies[identity] = copied
+        directions.append(copied)
+    return result[0], result[1], directions
+
+
 def grid_strata(operations: np.ndarray) -> tuple[np.ndarray, np.ndarray, list[np.ndarray | None]]:
     """Classify every point of the search grid by its stratum.
 
@@ -266,14 +293,15 @@ def grid_strata(operations: np.ndarray) -> tuple[np.ndarray, np.ndarray, list[np
     key = np.ascontiguousarray(operations, dtype=np.int64).tobytes()
     cached = _STRATA_CACHE.get(key)
     if cached is not None:
-        return cached
+        return _copy_grid_result(cached)
 
     denominator = GRID_DENOMINATOR
     span = np.arange(denominator, dtype=np.int64)
     grid = np.stack(np.meshgrid(span, span, span, indexing="ij"), axis=-1).reshape(-1, 3)
     masks = np.zeros((len(grid), len(operations)), dtype=bool)
     for index, matrix in enumerate(operations):
-        masks[:, index] = np.all((grid @ matrix - grid) % denominator == 0, axis=1)
+        # Congruences need only bounded residues, avoiding int64 dot overflow.
+        masks[:, index] = np.all((grid @ (matrix % denominator) - grid) % denominator == 0, axis=1)
     patterns, inverse = _unique_masks(masks)
     dimensions = np.zeros(len(patterns), dtype=np.int64)
     directions: list[np.ndarray | None] = [None] * len(patterns)
@@ -290,4 +318,4 @@ def grid_strata(operations: np.ndarray) -> tuple[np.ndarray, np.ndarray, list[np
     if len(_STRATA_CACHE) >= 4:  # pragma: no cover - a session uses one or two groups
         _STRATA_CACHE.clear()
     _STRATA_CACHE[key] = result
-    return result
+    return _copy_grid_result(result)

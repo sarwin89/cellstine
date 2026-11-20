@@ -197,11 +197,43 @@ def _lexicographic_minimum(stack: np.ndarray) -> np.ndarray:
 
 
 def _first_per_key(keys: np.ndarray) -> np.ndarray:
+    """Sorted index of the first row of every distinct key row."""
+
     if len(keys) == 0:
         return np.zeros(0, dtype=np.int64)
+    if keys.dtype == np.int64 and keys.ndim == 2:
+        first = _first_per_hashed_key(keys)
+        if first is not None:
+            return first
     contiguous = np.ascontiguousarray(keys)
     view = contiguous.view(np.dtype((np.void, keys.dtype.itemsize * keys.shape[1]))).ravel()
     _, first = np.unique(view, return_index=True)
+    return np.sort(first)
+
+
+def _first_per_hashed_key(keys: np.ndarray) -> np.ndarray | None:
+    """:func:`_first_per_key` through a 64-bit hash, or ``None`` on a collision.
+
+    ``np.unique`` on a void view sorts with a generic byte comparison; a
+    stable sort of one integer hash is several times cheaper.  Every row is
+    then compared with the first row of its hash group, so a collision between
+    two different keys is detected exactly and handed back to the slow path.
+    """
+
+    mixed = np.zeros(len(keys), dtype=np.uint64)
+    multiplier = np.uint64(0x9E3779B97F4A7C15)
+    shift = np.uint64(31)
+    with np.errstate(over="ignore"):
+        for column in np.ascontiguousarray(keys).view(np.uint64).T:
+            mixed = (mixed ^ column) * multiplier
+            mixed ^= mixed >> shift
+    order = np.argsort(mixed, kind="stable")
+    sorted_hashes = mixed[order]
+    starts = np.flatnonzero(np.concatenate([[True], sorted_hashes[1:] != sorted_hashes[:-1]]))
+    first = order[starts]
+    lengths = np.diff(np.append(starts, len(order)))
+    if not np.array_equal(keys[order], keys[np.repeat(first, lengths)]):
+        return None
     return np.sort(first)
 
 
@@ -215,19 +247,28 @@ def _vector_orbit_representatives(vectors: np.ndarray, group: np.ndarray) -> np.
 def _fold_sublattices(first: np.ndarray, second: np.ndarray, group: np.ndarray):
     if len(first) == 0 or len(group) <= 1:
         return np.arange(len(first))
-    keys = np.stack(
-        [_hermite_normal_form(first @ symmetry.T, second @ symmetry.T) for symmetry in group]
-    )
-    return _first_per_key(_lexicographic_minimum(keys))
+    # Folded in one image at a time: stacking all |G| key tables at once held
+    # gigabytes for a long search.  ``-G`` spans the same sublattice as ``G``,
+    # so its Hermite form is identical and is skipped.
+    best: np.ndarray | None = None
+    seen: set[bytes] = set()
+    for symmetry in np.asarray(group, dtype=np.int64):
+        if (-symmetry).tobytes() in seen:
+            continue
+        seen.add(symmetry.tobytes())
+        candidate = _hermite_normal_form(first @ symmetry.T, second @ symmetry.T)
+        best = candidate if best is None else _lexicographic_min_pair(best, candidate)
+    return _first_per_key(best)
 
 
 def _fold_bases(first: np.ndarray, second: np.ndarray, group: np.ndarray):
     if len(first) == 0 or len(group) <= 1:
         return np.arange(len(first))
-    keys = np.stack(
-        [np.concatenate([first @ symmetry.T, second @ symmetry.T], axis=1) for symmetry in group]
-    )
-    return _first_per_key(_lexicographic_minimum(keys))
+    best: np.ndarray | None = None
+    for symmetry in group:
+        candidate = np.concatenate([first @ symmetry.T, second @ symmetry.T], axis=1)
+        best = candidate if best is None else _lexicographic_min_pair(best, candidate)
+    return _first_per_key(best)
 
 
 @dataclass
@@ -337,8 +378,13 @@ def _basis_table(
     upper: float = 1.0,
     first_indices: np.ndarray | None = None,
     area_squared_max: float | None = None,
+    keep_index=None,
 ) -> _Table:
-    """Generate reduced/partner bases through shell-local angular arc lookup."""
+    """Generate reduced/partner bases through shell-local angular arc lookup.
+
+    ``keep_index`` filters rows by their index (the basis determinant) as they
+    are generated, so a table bounded by an atom cap is never held whole.
+    """
     g11m, g12m, g22m = float(metric[0, 0]), float(metric[0, 1]), float(metric[1, 1])
     vectors, squared, angles = table.vectors, table.squared, table.angles
     first = (
@@ -387,6 +433,8 @@ def _basis_table(
             - first_vectors[:, 1] * second_vectors[:, 0]
         )
         keep = determinant > 0
+        if keep_index is not None:
+            keep &= keep_index(determinant)
         if not np.any(keep):
             continue
         first_vectors, second_vectors = first_vectors[keep], second_vectors[keep]

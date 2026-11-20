@@ -5,13 +5,12 @@ from __future__ import annotations
 from .prompts import (
     INPUT_DIR,
     OUTPUT_DIR,
+    STRUCTURE_PATTERNS,
     _choice,
     _print_title,
     _prompt_int_range,
     _prompt_path,
 )
-
-STRUCTURE_PATTERNS = ("*.vasp", "POSCAR", "CONTCAR")
 
 
 def _build_migration_path(group: str, *, subject: str) -> list[str]:

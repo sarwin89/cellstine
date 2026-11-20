@@ -17,6 +17,7 @@ import pytest
 
 from cellstine.core.symmetry2d import DEFAULT_SYMMETRY_TOLERANCE
 from cellstine.moire.search.find import run_find
+from cellstine.moire.search.results import read_results
 
 from conftest import write_poscar
 
@@ -96,11 +97,9 @@ def test_idealisation_removes_the_spurious_anisotropic_strain(rounded_pair, tmp_
 
 
 def test_idealisation_is_recorded_and_small(rounded_pair, tmp_path):
-    import json
-
     top, bottom = rounded_pair
     run = _run(top, bottom, tmp_path / "recorded")
-    document = json.loads(Path(run.result_path).read_text())
+    document = read_results(run.result_path)
     metadata = document["metadata"]
     assert metadata["symmetry_tolerance"] == pytest.approx(DEFAULT_SYMMETRY_TOLERANCE)
     for name in ("top_idealisation", "bottom_idealisation"):

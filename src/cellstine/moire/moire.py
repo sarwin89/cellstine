@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Sequence
 
 from ..core.base import Base, run_output_suffix
+from ..core.constants import DEFAULT_RESULTS_FORMAT
+from ..core.outputs import reserve_default_directory, reserve_default_file
 from ..core.layers import shift_top_layer
 from ..core.models import CommandResult
 from ..core.naming import safe_token
@@ -15,6 +17,7 @@ from ..core.previews import format_bilayer_candidates
 from .builder.make import generate_many_from_results
 from ..core.symmetry2d import DEFAULT_SYMMETRY_TOLERANCE
 from .search.find import DEFAULT_CANDIDATE_LIMIT, run_find
+from .search.results import normalize_results_format
 
 
 def _format_timing(value: float | int | None) -> str:
@@ -121,6 +124,7 @@ class Moire(Base):
         symmetry_tolerance: float = DEFAULT_SYMMETRY_TOLERANCE,
         preview_limit: int = 10,
         progress: bool = False,
+        results_format: str = DEFAULT_RESULTS_FORMAT,
     ) -> CommandResult:
         """Search one bilayer for commensurate supercells and record the best.
 
@@ -134,8 +138,14 @@ class Moire(Base):
         factor; the reduced layer is written into the run directory and is what
         the reported matrices refer to.  ``reduce_layers=False`` keeps the cells
         exactly as they were given.
+
+        ``results_format`` defaults to ``npz``, which stores numerical
+        columns without text conversion; ``npz-compressed`` adds lossless ZIP
+        compression. Both remain readable by the build/preview/plot workflows.
+        Choose ``json`` for the readable legacy file and results_json artifact.
         """
         total_start = time.perf_counter()
+        results_format = normalize_results_format(results_format)
         progress_callback = _progress_printer() if progress else None
         backend = self.choose_backend(feature="moire.find")
         label = f"{Path(bottom_poscar).stem}_{Path(top_poscar).stem}"
@@ -160,6 +170,7 @@ class Moire(Base):
             symmetry_tolerance=float(symmetry_tolerance),
             output_root=str(run_dir),
             progress_callback=progress_callback,
+            results_format=results_format,
         )
 
         manifest_start = time.perf_counter()
@@ -174,7 +185,7 @@ class Moire(Base):
                 "bottom_poscar": str(Path(bottom_poscar).resolve()),
             },
             parameters=run.parameters,
-            artifacts={"results_json": run.result_path},
+            artifacts={"results_json" if results_format == "json" else "results_npz": run.result_path},
             summary={
                 "candidate_count": len(run.candidates),
                 "candidates_found": len(run.result),
@@ -199,7 +210,7 @@ class Moire(Base):
         return self.result(
             manifest_path=manifest_path,
             run_dir=run_dir,
-            artifacts={"results_json": run.result_path},
+            artifacts={"results_json" if results_format == "json" else "results_npz": run.result_path},
             summary={
                 "candidate_count": len(run.candidates),
                 "candidates_found": len(run.result),
@@ -229,12 +240,17 @@ class Moire(Base):
         bottom_c_repeat: int | None = None,
         vacuum: float | None = None,
         workers: int = 1,
+        parallel_backend: str = "process",
     ) -> CommandResult:
+        if parallel_backend not in ("process", "thread"):
+            raise ValueError("parallel_backend must be process or thread")
         backend = self.choose_backend(feature="moire.make")
-        resolved_results = self.resolve_results_file(results_file, artifact_keys=("results_json",))
+        resolved_results = self.resolve_results_file(results_file, artifact_keys=("results_json", "results_npz"))
         run_id, run_dir = self.create_run_dir("make", Path(resolved_results).stem)
         output_suffix = run_output_suffix(run_id)
         resolved_output_dir = output_dir or str(self.output_root / run_id)
+        if output_path is None and not output_dir:
+            resolved_output_dir = str(reserve_default_directory(resolved_output_dir))
         runs = generate_many_from_results(
             resolved_results,
             indexes=[int(value) for value in indexes],
@@ -248,6 +264,7 @@ class Moire(Base):
             bottom_c_repeat=bottom_c_repeat,
             vacuum=None if vacuum is None else float(vacuum),
             workers=int(workers),
+            parallel_backend=parallel_backend,
         )
         if output_path is None and output_dir is None:
             for run in runs:
@@ -269,6 +286,7 @@ class Moire(Base):
                 "interlayer_distance": float(interlayer_distance),
                 "vacuum": None if vacuum is None else float(vacuum),
                 "workers": int(workers),
+                "parallel_backend": parallel_backend,
             },
             artifacts={"structures": artifact_paths},
             summary={
@@ -298,10 +316,10 @@ class Moire(Base):
         backend = self.choose_backend(feature="moire.translate")
         run_id, run_dir = self.create_run_dir("translate", Path(poscar_path).stem)
         output_suffix = run_output_suffix(run_id)
-        resolved_output_path = output_path or str(
+        resolved_output_path = output_path or str(reserve_default_file(
             self.output_root
             / f"{safe_token(Path(poscar_path).stem)}_upper_layer_shifted_{output_suffix}.vasp"
-        )
+        ))
         run = shift_top_layer(
             poscar_path=str(Path(poscar_path).resolve()),
             output_path=resolved_output_path,

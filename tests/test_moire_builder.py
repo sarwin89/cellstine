@@ -26,7 +26,7 @@ def graphene_run(tmp_path_factory, graphene_poscar):
         bottom_strain=0.01,
         preview_limit=0,
     )
-    return workflow, found.artifacts["results_json"]
+    return workflow, found.artifacts["results_npz"]
 
 
 def _minimum_distance(lattice: np.ndarray, positions: np.ndarray) -> float:

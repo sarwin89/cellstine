@@ -25,10 +25,12 @@ from cellstine.core.reduction import (
     axis_spacings,
     delaunay_reduce,
     gauss_reduction_multiplier,
+    integer_lattice_basis,
     niggli_reduce,
     plane_reciprocal_norms,
     plane_reduce,
     reciprocal_norms,
+    rational_lattice_basis,
     wrap_fractional,
     wrap_to_cell,
 )
@@ -84,6 +86,17 @@ def test_a_lattice_must_be_three_independent_finite_rows():
     with pytest.raises(ValueError):
         as_lattice(np.array([[1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [0.0, 0.0, 1.0]]))
     assert as_lattice(np.eye(3)).shape == (3, 3)
+
+
+def test_integer_basis_rejects_insufficient_generators():
+    with pytest.raises(ValueError, match="three or more"):
+        integer_lattice_basis(np.array([[1, 0, 0], [0, 1, 0]]))
+
+
+@pytest.mark.parametrize("denominator", [0, -2])
+def test_rational_basis_rejects_a_nonpositive_denominator(denominator):
+    with pytest.raises(ValueError, match="positive"):
+        rational_lattice_basis(np.eye(3), denominator)
 
 
 def test_wrapping_puts_a_coordinate_in_its_window():

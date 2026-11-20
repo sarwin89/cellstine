@@ -10,6 +10,7 @@ from typing import Sequence
 import numpy as np
 
 from ...core.base import Base, run_output_suffix
+from ...core.outputs import reserve_default_file
 from ...core.lattice import inplane_principal_log_strains
 from ...core.vacuum import vacuum_gap
 from ...core.models import CommandResult
@@ -256,7 +257,7 @@ class Interface(Base):
         )
         if output_path is None:
             output_suffix = run_output_suffix(run_id)
-            destination = self.output_root / f"interface_gap{safe_token(f'{float(gap):.2f}')}_{output_suffix}.vasp"
+            destination = reserve_default_file(self.output_root / f"interface_gap{safe_token(f'{float(gap):.2f}')}_{output_suffix}.vasp")
         else:
             destination = Path(output_path).resolve()
         output_record = bottom.copy()
@@ -329,7 +330,9 @@ class Interface(Base):
         analysis = stacking_mod.analyse_stacking(record)
         if not analysis.close_packed:
             raise ValueError(f"the {side} slab is not close packed: {analysis.reason}")
-        mirrored = stacking_mod.mirror_structure(record)
+        mirrored, _ = stacking_mod._reverse_stacking(
+            record, analysis, reference_hollow=analysis.hollow_cartesian
+        )
         mirrored.comment = restage_comment(record.comment, "interface build", "stacking reversed")
         destination = Path(run_dir) / f"{side}_{Path(path).stem}_mirrored.vasp"
         self.vasp_io.write(mirrored, str(destination), positions_are_cartesian=False, wrap_positions=True)
@@ -391,10 +394,10 @@ class Interface(Base):
             top_miller = "".join(str(value) for value in entry["top_miller"])
             angle_token = safe_token(f"{float(entry['angle_deg']):.4f}")
             gap_token = safe_token(f"{float(gap):.2f}")
-            destination = self.output_root / (
+            destination = reserve_default_file(self.output_root / (
                 f"interface_match{int(entry['index']):03d}_{bottom_miller}on{top_miller}_"
                 f"ang{angle_token}_atoms{total_atoms}_gap{gap_token}_{output_suffix}.vasp"
-            )
+            ))
         else:
             destination = Path(output_path).resolve()
         destination.parent.mkdir(parents=True, exist_ok=True)

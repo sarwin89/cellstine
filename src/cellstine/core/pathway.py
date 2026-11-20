@@ -115,6 +115,36 @@ class Assignment:
         """
 
         matrix = np.asarray(cost, dtype=float)
+        size = self.size
+        row_potentials, column_potentials = self.row_potentials, self.column_potentials
+        # Custom/nonfinite certificates retain the original broadcast/indexing
+        # behavior below. Normal solver certificates need only bounded slack.
+        normal = (
+            matrix.size > 65536
+            and matrix.shape == (size, size)
+            and isinstance(row_potentials, np.ndarray) and row_potentials.shape == (size,)
+            and isinstance(column_potentials, np.ndarray) and column_potentials.shape == (size,)
+            and row_potentials.dtype.kind in "biuf" and column_potentials.dtype.kind in "biuf"
+            and isinstance(self.columns, np.ndarray) and self.columns.shape == (size,)
+            and self.columns.dtype.kind in "iu"
+        )
+        safe = np.finfo(float).max / 4.0
+        if (normal and np.all(np.isfinite(row_potentials)) and np.all(np.isfinite(column_potentials))
+                and np.all(np.abs(row_potentials) <= safe) and np.all(np.abs(column_potentials) <= safe)
+                and np.all(self.columns >= 0) and np.all(self.columns < size)):
+            infeasibility = tightness = 0.0
+            step = max(1, 65536 // max(size, 1))
+            for start in range(0, size, step):
+                stop = min(start + step, size)
+                block = matrix[start:stop]
+                if not np.all(np.isfinite(block)) or not np.all(np.abs(block) <= safe):
+                    break
+                slack = block - row_potentials[start:stop, None] - column_potentials[None, :]
+                infeasibility = max(infeasibility, float(max(0.0, -slack.min())))
+                tightness = max(tightness, float(np.max(np.abs(
+                    slack[np.arange(stop - start), self.columns[start:stop]]))))
+            else:
+                return max(infeasibility, tightness)
         slack = matrix - self.row_potentials[:, None] - self.column_potentials[None, :]
         infeasibility = float(max(0.0, -slack.min())) if slack.size else 0.0
         rows = np.arange(self.size)
@@ -225,9 +255,20 @@ def _pair_cost_matrix(
 
     rows = np.asarray(start_direct, dtype=float).reshape(-1, 3)
     columns = np.asarray(end_direct, dtype=float).reshape(-1, 3)
-    deltas = (columns[None, :, :] - rows[:, None, :]).reshape(-1, 3)
-    distances = minimum_image_distances(lattice, deltas)
-    return (distances * distances).reshape(rows.shape[0], columns.shape[0])
+    if rows.shape[0] * columns.shape[0] <= 65536:
+        # Retain the direct legacy path when its complete temporary fits the
+        # budget, including metric validation and empty rectangular shapes.
+        deltas = (columns[None, :, :] - rows[:, None, :]).reshape(-1, 3)
+        distances = minimum_image_distances(lattice, deltas)
+        return (distances * distances).reshape(rows.shape[0], columns.shape[0])
+    costs = np.empty((rows.shape[0], columns.shape[0]), dtype=float)
+    step = max(1, 65536 // columns.shape[0])
+    for start in range(0, rows.shape[0], step):
+        stop = min(start + step, rows.shape[0])
+        deltas = (columns[None, :, :] - rows[start:stop, None, :]).reshape(-1, 3)
+        distances = minimum_image_distances(lattice, deltas)
+        costs[start:stop] = (distances * distances).reshape(stop - start, columns.shape[0])
+    return costs
 
 
 def match_atoms(
@@ -260,12 +301,16 @@ def match_atoms(
         raise ValueError("the two structures must have the same composition")
 
     partners = np.zeros(start.shape[0], dtype=np.int64)
-    displacements = np.zeros((start.shape[0], 3), dtype=float)
     total = 0.0
     error = 0.0
-    for symbol in sorted(set(labels)):
-        rows = np.flatnonzero(np.array(labels, dtype=object) == symbol)
-        columns = np.flatnonzero(np.array(end_labels, dtype=object) == symbol)
+    start_groups, end_groups = {}, {}
+    for index, symbol in enumerate(labels):
+        start_groups.setdefault(symbol, []).append(index)
+    for index, symbol in enumerate(end_labels):
+        end_groups.setdefault(symbol, []).append(index)
+    for symbol in sorted(start_groups):
+        rows = np.asarray(start_groups[symbol], dtype=np.intp)
+        columns = np.asarray(end_groups[symbol], dtype=np.intp)
         cost = _pair_cost_matrix(cell, start[rows], end[columns])
         assignment = optimal_assignment(cost)
         error = max(error, assignment.certificate_error(cost))
@@ -344,8 +389,17 @@ class MigrationPath:
 
 
 def _check_same_cell(first: np.ndarray, second: np.ndarray, tolerance: float) -> None:
-    difference = float(np.max(np.abs(np.asarray(first, dtype=float) - np.asarray(second, dtype=float))))
-    if difference > float(tolerance):
+    first = np.asarray(first, dtype=float)
+    second = np.asarray(second, dtype=float)
+    tolerance = float(tolerance)
+    if first.shape != (3, 3) or second.shape != (3, 3):
+        raise ValueError("migration endpoint cells must be 3x3 matrices")
+    if not np.all(np.isfinite(first)) or not np.all(np.isfinite(second)):
+        raise ValueError("migration endpoint cells must be finite")
+    if not np.isfinite(tolerance) or tolerance < 0.0:
+        raise ValueError("cell tolerance must be finite and non-negative")
+    difference = float(np.max(np.abs(first - second)))
+    if difference > tolerance:
         raise ValueError(
             "the two endpoints must share one cell for a migration path; they differ by "
             f"{difference:.6f} A, so relax them in the same cell or rebuild the final "
@@ -379,12 +433,28 @@ def build_migration_path(
     if count < 1:
         raise ValueError("a migration path needs at least one intermediate image")
     cell = np.asarray(lattice, dtype=float)
-    if end_lattice is not None:
-        _check_same_cell(cell, end_lattice, cell_tolerance)
+    _check_same_cell(cell, cell if end_lattice is None else end_lattice, cell_tolerance)
     start = np.asarray(start_direct, dtype=float).reshape(-1, 3)
     end = np.asarray(end_direct, dtype=float).reshape(-1, 3)
+    per_image = max(1, int(start.shape[0]) * 3) * np.dtype(float).itemsize
+    if count + 2 > int(np.iinfo(np.intp).max) // per_image:
+        raise ValueError("migration image chain is too large to address")
+    species = [str(symbol) for symbol in species]
+    counts = [int(value) for value in counts]
+    if len(species) != len(counts) or any(value < 0 for value in counts) or sum(counts) != start.shape[0]:
+        raise ValueError("species/count records must describe exactly one label per atom")
     labels = _species_by_atom(species, counts)
-    end_labels = labels if end_species is None else _species_by_atom(end_species, end_counts or counts)
+    if end_species is None:
+        end_labels = labels
+    else:
+        end_species = [str(symbol) for symbol in end_species]
+        resolved_counts = [] if end_counts is None else [int(value) for value in end_counts]
+        if not resolved_counts:
+            resolved_counts = counts
+        if (len(end_species) != len(resolved_counts) or any(value < 0 for value in resolved_counts)
+                or sum(resolved_counts) != end.shape[0]):
+            raise ValueError("endpoint species/count records must describe exactly one label per atom")
+        end_labels = _species_by_atom(end_species, resolved_counts)
     if start.shape[0] != end.shape[0]:
         raise ValueError(
             f"the two endpoints hold {start.shape[0]} and {end.shape[0]} atoms; a migration "

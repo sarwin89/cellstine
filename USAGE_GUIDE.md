@@ -162,32 +162,36 @@ keeping the CLI readable; it does not mean engineering strain.
 family. When that family is inapplicable, CELLSTINE records why and falls back
 to the general search.
 
-### 5.2 JSON Results And `moire build`
+### 5.2 Portable Results And `moire build`
 
-Every successful search writes schema-versioned
-`cellstine.moire.gram` JSON v1:
+Every successful bilayer search writes a portable NPZ archive containing the
+validated `cellstine.moire.gram` v2 result document:
 
 ```text
-runs/moire/<run-id>/results.json
+runs/moire/<run-id>/results.npz
 runs/moire/<run-id>/manifest.json
 ```
 
-The JSON carries the candidate matrices, angle in degrees, relative principal
+The result document carries the candidate matrices, angle in degrees, relative principal
 strain, top and bottom strain budgets, atom counts, rank/Pareto status, Löwner
 certification, shared lattice, affine maps, and search metadata. It is the
-single handoff format for previews, visualization, and construction. Legacy
+shared handoff for previews, visualization, and construction. Use
+`--results-format json` to write readable `results.json` for JSON-only tools, or
+`--results-format npz-compressed` for lossless compression. Python callers use
+the equivalent `results_format` keyword. Archives require no additional
+dependency and never load pickle. Legacy
 positional `.dat` files are rejected; rerun native `moire search` to create
-`results.json`.
+`results.npz`.
 
 Build one or several selected candidates:
 
 ```bash
-cellstine moire build runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
-cellstine moire build runs/moire/<run-id>/results.json --indexes 1,2,5-7 --interlayer-distance 3.35 --workers 4
+cellstine moire build runs/moire/<run-id>/results.npz --indexes 1 --interlayer-distance 3.35
+cellstine moire build runs/moire/<run-id>/results.npz --indexes 1,2,5-7 --interlayer-distance 3.35 --workers 4
 ```
 
-A manifest containing the `results_json` artifact can be passed instead of
-the raw JSON path.
+A manifest containing either `results_npz` or `results_json` can be passed
+instead of a raw archive or JSON path.
 
 ### 5.3 Translation, Preview, And Visualization
 
@@ -200,8 +204,8 @@ cellstine moire shift output/stacked.vasp --shift-direct 0.333,0.667
 Create a labelled static summary or the optional interactive Plotly viewer:
 
 ```bash
-cellstine moire view runs/moire/<run-id>/results.json --indices 1,2,3
-cellstine moire view runs/moire/<run-id>/results.json --indices 1,2,3 --plotly
+cellstine moire view runs/moire/<run-id>/results.npz --indices 1,2,3
+cellstine moire view runs/moire/<run-id>/results.npz --indices 1,2,3 --plotly
 ```
 
 Both paths use the validated JSON reader. They label top strain, bottom strain,
@@ -306,7 +310,8 @@ cellstine adsorbate assemble input/Au_1x1.vasp --a-length 12.0 --b-length 12.0 -
 
 `--top-strain` bounds the synthetic molecular lattice and `--bottom-strain`
 bounds the substrate, using the same principal logarithmic strain definition as
-native bilayer moire search. The command writes schema-versioned `results.json`.
+native bilayer moire search. The command writes `results.npz` by default. Select `--results-format json`
+for readable JSON, or `--results-format npz-compressed` for lossless compression.
 
 ### 6.4 Adsorbate Visualization
 
@@ -579,7 +584,7 @@ result = Moire().find(
     bottom_strain=0.01,
 )
 print(result.manifest_path)
-print(result.artifacts["results_json"])
+print(result.artifacts["results_npz"])
 ```
 
 Adsorbate placement:

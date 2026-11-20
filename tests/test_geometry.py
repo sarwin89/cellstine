@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import itertools
 import math
+import tracemalloc
 
 import numpy as np
 import pytest
@@ -25,6 +26,137 @@ HEXAGONAL = np.array(
 SHEARED = np.array([[5.0, 0.0, 0.0], [4.9, 1.0, 0.0], [0.2, 0.3, 4.0]])
 CUBIC = 3.9 * np.eye(3)
 CELLS = {"cubic": CUBIC, "hexagonal": HEXAGONAL, "sheared": SHEARED}
+
+
+@pytest.mark.parametrize("query_x,expected", [(0.0, 0.0), (1000.0, 1000.0)])
+def test_nearest_point_block_bounds_candidate_and_fallback_allocations(query_x, expected):
+    points = np.zeros((512, 3))
+    queries = np.tile([query_x, 0.0, 0.0], (2048, 1))
+    query = geometry.NearestPointQuery(points, pitch=1.0, block=1024)
+    tracemalloc.start()
+    try:
+        distances = query.distances(queries)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert np.array_equal(distances, np.full(len(queries), expected))
+    # A complete (queries, points, 3) displacement tensor alone needs 24 MiB.
+    assert peak < 16 * 1024 * 1024
+
+
+@pytest.mark.parametrize("block", [1, 127, 4096])
+def test_nearest_point_query_blocks_match_a_cartesian_reference(block):
+    rng = np.random.default_rng(71)
+    points = rng.normal(size=(31, 3))
+    queries = np.vstack([rng.normal(size=(211, 3)), [[1000.0, -2000.0, 4000.0]]])
+    reference = np.linalg.norm(queries[:, None, :] - points[None, :, :], axis=2).min(axis=1)
+    query = geometry.NearestPointQuery(points, pitch=0.25, block=block)
+    assert query.distances(queries) == pytest.approx(reference, rel=1e-14, abs=1e-14)
+    assert query.distances(queries[::-1]) == pytest.approx(reference[::-1], rel=1e-14, abs=1e-14)
+
+
+def test_plane_minimum_image_bounds_candidate_memory():
+    basis = np.array([[1.0, 0.0], [-0.5, math.sqrt(3.0) / 2.0]])
+    deltas = np.tile([0.49, -0.49], (120000, 1))
+    tracemalloc.start()
+    try:
+        vectors = geometry.plane_minimum_image(basis, deltas)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert np.linalg.norm(vectors, axis=1) == pytest.approx(np.full(len(deltas), math.sqrt(0.2503)), abs=1e-12)
+    assert peak < 16 * 1024 * 1024
+
+
+@pytest.mark.parametrize("dimensions", [1, 2])
+def test_automatic_query_grid_avoids_excess_levels_for_flat_point_sets(dimensions):
+    if dimensions == 1:
+        points = np.column_stack([np.linspace(0.0, 1.0, 1024), np.zeros((1024, 2))])
+    else:
+        x, y = np.meshgrid(np.arange(32) / 32.0, np.arange(32) / 32.0, indexing="ij")
+        points = np.column_stack([x.ravel(), y.ravel(), np.zeros(1024)])
+    queries = points[::32] + [0.0, 0.0, 0.1]
+    query = geometry.NearestPointQuery(points)
+    tracemalloc.start()
+    try:
+        distances = query.distances(queries)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert distances == pytest.approx(np.full(len(queries), 0.1), abs=1e-14)
+    assert peak < 6 * 1024 * 1024
+
+
+def test_shortest_pair_search_avoids_large_vacuum_dependent_image_clouds():
+    lattice = np.diag([1.0, 1.0, 10000.0])
+    sites = np.array([[0.0, 0.0, 0.5], [0.1, 0.0, 0.5]])
+    tracemalloc.start()
+    try:
+        distance = geometry.shortest_interatomic_distance(lattice, sites)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert distance == pytest.approx(0.1, abs=1e-14)
+    assert peak < 8 * 1024 * 1024
+
+
+@pytest.mark.parametrize("prefer_lowest", [False, True])
+def test_site_matching_bounds_padded_memory_and_preserves_label_ties(prefer_lowest):
+    sites = np.zeros((512, 3))
+    labels = np.arange(len(sites)) % 2
+    queries = np.zeros((2048, 3))
+    wanted = np.arange(len(queries)) % 3
+    index = geometry.PeriodicSiteIndex(CUBIC, sites, labels, tolerance=1e-4)
+    tracemalloc.start()
+    try:
+        matched = index.match(queries, wanted, prefer_lowest=prefer_lowest)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert np.array_equal(matched, np.where(wanted < 2, wanted, -1))
+    assert peak < 16 * 1024 * 1024
+
+
+@pytest.mark.parametrize("failure", [RuntimeError, ValueError])
+def test_reduction_failure_preserves_exact_shortest_vectors_and_images(monkeypatch, failure):
+    def unavailable(_lattice):
+        raise failure("simulated reduction failure")
+
+    monkeypatch.setattr(geometry, "delaunay_reduce", unavailable)
+    monkeypatch.setattr(geometry, "_REDUCED_CACHE", {})
+    lattice = np.array([[10.0, 0.0, 0.0], [94.0, 1.0, 0.0], [0.0, 0.0, 10.0]])
+    # (-19, 2, 0) maps to (-2, 2, 0), the shortest translation.
+    assert geometry.shortest_lattice_vector_length(lattice) == pytest.approx(math.sqrt(8.0))
+    # (0.3, 0, 0) is (3, 0, 0); subtracting (4, 1, 0) gives (-1, -1, 0).
+    assert geometry.minimum_image_distances(lattice, [[0.3, 0.0, 0.0]])[0] == pytest.approx(math.sqrt(2.0))
+
+
+def test_reduction_failure_exact_search_bounds_temporary_memory(monkeypatch):
+    def unavailable(_lattice):
+        raise RuntimeError("simulated reduction failure")
+
+    monkeypatch.setattr(geometry, "delaunay_reduce", unavailable)
+    monkeypatch.setattr(geometry, "_REDUCED_CACHE", {})
+    lattice = np.array([[10.0, 0.0, 0.0], [100004.0, 1.0, 0.0], [0.0, 0.0, 10.0]])
+    tracemalloc.start()
+    try:
+        shortest = geometry.shortest_lattice_vector_length(lattice)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert shortest == pytest.approx(math.sqrt(8.0))
+    assert peak < 16 * 1024 * 1024
+
+
+def test_reduction_failure_refuses_unrepresentable_integer_bounds(monkeypatch):
+    def unavailable(_lattice):
+        raise RuntimeError("simulated reduction failure")
+
+    monkeypatch.setattr(geometry, "delaunay_reduce", unavailable)
+    monkeypatch.setattr(geometry, "_REDUCED_CACHE", {})
+    lattice = np.array([[10.0, 0.0, 0.0], [1e20, 1.0, 0.0], [0.0, 0.0, 10.0]])
+    with pytest.raises(ArithmeticError, match="integer coefficient"):
+        geometry.shortest_lattice_vector_length(lattice)
 
 
 def brute_force_minimum_image(lattice: np.ndarray, deltas: np.ndarray, reach: int = 5) -> np.ndarray:

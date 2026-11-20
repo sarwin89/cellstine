@@ -284,6 +284,88 @@ def _canonical_pair_keys(top_matrices: np.ndarray, bottom_matrices: np.ndarray) 
     return keys
 
 
+def _primitive_pair_keys(top_matrices: np.ndarray, bottom_matrices: np.ndarray) -> np.ndarray:
+    """Exact class keys of *primitive* pairs, with no extended Euclid at all.
+
+    For a pair of coincidence index one the coincidence lattice in top
+    coordinates is ``M Z^2`` itself, and it is ``{y in Z^2 : T y in Z^2}`` with
+    ``T = N M^-1``.  So ``T`` alone decides the class modulo the common right
+    action ``(M, N) -> (M K, N K)``, and ``T`` is ``W / det M`` with the integer
+    ``W = N adj(M)``.  Under ``K`` both ``det M`` and ``W`` pick up ``det K``, so
+    ``(|det M|, sign(det M) W)`` is an exact key: equal keys mean one ``K``
+    apart, and the converse holds by the same computation.
+
+    The partition is the one :func:`_canonical_pair_keys` gives on primitive
+    pairs; only the key values differ.  It must not be used for imprimitive
+    pairs, whose class also needs the lattice ``M Z^2``.
+    """
+
+    count = len(top_matrices)
+    if count == 0:
+        return np.zeros((0, 5), dtype=np.int64)
+    a, b = top_matrices[:, 0, 0], top_matrices[:, 0, 1]
+    c, d = top_matrices[:, 1, 0], top_matrices[:, 1, 1]
+    e, f = bottom_matrices[:, 0, 0], bottom_matrices[:, 0, 1]
+    g, h = bottom_matrices[:, 1, 0], bottom_matrices[:, 1, 1]
+    determinant = a * d - b * c
+    sign = np.where(determinant < 0, -1, 1)
+    keys = np.empty((count, 5), dtype=np.int64)
+    keys[:, 0] = np.abs(determinant)
+    keys[:, 1] = sign * (e * d - f * c)
+    keys[:, 2] = sign * (f * a - e * b)
+    keys[:, 3] = sign * (g * d - h * c)
+    keys[:, 4] = sign * (h * a - g * b)
+    return keys
+
+
+def _primitive_orbit_keys(
+    top_matrices: np.ndarray,
+    bottom_matrices: np.ndarray,
+    top_group: np.ndarray,
+    bottom_group: np.ndarray,
+) -> np.ndarray:
+    """:func:`_pair_orbit_keys` for primitive pairs, by integer matmul only.
+
+    The sign-normalised numerator is sent to ``G_b W inv(G_t)`` while
+    ``|det M|`` stays fixed. Since ``inv(G_t) = det(G_t) adj(G_t)`` for a
+    unimodular operation, this also covers paired mirrors under dev's existing
+    policy. The determinant factor accounts for the changed sign of ``det M``.
+    """
+
+    keys = _primitive_pair_keys(top_matrices, bottom_matrices)
+    if len(keys) == 0:
+        return keys
+    top = np.asarray(top_group, dtype=np.int64)
+    bottom = np.asarray(bottom_group, dtype=np.int64)
+    combinations = _reduced_symmetry_combinations(top, bottom)
+    if len(combinations) <= 1:
+        return keys
+    w00, w01, w10, w11 = keys[:, 1], keys[:, 2], keys[:, 3], keys[:, 4]
+    best: np.ndarray | None = None
+    for left, right in combinations:
+        rotation_top, rotation_bottom = top[left], bottom[right]
+        det_top = int(rotation_top[0, 0]) * int(rotation_top[1, 1]) - int(rotation_top[0, 1]) * int(rotation_top[1, 0])
+        det_bottom = int(rotation_bottom[0, 0]) * int(rotation_bottom[1, 1]) - int(rotation_bottom[0, 1]) * int(rotation_bottom[1, 0])
+        if det_top not in (-1, 1) or det_bottom != det_top:
+            raise ValueError("primitive orbit keys need matching unimodular layer operations")
+        # inv(G_t), then G_b W, then (G_b W) inv(G_t), all written out.
+        j00, j01 = det_top * int(rotation_top[1, 1]), -det_top * int(rotation_top[0, 1])
+        j10, j11 = -det_top * int(rotation_top[1, 0]), det_top * int(rotation_top[0, 0])
+        x00 = rotation_bottom[0, 0] * w00 + rotation_bottom[0, 1] * w10
+        x01 = rotation_bottom[0, 0] * w01 + rotation_bottom[0, 1] * w11
+        x10 = rotation_bottom[1, 0] * w00 + rotation_bottom[1, 1] * w10
+        x11 = rotation_bottom[1, 0] * w01 + rotation_bottom[1, 1] * w11
+        candidate = np.empty_like(keys)
+        candidate[:, 0] = keys[:, 0]
+        candidate[:, 1] = x00 * j00 + x01 * j10
+        candidate[:, 2] = x00 * j01 + x01 * j11
+        candidate[:, 3] = x10 * j00 + x11 * j10
+        candidate[:, 4] = x10 * j01 + x11 * j11
+        best = candidate if best is None else _lexicographic_min_pair(best, candidate)
+    assert best is not None
+    return best
+
+
 def _symmetry_combinations(
     top_group: np.ndarray, bottom_group: np.ndarray
 ) -> list[tuple[int, int]]:

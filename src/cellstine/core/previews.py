@@ -206,7 +206,7 @@ def format_nlayer_candidates(candidates: Sequence[Any], *, limit: int = 10, titl
 
 def _iter_manifest_result_paths(path: Path) -> Iterable[Path]:
     manifest = RunManifest.load(path)
-    priority = ["results_json", "results_dat"]
+    priority = ["results_json", "results_npz", "results_dat"]
     for key in priority:
         value = manifest.artifacts.get(key)
         if value is not None:
@@ -214,18 +214,33 @@ def _iter_manifest_result_paths(path: Path) -> Iterable[Path]:
     for key, value in sorted(manifest.artifacts.items()):
         if key in priority:
             continue
-        if key.startswith("results_dat") or key.startswith("results_json"):
+        if key.startswith(("results_dat", "results_json", "results_npz")):
             yield Path(str(value)).resolve()
 
 
 def preview_moire_results_file(path: str | Path, *, limit: int = 15) -> str:
     """Preview validated native Gram JSON, rejecting positional DAT results."""
 
+    return _preview_moire_results_with_count(path, limit=limit)[0]
+
+
+def _preview_moire_results_with_count(
+    path: str | Path, *, limit: int = 15
+) -> tuple[str, int | None]:
+    """Preview and actual selection bound from the same validated read.
+
+    A manifest can name several independent candidate lists; those have no
+    single index bound. Return only a count, without retaining the document.
+    """
+
     source = Path(path).resolve()
     result_paths = list(_iter_manifest_result_paths(source)) if source.name == "manifest.json" else [source]
     sections = []
+    count = None
     for result_path in result_paths:
         payload = read_results(result_path)
+        if len(result_paths) == 1:
+            count = len(payload["candidates"])
         search = payload["search"]
         metadata = payload["metadata"]
         fallback = metadata["symmetric_fallback"] or "none"
@@ -243,7 +258,8 @@ def preview_moire_results_file(path: str | Path, *, limit: int = 15) -> str:
         sections.append(
             format_bilayer_candidates(payload["candidates"], limit=limit, title=title)
         )
-    return "\n\n".join(section for section in sections if section) or "No saved candidates could be previewed."
+    text = "\n\n".join(section for section in sections if section) or "No saved candidates could be previewed."
+    return text, count
 
 
 def format_adsorption_sites(sites: Sequence[Any], *, limit: int = 30, title: str | None = None) -> str:

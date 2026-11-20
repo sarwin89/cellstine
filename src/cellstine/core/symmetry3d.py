@@ -34,7 +34,6 @@ standard settings of all 230 groups and is deliberately left to ``spglib``.
 from __future__ import annotations
 
 import itertools
-import math
 from dataclasses import dataclass
 from typing import List, Sequence, Tuple
 
@@ -349,9 +348,12 @@ def equivalent_atom_map(
     positions = np.mod(np.asarray(positions_direct, dtype=float).reshape(-1, 3), 1.0)
     labels = _species_labels(species, len(positions))
     permutations = []
+    site_index = None
     for rotation, translation in zip(rotations, translations):
         images = positions @ np.asarray(rotation, dtype=float).T + np.asarray(translation, dtype=float)
-        permutation = _site_permutation(array, positions, labels, images, float(symprec))
+        if site_index is None and len(positions):
+            site_index = PeriodicSiteIndex(array, positions, labels, float(symprec))
+        permutation = _site_permutation(array, positions, labels, images, float(symprec), site_index)
         if permutation is not None:
             permutations.append(permutation)
     if not permutations:
@@ -381,9 +383,12 @@ def site_permutations(
     labels = _species_labels(species, len(positions))
     identity = np.arange(len(positions), dtype=np.int64)
     result = []
+    site_index = None
     for rotation, translation in zip(rotations, translations):
         images = positions @ np.asarray(rotation, dtype=float).T + np.asarray(translation, dtype=float)
-        permutation = _site_permutation(array, positions, labels, images, float(symprec))
+        if site_index is None and len(positions):
+            site_index = PeriodicSiteIndex(array, positions, labels, float(symprec))
+        permutation = _site_permutation(array, positions, labels, images, float(symprec), site_index)
         result.append(identity if permutation is None else permutation)
     if not result:
         return identity[None, :]
@@ -398,12 +403,11 @@ def _translations_are_centering(
 ) -> bool:
     """Whether every operation carries one of the centering translations.
 
-    That is the test for a symmorphic setting.  The comparison is the same
-    component-wise one a direct scan performs, but the candidate is found by a
-    bucketed periodic lookup, so the cost is linear in the number of operations
-    rather than their product with the number of centering vectors -- the outer
-    product alone is tens of megabytes for a supercell, whose group has one
-    operation per point-group element *and* lattice point.
+    That is the test for a symmorphic setting. A periodic lookup handles the
+    usual separated centers. If its nearest candidate fails the component-wise
+    bound, other centers may still satisfy it; bounded exact scans resolve only
+    those ambiguous rows without allocating the full operations-by-centers
+    outer product. The tolerance is the same as a direct component-wise scan.
     """
 
     vectors = np.mod(np.asarray(translations, dtype=float).reshape(-1, 3), 1.0)
@@ -412,14 +416,24 @@ def _translations_are_centering(
         return True
     if sites.shape[0] == 0:
         return False
-    # A ball of this radius contains the cube the component-wise test accepts,
-    # so no candidate is missed; the component-wise test is applied afterwards.
-    index = PeriodicSiteIndex(np.eye(3), sites, tolerance=math.sqrt(3.0) * tolerance)
+    # Enclose the component-wise cube with room for rounding at its corners.
+    # Acceptance below still uses the original component-wise tolerance.
+    index = PeriodicSiteIndex(np.eye(3), sites, tolerance=2.0 * tolerance)
     matched = index.match(vectors)
     if np.any(matched < 0):
         return False
     residues = _wrap_fractional(vectors - sites[matched])
-    return bool(np.all(np.abs(residues) <= tolerance))
+    within = np.all(np.abs(residues) <= tolerance, axis=1)
+    if np.all(within):
+        return True
+    for vector in vectors[~within]:
+        for start in range(0, len(sites), 65536):
+            residues = _wrap_fractional(vector - sites[start : start + 65536])
+            if np.any(np.all(np.abs(residues) <= tolerance, axis=1)):
+                break
+        else:
+            return False
+    return True
 
 
 def pure_translations(rotations: np.ndarray, translations: np.ndarray, *, symprec: float = 1e-5) -> np.ndarray:
@@ -528,9 +542,9 @@ def translation_group(
 
     array = _as_lattice(lattice)
     positions = np.mod(np.asarray(positions_direct, dtype=float).reshape(-1, 3), 1.0)
+    labels = _species_labels(species, len(positions))
     if len(positions) == 0:
         return np.zeros((1, 3), dtype=float)
-    labels = _species_labels(species, len(positions))
     scan = _OperationScan(array, positions, labels, float(symprec))
     found = scan.accepted_translations(np.eye(3, dtype=np.int64))
     if not found:  # pragma: no cover - the zero shift always maps a cell onto itself
@@ -702,11 +716,11 @@ def _canonical_planar_gauge(basis: np.ndarray, cell: np.ndarray) -> np.ndarray:
     candidates: list[tuple[tuple[float, ...], np.ndarray]] = []
     for first_row in itertools.product(span, repeat=2):
         for second_row in itertools.product(span, repeat=2):
-            transform = np.array((first_row, second_row), dtype=float)
             # A determinant of exactly one keeps both the lattice and the
             # handedness of the cell the reduction produced.
             if first_row[0] * second_row[1] - first_row[1] * second_row[0] != 1:
                 continue
+            transform = np.array((first_row, second_row), dtype=float)
             pair = transform @ rows[:2]
             cartesian = pair @ matrix
             lengths = np.linalg.norm(cartesian, axis=1)

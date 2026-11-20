@@ -28,7 +28,8 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT.parent))
+PACKAGE = ROOT / "src" / "cellstine"
+sys.path.insert(0, str(ROOT / "src"))
 
 
 def _load_cellstine():
@@ -37,7 +38,7 @@ def _load_cellstine():
     if "cellstine" in sys.modules:
         return sys.modules["cellstine"]
     spec = importlib.util.spec_from_file_location(
-        "cellstine", ROOT / "__init__.py", submodule_search_locations=[str(ROOT)]
+        "cellstine", PACKAGE / "__init__.py", submodule_search_locations=[str(PACKAGE)]
     )
     module = importlib.util.module_from_spec(spec)
     sys.modules["cellstine"] = module

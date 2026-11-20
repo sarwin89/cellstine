@@ -18,6 +18,7 @@ Run these before publishing package artifacts:
 
 ```powershell
 python -m pytest tests -q
+python tools/review_inventory.py --check
 python -m build --sdist --wheel
 python -m twine check dist/*
 ```
@@ -38,20 +39,27 @@ python -m venv .release-sdist-venv
 .release-sdist-venv\Scripts\cellstine.exe --version
 ```
 
-For supported Python versions, run the full test suite on Python 3.10, 3.11,
-and 3.12. The GitHub Actions workflow mirrors that matrix on Windows because
+For supported Python versions, run the full test suite on Python 3.10 through
+3.14. The GitHub Actions workflow mirrors that matrix on Windows because
 the guided CLI has Windows console-encoding behavior that should remain tested.
+Check that the candidate also passes the minimum NumPy job, the nine portable
+workflow jobs across Windows, Linux and macOS, and the package build job.
 
-## Publication sequence
+The Python 3.12 CI job also records line/branch test coverage and retains
+`coverage.xml` as the `python-3.12-coverage` workflow artifact. Review progress
+is tracked separately in [optimization/README.md](optimization/README.md):
+coverage percentages do not prove that a function has been reviewed.
 
-1. Ensure `pyproject.toml`, `src/cellstine/__init__.py`, and the README badge
-   agree on the release version.
-2. Run the full test matrix and package checks.
-3. Commit any release-only fixes.
-4. Push `main` and `dev`.
-5. Create an annotated tag, for example `v3.0.2`.
-6. Push the tag.
-7. Upload the checked files from `dist/` to PyPI.
+The publication plan is in [publication-plan.md](publication-plan.md). It is
+planning only; do not upload packages or create release tags without a separate
+maintainer instruction.
+
+Before selecting a candidate, review the
+[release preparation audit](optimization/release-preparation-audit.md) for
+known limitations and the migration from JSON to NPZ as the default moiré
+results format. Keep the release version consistent in `pyproject.toml`,
+`src/cellstine/__init__.py`, and the README badge. Follow the publication
+plan for artifact provenance, publication and post-publication verification.
 
 `dist/`, local release virtual environments, pytest basetemps, and Python cache
 directories are generated local artifacts and should not be committed.

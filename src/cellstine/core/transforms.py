@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import math
 from typing import TYPE_CHECKING, Sequence
 
 import numpy as np
@@ -16,7 +17,13 @@ def rotation_matrix_about_axis(axis: Sequence[float], angle_deg: float) -> np.nd
     norm = float(np.linalg.norm(vector))
     if norm <= 1e-15:
         raise ValueError("rotation axis cannot be zero")
-    unit = vector / norm
+    if math.isfinite(norm):
+        unit = vector / norm
+    else:
+        if not np.all(np.isfinite(vector)):
+            raise ValueError("rotation axis must have finite components")
+        scaled = vector / np.max(np.abs(vector))
+        unit = scaled / np.linalg.norm(scaled)
     x_val, y_val, z_val = unit
     angle = np.deg2rad(float(angle_deg))
     cosine = float(np.cos(angle))
@@ -97,7 +104,7 @@ def strained_copy(structure: "StructureRecord", target_inplane_lattice: np.ndarr
         structure,
         lattice=lattice,
         positions_cartesian=cartesian,
-        positions_direct=np.asarray(structure.positions_direct, dtype=float, copy=True),
+        positions_direct=np.array(structure.positions_direct, dtype=float, copy=True),
         metadata={**structure.metadata, "strained_to_interface": True},
     )
 
@@ -125,6 +132,46 @@ def integer_supercell_matrix(matrix: Sequence[Sequence[int]] | Sequence[int]) ->
     return integers
 
 
+_COSET_BOX_LIMIT = 65536
+
+
+def _cosets_by_residues(integers: np.ndarray, adjugate: np.ndarray, determinant: int) -> np.ndarray:
+    """Enumerate the finite translation quotient, then recover canonical rows."""
+
+    modulus = abs(determinant)
+    sign = 1 if determinant > 0 else -1
+    rows = [[int(value) for value in row] for row in integers]
+    steps = [tuple(sign * int(value) % modulus for value in row) for row in adjugate]
+    residues = [(0, 0, 0)]
+    seen = set(residues)
+    for residue in residues:
+        for step in steps:
+            following = tuple((residue[axis] + step[axis]) % modulus for axis in range(3))
+            if following in seen:
+                continue
+            if len(residues) >= modulus:
+                raise ArithmeticError("the supercell quotient exceeds its determinant")
+            seen.add(following)
+            residues.append(following)
+    if len(residues) != modulus:
+        raise ArithmeticError(
+            f"the supercell enumeration found {len(residues)} translations rather than {modulus}"
+        )
+    cosets = np.empty((modulus, 3), dtype=np.int64)
+    for index, residue in enumerate(residues):
+        for axis in range(3):
+            numerator = sum(residue[row] * rows[row][axis] for row in range(3))
+            value, remainder = divmod(numerator, modulus)
+            if remainder:
+                raise ArithmeticError("a supercell residue does not represent an integer translation")
+            try:
+                cosets[index, axis] = value
+            except OverflowError as error:
+                raise ArithmeticError("a supercell translation exceeds the int64 range") from error
+    order = np.lexsort((cosets[:, 2], cosets[:, 1], cosets[:, 0]))
+    return cosets[order]
+
+
 def supercell_cosets(matrix: Sequence[Sequence[int]] | Sequence[int]) -> np.ndarray:
     """Return the ``|det matrix|`` lattice translations inside the supercell.
 
@@ -141,8 +188,13 @@ def supercell_cosets(matrix: Sequence[Sequence[int]] | Sequence[int]) -> np.ndar
     adjugate = np.rint(np.linalg.inv(integers.astype(float)) * float(determinant)).astype(np.int64)
     if not np.array_equal(integers @ adjugate, determinant * np.eye(3, dtype=np.int64)):
         raise ArithmeticError("could not invert the supercell matrix exactly")
-    lower = np.minimum(integers, 0).sum(axis=0)
-    upper = np.maximum(integers, 0).sum(axis=0)
+    if abs(determinant) == 1:
+        return np.zeros((1, 3), dtype=np.int64)
+    lower = [sum(min(int(row[axis]), 0) for row in integers) for axis in range(3)]
+    upper = [sum(max(int(row[axis]), 0) for row in integers) for axis in range(3)]
+    box_size = math.prod(upper[axis] - lower[axis] + 1 for axis in range(3))
+    if box_size > _COSET_BOX_LIMIT:
+        return _cosets_by_residues(integers, adjugate, determinant)
     ranges = [np.arange(int(lower[axis]), int(upper[axis]) + 1, dtype=np.int64) for axis in range(3)]
     grid = np.stack(np.meshgrid(*ranges, indexing="ij"), axis=-1).reshape(-1, 3)
     scaled = grid @ adjugate

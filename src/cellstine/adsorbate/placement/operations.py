@@ -3,11 +3,12 @@
 Three of the choices made here are choices of a *gap*, and what each of them
 guarantees is proved in ``aristotle-lean-reference/RequestProject/MoleculeFraming.lean``:
 
-* :func:`identify_top_group` cuts the sorted heights at the midpoint of the
-  largest gap (``Cellstine.height_lt_gapCut``, ``Cellstine.gapCut_lt_height``);
+* The largest-gap fallback of :func:`identify_top_group` cuts sorted heights at
+  that gap's midpoint (``Cellstine.height_lt_gapCut``, ``Cellstine.gapCut_lt_height``);
   every atom is then at least half a gap clear of the cut
   (``Cellstine.gapCut_clearance_below``) and no other cut is more robust
   (``Cellstine.exists_height_near_of_mem_range``).
+  A lower disjoint-species gap takes priority when one exists.
 * :func:`_unwrap_periodic_axis_with_start` puts the branch cut of a fractional
   coordinate at the largest empty arc.  Unwrapping moves each atom by a whole
   lattice vector (``Cellstine.unwrapTo_sub_mem``), always lands inside one
@@ -28,6 +29,8 @@ guarantees is proved in ``aristotle-lean-reference/RequestProject/MoleculeFramin
 from __future__ import annotations
 
 from dataclasses import dataclass
+from collections import Counter
+import math
 from pathlib import Path
 from typing import Sequence
 
@@ -37,6 +40,7 @@ from ...core.contacts import contact_report
 from ...core.elements import ATOMIC_MASSES, species_masses
 from ...core.layers import LAYER_TOLERANCE, LayerShiftRun, resolve_shift_vectors
 from ...core.provenance import restage_comment
+from ...core.outputs import reserve_default_file
 from ...core.species import expand_species
 from ...core.transforms import yaw_pitch_roll_matrix
 from ...core.vacuum import fit_cell_to_vacuum, normal_heights, vacuum_gap
@@ -137,18 +141,26 @@ def _species_disjoint_split(
         return None
 
     expanded_species = np.array(expand_species(structure.species, structure.counts), dtype=object)
+    upper_counts = Counter(str(symbol) for symbol in expanded_species)
+    bottom_species = set()
+    shared = 0
+    cursor = 0
     for gap_index in gap_candidates.tolist():
-        bottom_cluster = order[: gap_index + 1]
-        upper_cluster = order[gap_index + 1 :]
-        if bottom_cluster.size == 0 or upper_cluster.size == 0:
+        while cursor <= gap_index:
+            symbol = str(expanded_species[order[cursor]])
+            if symbol not in bottom_species:
+                bottom_species.add(symbol)
+                shared += 1
+            upper_counts[symbol] -= 1
+            if upper_counts[symbol] == 0:
+                shared -= 1
+            cursor += 1
+        if shared:
             continue
-
-        bottom_species = {str(expanded_species[index]) for index in bottom_cluster.tolist()}
-        upper_species = {str(expanded_species[index]) for index in upper_cluster.tolist()}
-        if not bottom_species or not upper_species or not bottom_species.isdisjoint(upper_species):
-            continue
-
-        substrate_mask = np.array([str(symbol) in bottom_species for symbol in expanded_species], dtype=bool)
+        # Disjoint species imply that this sorted prefix contains every atom
+        # of its species, so its atom mask equals the old membership scan.
+        substrate_mask = np.zeros(len(expanded_species), dtype=bool)
+        substrate_mask[order[:cursor]] = True
         molecule_mask = ~substrate_mask
         if np.any(substrate_mask) and np.any(molecule_mask):
             return _TopGroupSplit(
@@ -165,7 +177,12 @@ def center_of_mass_cartesian(positions: np.ndarray, species: Sequence[str]) -> n
     weight = float(np.sum(masses))
     if weight <= 0.0:
         raise ValueError("total atomic mass must be positive")
-    return np.sum(np.asarray(positions, dtype=float) * masses[:, None], axis=0) / weight
+    points = np.asarray(positions, dtype=float)
+    if points.shape != (len(masses), 3):
+        raise ValueError("positions must be an (N, 3) array matching the species count")
+    if not np.all(np.isfinite(points)):
+        raise ValueError("positions must have finite coordinates")
+    return np.sum(points * masses[:, None], axis=0) / weight
 
 
 def identify_top_group(
@@ -281,6 +298,15 @@ def _resolve_target_cartesian(
     return current.copy()
 
 
+def _molecule_rotation(rotation_deg, tilt_deg, roll_deg) -> np.ndarray | None:
+    """Validate all requested angles, retaining the exact zero-rotation path."""
+
+    angles = (float(rotation_deg), float(tilt_deg), float(roll_deg))
+    if not all(math.isfinite(angle) for angle in angles):
+        raise ValueError("rotation angles must be finite")
+    return yaw_pitch_roll_matrix(*angles) if any(angle != 0.0 for angle in angles) else None
+
+
 def _transform_molecule_cartesian(
     positions: np.ndarray,
     species: Sequence[str],
@@ -297,20 +323,28 @@ def _transform_molecule_cartesian(
     pivot = _resolve_target_cartesian(lattice, com_before, target_cartesian, target_direct)
 
     translated = positions_array + (pivot - com_before)
-    if abs(float(rotation_deg)) > 0.0 or abs(float(tilt_deg)) > 0.0 or abs(float(roll_deg)) > 0.0:
-        rotation = yaw_pitch_roll_matrix(float(rotation_deg), float(tilt_deg), float(roll_deg))
+    rotation = _molecule_rotation(rotation_deg, tilt_deg, roll_deg)
+    if rotation is not None:
         translated = (translated - pivot) @ rotation.T + pivot
 
     return translated, com_before
 
 
 def _normalise_reframe_axes(reframe_axes: str | Sequence[str] | None) -> tuple[int, ...]:
-    if reframe_axes in {None, "", "none"}:
+    if reframe_axes is None:
         return tuple()
 
     axis_map = {"x": 0, "y": 1, "z": 2}
     if isinstance(reframe_axes, str):
-        tokens = [char for char in reframe_axes.lower() if char in axis_map]
+        text = reframe_axes.strip().lower()
+        if text in {"", "none"}:
+            return tuple()
+        tokens = []
+        for char in text:
+            if char in axis_map:
+                tokens.append(char)
+            elif not char.isspace() and char not in ",;:/_-":
+                raise ValueError(f"unsupported reframe axis {char!r}; use x, y, z, xy, xyz, or none")
     else:
         tokens = [str(item).strip().lower() for item in reframe_axes]
 
@@ -344,8 +378,8 @@ def _estimate_inplane_repeats_for_molecule(
     positions = np.asarray(molecule.positions_cartesian, dtype=float)
     com = center_of_mass_cartesian(positions, molecule_species)
     centered = positions - com
-    if abs(float(rotation_deg)) > 0.0 or abs(float(tilt_deg)) > 0.0 or abs(float(roll_deg)) > 0.0:
-        rotation = yaw_pitch_roll_matrix(float(rotation_deg), float(tilt_deg), float(roll_deg))
+    rotation = _molecule_rotation(rotation_deg, tilt_deg, roll_deg)
+    if rotation is not None:
         centered = centered @ rotation.T
     direct_delta = io_mod.cartesian_to_direct(centered, substrate.lattice)
     spans = np.ptp(direct_delta[:, :2], axis=0) if direct_delta.size else np.zeros(2, dtype=float)
@@ -436,7 +470,8 @@ def _combine_substrate_and_molecule(
             np.asarray(molecule_positions_cartesian, dtype=float),
         )
     )
-    molecule_indices = tuple(range(substrate.natoms, substrate.natoms + molecule.natoms))
+    substrate_atoms = substrate.natoms
+    molecule_indices = tuple(range(substrate_atoms, substrate_atoms + molecule.natoms))
     combined_direct = io_mod.cartesian_to_direct(combined_cartesian, cell)
     reframed_direct, shift_direct = _reframe_direct_positions(
         combined_direct,
@@ -445,18 +480,7 @@ def _combine_substrate_and_molecule(
     )
     reframed_cartesian = io_mod.direct_to_cartesian(reframed_direct, cell)
 
-    substrate_flags = (
-        _default_flag_list(substrate.natoms)
-        if substrate.selective_flags is None
-        else [tuple(flags) for flags in substrate.selective_flags]
-    )
-    molecule_flags = (
-        _default_flag_list(molecule.natoms)
-        if molecule.selective_flags is None
-        else [tuple(flags) for flags in molecule.selective_flags]
-    )
     use_flags = substrate.selective_flags is not None or molecule.selective_flags is not None
-    combined_flags = substrate_flags + molecule_flags
 
     combined_species_expanded = substrate_species_expanded + molecule_species_expanded
     species_order: list[str] = []
@@ -466,13 +490,24 @@ def _combine_substrate_and_molecule(
 
     ordered_indices: list[int] = []
     counts: list[int] = []
+    indices_by_species = {}
+    for index, symbol in enumerate(combined_species_expanded):
+        indices_by_species.setdefault(symbol, []).append(index)
     for symbol in species_order:
-        indices_for_species = [index for index, entry in enumerate(combined_species_expanded) if entry == symbol]
+        indices_for_species = indices_by_species.get(symbol, [])
         ordered_indices.extend(indices_for_species)
         counts.append(len(indices_for_species))
 
     positions_direct_out = reframed_direct[np.array(ordered_indices, dtype=int)]
-    flags_out = [combined_flags[index] for index in ordered_indices] if use_flags else None
+    flags_out = None
+    if use_flags:
+        flags_out = []
+        for index in ordered_indices:
+            if index < substrate_atoms:
+                flags = None if substrate.selective_flags is None else substrate.selective_flags[index]
+            else:
+                flags = None if molecule.selective_flags is None else molecule.selective_flags[index - substrate_atoms]
+            flags_out.append(("T", "T", "T") if flags is None else tuple(flags))
     final_molecule_cartesian = reframed_cartesian[np.array(molecule_indices, dtype=int)]
     return positions_direct_out, counts, species_order, flags_out, shift_direct, final_molecule_cartesian
 
@@ -613,9 +648,9 @@ def transform_top_molecule(
     if output_path is None:
         input_path = Path(poscar_path).resolve()
         DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        output_path = str(
-            (DEFAULT_OUTPUT_DIR / f"{input_path.stem}_molecule_adjusted{input_path.suffix or '.vasp'}").resolve()
-        )
+        output_path = str(reserve_default_file(
+            DEFAULT_OUTPUT_DIR / f"{input_path.stem}_molecule_adjusted{input_path.suffix or '.vasp'}"
+        ).resolve())
     else:
         Path(output_path).resolve().parent.mkdir(parents=True, exist_ok=True)
 
@@ -760,12 +795,12 @@ def place_molecule_on_site(
         molecule_path = Path(molecule_poscar).resolve()
         DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
         canonical_site = surface_mod.canonical_site_type(site_type)
-        output_path = str(
+        output_path = str(reserve_default_file(
             (
                 DEFAULT_OUTPUT_DIR
                 / f"{substrate_path.stem}__{molecule_path.stem}_{canonical_site}{int(site_index):02d}{substrate_path.suffix or '.vasp'}"
-            ).resolve()
-        )
+            )
+        ).resolve())
     else:
         Path(output_path).resolve().parent.mkdir(parents=True, exist_ok=True)
 
@@ -836,9 +871,9 @@ def shift_top_layer(
     if output_path is None:
         input_path = Path(poscar_path).resolve()
         DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        output_path = str(
-            (DEFAULT_OUTPUT_DIR / f"{input_path.stem}_upper_layer_shifted{input_path.suffix or '.vasp'}").resolve()
-        )
+        output_path = str(reserve_default_file(
+            DEFAULT_OUTPUT_DIR / f"{input_path.stem}_upper_layer_shifted{input_path.suffix or '.vasp'}"
+        ).resolve())
     else:
         Path(output_path).resolve().parent.mkdir(parents=True, exist_ok=True)
 

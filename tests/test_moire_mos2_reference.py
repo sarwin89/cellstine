@@ -34,9 +34,11 @@ import json
 import math
 from pathlib import Path
 
+
 import numpy as np
 import pytest
 
+from cellstine.moire.search.results import read_results
 from cellstine.cli.main import execute_namespace
 from cellstine.cli.parsers import build_parser
 from cellstine.defect.workflow import Defect
@@ -151,8 +153,8 @@ def bilayer_search(workspace):
         )
     finally:
         patch.undo()
-    results_file = found.artifacts["results_json"]
-    document = json.loads(Path(results_file).read_text())
+    results_file = found.artifacts["results_npz"]
+    document = read_results(results_file)
     return workspace, results_file, document
 
 

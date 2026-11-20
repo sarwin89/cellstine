@@ -161,12 +161,14 @@ def termination_report(
     notes; the checks only ever have anything to say about a compound.
     """
 
-    bulk_totals = {
-        str(symbol): int(count) for symbol, count in zip(bulk_species, bulk_counts) if int(count) > 0
-    }
-    slab_totals = {
-        str(symbol): int(count) for symbol, count in zip(slab_species, slab_counts) if int(count) > 0
-    }
+    bulk_totals: dict[str, int] = {}
+    slab_totals: dict[str, int] = {}
+    for totals, labels, numbers in ((bulk_totals, bulk_species, bulk_counts), (slab_totals, slab_species, slab_counts)):
+        for symbol, number in zip(labels, numbers):
+            count = int(number)
+            if count > 0:
+                key = str(symbol)
+                totals[key] = totals.get(key, 0) + count
     formula = formula_unit(bulk_totals)
 
     # How many whole formula units the slab holds, and what is left over.  A
@@ -232,8 +234,9 @@ def termination_report(
 def _fractional_units(slab_totals: Mapping[str, int], formula: Mapping[str, int]) -> float:
     """Return how many formula units the slab holds, the limiting species deciding.
 
-    The count is whole exactly when the slab is stoichiometric; ``2.5`` says the
-    cell is half a formula unit short of three.  An empty formula -- a structure
+    Stoichiometric slabs have a whole count, but a whole limiting ratio can
+    still leave another species in excess. ``2.5`` means the limiting species
+    supplies two and a half units. An empty formula -- a structure
     with no atoms -- has no meaningful count.
     """
 

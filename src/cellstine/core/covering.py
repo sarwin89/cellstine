@@ -112,11 +112,12 @@ def branch_and_bound_maximum(
         live = (values + reach) > best
         if not np.any(live):
             return best
+        child_count = int(np.count_nonzero(live)) * offsets.shape[0]
+        if spent + child_count > int(probe_budget):
+            return bound
         children = (
             centres[live][:, None, :] + offsets[None, :, :] * step[None, None, :]
         ).reshape(-1, dimension)
-        if spent + children.shape[0] > int(probe_budget):
-            return bound
         centres = children
         step = step * 0.5
         reach *= 0.5

@@ -14,12 +14,12 @@ of index ``n`` is the row span of exactly one integer matrix in Hermite normal
 form: upper triangular, positive diagonal with product ``n``, and every
 off-diagonal entry reduced modulo the diagonal entry of its column.  Enumerating
 those matrices therefore enumerates the possible supercells once each, with no
-sublattice missed and none repeated, and the best of them is the roundest cell
-of that size.  The result is usually *not* a diagonal repeat: an fcc primitive
-cell repeated ``2x2x2`` separates the images by 2 a, while the eight-cell
-sublattice that gives the conventional cubic cell doubled separates them by
-``2 a / sqrt 2 * sqrt 2`` -- the search finds whichever is larger without being
-told about the crystal system.
+sublattice missed and none repeated. Image separation is ranked first; shape
+is a heuristic secondary tie-breaker. A useful choice need not be a diagonal
+repeat: four fcc primitive cells can form the conventional cubic cell, whose
+image separation is ``a``. Four-cell diagonal repeats retain a shortest
+translation of ``a / sqrt 2``. The search uses the actual lattice rather than
+being told about the crystal system.
 
 Two things keep the answer honest rather than merely arithmetic:
 
@@ -48,6 +48,7 @@ from typing import Any, Iterator, Sequence
 
 import numpy as np
 
+from ..core._integer_grid import _integer_box_blocks
 from ..core.geometry import (
     as_lattice,
     delaunay_reduce,
@@ -285,45 +286,41 @@ def image_distance_of(lattice: np.ndarray, matrix: Sequence[Sequence[int]], *, p
 def _hermite_parameters_3d(cells: int) -> np.ndarray:
     """The Hermite normal forms of determinant ``cells`` as ``(a, b, c, e, f, i)``."""
 
-    blocks: list[np.ndarray] = []
     count = int(cells)
+    parameters = np.empty((hermite_normal_form_count(count), 6), dtype=np.int64)
+    offset = 0
     for first in _divisors(count):
         rest = count // first
         for second in _divisors(rest):
             third = rest // second
-            grid = np.stack(
-                np.meshgrid(
-                    np.arange(second, dtype=np.int64),
-                    np.arange(third, dtype=np.int64),
-                    np.arange(third, dtype=np.int64),
-                    indexing="ij",
-                ),
-                axis=-1,
-            ).reshape(-1, 3)
-            block = np.empty((grid.shape[0], 6), dtype=np.int64)
+            size = second * third * third
+            block = parameters[offset:offset + size]
             block[:, 0] = first
-            block[:, 1] = grid[:, 0]
-            block[:, 2] = grid[:, 1]
             block[:, 3] = second
-            block[:, 4] = grid[:, 2]
             block[:, 5] = third
-            blocks.append(block)
-    return np.concatenate(blocks, axis=0)
+            shaped = block.reshape(second, third, third, 6)
+            shaped[..., 1] = np.arange(second, dtype=np.int64)[:, None, None]
+            numbers = np.arange(third, dtype=np.int64)
+            shaped[..., 2] = numbers[None, :, None]
+            shaped[..., 4] = numbers[None, None, :]
+            offset += size
+    return parameters
 
 
 def _hermite_parameters_2d(cells: int) -> np.ndarray:
     """The plane Hermite normal forms of determinant ``cells`` as ``(a, b, d)``."""
 
-    blocks: list[np.ndarray] = []
     count = int(cells)
+    parameters = np.empty((hermite_normal_form_count(count, plane=True), 3), dtype=np.int64)
+    offset = 0
     for first in _divisors(count):
         second = count // first
-        block = np.empty((second, 3), dtype=np.int64)
+        block = parameters[offset:offset + second]
         block[:, 0] = first
         block[:, 1] = np.arange(second, dtype=np.int64)
         block[:, 2] = second
-        blocks.append(block)
-    return np.concatenate(blocks, axis=0)
+        offset += second
+    return parameters
 
 
 def host_lattice_vectors(
@@ -342,13 +339,25 @@ def host_lattice_vectors(
         spacings = 1.0 / np.linalg.norm(np.linalg.pinv(rows), axis=0)
     else:
         spacings = 1.0 / np.linalg.norm(np.linalg.inv(rows), axis=0)
-    reach = np.floor(float(radius) / spacings + 1e-9).astype(np.int64)
-    ranges = [np.arange(-int(value), int(value) + 1, dtype=np.int64) for value in reach]
-    grid = np.stack(np.meshgrid(*ranges, indexing="ij"), axis=-1).reshape(-1, len(ranges))
-    grid = grid[np.any(grid != 0, axis=1)]
-    norms = np.linalg.norm(grid.astype(float) @ rows, axis=1)
-    keep = norms <= float(radius) + 1e-9
-    grid, norms = grid[keep], norms[keep]
+    with np.errstate(over="ignore", invalid="ignore"):
+        reach_float = np.floor(float(radius) / spacings + 1e-9)
+    if not np.all(np.isfinite(reach_float)) or np.any(np.abs(reach_float) >= float(1 << 63)):
+        raise ValueError("host lattice search coordinates must be finite and fit int64")
+    reach = reach_float.astype(np.int64)
+    if np.any(reach < 0):
+        return np.empty((0, len(rows)), dtype=np.int64), np.empty(0, dtype=float)
+    points: list[np.ndarray] = []
+    lengths: list[np.ndarray] = []
+    for block in _integer_box_blocks(tuple(int(value) for value in reach)):
+        block = block[np.any(block != 0, axis=1)]
+        norms = np.linalg.norm(block.astype(float) @ rows, axis=1)
+        keep = norms <= float(radius) + 1e-9
+        if np.any(keep):
+            points.append(block[keep])
+            lengths.append(norms[keep])
+    if not points:
+        return np.empty((0, len(rows)), dtype=np.int64), np.empty(0, dtype=float)
+    grid, norms = np.concatenate(points), np.concatenate(lengths)
     order = np.argsort(norms)
     return grid[order], norms[order]
 
@@ -474,16 +483,18 @@ def reduced_supercell_matrix(
 def _roundest(
     lattice: np.ndarray, matrices: Sequence[np.ndarray], *, plane: bool
 ) -> np.ndarray:
-    """Pick the roundest cell among sublattices with the same shortest vector.
+    """Rank a shape shortlist among cells with the same shortest vector.
 
     Several sublattices of an index often share the same image separation --
     for face-centred cubic aluminium four primitive cells reach ``a`` in more
     than one way -- and they are not equally good cells to compute in.  The one
-    kept is the most orthogonal: since they all enclose the same volume, that is
-    the one whose reduced basis vectors have the smallest product, by Hadamard's
-    inequality, and then the shortest longest vector.  Ties left after that are
-    broken by the entries of the matrix, so the answer never depends on the
-    order the candidates were enumerated in.
+    kept minimizes the reduced basis-vector product within the shortlist,
+    followed by its longest vector and absolute matrix entries. At fixed
+    volume the product measures orthogonality by Hadamard's inequality.
+    Larger sets are first shortlisted by unreduced basis-vector product.
+    That cheap score does not certify global reduced-basis roundness, and
+    shortlist ties can depend on enumeration order. Image separation is
+    selected separately and is not replaced by this secondary heuristic.
     """
 
     array = as_lattice(lattice)

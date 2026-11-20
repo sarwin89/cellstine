@@ -17,7 +17,7 @@ import math
 import numpy as np
 import pytest
 
-from cellstine.core.lattice import vector_angle_deg
+from cellstine.core.lattice import inplane_principal_log_strains, vector_angle_deg
 
 
 def _rotated_pair(angle_deg: float) -> tuple[np.ndarray, np.ndarray]:
@@ -69,6 +69,19 @@ def test_antiparallel_vectors_give_one_hundred_and_eighty_degrees() -> None:
 def test_a_zero_vector_is_rejected() -> None:
     with pytest.raises(ValueError):
         vector_angle_deg([0.0, 0.0], [1.0, 0.0])
+
+
+def test_inplane_strain_rejects_a_rank_deficient_top_cell():
+    top = np.array([[1.0, 2.0, 0.0], [2.0, 4.0, 0.0], [0.0, 0.0, 10.0]])
+    with pytest.raises(ValueError, match="independent"):
+        inplane_principal_log_strains(np.eye(3), top)
+
+
+@pytest.mark.parametrize("scale", [1e-200, 1e-160, 1e200])
+@pytest.mark.parametrize("angle", [30.0, 90.0, 180.0])
+def test_finite_nonzero_vectors_keep_their_angle_at_extreme_scales(scale, angle):
+    first, second = _rotated_pair(angle)
+    assert vector_angle_deg(scale * first, 3.7 * scale * second) == pytest.approx(angle, abs=1e-12)
 
 
 def test_the_moire_and_surface_reports_use_the_shared_helper() -> None:

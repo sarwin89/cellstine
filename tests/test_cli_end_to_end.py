@@ -13,9 +13,11 @@ import json
 import math
 from pathlib import Path
 
+
 import numpy as np
 import pytest
 
+from cellstine.moire.search.results import read_results
 from cellstine.cli.main import execute_namespace
 from cellstine.cli.parsers import build_parser
 from cellstine.io import native as io_mod
@@ -103,8 +105,8 @@ def test_the_moire_pipeline_runs_from_search_to_structure(graphene, workspace):
     found = run_cli(
         "moire", "search", graphene, graphene, "--length", "8", "--strain", "0.01",
     )
-    results_path = Path(found.artifacts["results_json"])
-    document = json.loads(results_path.read_text())
+    results_path = Path(found.artifacts["results_npz"])
+    document = read_results(results_path)
     assert document["schema"] == "cellstine.moire.gram"
     assert int(found.summary["candidate_count"]) == len(document["candidates"])
 
@@ -280,7 +282,7 @@ def test_the_visualizers_write_the_files_they_promise(graphene, aluminium, works
     found = run_cli(
         "moire", "search", graphene, graphene, "--length", "8", "--strain", "0.01",
     )
-    results_path = str(Path(found.artifacts["results_json"]))
+    results_path = str(Path(found.artifacts["results_npz"]))
     png = workspace / "moire.png"
     picture = run_cli("moire", "view", results_path, "--indices", "1", "--output", str(png))
     assert png.exists() and png.stat().st_size > 0

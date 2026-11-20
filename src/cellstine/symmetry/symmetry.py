@@ -2,17 +2,18 @@
 
 from __future__ import annotations
 
-import json
 from dataclasses import replace
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 import numpy as np
 
-from ..core.lattice import vector_angle_deg
+from ..core.lattice import vector_angle_deg as vector_angle_deg
 from ..core.species import expand_species
 from ..core.base import Base, run_output_suffix
 from ..core.models import CommandResult
+from ..core.jsonio import write_indented_json
+from ..core.outputs import reserve_default_file
 from ..io.converters import StructureConverter
 from ..io.models import StructureRecord
 from ..io.vasp import VaspIO
@@ -38,7 +39,7 @@ from .spglib_adapter import (
 def _write_analysis_file(path: Path, analysis: SymmetryAnalysis) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
-        json.dump(analysis.to_dict(), handle, indent=2)
+        write_indented_json(handle, analysis.to_dict())
         handle.write("\n")
     return path.resolve()
 
@@ -483,7 +484,7 @@ class Symmetry(BandPathMixin, Base):
         else:
             reduced = self._native_conventional_record(record, symprec=float(symprec), idealise=kind == "refined")
         run_id, run_dir = self.create_run_dir("reduce", label=Path(source).stem)
-        destination = Path(output_path).resolve() if output_path is not None else self.output_root / f"symmetry_{cell}_{Path(source).stem}_{run_output_suffix(run_id).replace('_', '-')}.vasp"
+        destination = Path(output_path).resolve() if output_path is not None else reserve_default_file(self.output_root / f"symmetry_{cell}_{Path(source).stem}_{run_output_suffix(run_id).replace('_', '-')}.vasp")
         written = self.vasp_io.write(reduced, str(destination), positions_are_cartesian=False, wrap_positions=True)
         summary = {"backend": resolved_backend, "cell": kind, "atom_count": int(reduced.natoms)}
         artifacts = {"output_poscar": str(written)}
@@ -520,7 +521,7 @@ class Symmetry(BandPathMixin, Base):
             backend=resolved_backend,
         )
         run_id, run_dir = self.create_run_dir("lattice_reduce", label=Path(source).stem)
-        destination = Path(output_path).resolve() if output_path is not None else self.output_root / f"symmetry_{reduction}_{Path(source).stem}_{run_output_suffix(run_id).replace('_', '-')}.vasp"
+        destination = Path(output_path).resolve() if output_path is not None else reserve_default_file(self.output_root / f"symmetry_{reduction}_{Path(source).stem}_{run_output_suffix(run_id).replace('_', '-')}.vasp")
         written = self.vasp_io.write(reduced, str(destination), positions_are_cartesian=False, wrap_positions=True)
         summary = {"backend": resolved_backend, "reduction": str(reduction).lower(), "atom_count": int(reduced.natoms)}
         artifacts = {"output_poscar": str(written)}
@@ -606,8 +607,8 @@ class Symmetry(BandPathMixin, Base):
         destination = (
             Path(output_path).resolve()
             if output_path is not None
-            else self.output_root
-            / f"KPOINTS_{Path(source).stem}_{run_output_suffix(run_id).replace('_', '-')}"
+            else reserve_default_file(self.output_root
+            / f"KPOINTS_{Path(source).stem}_{run_output_suffix(run_id).replace('_', '-')}")
         )
         comment = (
             f"{Path(source).stem} {counts[0]}x{counts[1]}x{counts[2]} "

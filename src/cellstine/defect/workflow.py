@@ -219,6 +219,7 @@ class Defect(
                 "layer_tolerance": float(layer_tolerance),
                 "symprec": float(symprec),
                 "divacancy_distance": float(divacancy_distance),
+                "interstitial_saddles": bool(interstitial_saddles),
                 "view_direction": (analysis.view_direction or {}).get("spec"),
             },
             artifacts=artifacts,
@@ -248,8 +249,9 @@ class Defect(
 
         The cell is chosen for the distance it puts between the defect and its
         periodic images, not for the number of atoms: every sublattice of the
-        host lattice of a given index is enumerated in Hermite normal form and
-        the roundest one wins, which is usually not a plain repeat.  With
+        host lattice of a given index is enumerated in Hermite normal form.
+        Image separation is ranked first, followed by a heuristic shape
+        tie-breaker; the result need not be a plain repeat. With
         ``min_image_distance`` the smallest cell that reaches the requested
         separation is written; with ``max_cells`` the best cell of at most that
         many host cells is written instead.  A slab is treated as periodic in
@@ -439,7 +441,7 @@ class Defect(
         summary = {
             "structure_kind": analysis.structure_kind,
             "backend": analysis.backend,
-            "shown_sites": min(int(limit), len(analysis.sites)),
+            "shown_sites": min(max(0, int(limit)), len(analysis.sites)),
             "total_sites": len(analysis.sites),
             "layers": len(analysis.layers),
             "view_direction": (analysis.view_direction or {}).get("label"),
@@ -457,6 +459,7 @@ class Defect(
                 "layer_tolerance": float(layer_tolerance),
                 "symprec": float(symprec),
                 "divacancy_distance": float(divacancy_distance),
+                "interstitial_saddles": bool(interstitial_saddles),
             },
             artifacts=artifacts,
             summary=summary,

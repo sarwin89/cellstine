@@ -211,10 +211,12 @@ def _lattice_points(lattice: np.ndarray, radius: int = 4) -> np.ndarray:
     return grid.astype(float) @ reduced
 
 
-def _shortest_along(lattice: np.ndarray, axis: np.ndarray, tolerance: float = 1e-6) -> np.ndarray:
+def _shortest_along(
+    lattice: np.ndarray, axis: np.ndarray, tolerance: float = 1e-6, *, points: np.ndarray | None = None
+) -> np.ndarray:
     """Return the shortest lattice vector parallel to ``axis``."""
 
-    points = _lattice_points(lattice)
+    points = _lattice_points(lattice) if points is None else points
     lengths = np.linalg.norm(points, axis=1)
     projections = points @ axis
     parallel = np.abs(np.abs(projections) - lengths) <= tolerance * np.maximum(lengths, 1.0)
@@ -224,10 +226,12 @@ def _shortest_along(lattice: np.ndarray, axis: np.ndarray, tolerance: float = 1e
     return points[forward][int(np.argmin(lengths[forward]))]
 
 
-def _shortest_perpendicular(lattice: np.ndarray, axis: np.ndarray, tolerance: float = 1e-6) -> np.ndarray:
+def _shortest_perpendicular(
+    lattice: np.ndarray, axis: np.ndarray, tolerance: float = 1e-6, *, points: np.ndarray | None = None
+) -> np.ndarray:
     """Return the shortest lattice vector perpendicular to ``axis``."""
 
-    points = _lattice_points(lattice)
+    points = _lattice_points(lattice) if points is None else points
     lengths = np.linalg.norm(points, axis=1)
     perpendicular = np.abs(points @ axis) <= tolerance * np.maximum(lengths, 1.0)
     if not np.any(perpendicular):  # pragma: no cover - defensive
@@ -294,7 +298,8 @@ def _centring_from_cosets(lattice: np.ndarray, cell: np.ndarray) -> tuple[str, n
 def _orthogonal_cell(lattice: np.ndarray, axes: Sequence[np.ndarray]) -> np.ndarray:
     """Return the conventional cell built from shortest vectors along ``axes``."""
 
-    vectors = [_shortest_along(lattice, axis) for axis in axes]
+    points = _lattice_points(lattice)
+    vectors = [_shortest_along(lattice, axis, points=points) for axis in axes]
     order = np.argsort([float(np.linalg.norm(vector)) for vector in vectors], kind="stable")
     cell = np.asarray([vectors[int(index)] for index in order], dtype=float)
     if float(np.linalg.det(cell)) < 0.0:
@@ -312,8 +317,9 @@ def _axial_cell(lattice: np.ndarray, axis: np.ndarray, turn: float) -> np.ndarra
     triple hexagonal cell, so no separate stacking is needed.
     """
 
-    plane = _shortest_perpendicular(lattice, axis)
-    third = _shortest_along(lattice, axis)
+    points = _lattice_points(lattice)
+    plane = _shortest_perpendicular(lattice, axis, points=points)
+    third = _shortest_along(lattice, axis, points=points)
     if float(third @ axis) < 0.0:  # pragma: no cover - defensive
         third = -third
     second = _rotate(plane, axis, turn)
@@ -326,8 +332,8 @@ def _axial_cell(lattice: np.ndarray, axis: np.ndarray, turn: float) -> np.ndarra
 def _monoclinic_cell(lattice: np.ndarray, axis: np.ndarray) -> np.ndarray:
     """Return the b-unique conventional cell of a monoclinic lattice."""
 
-    unique = _shortest_along(lattice, axis)
     points = _lattice_points(lattice)
+    unique = _shortest_along(lattice, axis, points=points)
     lengths = np.linalg.norm(points, axis=1)
     inplane = points[np.abs(points @ axis) <= 1e-6 * np.maximum(lengths, 1.0)]
     order = np.argsort(np.linalg.norm(inplane, axis=1), kind="stable")

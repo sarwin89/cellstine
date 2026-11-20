@@ -13,9 +13,11 @@ import json
 import math
 from pathlib import Path
 
+
 import numpy as np
 import pytest
 
+from cellstine.moire.search.results import read_results
 from cellstine.adsorbate.assemble import assemble
 from cellstine.adsorbate.placement.place import place
 from cellstine.adsorbate.transform.move import move
@@ -209,7 +211,7 @@ def test_assemble_reports_substrate_supercells_that_fit_the_target(aluminium_sla
         bottom_strain=0.05,
         preview_limit=3,
     )
-    document = json.loads(Path(result.artifacts["results_json"]).read_text())
+    document = read_results(result.artifacts["results_npz"])
     assert document["candidates"], "no substrate supercell was offered"
 
     # The synthetic target the search ran against is written out alongside the

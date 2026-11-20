@@ -19,17 +19,18 @@ reciprocal-space commands live.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 import numpy as np
 
 from ..core import symmetry3d
 from ..core.base import run_output_suffix
+from ..core.jsonio import write_indented_json
 from ..core.bravais import conventional_cell
 from ..core.kpath import BandPath, band_path
 from ..core.models import CommandResult
+from ..core.outputs import reserve_default_file
 from ..core.species import expand_species
 from ..io import kpoints as kpoints_io
 
@@ -146,8 +147,8 @@ class BandPathMixin:
         destination = (
             Path(output_path).resolve()
             if output_path is not None
-            else self.output_root
-            / f"KPOINTS_band_{Path(source).stem}_{run_output_suffix(run_id).replace('_', '-')}"
+            else reserve_default_file(self.output_root
+            / f"KPOINTS_band_{Path(source).stem}_{run_output_suffix(run_id).replace('_', '-')}")
         )
         comment = f"{Path(source).stem} {cell.symbol} band path {result.path_string()}"
         written = kpoints_io.write_band_path(destination, result, divisions=count, comment=comment)
@@ -171,7 +172,7 @@ class BandPathMixin:
         }
         kpath_json = run_dir / "kpath.json"
         with kpath_json.open("w", encoding="utf-8") as handle:
-            json.dump(payload_json, handle, indent=2)
+            write_indented_json(handle, payload_json)
 
         lengths = result.segment_lengths()
         warnings: list[str] = []

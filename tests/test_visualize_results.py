@@ -6,9 +6,11 @@ import json
 import re
 from pathlib import Path
 
+
 import numpy as np
 import pytest
 
+from cellstine.moire.search.results import read_results
 from cellstine.io import native as io
 from cellstine.moire.moire import Moire
 from cellstine.visualize.visualize import Visualize
@@ -30,7 +32,7 @@ def graphene_results(tmp_path_factory, graphene_poscar):
         bottom_strain=0.01,
         preview_limit=0,
     )
-    return workspace, workflow, found.artifacts["results_json"]
+    return workspace, workflow, found.artifacts["results_npz"]
 
 
 def _frames_of(html: str) -> list[dict]:
@@ -86,7 +88,7 @@ def test_plotly_viewer_matches_the_written_poscar(graphene_results):
 
 def test_plotly_viewer_reports_the_recorded_candidate(graphene_results):
     workspace, _, results_json = graphene_results
-    payload = json.loads(Path(results_json).read_text(encoding="utf-8"))
+    payload = read_results(results_json)
     record = next(
         candidate for candidate in payload["candidates"] if int(candidate["index"]) == 1
     )

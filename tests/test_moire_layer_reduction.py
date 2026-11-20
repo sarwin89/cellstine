@@ -16,6 +16,7 @@ import json
 import numpy as np
 import pytest
 
+from cellstine.moire.search.results import read_results
 from cellstine.core.species import expand_species, group_species
 from cellstine.core.symmetry3d import planar_primitive_layer, planar_translation_basis
 from cellstine.io import native as io
@@ -191,7 +192,7 @@ def test_the_reduced_layer_is_written_and_recorded(tmp_path):
         max_atoms=100,
         output_root=str(tmp_path / "runs"),
     )
-    document = json.loads(run.result_path.read_text())
+    document = read_results(run.result_path)
     metadata = document["metadata"]
     assert metadata["top_layer_index"] == 4
     assert metadata["bottom_layer_index"] == 4
@@ -230,7 +231,7 @@ def test_keeping_the_layer_cells_reproduces_the_old_coarse_search(tmp_path):
     # Every cell is a supercell of the 8-atom input layer pair, so nothing
     # smaller than 16 atoms can appear.
     assert min(int(row["atom_count"]) for row in run.candidates) >= 16
-    document = json.loads(run.result_path.read_text())
+    document = read_results(run.result_path)
     assert document["metadata"]["top_poscar_source"] is None
     assert document["search"]["top_poscar"] == str(supercell.resolve())
 

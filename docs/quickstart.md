@@ -35,12 +35,15 @@ dependency-free prompt UI even if Rich/Typer are installed.
 ## First commands
 
 Find native Gram-form MoS2/MoS2 bilayer candidates, then build candidate 1
-from the schema-versioned JSON:
+from the portable result archive:
 
 ```bash
 cellstine moire search input/examples/mos2.vasp input/examples/mos2.vasp --length 20 --strain 0.01
-cellstine moire build runs/moire/<run-id>/results.json --indexes 1 --interlayer-distance 3.35
+cellstine moire build runs/moire/<run-id>/results.npz --indexes 1 --interlayer-distance 3.35
 ```
+
+The default is NPZ. Add `--results-format json` to the search for readable
+`results.json`; build and view accept either format or a run manifest.
 
 Here moire **strain** is principal logarithmic strain, `h = log(lambda)`, for
 principal stretch `lambda`. The accepted relative strain is bounded by the sum

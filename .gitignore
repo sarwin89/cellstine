@@ -9,6 +9,7 @@ __pycache__/
 .coverage
 .coverage.*
 htmlcov/
+coverage.xml
 
 # Packaging and build outputs
 build/

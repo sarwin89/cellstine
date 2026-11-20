@@ -16,11 +16,16 @@ from __future__ import annotations
 __all__ = [
     "DEFAULT_CELL_LIMIT",
     "DEFAULT_MATCH_LIMIT",
+    "DEFAULT_RESULTS_FORMAT",
     "DEFAULT_SYMMETRY_TOLERANCE",
     "DIRECTION_HELP",
     "LAYER_TOLERANCE",
     "LAYER_SELECTION_HELP",
 ]
+
+
+#: Portable bilayer search results; JSON remains an explicit compatibility choice.
+DEFAULT_RESULTS_FORMAT = "npz"
 
 
 #: The tolerance the planar symmetry search uses to decide whether two sites
@@ -42,7 +47,7 @@ DEFAULT_MATCH_LIMIT = 200
 
 DIRECTION_HELP = (
     "direction of observation: auto (the a-b surface normal), a/b/c, a*/b*/c*, "
-    "x/y/z, a Miller plane normal such as 111, (1,1,1) or 1x1, a real-space "
+    "x/y/z, a Miller plane normal such as 111, (1,1,1) or 11x1, a real-space "
     "direction such as [1,1,0], or cart:x,y,z; prefix with '-' to look the "
     "other way"
 )

@@ -28,6 +28,8 @@ atom relative to another, and the fitted cell therefore has the requested gap
 
 from __future__ import annotations
 
+from math import isfinite
+
 import numpy as np
 
 __all__ = [
@@ -39,17 +41,58 @@ __all__ = [
     "vacuum_gap",
 ]
 
+_MIN_SAFE_NORMAL_NORM = float(np.sqrt(np.finfo(float).tiny))
+
 
 def surface_normal(lattice: np.ndarray) -> np.ndarray:
     """Return the unit normal of the ``a``-``b`` plane, oriented along ``+c``."""
 
     rows = np.asarray(lattice, dtype=float).reshape(3, 3)
-    normal = np.cross(rows[0], rows[1])
-    length = float(np.linalg.norm(normal))
+    with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+        normal = np.cross(rows[0], rows[1])
+        length = float(np.linalg.norm(normal))
+    if not isfinite(length) or length <= _MIN_SAFE_NORMAL_NORM:
+        if not np.all(np.isfinite(rows[:2])):
+            raise ValueError("the in-plane lattice vectors must have finite components")
+        if not isfinite(length) and np.all(np.isfinite(normal)) and np.any(normal != 0.0):
+            scaled = normal / np.max(np.abs(normal))
+        else:
+            # Underflow can quantize the cross product's direction before its
+            # norm reaches zero. Recompute from scaled rows rather than reuse it.
+            scales = np.max(np.abs(rows[:2]), axis=1)
+            if np.any(scales <= 0.0):
+                raise ValueError("the in-plane lattice vectors are parallel; no surface normal exists")
+            scaled = np.cross(rows[0] / scales[0], rows[1] / scales[1])
+            maximum = float(np.max(np.abs(scaled)))
+            if maximum <= float(np.finfo(float).tiny):
+                # Extremely different component scales can erase a direction
+                # or leave a quantized subnormal cross product even here.
+                # Resolve this rare ambiguity on the exact values of
+                # the supplied floats, without changing the ordinary path.
+                from fractions import Fraction
+
+                first = [Fraction(float(value)) for value in rows[0]]
+                second = [Fraction(float(value)) for value in rows[1]]
+                exact = [
+                    first[1] * second[2] - first[2] * second[1],
+                    first[2] * second[0] - first[0] * second[2],
+                    first[0] * second[1] - first[1] * second[0],
+                ]
+                largest = max(abs(value) for value in exact)
+                if not largest:
+                    raise ValueError("the in-plane lattice vectors are parallel; no surface normal exists")
+                scaled = np.array([float(value / largest) for value in exact])
+                maximum = float(np.max(np.abs(scaled)))
+            scaled = scaled / maximum
+        normal = scaled
+        length = float(np.linalg.norm(normal))
     if length <= 0.0:
         raise ValueError("the in-plane lattice vectors are parallel; no surface normal exists")
     normal = normal / length
-    if float(np.dot(rows[2], normal)) < 0.0:
+    orientation = float(np.dot(rows[2], normal))
+    if not isfinite(orientation) and np.all(np.isfinite(rows[2])):
+        orientation = float(np.dot(rows[2] / np.max(np.abs(rows[2])), normal))
+    if orientation < 0.0:
         normal = -normal
     return normal
 

@@ -28,7 +28,11 @@ def _slug(value: str, max_length: int = 64) -> str:
 
 
 def run_output_suffix(run_id: str) -> str:
-    """Return the short unique suffix used at the end of generated filenames."""
+    """Return the legacy run-ID suffix used in preferred output filenames.
+
+    Actual default destinations are reserved separately: numeric labels and
+    counters share historical syntax, so the suffix alone is not an identity.
+    """
 
     parts = str(run_id).split("_")
     if len(parts) >= 2 and parts[-2].isdigit() and len(parts[-2]) == 2:
@@ -79,12 +83,19 @@ class Base:
         run_id = f"{base_id}_{timestamp}"
         run_dir = self.runs_root / self.workflow_name / run_id
         suffix = 1
-        while run_dir.exists():
+        while True:
+            try:
+                run_dir.mkdir(parents=True, exist_ok=False)
+            except FileExistsError:
+                # Another workflow may reserve the same minute-based name.
+                # Do not retry a parent-path failure with no occupied target.
+                if not run_dir.exists():
+                    raise
+            else:
+                return run_id, run_dir
             suffix += 1
             run_id = f"{base_id}_{suffix:02d}_{timestamp}"
             run_dir = self.runs_root / self.workflow_name / run_id
-        run_dir.mkdir(parents=True, exist_ok=False)
-        return run_id, run_dir
 
     def write_manifest(
         self,

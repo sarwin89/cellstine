@@ -33,6 +33,7 @@ from typing import Any, Mapping, Sequence
 import numpy as np
 
 from ...moire.search.find import run_find
+from ...core.jsonio import write_indented_json
 from ...moire.search.results import read_results
 
 SCHEMA = "cellstine.interface.match"
@@ -155,6 +156,7 @@ def search_slab_pair(
         min_cell_angle_deg=float(request.min_cell_angle_deg),
         max_cell_angle_deg=float(request.max_cell_angle_deg),
         output_root=str(results_root),
+        results_format="json",  # The v1 match schema names this pointer results_json.
     )
     return run.result_path, list(run.candidates)
 
@@ -435,7 +437,7 @@ def write_matches(path: str | Path, payload: Any) -> Path:
     destination = Path(path).resolve()
     destination.parent.mkdir(parents=True, exist_ok=True)
     with destination.open("w", encoding="utf-8", newline="\n") as handle:
-        json.dump(document, handle, indent=2, allow_nan=False)
+        write_indented_json(handle, document, allow_nan=False)
         handle.write("\n")
     return destination
 

@@ -98,7 +98,7 @@ def _built(workspace, name):
         bottom_strain=0.02,
         preview_limit=0,
     )
-    results = found.artifacts["results_json"]
+    results = found.artifacts["results_npz"]
     _, _, candidates, _ = generator.parse_results(results)
     assert len(candidates) >= CANDIDATES_PER_PAIR
     measured = []

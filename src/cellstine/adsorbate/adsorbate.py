@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import math
+from numbers import Integral, Real
 from pathlib import Path
 from typing import Sequence
 
 from ..core.base import Base, run_output_suffix
+from ..core.constants import DEFAULT_RESULTS_FORMAT
+from ..core.outputs import reserve_default_file
 from ..core.lattice import build_target_lattice
 from ..core.naming import safe_token
 from ..core.models import CommandResult
@@ -18,6 +21,7 @@ from ..io import native as io_mod
 from ..io.converters import StructureConverter
 from ..io.vasp import VaspIO
 from ..moire.search.find import run_find
+from ..moire.search.results import normalize_results_format
 from .placement.operations import place_molecule_on_site, transform_top_molecule
 
 
@@ -44,6 +48,24 @@ def _contact_summary(run) -> dict[str, object]:
     if notes:
         summary["warnings"] = list(notes)
     return summary
+
+
+def _manifest_sequence(values) -> list:
+    """Use plain scalar values for array inputs, preserving built-in values."""
+
+    if values is None:
+        return []
+    result = []
+    for value in values:
+        if type(value) in (int, float, bool):
+            result.append(value)
+        elif isinstance(value, Integral):
+            result.append(int(value))
+        elif isinstance(value, Real):
+            result.append(float(value))
+        else:
+            result.append(value.item() if hasattr(value, "item") else value)
+    return result
 
 
 class Adsorbate(MigrationPathMixin, Base):
@@ -93,7 +115,7 @@ class Adsorbate(MigrationPathMixin, Base):
             dependency_manager=self.dependency_manager,
         ).surface(
             bulk_poscar=substrate_path,
-            miller=miller or "1,1,1",
+            miller=miller if miller is not None and len(miller) else "1,1,1",
             layers=int(layers),
             vacuum=float(vacuum),
             repeat_a=int(repeat_a),
@@ -121,7 +143,7 @@ class Adsorbate(MigrationPathMixin, Base):
         """
 
         source = Path(substrate_path).resolve()
-        entries = [int(value) for value in supercell_matrix] if supercell_matrix else None
+        entries = [int(value) for value in supercell_matrix] if supercell_matrix is not None else None
         repeat_a = max(1, int(repeat_a))
         repeat_b = max(1, int(repeat_b))
         if repeat_a == 1 and repeat_b == 1 and not entries:
@@ -134,6 +156,8 @@ class Adsorbate(MigrationPathMixin, Base):
         target_dir = Path(run_dir) if run_dir is not None else self.output_root
         target_dir.mkdir(parents=True, exist_ok=True)
         expanded_path = target_dir / f"{safe_token(source.stem)}_substrate_expanded.vasp"
+        if run_dir is None:
+            expanded_path = reserve_default_file(expanded_path)
         io_mod.write_poscar(
             str(expanded_path),
             structure.lattice,
@@ -201,13 +225,13 @@ class Adsorbate(MigrationPathMixin, Base):
             supercell_matrix=substrate_supercell_matrix,
             run_dir=run_dir,
         )
-        resolved_output_path = output_path or str(
+        resolved_output_path = output_path or str(reserve_default_file(
             self.output_root
             / (
                 f"adsorbate_{safe_token(site_type)}{int(site_index):02d}_h{safe_token(f'{float(height):.2f}')}"
                 f"_rot{safe_token(f'{float(rotation_deg):.2f}')}_tilt{safe_token(f'{float(tilt_deg):.2f}')}_roll{safe_token(f'{float(roll_deg):.2f}')}_{output_suffix}.vasp"
             )
-        )
+        ))
         run = place_molecule_on_site(
             substrate_poscar=resolved_substrate,
             molecule_poscar=str(resolved_molecule_path),
@@ -244,7 +268,7 @@ class Adsorbate(MigrationPathMixin, Base):
                 "surface_side": str(surface_side),
                 "substrate_repeat_a": int(substrate_repeat_a),
                 "substrate_repeat_b": int(substrate_repeat_b),
-                "substrate_supercell_matrix": list(substrate_supercell_matrix or []),
+                "substrate_supercell_matrix": _manifest_sequence(substrate_supercell_matrix),
                 "auto_repeat_substrate": bool(auto_repeat_substrate),
                 "fit_padding": float(fit_padding),
                 "preserve_vacuum": bool(preserve_vacuum),
@@ -297,12 +321,12 @@ class Adsorbate(MigrationPathMixin, Base):
             target_token = "cart_" + "_".join(safe_token(f"{float(value):.3f}") for value in target_cartesian)
         if target_direct is not None:
             target_token = "direct_" + "_".join(safe_token(f"{float(value):.3f}") for value in target_direct)
-        resolved_output_path = output_path or str(
+        resolved_output_path = output_path or str(reserve_default_file(
             self.output_root
             / (
                 f"move_{target_token}_rot{safe_token(f'{float(rotation_deg):.2f}')}_tilt{safe_token(f'{float(tilt_deg):.2f}')}_roll{safe_token(f'{float(roll_deg):.2f}')}_{output_suffix}.vasp"
             )
-        )
+        ))
         run = transform_top_molecule(
             poscar_path=str(Path(poscar_path).resolve()),
             output_path=resolved_output_path,
@@ -322,7 +346,7 @@ class Adsorbate(MigrationPathMixin, Base):
             run_dir=run_dir,
             backend=backend,
             inputs={"poscar_path": str(Path(poscar_path).resolve())},
-            parameters={"target_cartesian": list(target_cartesian or []), "target_direct": list(target_direct or []), "rotation_deg": float(rotation_deg), "tilt_deg": float(tilt_deg), "roll_deg": float(roll_deg)},
+            parameters={"target_cartesian": _manifest_sequence(target_cartesian), "target_direct": _manifest_sequence(target_direct), "rotation_deg": float(rotation_deg), "tilt_deg": float(tilt_deg), "roll_deg": float(roll_deg)},
             artifacts={"output_poscar": run.output_path},
             summary={
                 "molecule_atom_count": run.molecule_atom_count,
@@ -357,7 +381,11 @@ class Adsorbate(MigrationPathMixin, Base):
         max_atoms: int | None = 2000,
         output_root: str | None = None,
         preview_limit: int = 10,
+        results_format: str = DEFAULT_RESULTS_FORMAT,
     ) -> CommandResult:
+        """Match a molecular assembly lattice; save NPZ or explicitly chosen JSON."""
+        results_format = normalize_results_format(results_format)
+        result_artifact = "results_json" if results_format == "json" else "results_npz"
         backend = self.choose_backend(feature="adsorbate.assemble")
         run_id, run_dir = self.create_run_dir("assemble", Path(substrate_poscar).stem)
         substrate = self.converter.read(substrate_poscar)
@@ -380,6 +408,7 @@ class Adsorbate(MigrationPathMixin, Base):
             bottom_strain=float(bottom_strain),
             max_atoms=max_atoms,
             output_root=str(output_root or run_dir),
+            results_format=results_format,
         )
         manifest_path = self.write_manifest(
             stage="assemble",
@@ -394,15 +423,16 @@ class Adsorbate(MigrationPathMixin, Base):
                 "max_length": float(max_length),
                 "top_strain": float(top_strain),
                 "bottom_strain": float(bottom_strain),
+                "results_format": results_format,
             },
-            artifacts={"target_poscar": target_path, "results_json": run.result_path},
+            artifacts={"target_poscar": target_path, result_artifact: run.result_path},
             summary={"candidate_count": len(run.candidates)},
         )
         preview = format_bilayer_candidates(run.candidates, limit=int(preview_limit)) if int(preview_limit) > 0 else ""
         return self.result(
             manifest_path=manifest_path,
             run_dir=run_dir,
-            artifacts={"target_poscar": target_path, "results_json": run.result_path},
+            artifacts={"target_poscar": target_path, result_artifact: run.result_path},
             summary={"candidate_count": len(run.candidates)},
             payload={"candidate_preview": preview},
         )
